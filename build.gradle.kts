@@ -38,6 +38,7 @@ val jjwtVersion = "0.12.6"
 val wiremockVersion = "3.9.2"
 val wiremockSpringBootVersion = "2.1.3"
 val micrometerVersion = "1.4.0"
+val postgresVersion = "42.7.4"
 
 dependencies {
 	implementation("org.springframework.boot:spring-boot-starter")
@@ -49,6 +50,9 @@ dependencies {
 	implementation("com.fasterxml.jackson.datatype:jackson-datatype-jsr310")
 	implementation("org.openapitools:jackson-databind-nullable:$openApiToolsVersion")
 	implementation("com.google.code.findbugs:jsr305:$findbugsVersion")
+  implementation("org.springframework.boot:spring-boot-starter-data-jpa")
+  implementation("org.postgresql:postgresql:$postgresVersion")
+
 
 	compileOnly("org.projectlombok:lombok")
 	annotationProcessor("org.projectlombok:lombok")
