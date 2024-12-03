@@ -1,4 +1,4 @@
-package it.gov.pagopa.organization.config;
+package it.gov.pagopa.pu.organization.config;
 
 import io.swagger.v3.oas.models.OpenAPI;
 import io.swagger.v3.oas.models.info.Info;

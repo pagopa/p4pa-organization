@@ -1,4 +1,4 @@
-package it.gov.pagopa.organization;
+package it.gov.pagopa.pu.organization;
 
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
