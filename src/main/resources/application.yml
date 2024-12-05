@@ -3,6 +3,12 @@ spring:
       name: ${artifactId}
       version: ${version}
     jmx.enabled: true
+    datasource:
+      url: \${ORGANIZATION_DB_URL:jdbc:postgresql://\${ORGANIZATION_DB_HOST:localhost}:\${ORGANIZATION_DB_PORT:5432}/mypay}
+      username: \${ORGANIZATION_DB_USER}
+      password: \${ORGANIZATION_DB_PASSWORD}
+      driverClassName: org.postgresql.Driver
+
 management:
     endpoint:
       health:
