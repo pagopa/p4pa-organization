@@ -1,28 +1,30 @@
 package it.gov.pagopa.template.controller;
 
 import it.gov.pagopa.template.dto.OrganizationDTO;
-import it.gov.pagopa.template.service.OrganizationService;
+import it.gov.pagopa.template.entity.Organization;
+import it.gov.pagopa.template.mapper.OrganizationMapper;
+import it.gov.pagopa.template.repository.OrganizationRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RestController;
 
-import java.util.List;
+import java.util.Optional;
 
 @RestController
-@RequestMapping("/api/organization")
 public class OrganizationController {
 
-  private final OrganizationService organizationService;
+  private final OrganizationRepository organizationRepository;
 
   @Autowired
-  public OrganizationController(OrganizationService organizationService) {
-    this.organizationService = organizationService;
+  public OrganizationController(OrganizationRepository organizationRepository) {
+    this.organizationRepository = organizationRepository;
   }
 
-  @GetMapping
-  public List<OrganizationDTO> getOrganizations() {
-    return organizationService.getOrganizations();
+  @GetMapping("/api/organizations/{ipaCode}")
+  public OrganizationDTO getOrganizationByIpaCode(@PathVariable String ipaCode) {
+    Optional<Organization> organization = organizationRepository.findByIpaCode(ipaCode);
+    return organization.map(OrganizationMapper::toDTO).orElse(null);
   }
 
 }

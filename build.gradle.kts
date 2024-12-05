@@ -52,6 +52,8 @@ dependencies {
 	implementation("com.google.code.findbugs:jsr305:$findbugsVersion")
   implementation("org.springframework.boot:spring-boot-starter-data-jpa")
   implementation("org.postgresql:postgresql:$postgresVersion")
+  implementation("org.springframework.data:spring-data-rest-webmvc")
+
 
 
 	compileOnly("org.projectlombok:lombok")
