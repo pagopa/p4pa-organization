@@ -9,7 +9,14 @@ import jakarta.persistence.Id;
 import jakarta.persistence.OneToMany;
 import java.io.Serializable;
 import java.util.List;
+import lombok.AllArgsConstructor;
+import lombok.Data;
+import lombok.NoArgsConstructor;
+
 @Entity(name = "broker")
+@AllArgsConstructor
+@NoArgsConstructor
+@Data
 public class BrokerEntity implements Serializable {
   @Id
   private Long brokerId;

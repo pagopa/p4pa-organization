@@ -8,7 +8,14 @@ import jakarta.persistence.ManyToOne;
 import java.io.Serializable;
 import java.time.Instant;
 import java.time.LocalDate;
+import lombok.AllArgsConstructor;
+import lombok.Data;
+import lombok.NoArgsConstructor;
+
 @Entity(name = "organization")
+@AllArgsConstructor
+@NoArgsConstructor
+@Data
 public class OrganizationEntity implements Serializable {
   @Id
   private Long organizationId;
