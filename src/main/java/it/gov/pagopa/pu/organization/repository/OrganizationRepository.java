@@ -6,7 +6,7 @@ import org.springframework.data.rest.core.annotation.RepositoryRestResource;
 
 import java.util.Optional;
 
-@RepositoryRestResource(path = "organizations", collectionResourceRel = "organizations")
+@RepositoryRestResource(path = "organization", collectionResourceRel = "organization")
 public interface OrganizationRepository extends JpaRepository<Organization, Long> {
 
   Optional<Organization> findByIpaCode(String ipaCode);
