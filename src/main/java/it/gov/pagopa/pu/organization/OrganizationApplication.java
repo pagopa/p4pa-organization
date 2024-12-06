@@ -1,13 +1,13 @@
-package it.gov.pagopa.template;
+package it.gov.pagopa.pu.organization;
 
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
 
 @SpringBootApplication
-public class P4PAOrganizationApplication {
+public class OrganizationApplication {
 
 	public static void main(String[] args) {
-		SpringApplication.run(P4PAOrganizationApplication.class, args);
+		SpringApplication.run(OrganizationApplication.class, args);
 	}
 
 }
