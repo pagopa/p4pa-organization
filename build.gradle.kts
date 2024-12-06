@@ -101,7 +101,7 @@ tasks.build {
 openApi {
   apiDocsUrl.set("http://localhost:8080/v3/api-docs")
   outputDir.set(file("$projectDir/build"))
-  outputFileName.set("openapi.json")
+  outputFileName.set("generated.openapi.json")
 }
 
 configure<SourceSetContainer> {
