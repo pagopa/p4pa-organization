@@ -65,8 +65,7 @@ tasks.withType<Test> {
 
 tasks.jacocoTestReport {
 	dependsOn(tasks.test)
-  dependsOn(tasks.generateOpenApiDocs)
-	reports {
+  reports {
 		xml.required = true
 	}
 }
@@ -94,13 +93,9 @@ tasks.compileJava {
 	dependsOn("openApiGenerate")
 }
 
-tasks.build {
-  finalizedBy(tasks.generateOpenApiDocs)
-}
-
 openApi {
   apiDocsUrl.set("http://localhost:8080/v3/api-docs")
-  outputDir.set(file("$projectDir/build"))
+  outputDir.set(file("$projectDir/openapi"))
   outputFileName.set("generated.openapi.json")
 }
 
