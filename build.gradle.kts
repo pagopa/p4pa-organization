@@ -65,6 +65,7 @@ tasks.withType<Test> {
 
 tasks.jacocoTestReport {
 	dependsOn(tasks.test)
+  dependsOn(tasks.generateOpenApiDocs)
 	reports {
 		xml.required = true
 	}
@@ -94,7 +95,7 @@ tasks.compileJava {
 }
 
 tasks.build {
-  dependsOn("generateOpenApiDocs")
+  finalizedBy(tasks.generateOpenApiDocs)
 }
 
 openApi {
