@@ -6,6 +6,7 @@ plugins {
 	id("org.sonarqube") version "5.1.0.4882"
 	id("com.github.ben-manes.versions") version "0.51.0"
 	id("org.openapi.generator") version "7.9.0"
+  id("org.springdoc.openapi-gradle-plugin") version "1.9.0"
 }
 
 group = "it.gov.pagopa.payhub"
@@ -88,6 +89,12 @@ configurations {
 
 tasks.compileJava {
 	dependsOn("openApiGenerate")
+}
+
+openApi {
+  apiDocsUrl.set("http://localhost:8080/v3/api-docs")
+  outputDir.set(file("$projectDir/openapi"))
+  outputFileName.set("generated.openapi.json")
 }
 
 configure<SourceSetContainer> {
