@@ -64,6 +64,9 @@ microservice-chart:
 
   envSecret:
     APPLICATIONINSIGHTS_CONNECTION_STRING: appinsights-connection-string
+    ORGANIZATION_DB_HOST: db-host
+    ORGANIZATION_DB_USER: db-mypay-login-username
+    ORGANIZATION_DB_PASSWORD: db-mypay-login-password
 
   # nodeSelector: {}
 
