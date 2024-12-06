@@ -6,6 +6,7 @@ plugins {
 	id("org.sonarqube") version "5.1.0.4882"
 	id("com.github.ben-manes.versions") version "0.51.0"
 	id("org.openapi.generator") version "7.9.0"
+  id("org.springdoc.openapi-gradle-plugin") version "1.9.0"
 }
 
 group = "it.gov.pagopa.payhub"
@@ -53,7 +54,7 @@ dependencies {
   implementation("org.springframework.boot:spring-boot-starter-data-jpa")
   implementation("org.postgresql:postgresql:$postgresVersion")
   implementation("org.springframework.data:spring-data-rest-webmvc")
-
+  implementation("org.springframework.boot:spring-boot-starter-jdbc")
 
 
 	compileOnly("org.projectlombok:lombok")
@@ -136,3 +137,4 @@ openApiGenerate {
     "additionalModelTypeAnnotations" to "@lombok.Data @lombok.Builder @lombok.AllArgsConstructor @lombok.RequiredArgsConstructor"
   ))
 }
+
