@@ -6,6 +6,7 @@ plugins {
 	id("org.sonarqube") version "5.1.0.4882"
 	id("com.github.ben-manes.versions") version "0.51.0"
 	id("org.openapi.generator") version "7.9.0"
+  id("org.springdoc.openapi-gradle-plugin") version "1.9.0"
 }
 
 group = "it.gov.pagopa.payhub"
@@ -54,7 +55,7 @@ dependencies {
 	//	Testing
 	testImplementation("org.springframework.boot:spring-boot-starter-test")
 	testImplementation("org.mockito:mockito-core")
-	testImplementation ("org.projectlombok:lombok")
+	testImplementation("org.projectlombok:lombok")
 }
 
 tasks.withType<Test> {
@@ -92,6 +93,16 @@ tasks.compileJava {
 	dependsOn("openApiGenerate")
 }
 
+tasks.build {
+  dependsOn("generateOpenApiDocs")
+}
+
+openApi {
+  apiDocsUrl.set("http://localhost:8080/v3/api-docs")
+  outputDir.set(file("$projectDir/build"))
+  outputFileName.set("openapi.json")
+}
+
 configure<SourceSetContainer> {
 	named("main") {
 		java.srcDir("$projectDir/build/generated/src/main/java")
@@ -99,7 +110,7 @@ configure<SourceSetContainer> {
 }
 
 springBoot {
-	mainClass.value("it.gov.pagopa.template.TemplateApplication")
+	mainClass.value("it.gov.pagopa.pu.organization.OrganizationApplication")
 }
 
 openApiGenerate {

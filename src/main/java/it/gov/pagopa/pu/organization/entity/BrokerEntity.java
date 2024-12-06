@@ -12,6 +12,7 @@ import java.util.List;
 import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
+import org.springframework.data.rest.core.annotation.RestResource;
 
 @Entity(name = "broker")
 @AllArgsConstructor
@@ -40,6 +41,7 @@ public class BrokerEntity implements Serializable {
   @Enumerated(EnumType.STRING)
   private PagoPaInteractionModel pagoPaInteractionModel;
 
-  @OneToMany(fetch = FetchType.LAZY, mappedBy = "brokerId")
+  @OneToMany(fetch = FetchType.EAGER, mappedBy = "brokerId")
+  @RestResource(path = "organization", rel="masterOrg")
   private List<OrganizationEntity> masterOrg;
 }

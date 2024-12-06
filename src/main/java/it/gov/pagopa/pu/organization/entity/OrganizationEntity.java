@@ -11,6 +11,7 @@ import java.time.LocalDate;
 import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
+import org.springframework.data.rest.core.annotation.RestResource;
 
 @Entity(name = "organization")
 @AllArgsConstructor
@@ -51,7 +52,8 @@ public class OrganizationEntity implements Serializable {
   private String orgTypeCode;
   private LocalDate startDate;
 
-  @ManyToOne(fetch = FetchType.LAZY)
+  @ManyToOne(fetch = FetchType.EAGER)
   @JoinColumn(name = "brokerId")
+  @RestResource(path = "broker", rel="brokerId")
   private BrokerEntity brokerId;
 }
