@@ -5,7 +5,6 @@ public enum PagoPaInteractionModel {
   SYNC_ACA,
   SYNC$GPDPRELOAD,
   SYNC_ACA$GPDPRELOAD,
-  ASYNC_GPD,
-  GPD
+  ASYNC_GPD
 }
 
