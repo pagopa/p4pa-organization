@@ -52,8 +52,5 @@ public class OrganizationEntity implements Serializable {
   private String orgTypeCode;
   private LocalDate startDate;
 
-  @ManyToOne(fetch = FetchType.EAGER)
-  @JoinColumn(name = "brokerId")
-  @RestResource(path = "broker", rel="brokerId")
-  private BrokerEntity brokerId;
+  private Long brokerId;
 }
