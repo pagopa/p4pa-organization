@@ -1,4 +1,4 @@
-package it.gov.pagopa.pu.organization.entity;
+package it.gov.pagopa.pu.organization.model;
 
 import it.gov.pagopa.pu.organization.enums.PagoPaInteractionModel;
 import jakarta.persistence.Entity;
