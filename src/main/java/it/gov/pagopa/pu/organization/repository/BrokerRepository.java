@@ -4,7 +4,7 @@ import it.gov.pagopa.pu.organization.model.Broker;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.rest.core.annotation.RepositoryRestResource;
 
-@RepositoryRestResource(collectionResourceRel = "broker", path = "broker")
+@RepositoryRestResource(collectionResourceRel = "broker", path = "brokers")
 public interface BrokerRepository extends JpaRepository<Broker,Long> {
 
 }
