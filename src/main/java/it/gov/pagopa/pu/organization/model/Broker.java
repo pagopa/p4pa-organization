@@ -24,9 +24,18 @@ public class Broker implements Serializable {
   @SequenceGenerator(name = "broker_generator", sequenceName = "broker_seq", allocationSize = 1)
   private Long brokerId;
 
+  private Long organizationId;
+
   private String brokerFiscalCode;
 
+  private String brokerName;
+
+  @Enumerated(EnumType.STRING)
+  private PagoPaInteractionModel pagoPaInteractionModel;
+
   private String stationId;
+
+  private String broadcastStationId;
 
   private byte[] syncKey;
 
@@ -34,15 +43,7 @@ public class Broker implements Serializable {
 
   private byte[] acaKey;
 
-  private String brokerName;
-
   @ColumnTransformer(write = "?::jsonb")
   private String personalisationFe;
 
-  private String broadcastStationId;
-
-  @Enumerated(EnumType.STRING)
-  private PagoPaInteractionModel pagoPaInteractionModel;
-
-  private Long organization_id;
 }
