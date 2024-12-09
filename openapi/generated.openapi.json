@@ -397,10 +397,30 @@
       "EntityModelBroker": {
         "type": "object",
         "properties": {
+          "organizationId": {
+            "type": "integer",
+            "format": "int64"
+          },
           "brokerFiscalCode": {
             "type": "string"
           },
+          "brokerName": {
+            "type": "string"
+          },
+          "pagoPaInteractionModel": {
+            "type": "string",
+            "enum": [
+              "SYNC",
+              "SYNC_ACA",
+              "SYNC$GPDPRELOAD",
+              "SYNC_ACA$GPDPRELOAD",
+              "ASYNC_GPD"
+            ]
+          },
           "stationId": {
+            "type": "string"
+          },
+          "broadcastStationId": {
             "type": "string"
           },
           "syncKey": {
@@ -415,28 +435,8 @@
             "type": "string",
             "format": "byte"
           },
-          "brokerName": {
-            "type": "string"
-          },
           "personalisationFe": {
             "type": "string"
-          },
-          "broadcastStationId": {
-            "type": "string"
-          },
-          "pagoPaInteractionModel": {
-            "type": "string",
-            "enum": [
-              "SYNC",
-              "SYNC_ACA",
-              "SYNC$GPDPRELOAD",
-              "SYNC_ACA$GPDPRELOAD",
-              "ASYNC_GPD"
-            ]
-          },
-          "organization_id": {
-            "type": "integer",
-            "format": "int64"
           },
           "_links": {
             "$ref": "#/components/schemas/Links"
@@ -493,10 +493,30 @@
             "type": "integer",
             "format": "int64"
           },
+          "organizationId": {
+            "type": "integer",
+            "format": "int64"
+          },
           "brokerFiscalCode": {
             "type": "string"
           },
+          "brokerName": {
+            "type": "string"
+          },
+          "pagoPaInteractionModel": {
+            "type": "string",
+            "enum": [
+              "SYNC",
+              "SYNC_ACA",
+              "SYNC$GPDPRELOAD",
+              "SYNC_ACA$GPDPRELOAD",
+              "ASYNC_GPD"
+            ]
+          },
           "stationId": {
+            "type": "string"
+          },
+          "broadcastStationId": {
             "type": "string"
           },
           "syncKey": {
@@ -511,28 +531,8 @@
             "type": "string",
             "format": "byte"
           },
-          "brokerName": {
-            "type": "string"
-          },
           "personalisationFe": {
             "type": "string"
-          },
-          "broadcastStationId": {
-            "type": "string"
-          },
-          "pagoPaInteractionModel": {
-            "type": "string",
-            "enum": [
-              "SYNC",
-              "SYNC_ACA",
-              "SYNC$GPDPRELOAD",
-              "SYNC_ACA$GPDPRELOAD",
-              "ASYNC_GPD"
-            ]
-          },
-          "organization_id": {
-            "type": "integer",
-            "format": "int64"
           }
         }
       },
