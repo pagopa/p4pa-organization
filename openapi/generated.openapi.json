@@ -12,7 +12,7 @@
     }
   ],
   "paths": {
-    "/broker": {
+    "/brokers": {
       "get": {
         "tags": [
           "broker-entity-controller"
@@ -108,7 +108,7 @@
         }
       }
     },
-    "/broker/{id}": {
+    "/brokers/{id}": {
       "get": {
         "tags": [
           "broker-entity-controller"
@@ -281,7 +281,7 @@
         }
       }
     },
-    "/profile/broker": {
+    "/profile/brokers": {
       "get": {
         "tags": [
           "profile-controller"
@@ -434,7 +434,7 @@
               "ASYNC_GPD"
             ]
           },
-          "masterOrg": {
+          "organization_id": {
             "type": "integer",
             "format": "int64"
           },
@@ -530,7 +530,7 @@
               "ASYNC_GPD"
             ]
           },
-          "masterOrg": {
+          "organization_id": {
             "type": "integer",
             "format": "int64"
           }
