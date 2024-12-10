@@ -858,7 +858,7 @@
           "iban": {
             "type": "string"
           },
-          "urlOrgSendSILPaymentResult": {
+          "urlOrgSendSilPaymentResult": {
             "type": "string"
           },
           "password": {
@@ -1043,7 +1043,7 @@
           "iban": {
             "type": "string"
           },
-          "urlOrgSendSILPaymentResult": {
+          "urlOrgSendSilPaymentResult": {
             "type": "string"
           },
           "password": {

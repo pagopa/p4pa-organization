@@ -1,9 +1,9 @@
-package it.gov.pagopa.pu.organization.entity;
+package it.gov.pagopa.pu.organization.model;
 
-import jakarta.persistence.Entity;
-import jakarta.persistence.Id;
-import jakarta.persistence.Table;
+import jakarta.persistence.*;
+import lombok.AllArgsConstructor;
 import lombok.Data;
+import lombok.NoArgsConstructor;
 
 import java.io.Serializable;
 import java.time.Instant;
@@ -11,10 +11,14 @@ import java.time.LocalDate;
 
 @Entity
 @Table(name = "organization")
+@AllArgsConstructor
+@NoArgsConstructor
 @Data
 public class Organization implements Serializable {
 
   @Id
+  @GeneratedValue(strategy = GenerationType.SEQUENCE, generator = "organization_generator")
+  @SequenceGenerator(name = "organization_generator", sequenceName = "organization_seq", allocationSize = 1)
   private Long organizationId;
   private String ipaCode;
   private String orgFiscalCode;
