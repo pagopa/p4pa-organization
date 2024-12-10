@@ -1,5 +1,6 @@
 package it.gov.pagopa.pu.organization.model;
 
+import it.gov.pagopa.pu.organization.dto.PersonalisationFe;
 import it.gov.pagopa.pu.organization.enums.PagoPaInteractionModel;
 import jakarta.persistence.Entity;
 import jakarta.persistence.EnumType;
@@ -12,7 +13,8 @@ import java.io.Serializable;
 import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
-import org.hibernate.annotations.ColumnTransformer;
+import org.hibernate.annotations.JdbcTypeCode;
+import org.hibernate.type.SqlTypes;
 
 @Entity(name = "broker")
 @AllArgsConstructor
@@ -43,7 +45,7 @@ public class Broker implements Serializable {
 
   private byte[] acaKey;
 
-  @ColumnTransformer(write = "?::jsonb")
-  private String personalisationFe;
+  @JdbcTypeCode(SqlTypes.JSON)
+  private PersonalisationFe personalisationFe;
 
 }
