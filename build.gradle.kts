@@ -32,20 +32,21 @@ repositories {
 val springDocOpenApiVersion = "2.6.0"
 val openApiToolsVersion = "0.2.6"
 val micrometerVersion = "1.4.0"
-val postgresVersion = "42.7.4"
+val postgresJdbcVersion = "42.7.4"
 
 dependencies {
 	implementation("org.springframework.boot:spring-boot-starter")
 	implementation("org.springframework.boot:spring-boot-starter-web")
+  implementation("org.springframework.boot:spring-boot-starter-data-rest")
+  implementation("org.springframework.boot:spring-boot-starter-data-jpa")
 	implementation("org.springframework.boot:spring-boot-starter-actuator")
   implementation("io.micrometer:micrometer-tracing-bridge-otel:$micrometerVersion")
 	implementation("org.springdoc:springdoc-openapi-starter-webmvc-ui:$springDocOpenApiVersion")
 	implementation("com.fasterxml.jackson.datatype:jackson-datatype-jsr310")
 	implementation("org.openapitools:jackson-databind-nullable:$openApiToolsVersion")
-  implementation("org.springframework.boot:spring-boot-starter-data-jpa")
-  implementation("org.postgresql:postgresql:$postgresVersion")
-  implementation("org.springframework.data:spring-data-rest-webmvc")
-  implementation("org.springframework.boot:spring-boot-starter-jdbc")
+
+  //postgres jdbc
+  implementation("org.postgresql:postgresql:$postgresJdbcVersion")
 
 	compileOnly("org.projectlombok:lombok")
 	annotationProcessor("org.projectlombok:lombok")
@@ -63,7 +64,7 @@ tasks.withType<Test> {
 
 tasks.jacocoTestReport {
 	dependsOn(tasks.test)
-	reports {
+  reports {
 		xml.required = true
 	}
 }
