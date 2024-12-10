@@ -15,20 +15,16 @@ import java.time.LocalDate;
 public class Organization implements Serializable {
 
   @Id
-  private Long orgId;
+  private Long organizationId;
   private String ipaCode;
   private String orgFiscalCode;
   private String orgName;
   private String adminEmail;
   private Instant creationDate;
   private Instant lastUpdateDate;
-  private String paymentTypeCode;
   private Long fee;
   private String iban;
-  private String myBoxClientKey;
-  private String myBoxClientSecret;
-  private String urlOrgSendSILPaymentResult;
-  private String codeGlobalLocationNumber;
+  private String urlOrgSendSilPaymentResult;
   private String password;
   private Boolean creditBicSeller;
   private String beneficiaryOrgName;
@@ -42,7 +38,7 @@ public class Organization implements Serializable {
   private String beneficiaryOrgWebSite;
   private String beneficiaryOrgEmail;
   private String applicationCode;
-  private String cbillInterbankCode;
+  private String cbillInterBankCode;
   private String orgInformation;
   private String orgLogoDesc;
   private String authorizationDesc;

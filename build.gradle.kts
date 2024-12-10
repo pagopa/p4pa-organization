@@ -88,40 +88,12 @@ configurations {
 	}
 }
 
-tasks.compileJava {
-	dependsOn("openApiGenerate")
-}
-
 openApi {
   apiDocsUrl.set("http://localhost:8080/v3/api-docs")
   outputDir.set(file("$projectDir/openapi"))
   outputFileName.set("generated.openapi.json")
 }
 
-configure<SourceSetContainer> {
-	named("main") {
-		java.srcDir("$projectDir/build/generated/src/main/java")
-	}
-}
-
 springBoot {
 	mainClass.value("it.gov.pagopa.pu.organization.OrganizationApplication")
-}
-
-openApiGenerate {
-  generatorName.set("spring")
-  inputSpec.set("$rootDir/openapi/template-payments-java-repository.openapi.yaml")
-  outputDir.set("$projectDir/build/generated")
-  apiPackage.set("it.gov.pagopa.template.controller.generated")
-  modelPackage.set("it.gov.pagopa.template.model.generated")
-  configOptions.set(mapOf(
-    "dateLibrary" to "java8",
-    "requestMappingMode" to "api_interface",
-    "useSpringBoot3" to "true",
-    "interfaceOnly" to "true",
-    "useTags" to "true",
-    "generateConstructorWithAllArgs" to "false",
-    "generatedConstructorWithRequiredArgs" to "false",
-    "additionalModelTypeAnnotations" to "@lombok.Data @lombok.Builder @lombok.AllArgsConstructor @lombok.RequiredArgsConstructor"
-  ))
 }
