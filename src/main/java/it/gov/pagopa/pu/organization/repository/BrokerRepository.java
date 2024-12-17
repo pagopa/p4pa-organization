@@ -10,7 +10,7 @@ import java.util.Optional;
 @RepositoryRestResource(collectionResourceRel = "broker", path = "brokers")
 public interface BrokerRepository extends JpaRepository<Broker,Long> {
 
-  @Query("select b from broker b join Organization o on b.organizationId = o.organizationId " +
+  @Query("select b from broker b join Organization o on b.brokerId = o.brokerId " +
     "where o.orgFiscalCode = :orgFiscalCode")
   Optional<Broker> findByOrgFiscalCode(String orgFiscalCode);
 
