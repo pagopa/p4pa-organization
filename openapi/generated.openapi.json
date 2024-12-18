@@ -108,6 +108,38 @@
         }
       }
     },
+    "/brokers/search/findByOrgFiscalCode": {
+      "get": {
+        "tags": [
+          "broker-search-controller"
+        ],
+        "operationId": "executeSearch-broker-get",
+        "parameters": [
+          {
+            "name": "orgFiscalCode",
+            "in": "query",
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "OK",
+            "content": {
+              "application/hal+json": {
+                "schema": {
+                  "$ref": "#/components/schemas/EntityModelBroker"
+                }
+              }
+            }
+          },
+          "404": {
+            "description": "Not Found"
+          }
+        }
+      }
+    },
     "/brokers/{id}": {
       "get": {
         "tags": [
@@ -861,32 +893,6 @@
           }
         }
       },
-      "PersonalisationFe": {
-        "type": "object",
-        "properties": {
-          "headerAssistanceUrl": {
-            "type": "string"
-          },
-          "logoFooterImg": {
-            "type": "string"
-          },
-          "footerDescText": {
-            "type": "string"
-          },
-          "footerPrivacyInfoUrl": {
-            "type": "string"
-          },
-          "footerGDPRUrl": {
-            "type": "string"
-          },
-          "footerTermsCondUrl": {
-            "type": "string"
-          },
-          "footerAccessibilityUrl": {
-            "type": "string"
-          }
-        }
-      },
       "EntityModelBroker": {
         "type": "object",
         "properties": {
@@ -937,6 +943,32 @@
           },
           "_links": {
             "$ref": "#/components/schemas/Links"
+          }
+        }
+      },
+      "PersonalisationFe": {
+        "type": "object",
+        "properties": {
+          "headerAssistanceUrl": {
+            "type": "string"
+          },
+          "logoFooterImg": {
+            "type": "string"
+          },
+          "footerDescText": {
+            "type": "string"
+          },
+          "footerPrivacyInfoUrl": {
+            "type": "string"
+          },
+          "footerGDPRUrl": {
+            "type": "string"
+          },
+          "footerTermsCondUrl": {
+            "type": "string"
+          },
+          "footerAccessibilityUrl": {
+            "type": "string"
           }
         }
       },
