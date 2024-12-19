@@ -34,13 +34,11 @@ public class BrokerService {
   public BrokerApiKeys getBrokerApiKeys(Long brokerId){
     Broker broker = brokerRepository.findById(brokerId).orElseThrow(() -> new HttpServerErrorException(HttpStatus.NOT_FOUND));
 
-    BrokerApiKeys brokerApiKeys = BrokerApiKeys.builder()
+    return BrokerApiKeys.builder()
       .syncKey(decryptKey(broker.getSyncKey()))
       .acaKey(decryptKey(broker.getAcaKey()))
       .gpdKey(decryptKey(broker.getGpdKey()))
       .build();
-
-    return brokerApiKeys;
   }
 
   public String decryptKey(byte[] encryptedKey){

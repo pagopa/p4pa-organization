@@ -20,7 +20,7 @@ import java.util.Optional;
 import java.util.stream.Stream;
 
 @ExtendWith(MockitoExtension.class)
-public class BrokerServiceTest {
+class BrokerServiceTest {
 
   private static final String VALID_BROKER_ENCRYPT_PASSWORD = "VALID_PASSWORD";
   private static final byte[] VALID_ENCRYPTED_SYNC_PASSWORD = new byte[]{1, 2, 3};
