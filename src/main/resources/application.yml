@@ -21,3 +21,6 @@ management:
         exposure.include: "*"
       web:
         exposure.include: info, health
+
+app:
+  brokerEncryptPassword: \${BROKER_ENCRYPT_PASSWORD}

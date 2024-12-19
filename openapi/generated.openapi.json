@@ -11,6 +11,12 @@
       "description": "Generated server url"
     }
   ],
+  "tags": [
+    {
+      "name": "Broker",
+      "description": "the Broker API"
+    }
+  ],
   "paths": {
     "/brokers": {
       "get": {
@@ -653,6 +659,73 @@
           }
         }
       }
+    },
+    "/brokers/apiKey/{brokerId}": {
+      "get": {
+        "tags": [
+          "Broker"
+        ],
+        "summary": "Retrieve decrypted API keys for a broker",
+        "operationId": "getBrokerApiKeys",
+        "parameters": [
+          {
+            "name": "brokerId",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "integer",
+              "format": "int64"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "OK",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/BrokerApiKeys"
+                }
+              },
+              "application/hal+json": {
+                "schema": {
+                  "$ref": "#/components/schemas/BrokerApiKeys"
+                }
+              }
+            }
+          },
+          "404": {
+            "description": "Not Found",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/BrokerApiKeys"
+                }
+              },
+              "application/hal+json": {
+                "schema": {
+                  "$ref": "#/components/schemas/BrokerApiKeys"
+                }
+              }
+            }
+          },
+          "500": {
+            "description": "Internal Server Error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/BrokerApiKeys"
+                }
+              },
+              "application/hal+json": {
+                "schema": {
+                  "$ref": "#/components/schemas/BrokerApiKeys"
+                }
+              }
+            }
+          }
+        }
+      }
     }
   },
   "components": {
@@ -946,6 +1019,28 @@
           }
         }
       },
+      "PagedModelEntityModelBroker": {
+        "type": "object",
+        "properties": {
+          "_embedded": {
+            "type": "object",
+            "properties": {
+              "broker": {
+                "type": "array",
+                "items": {
+                  "$ref": "#/components/schemas/EntityModelBroker"
+                }
+              }
+            }
+          },
+          "_links": {
+            "$ref": "#/components/schemas/Links"
+          },
+          "page": {
+            "$ref": "#/components/schemas/PageMetadata"
+          }
+        }
+      },
       "PersonalisationFe": {
         "type": "object",
         "properties": {
@@ -969,28 +1064,6 @@
           },
           "footerAccessibilityUrl": {
             "type": "string"
-          }
-        }
-      },
-      "PagedModelEntityModelBroker": {
-        "type": "object",
-        "properties": {
-          "_embedded": {
-            "type": "object",
-            "properties": {
-              "broker": {
-                "type": "array",
-                "items": {
-                  "$ref": "#/components/schemas/EntityModelBroker"
-                }
-              }
-            }
-          },
-          "_links": {
-            "$ref": "#/components/schemas/Links"
-          },
-          "page": {
-            "$ref": "#/components/schemas/PageMetadata"
           }
         }
       },
@@ -1151,6 +1224,20 @@
           "brokerId": {
             "type": "integer",
             "format": "int64"
+          }
+        }
+      },
+      "BrokerApiKeys": {
+        "type": "object",
+        "properties": {
+          "syncKey": {
+            "type": "string"
+          },
+          "acaKey": {
+            "type": "string"
+          },
+          "gpdKey": {
+            "type": "string"
           }
         }
       },

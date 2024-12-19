@@ -11,6 +11,7 @@ import jakarta.persistence.Id;
 import jakarta.persistence.SequenceGenerator;
 import java.io.Serializable;
 import lombok.AllArgsConstructor;
+import lombok.Builder;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 import org.hibernate.annotations.JdbcTypeCode;
@@ -19,6 +20,7 @@ import org.hibernate.type.SqlTypes;
 @Entity(name = "broker")
 @AllArgsConstructor
 @NoArgsConstructor
+@Builder
 @Data
 public class Broker implements Serializable {
   @Id

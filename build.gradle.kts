@@ -94,6 +94,37 @@ openApi {
   outputFileName.set("generated.openapi.json")
 }
 
+configure<SourceSetContainer> {
+  named("main") {
+    java.srcDir("$projectDir/build/generated/src/main/java")
+  }
+}
+
+tasks.compileJava {
+  dependsOn("openApiGenerateOrganization")
+}
+
 springBoot {
 	mainClass.value("it.gov.pagopa.pu.organization.OrganizationApplication")
+}
+
+tasks.register<org.openapitools.generator.gradle.plugin.tasks.GenerateTask>("openApiGenerateOrganization") {
+  group = "openapi"
+  description = "description"
+
+  generatorName.set("spring")
+  inputSpec.set("$rootDir/openapi/p4pa-organization.openapi.json")
+  outputDir.set("$projectDir/build/generated")
+  apiPackage.set("it.gov.pagopa.pu.organization.controller.generated")
+  modelPackage.set("it.gov.pagopa.pu.organization.dto.generated")
+  configOptions.set(mapOf(
+    "dateLibrary" to "java8",
+    "requestMappingMode" to "api_interface",
+    "useSpringBoot3" to "true",
+    "interfaceOnly" to "true",
+    "useTags" to "true",
+    "generateConstructorWithAllArgs" to "false",
+    "generatedConstructorWithRequiredArgs" to "false",
+    "additionalModelTypeAnnotations" to "@lombok.Data @lombok.Builder @lombok.AllArgsConstructor"
+  ))
 }
