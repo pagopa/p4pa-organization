@@ -18,7 +18,7 @@ public class BrokerEncryptionService {
 
   private final String brokerEncryptPassword;
 
-  BrokerEncryptionService(
+  public BrokerEncryptionService(
     @Value("${app.brokerEncryptPassword}") String brokerEncryptPassword) {
     this.brokerEncryptPassword = brokerEncryptPassword;
   }
