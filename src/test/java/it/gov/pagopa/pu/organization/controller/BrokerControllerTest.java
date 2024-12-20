@@ -12,7 +12,7 @@ import org.mockito.junit.jupiter.MockitoExtension;
 import org.springframework.http.ResponseEntity;
 
 @ExtendWith(MockitoExtension.class)
-public class BrokerControllerTest {
+class BrokerControllerTest {
 
   @Mock
   private BrokerService brokerServiceMock;

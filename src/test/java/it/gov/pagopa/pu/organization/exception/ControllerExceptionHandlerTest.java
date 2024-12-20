@@ -15,7 +15,7 @@ import org.springframework.test.web.servlet.result.MockMvcResultMatchers;
 
 @WebMvcTest
 @Import({BrokerController.class})
-public class ControllerExceptionHandlerTest {
+class ControllerExceptionHandlerTest {
 
   @MockBean
   private BrokerService brokerServiceMock;
@@ -26,19 +26,19 @@ public class ControllerExceptionHandlerTest {
   @Test
   void test() throws Exception{
     //given
-    Long INVALID_BROKER_ID = 1L;
-    String ERR_MESSAGE = "broker [%s]".formatted(INVALID_BROKER_ID);
-    Mockito.when(brokerServiceMock.getBrokerApiKeys(INVALID_BROKER_ID)).thenThrow(new ResourceNotFoundException(ERR_MESSAGE));
+    Long invalidBrokerId = 1L;
+    String errorMessage = "broker [%s]".formatted(invalidBrokerId);
+    Mockito.when(brokerServiceMock.getBrokerApiKeys(invalidBrokerId)).thenThrow(new ResourceNotFoundException(errorMessage));
     //when
     mockMvc.perform(
-        MockMvcRequestBuilders.get("/brokers/apiKey/{brokerId}", INVALID_BROKER_ID) )
+        MockMvcRequestBuilders.get("/brokers/apiKey/{brokerId}", invalidBrokerId) )
     //verify
       .andExpect(MockMvcResultMatchers.status().isNotFound())
       .andExpect(MockMvcResultMatchers.jsonPath("$.message")
-        .value("resource not found: %s".formatted(ERR_MESSAGE)))
+        .value("resource not found: %s".formatted(errorMessage)))
       .andReturn();
 
-    Mockito.verify(brokerServiceMock, Mockito.times(1)).getBrokerApiKeys(INVALID_BROKER_ID);
+    Mockito.verify(brokerServiceMock, Mockito.times(1)).getBrokerApiKeys(invalidBrokerId);
   }
 
 }
