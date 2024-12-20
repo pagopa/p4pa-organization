@@ -23,7 +23,7 @@ public class ControllerExceptionHandler {
   }
 
   private void logException(Exception ex, HttpServletRequest request, HttpStatus httpStatus, Level level, boolean printStackTrace) {
-    printStackTrace = printStackTrace | log.isTraceEnabled();
+    printStackTrace = printStackTrace || log.isTraceEnabled();
     log.atLevel(level)
       .setCause(printStackTrace ? ex : null)
       .log("A {} occurred handling request {} {} - HttpStatus {} - {}",
