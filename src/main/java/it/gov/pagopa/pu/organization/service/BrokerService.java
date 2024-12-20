@@ -7,9 +7,8 @@ import it.gov.pagopa.pu.organization.util.AESUtils;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.lang3.StringUtils;
 import org.springframework.beans.factory.annotation.Value;
-import org.springframework.http.HttpStatus;
+import org.springframework.data.rest.webmvc.ResourceNotFoundException;
 import org.springframework.stereotype.Service;
-import org.springframework.web.client.HttpServerErrorException;
 
 import java.util.Collections;
 import java.util.HashMap;
@@ -32,7 +31,7 @@ public class BrokerService {
   private final Map<byte[], String> apiKeyDecryptMap = Collections.synchronizedMap(new HashMap<>());
 
   public BrokerApiKeys getBrokerApiKeys(Long brokerId){
-    Broker broker = brokerRepository.findById(brokerId).orElseThrow(() -> new HttpServerErrorException(HttpStatus.NOT_FOUND));
+    Broker broker = brokerRepository.findById(brokerId).orElseThrow(() -> new ResourceNotFoundException("broker [%s]".formatted(brokerId)));
 
     return BrokerApiKeys.builder()
       .syncKey(decryptKey(broker.getSyncKey()))

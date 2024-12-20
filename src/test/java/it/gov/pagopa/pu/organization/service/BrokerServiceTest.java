@@ -12,8 +12,7 @@ import org.mockito.Mock;
 import org.mockito.MockedStatic;
 import org.mockito.Mockito;
 import org.mockito.junit.jupiter.MockitoExtension;
-import org.springframework.http.HttpStatus;
-import org.springframework.web.client.HttpServerErrorException;
+import org.springframework.data.rest.webmvc.ResourceNotFoundException;
 
 import java.util.List;
 import java.util.Optional;
@@ -82,12 +81,13 @@ class BrokerServiceTest {
   @Test
   void givenNotFoundBrokerIdWhenGetBrokerApiKeysThenException(){
     //given
-    Mockito.when(brokerRepositoryMock.findById(VALID_BROKER_ID)).thenThrow(new HttpServerErrorException(HttpStatus.NOT_FOUND));
+    String errrorMessage = "broker [%s]".formatted(VALID_BROKER_ID);
+    Mockito.when(brokerRepositoryMock.findById(VALID_BROKER_ID)).thenThrow(new ResourceNotFoundException(errrorMessage));
 
     //when
-    HttpServerErrorException exception = Assertions.assertThrows(HttpServerErrorException.class, () -> brokerService.getBrokerApiKeys(VALID_BROKER_ID));
+    ResourceNotFoundException exception = Assertions.assertThrows(ResourceNotFoundException.class, () -> brokerService.getBrokerApiKeys(VALID_BROKER_ID));
 
     //verify
-    Assertions.assertEquals(HttpStatus.NOT_FOUND, exception.getStatusCode());
+    Assertions.assertEquals(errrorMessage, exception.getMessage());
   }
 }
