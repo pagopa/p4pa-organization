@@ -3,53 +3,27 @@ package it.gov.pagopa.pu.organization.service;
 import it.gov.pagopa.pu.organization.dto.generated.BrokerApiKeys;
 import it.gov.pagopa.pu.organization.model.Broker;
 import it.gov.pagopa.pu.organization.repository.BrokerRepository;
-import it.gov.pagopa.pu.organization.util.AESUtils;
 import lombok.extern.slf4j.Slf4j;
-import org.apache.commons.lang3.StringUtils;
-import org.springframework.beans.factory.annotation.Value;
 import org.springframework.data.rest.webmvc.ResourceNotFoundException;
 import org.springframework.stereotype.Service;
 
-import java.util.Collections;
-import java.util.HashMap;
-import java.util.Map;
-
-@Service("brokerService")
+@Service
 @Slf4j
 public class BrokerService {
 
-  private final String brokerEncryptPassword;
   private final BrokerRepository brokerRepository;
+  private final BrokerEncryptionService brokerEncryptionService;
 
   public BrokerService(
-    @Value("${app.brokerEncryptPassword}") String brokerEncryptPassword,
-    BrokerRepository brokerRepository) {
-    this.brokerEncryptPassword = brokerEncryptPassword;
+    BrokerRepository brokerRepository,
+    BrokerEncryptionService brokerEncryptionService) {
+    this.brokerEncryptionService = brokerEncryptionService;
     this.brokerRepository = brokerRepository;
   }
 
-  private final Map<byte[], String> apiKeyDecryptMap = Collections.synchronizedMap(new HashMap<>());
-
   public BrokerApiKeys getBrokerApiKeys(Long brokerId){
     Broker broker = brokerRepository.findById(brokerId).orElseThrow(() -> new ResourceNotFoundException("broker [%s]".formatted(brokerId)));
-
-    return BrokerApiKeys.builder()
-      .syncKey(decryptKey(broker.getSyncKey()))
-      .acaKey(decryptKey(broker.getAcaKey()))
-      .gpdKey(decryptKey(broker.getGpdKey()))
-      .build();
+    return brokerEncryptionService.getBrokerDecryptedApiKeys(broker);
   }
 
-  public String decryptKey(byte[] encryptedKey){
-    if(encryptedKey==null || encryptedKey.length==0) {
-      log.debug("null or empty api-key");
-      return null;
-    }
-    String decrypted = apiKeyDecryptMap.computeIfAbsent(encryptedKey, c -> {
-      log.debug("invoking AESUtils to decrypt api-key");
-      return AESUtils.decrypt(brokerEncryptPassword,c);
-    });
-    log.debug("decrypted api-key: {}", StringUtils.abbreviateMiddle(decrypted, "..", 8));
-    return decrypted;
-  }
 }
