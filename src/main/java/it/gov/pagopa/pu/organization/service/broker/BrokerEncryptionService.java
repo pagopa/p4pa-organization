@@ -8,9 +8,8 @@ import org.apache.commons.lang3.StringUtils;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
 
-import java.util.Collections;
-import java.util.HashMap;
 import java.util.Map;
+import java.util.concurrent.ConcurrentHashMap;
 
 @Service
 @Slf4j
@@ -23,7 +22,7 @@ public class BrokerEncryptionService {
     this.brokerEncryptPassword = brokerEncryptPassword;
   }
 
-  private final Map<byte[], String> apiKeyDecryptMap = Collections.synchronizedMap(new HashMap<>());
+  private final Map<byte[], String> apiKeyDecryptMap = new ConcurrentHashMap<>();
 
   public BrokerApiKeys getBrokerDecryptedApiKeys(Broker broker){
     return BrokerApiKeys.builder()
