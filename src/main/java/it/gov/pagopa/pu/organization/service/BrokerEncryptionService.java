@@ -1,4 +1,4 @@
-package it.gov.pagopa.pu.organization.service;
+package it.gov.pagopa.pu.organization.service.broker;
 
 import it.gov.pagopa.pu.organization.dto.generated.BrokerApiKeys;
 import it.gov.pagopa.pu.organization.model.Broker;
