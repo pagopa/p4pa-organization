@@ -1,26 +1,30 @@
 spring:
-    application:
-      name: ${artifactId}
-      version: ${version}
-    jmx.enabled: true
-    datasource:
-      url: \${ORGANIZATION_DB_URL:jdbc:postgresql://\${ORGANIZATION_DB_HOST:localhost}:\${ORGANIZATION_DB_PORT:5432}/\${ORGANIZATION_DB_NAME:mypay}}
-      username: \${ORGANIZATION_DB_USER}
-      password: \${ORGANIZATION_DB_PASSWORD}
-      driverClassName: org.postgresql.Driver
+  application:
+    name: ${artifactId}
+    version: ${version}
+  jmx.enabled: true
+  datasource:
+    url: \${ORGANIZATION_DB_URL:jdbc:postgresql://\${ORGANIZATION_DB_HOST:localhost}:\${ORGANIZATION_DB_PORT:5432}/\${ORGANIZATION_DB_NAME:mypay}}
+    username: \${ORGANIZATION_DB_USER}
+    password: \${ORGANIZATION_DB_PASSWORD}
+    driverClassName: org.postgresql.Driver
 
 management:
-    endpoint:
-      health:
-        probes.enabled: true
-        group:
-          readiness.include: "*"
-          liveness.include: livenessState,diskSpace,ping
-    endpoints:
-      jmx:
-        exposure.include: "*"
-      web:
-        exposure.include: info, health
+  endpoint:
+    health:
+      probes.enabled: true
+      group:
+        readiness.include: "*"
+        liveness.include: livenessState,diskSpace,ping
+  endpoints:
+    jmx:
+      exposure.include: "*"
+    web:
+      exposure.include: info, health
+
+logging:
+  level:
+    it.gov.pagopa.pu.organization.exception.ControllerExceptionHandler: "\${LOGGING_LEVEL_CONTROLLER_EXCEPTION:INFO}"
 
 app:
   brokerEncryptPassword: \${BROKER_ENCRYPT_PASSWORD}

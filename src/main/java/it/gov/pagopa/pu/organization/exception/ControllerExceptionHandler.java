@@ -2,11 +2,12 @@ package it.gov.pagopa.pu.organization.exception;
 
 import jakarta.servlet.http.HttpServletRequest;
 import lombok.extern.slf4j.Slf4j;
+import org.slf4j.event.Level;
 import org.springdoc.api.ErrorMessage;
 import org.springframework.data.rest.webmvc.ResourceNotFoundException;
 import org.springframework.http.HttpStatus;
+import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.ExceptionHandler;
-import org.springframework.web.bind.annotation.ResponseStatus;
 import org.springframework.web.bind.annotation.RestControllerAdvice;
 
 @RestControllerAdvice
@@ -14,21 +15,24 @@ import org.springframework.web.bind.annotation.RestControllerAdvice;
 public class ControllerExceptionHandler {
 
   @ExceptionHandler(ResourceNotFoundException.class)
-  @ResponseStatus(value = HttpStatus.NOT_FOUND)
-  public ErrorMessage resourceNotFoundException(ResourceNotFoundException ex, HttpServletRequest request) {
-    if(log.isInfoEnabled()) {
-      String logMessage = "A ResourceNotFoundException occurred handling request %s - HttpStatus %s - %s"
-        .formatted(getRequestDetails(request), HttpStatus.NOT_FOUND.value(), ex.getMessage());
-      if(log.isDebugEnabled())
-        log.debug(logMessage, ex);
-      else
-        log.info(logMessage);
-    }
-    return new ErrorMessage("resource not found: %s".formatted(ex.getMessage()));
+  public ResponseEntity<ErrorMessage> resourceNotFoundException(ResourceNotFoundException ex, HttpServletRequest request) {
+    HttpStatus returnStatus = HttpStatus.NOT_FOUND;
+    logException(ex, request, returnStatus, Level.INFO, false);
+    return ResponseEntity.status(returnStatus)
+      .body(new ErrorMessage("resource not found: %s".formatted(ex.getMessage())));
   }
 
-  private String getRequestDetails(HttpServletRequest request) {
-    return "%s %s".formatted(request.getMethod(), request.getRequestURI());
+  private void logException(Exception ex, HttpServletRequest request, HttpStatus httpStatus, Level level, boolean printStackTrace) {
+    printStackTrace = printStackTrace | log.isTraceEnabled();
+    log.atLevel(level)
+      .setCause(printStackTrace ? ex : null)
+      .log("A {} occurred handling request {} {} - HttpStatus {} - {}",
+        ex.getClass().getSimpleName(),
+        request.getMethod(),
+        request.getRequestURI(),
+        httpStatus.value(),
+        ex.getMessage()
+      );
   }
 
 }
