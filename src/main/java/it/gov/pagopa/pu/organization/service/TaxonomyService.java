@@ -1,6 +1,6 @@
 package it.gov.pagopa.pu.organization.service;
 
-import it.gov.pagopa.pu.organization.dto.DistinctOrganizationTypeDTO;
+import it.gov.pagopa.pu.organization.model.DistinctOrganizationTypeDTO;
 import it.gov.pagopa.pu.organization.repository.TaxonomyRepository;
 import java.util.List;
 import org.springframework.stereotype.Service;

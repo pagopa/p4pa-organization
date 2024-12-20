@@ -1,6 +1,6 @@
 package it.gov.pagopa.pu.organization.controller;
 
-import it.gov.pagopa.pu.organization.dto.DistinctOrganizationTypeDTO;
+import it.gov.pagopa.pu.organization.model.DistinctOrganizationTypeDTO;
 import it.gov.pagopa.pu.organization.service.TaxonomyService;
 import java.util.List;
 import org.springframework.http.HttpStatusCode;

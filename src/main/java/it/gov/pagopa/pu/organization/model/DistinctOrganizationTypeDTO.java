@@ -1,9 +1,8 @@
-package it.gov.pagopa.pu.organization.dto;
+package it.gov.pagopa.pu.organization.model;
 
-import it.gov.pagopa.pu.organization.model.Taxonomy;
 import org.springframework.data.rest.core.config.Projection;
 
-@Projection(name = "distinctOrganizationType", types = { Taxonomy.class })
+@Projection(name = "dataView", types = Taxonomy.class)
 public interface DistinctOrganizationTypeDTO {
   String getOrganizationType();
   String getOrganizationTypeDescription();
