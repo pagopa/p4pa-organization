@@ -4,7 +4,6 @@ import it.gov.pagopa.pu.organization.dto.generated.BrokerApiKeys;
 import it.gov.pagopa.pu.organization.model.Broker;
 import it.gov.pagopa.pu.organization.util.AESUtils;
 import lombok.extern.slf4j.Slf4j;
-import org.apache.commons.lang3.StringUtils;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
 
@@ -37,11 +36,9 @@ public class BrokerEncryptionService {
       log.debug("null or empty api-key");
       return null;
     }
-    String decrypted = apiKeyDecryptMap.computeIfAbsent(encryptedKey, c -> {
-      log.debug("invoking AESUtils to decrypt api-key");
+    return apiKeyDecryptMap.computeIfAbsent(encryptedKey, c -> {
+      log.debug("invoking AESUtils to decrypt api-key[{}] for broker[{}]", type, brokerId);
       return AESUtils.decrypt(brokerEncryptPassword,c);
     });
-    log.debug("decrypted api-key[{}] for broker[{}]: {}", type, brokerId, StringUtils.abbreviateMiddle(decrypted, "..", 8));
-    return decrypted;
   }
 }
