@@ -1,112 +1,100 @@
 {
-  "openapi": "3.0.1",
-  "info": {
-    "title": "p4pa-organization",
-    "description": "Api and Models",
-    "version": "0.0.1"
+  "openapi" : "3.0.1",
+  "info" : {
+    "title" : "p4pa-organization",
+    "description" : "Api and Models",
+    "version" : "0.0.1"
   },
-  "servers": [
-    {
-      "url": "http://localhost:8080",
-      "description": "Generated server url"
-    }
-  ],
-  "tags": [
-    {
-      "name": "Broker",
-      "description": "the Broker API"
-    }
-  ],
-  "paths": {
-    "/brokers": {
-      "get": {
-        "tags": [
-          "broker-entity-controller"
-        ],
-        "description": "get-broker",
-        "operationId": "getCollectionResource-broker-get_1",
-        "parameters": [
-          {
-            "name": "page",
-            "in": "query",
-            "description": "Zero-based page index (0..N)",
-            "required": false,
-            "schema": {
-              "minimum": 0,
-              "type": "integer",
-              "default": 0
-            }
-          },
-          {
-            "name": "size",
-            "in": "query",
-            "description": "The size of the page to be returned",
-            "required": false,
-            "schema": {
-              "minimum": 1,
-              "type": "integer",
-              "default": 20
-            }
-          },
-          {
-            "name": "sort",
-            "in": "query",
-            "description": "Sorting criteria in the format: property,(asc|desc). Default sort order is ascending. Multiple sort criteria are supported.",
-            "required": false,
-            "schema": {
-              "type": "array",
-              "items": {
-                "type": "string"
-              }
+  "servers" : [ {
+    "url" : "http://localhost",
+    "description" : "Generated server url"
+  } ],
+  "tags" : [ {
+    "name" : "Broker",
+    "description" : "the Broker API"
+  } ],
+  "paths" : {
+    "/brokers" : {
+      "get" : {
+        "tags" : [ "broker-entity-controller" ],
+        "description" : "get-broker",
+        "operationId" : "getCollectionResource-broker-get",
+        "parameters" : [ {
+          "name" : "page",
+          "in" : "query",
+          "description" : "Zero-based page index (0..N)",
+          "required" : false,
+          "schema" : {
+            "minimum" : 0,
+            "type" : "integer",
+            "default" : 0
+          }
+        }, {
+          "name" : "size",
+          "in" : "query",
+          "description" : "The size of the page to be returned",
+          "required" : false,
+          "schema" : {
+            "minimum" : 1,
+            "type" : "integer",
+            "default" : 20
+          }
+        }, {
+          "name" : "sort",
+          "in" : "query",
+          "description" : "Sorting criteria in the format: property,(asc|desc). Default sort order is ascending. Multiple sort criteria are supported.",
+          "required" : false,
+          "schema" : {
+            "type" : "array",
+            "items" : {
+              "type" : "string"
             }
           }
-        ],
-        "responses": {
-          "200": {
-            "description": "OK",
-            "content": {
-              "application/hal+json": {
-                "schema": {
-                  "$ref": "#/components/schemas/PagedModelEntityModelBroker"
+        } ],
+        "responses" : {
+          "200" : {
+            "description" : "OK",
+            "content" : {
+              "application/hal+json" : {
+                "schema" : {
+                  "$ref" : "#/components/schemas/PagedModelEntityModelBroker"
                 }
               },
-              "text/uri-list": {
-                "schema": {
-                  "type": "string"
+              "application/x-spring-data-compact+json" : {
+                "schema" : {
+                  "$ref" : "#/components/schemas/PagedModelEntityModelBroker"
                 }
               },
-              "application/x-spring-data-compact+json": {
-                "schema": {
-                  "$ref": "#/components/schemas/PagedModelEntityModelBroker"
+              "text/uri-list" : {
+                "schema" : {
+                  "type" : "string"
                 }
               }
             }
           }
         }
       },
-      "post": {
-        "tags": [
-          "broker-entity-controller"
-        ],
-        "description": "create-broker",
-        "operationId": "postCollectionResource-broker-post",
-        "requestBody": {
-          "content": {
-            "application/json": {
-              "schema": {
-                "$ref": "#/components/schemas/BrokerRequestBody"
+      "post" : {
+        "tags" : [ "broker-entity-controller" ],
+        "description" : "create-broker",
+        "operationId" : "postCollectionResource-broker-post",
+        "requestBody" : {
+          "content" : {
+            "application/json" : {
+              "schema" : {
+                "$ref" : "#/components/schemas/BrokerRequestBody"
               }
             }
           },
-          "required": true
+          "required" : true
         },
-        "responses": {
-          "201": {
-            "description": "Created",
-            "content": {
-              "application/hal+json": {
-                "schema": {
-                  "$ref": "#/components/schemas/EntityModelBroker"
+        "responses" : {
+          "201" : {
+            "description" : "Created",
+            "content" : {
+              "application/hal+json" : {
+                "schema" : {
+                  "$ref" : "#/components/schemas/EntityModelBroker"
                 }
               }
             }
@@ -114,280 +102,252 @@
         }
       }
     },
-    "/brokers/search/findByOrgFiscalCode": {
-      "get": {
-        "tags": [
-          "broker-search-controller"
-        ],
-        "operationId": "executeSearch-broker-get",
-        "parameters": [
-          {
-            "name": "orgFiscalCode",
-            "in": "query",
-            "schema": {
-              "type": "string"
-            }
+    "/brokers/search/findByOrgFiscalCode" : {
+      "get" : {
+        "tags" : [ "broker-search-controller" ],
+        "operationId" : "executeSearch-broker-get",
+        "parameters" : [ {
+          "name" : "orgFiscalCode",
+          "in" : "query",
+          "schema" : {
+            "type" : "string"
           }
-        ],
-        "responses": {
-          "200": {
-            "description": "OK",
-            "content": {
-              "application/hal+json": {
-                "schema": {
-                  "$ref": "#/components/schemas/EntityModelBroker"
+        } ],
+        "responses" : {
+          "200" : {
+            "description" : "OK",
+            "content" : {
+              "application/hal+json" : {
+                "schema" : {
+                  "$ref" : "#/components/schemas/EntityModelBroker"
                 }
               }
             }
           },
-          "404": {
-            "description": "Not Found"
+          "404" : {
+            "description" : "Not Found"
           }
         }
       }
     },
-    "/brokers/{id}": {
-      "get": {
-        "tags": [
-          "broker-entity-controller"
-        ],
-        "description": "get-broker",
-        "operationId": "getItemResource-broker-get",
-        "parameters": [
-          {
-            "name": "id",
-            "in": "path",
-            "required": true,
-            "schema": {
-              "type": "string"
-            }
+    "/brokers/{id}" : {
+      "get" : {
+        "tags" : [ "broker-entity-controller" ],
+        "description" : "get-broker",
+        "operationId" : "getItemResource-broker-get",
+        "parameters" : [ {
+          "name" : "id",
+          "in" : "path",
+          "required" : true,
+          "schema" : {
+            "type" : "string"
           }
-        ],
-        "responses": {
-          "200": {
-            "description": "OK",
-            "content": {
-              "application/hal+json": {
-                "schema": {
-                  "$ref": "#/components/schemas/EntityModelBroker"
+        } ],
+        "responses" : {
+          "200" : {
+            "description" : "OK",
+            "content" : {
+              "application/hal+json" : {
+                "schema" : {
+                  "$ref" : "#/components/schemas/EntityModelBroker"
                 }
               }
             }
           },
-          "404": {
-            "description": "Not Found"
+          "404" : {
+            "description" : "Not Found"
           }
         }
       },
-      "put": {
-        "tags": [
-          "broker-entity-controller"
-        ],
-        "description": "update-broker",
-        "operationId": "putItemResource-broker-put",
-        "parameters": [
-          {
-            "name": "id",
-            "in": "path",
-            "required": true,
-            "schema": {
-              "type": "string"
-            }
+      "put" : {
+        "tags" : [ "broker-entity-controller" ],
+        "description" : "update-broker",
+        "operationId" : "putItemResource-broker-put",
+        "parameters" : [ {
+          "name" : "id",
+          "in" : "path",
+          "required" : true,
+          "schema" : {
+            "type" : "string"
           }
-        ],
-        "requestBody": {
-          "content": {
-            "application/json": {
-              "schema": {
-                "$ref": "#/components/schemas/BrokerRequestBody"
+        } ],
+        "requestBody" : {
+          "content" : {
+            "application/json" : {
+              "schema" : {
+                "$ref" : "#/components/schemas/BrokerRequestBody"
               }
             }
           },
-          "required": true
+          "required" : true
         },
-        "responses": {
-          "200": {
-            "description": "OK",
-            "content": {
-              "application/hal+json": {
-                "schema": {
-                  "$ref": "#/components/schemas/EntityModelBroker"
+        "responses" : {
+          "200" : {
+            "description" : "OK",
+            "content" : {
+              "application/hal+json" : {
+                "schema" : {
+                  "$ref" : "#/components/schemas/EntityModelBroker"
                 }
               }
             }
           },
-          "201": {
-            "description": "Created",
-            "content": {
-              "application/hal+json": {
-                "schema": {
-                  "$ref": "#/components/schemas/EntityModelBroker"
+          "201" : {
+            "description" : "Created",
+            "content" : {
+              "application/hal+json" : {
+                "schema" : {
+                  "$ref" : "#/components/schemas/EntityModelBroker"
                 }
               }
             }
           },
-          "204": {
-            "description": "No Content"
+          "204" : {
+            "description" : "No Content"
           }
         }
       },
-      "delete": {
-        "tags": [
-          "broker-entity-controller"
-        ],
-        "description": "delete-broker",
-        "operationId": "deleteItemResource-broker-delete",
-        "parameters": [
-          {
-            "name": "id",
-            "in": "path",
-            "required": true,
-            "schema": {
-              "type": "string"
-            }
+      "delete" : {
+        "tags" : [ "broker-entity-controller" ],
+        "description" : "delete-broker",
+        "operationId" : "deleteItemResource-broker-delete",
+        "parameters" : [ {
+          "name" : "id",
+          "in" : "path",
+          "required" : true,
+          "schema" : {
+            "type" : "string"
           }
-        ],
-        "responses": {
-          "204": {
-            "description": "No Content"
+        } ],
+        "responses" : {
+          "204" : {
+            "description" : "No Content"
           },
-          "404": {
-            "description": "Not Found"
+          "404" : {
+            "description" : "Not Found"
           }
         }
       },
-      "patch": {
-        "tags": [
-          "broker-entity-controller"
-        ],
-        "description": "patch-broker",
-        "operationId": "patchItemResource-broker-patch",
-        "parameters": [
-          {
-            "name": "id",
-            "in": "path",
-            "required": true,
-            "schema": {
-              "type": "string"
-            }
+      "patch" : {
+        "tags" : [ "broker-entity-controller" ],
+        "description" : "patch-broker",
+        "operationId" : "patchItemResource-broker-patch",
+        "parameters" : [ {
+          "name" : "id",
+          "in" : "path",
+          "required" : true,
+          "schema" : {
+            "type" : "string"
           }
-        ],
-        "requestBody": {
-          "content": {
-            "application/json": {
-              "schema": {
-                "$ref": "#/components/schemas/BrokerRequestBody"
+        } ],
+        "requestBody" : {
+          "content" : {
+            "application/json" : {
+              "schema" : {
+                "$ref" : "#/components/schemas/BrokerRequestBody"
               }
             }
           },
-          "required": true
+          "required" : true
         },
-        "responses": {
-          "200": {
-            "description": "OK",
-            "content": {
-              "application/hal+json": {
-                "schema": {
-                  "$ref": "#/components/schemas/EntityModelBroker"
+        "responses" : {
+          "200" : {
+            "description" : "OK",
+            "content" : {
+              "application/hal+json" : {
+                "schema" : {
+                  "$ref" : "#/components/schemas/EntityModelBroker"
                 }
               }
             }
           },
-          "204": {
-            "description": "No Content"
+          "204" : {
+            "description" : "No Content"
           }
         }
       }
     },
-    "/organizations": {
-      "get": {
-        "tags": [
-          "organization-entity-controller"
-        ],
-        "description": "get-organization",
-        "operationId": "getCollectionResource-organization-get_1",
-        "parameters": [
-          {
-            "name": "page",
-            "in": "query",
-            "description": "Zero-based page index (0..N)",
-            "required": false,
-            "schema": {
-              "minimum": 0,
-              "type": "integer",
-              "default": 0
-            }
-          },
-          {
-            "name": "size",
-            "in": "query",
-            "description": "The size of the page to be returned",
-            "required": false,
-            "schema": {
-              "minimum": 1,
-              "type": "integer",
-              "default": 20
-            }
-          },
-          {
-            "name": "sort",
-            "in": "query",
-            "description": "Sorting criteria in the format: property,(asc|desc). Default sort order is ascending. Multiple sort criteria are supported.",
-            "required": false,
-            "schema": {
-              "type": "array",
-              "items": {
-                "type": "string"
-              }
+    "/organizations" : {
+      "get" : {
+        "tags" : [ "organization-entity-controller" ],
+        "description" : "get-organization",
+        "operationId" : "getCollectionResource-organization-get",
+        "parameters" : [ {
+          "name" : "page",
+          "in" : "query",
+          "description" : "Zero-based page index (0..N)",
+          "required" : false,
+          "schema" : {
+            "minimum" : 0,
+            "type" : "integer",
+            "default" : 0
+          }
+        }, {
+          "name" : "size",
+          "in" : "query",
+          "description" : "The size of the page to be returned",
+          "required" : false,
+          "schema" : {
+            "minimum" : 1,
+            "type" : "integer",
+            "default" : 20
+          }
+        }, {
+          "name" : "sort",
+          "in" : "query",
+          "description" : "Sorting criteria in the format: property,(asc|desc). Default sort order is ascending. Multiple sort criteria are supported.",
+          "required" : false,
+          "schema" : {
+            "type" : "array",
+            "items" : {
+              "type" : "string"
             }
           }
-        ],
-        "responses": {
-          "200": {
-            "description": "OK",
-            "content": {
-              "application/hal+json": {
-                "schema": {
-                  "$ref": "#/components/schemas/PagedModelEntityModelOrganization"
+        } ],
+        "responses" : {
+          "200" : {
+            "description" : "OK",
+            "content" : {
+              "application/hal+json" : {
+                "schema" : {
+                  "$ref" : "#/components/schemas/PagedModelEntityModelOrganization"
                 }
               },
-              "text/uri-list": {
-                "schema": {
-                  "type": "string"
+              "application/x-spring-data-compact+json" : {
+                "schema" : {
+                  "$ref" : "#/components/schemas/PagedModelEntityModelOrganization"
                 }
               },
-              "application/x-spring-data-compact+json": {
-                "schema": {
-                  "$ref": "#/components/schemas/PagedModelEntityModelOrganization"
+              "text/uri-list" : {
+                "schema" : {
+                  "type" : "string"
                 }
               }
             }
           }
         }
       },
-      "post": {
-        "tags": [
-          "organization-entity-controller"
-        ],
-        "description": "create-organization",
-        "operationId": "postCollectionResource-organization-post",
-        "requestBody": {
-          "content": {
-            "application/json": {
-              "schema": {
-                "$ref": "#/components/schemas/OrganizationRequestBody"
+      "post" : {
+        "tags" : [ "organization-entity-controller" ],
+        "description" : "create-organization",
+        "operationId" : "postCollectionResource-organization-post",
+        "requestBody" : {
+          "content" : {
+            "application/json" : {
+              "schema" : {
+                "$ref" : "#/components/schemas/OrganizationRequestBody"
               }
             }
           },
-          "required": true
+          "required" : true
         },
-        "responses": {
-          "201": {
-            "description": "Created",
-            "content": {
-              "application/hal+json": {
-                "schema": {
-                  "$ref": "#/components/schemas/EntityModelOrganization"
+        "responses" : {
+          "201" : {
+            "description" : "Created",
+            "content" : {
+              "application/hal+json" : {
+                "schema" : {
+                  "$ref" : "#/components/schemas/EntityModelOrganization"
                 }
               }
             }
@@ -395,204 +355,182 @@
         }
       }
     },
-    "/organizations/search/findByIpaCode": {
-      "get": {
-        "tags": [
-          "organization-search-controller"
-        ],
-        "operationId": "executeSearch-organization-get",
-        "parameters": [
-          {
-            "name": "ipaCode",
-            "in": "query",
-            "schema": {
-              "type": "string"
-            }
+    "/organizations/search/findByIpaCode" : {
+      "get" : {
+        "tags" : [ "organization-search-controller" ],
+        "operationId" : "executeSearch-organization-get",
+        "parameters" : [ {
+          "name" : "ipaCode",
+          "in" : "query",
+          "schema" : {
+            "type" : "string"
           }
-        ],
-        "responses": {
-          "200": {
-            "description": "OK",
-            "content": {
-              "application/hal+json": {
-                "schema": {
-                  "$ref": "#/components/schemas/EntityModelOrganization"
+        } ],
+        "responses" : {
+          "200" : {
+            "description" : "OK",
+            "content" : {
+              "application/hal+json" : {
+                "schema" : {
+                  "$ref" : "#/components/schemas/EntityModelOrganization"
                 }
               }
             }
           },
-          "404": {
-            "description": "Not Found"
+          "404" : {
+            "description" : "Not Found"
           }
         }
       }
     },
-    "/organizations/{id}": {
-      "get": {
-        "tags": [
-          "organization-entity-controller"
-        ],
-        "description": "get-organization",
-        "operationId": "getItemResource-organization-get",
-        "parameters": [
-          {
-            "name": "id",
-            "in": "path",
-            "required": true,
-            "schema": {
-              "type": "string"
-            }
+    "/organizations/{id}" : {
+      "get" : {
+        "tags" : [ "organization-entity-controller" ],
+        "description" : "get-organization",
+        "operationId" : "getItemResource-organization-get",
+        "parameters" : [ {
+          "name" : "id",
+          "in" : "path",
+          "required" : true,
+          "schema" : {
+            "type" : "string"
           }
-        ],
-        "responses": {
-          "200": {
-            "description": "OK",
-            "content": {
-              "application/hal+json": {
-                "schema": {
-                  "$ref": "#/components/schemas/EntityModelOrganization"
+        } ],
+        "responses" : {
+          "200" : {
+            "description" : "OK",
+            "content" : {
+              "application/hal+json" : {
+                "schema" : {
+                  "$ref" : "#/components/schemas/EntityModelOrganization"
                 }
               }
             }
           },
-          "404": {
-            "description": "Not Found"
+          "404" : {
+            "description" : "Not Found"
           }
         }
       },
-      "put": {
-        "tags": [
-          "organization-entity-controller"
-        ],
-        "description": "update-organization",
-        "operationId": "putItemResource-organization-put",
-        "parameters": [
-          {
-            "name": "id",
-            "in": "path",
-            "required": true,
-            "schema": {
-              "type": "string"
-            }
+      "put" : {
+        "tags" : [ "organization-entity-controller" ],
+        "description" : "update-organization",
+        "operationId" : "putItemResource-organization-put",
+        "parameters" : [ {
+          "name" : "id",
+          "in" : "path",
+          "required" : true,
+          "schema" : {
+            "type" : "string"
           }
-        ],
-        "requestBody": {
-          "content": {
-            "application/json": {
-              "schema": {
-                "$ref": "#/components/schemas/OrganizationRequestBody"
+        } ],
+        "requestBody" : {
+          "content" : {
+            "application/json" : {
+              "schema" : {
+                "$ref" : "#/components/schemas/OrganizationRequestBody"
               }
             }
           },
-          "required": true
+          "required" : true
         },
-        "responses": {
-          "200": {
-            "description": "OK",
-            "content": {
-              "application/hal+json": {
-                "schema": {
-                  "$ref": "#/components/schemas/EntityModelOrganization"
+        "responses" : {
+          "200" : {
+            "description" : "OK",
+            "content" : {
+              "application/hal+json" : {
+                "schema" : {
+                  "$ref" : "#/components/schemas/EntityModelOrganization"
                 }
               }
             }
           },
-          "201": {
-            "description": "Created",
-            "content": {
-              "application/hal+json": {
-                "schema": {
-                  "$ref": "#/components/schemas/EntityModelOrganization"
+          "201" : {
+            "description" : "Created",
+            "content" : {
+              "application/hal+json" : {
+                "schema" : {
+                  "$ref" : "#/components/schemas/EntityModelOrganization"
                 }
               }
             }
           },
-          "204": {
-            "description": "No Content"
+          "204" : {
+            "description" : "No Content"
           }
         }
       },
-      "delete": {
-        "tags": [
-          "organization-entity-controller"
-        ],
-        "description": "delete-organization",
-        "operationId": "deleteItemResource-organization-delete",
-        "parameters": [
-          {
-            "name": "id",
-            "in": "path",
-            "required": true,
-            "schema": {
-              "type": "string"
-            }
+      "delete" : {
+        "tags" : [ "organization-entity-controller" ],
+        "description" : "delete-organization",
+        "operationId" : "deleteItemResource-organization-delete",
+        "parameters" : [ {
+          "name" : "id",
+          "in" : "path",
+          "required" : true,
+          "schema" : {
+            "type" : "string"
           }
-        ],
-        "responses": {
-          "204": {
-            "description": "No Content"
+        } ],
+        "responses" : {
+          "204" : {
+            "description" : "No Content"
           },
-          "404": {
-            "description": "Not Found"
+          "404" : {
+            "description" : "Not Found"
           }
         }
       },
-      "patch": {
-        "tags": [
-          "organization-entity-controller"
-        ],
-        "description": "patch-organization",
-        "operationId": "patchItemResource-organization-patch",
-        "parameters": [
-          {
-            "name": "id",
-            "in": "path",
-            "required": true,
-            "schema": {
-              "type": "string"
-            }
+      "patch" : {
+        "tags" : [ "organization-entity-controller" ],
+        "description" : "patch-organization",
+        "operationId" : "patchItemResource-organization-patch",
+        "parameters" : [ {
+          "name" : "id",
+          "in" : "path",
+          "required" : true,
+          "schema" : {
+            "type" : "string"
           }
-        ],
-        "requestBody": {
-          "content": {
-            "application/json": {
-              "schema": {
-                "$ref": "#/components/schemas/OrganizationRequestBody"
+        } ],
+        "requestBody" : {
+          "content" : {
+            "application/json" : {
+              "schema" : {
+                "$ref" : "#/components/schemas/OrganizationRequestBody"
               }
             }
           },
-          "required": true
+          "required" : true
         },
-        "responses": {
-          "200": {
-            "description": "OK",
-            "content": {
-              "application/hal+json": {
-                "schema": {
-                  "$ref": "#/components/schemas/EntityModelOrganization"
+        "responses" : {
+          "200" : {
+            "description" : "OK",
+            "content" : {
+              "application/hal+json" : {
+                "schema" : {
+                  "$ref" : "#/components/schemas/EntityModelOrganization"
                 }
               }
             }
           },
-          "204": {
-            "description": "No Content"
+          "204" : {
+            "description" : "No Content"
           }
         }
       }
     },
-    "/profile": {
-      "get": {
-        "tags": [
-          "profile-controller"
-        ],
-        "operationId": "listAllFormsOfMetadata_1",
-        "responses": {
-          "200": {
-            "description": "OK",
-            "content": {
-              "application/hal+json": {
-                "schema": {
-                  "$ref": "#/components/schemas/RepresentationModelObject"
+    "/profile" : {
+      "get" : {
+        "tags" : [ "profile-controller" ],
+        "operationId" : "listAllFormsOfMetadata",
+        "responses" : {
+          "200" : {
+            "description" : "OK",
+            "content" : {
+              "application/hal+json" : {
+                "schema" : {
+                  "$ref" : "#/components/schemas/RepresentationModelObject"
                 }
               }
             }
@@ -600,29 +538,27 @@
         }
       }
     },
-    "/profile/brokers": {
-      "get": {
-        "tags": [
-          "profile-controller"
-        ],
-        "operationId": "descriptor_1_1_1",
-        "responses": {
-          "200": {
-            "description": "OK",
-            "content": {
-              "*/*": {
-                "schema": {
-                  "type": "string"
+    "/profile/brokers" : {
+      "get" : {
+        "tags" : [ "profile-controller" ],
+        "operationId" : "descriptor",
+        "responses" : {
+          "200" : {
+            "description" : "OK",
+            "content" : {
+              "*/*" : {
+                "schema" : {
+                  "type" : "string"
                 }
               },
-              "application/alps+json": {
-                "schema": {
-                  "type": "string"
+              "application/alps+json" : {
+                "schema" : {
+                  "type" : "string"
                 }
               },
-              "application/schema+json": {
-                "schema": {
-                  "$ref": "#/components/schemas/JsonSchema"
+              "application/schema+json" : {
+                "schema" : {
+                  "$ref" : "#/components/schemas/JsonSchema"
                 }
               }
             }
@@ -630,29 +566,27 @@
         }
       }
     },
-    "/profile/organizations": {
-      "get": {
-        "tags": [
-          "profile-controller"
-        ],
-        "operationId": "descriptor_1_1_2",
-        "responses": {
-          "200": {
-            "description": "OK",
-            "content": {
-              "*/*": {
-                "schema": {
-                  "type": "string"
+    "/profile/organizations" : {
+      "get" : {
+        "tags" : [ "profile-controller" ],
+        "operationId" : "descriptor_1",
+        "responses" : {
+          "200" : {
+            "description" : "OK",
+            "content" : {
+              "*/*" : {
+                "schema" : {
+                  "type" : "string"
                 }
               },
-              "application/alps+json": {
-                "schema": {
-                  "type": "string"
+              "application/alps+json" : {
+                "schema" : {
+                  "type" : "string"
                 }
               },
-              "application/schema+json": {
-                "schema": {
-                  "$ref": "#/components/schemas/JsonSchema"
+              "application/schema+json" : {
+                "schema" : {
+                  "$ref" : "#/components/schemas/JsonSchema"
                 }
               }
             }
@@ -660,66 +594,62 @@
         }
       }
     },
-    "/brokers/apiKey/{brokerId}": {
-      "get": {
-        "tags": [
-          "Broker"
-        ],
-        "summary": "Retrieve decrypted API keys for a broker",
-        "operationId": "getBrokerApiKeys",
-        "parameters": [
-          {
-            "name": "brokerId",
-            "in": "path",
-            "required": true,
-            "schema": {
-              "type": "integer",
-              "format": "int64"
-            }
+    "/brokers/apiKey/{brokerId}" : {
+      "get" : {
+        "tags" : [ "Broker" ],
+        "summary" : "Retrieve decrypted API keys for a broker",
+        "operationId" : "getBrokerApiKeys",
+        "parameters" : [ {
+          "name" : "brokerId",
+          "in" : "path",
+          "required" : true,
+          "schema" : {
+            "type" : "integer",
+            "format" : "int64"
           }
-        ],
-        "responses": {
-          "200": {
-            "description": "OK",
-            "content": {
-              "application/json": {
-                "schema": {
-                  "$ref": "#/components/schemas/BrokerApiKeys"
+        } ],
+        "responses" : {
+          "200" : {
+            "description" : "OK",
+            "content" : {
+              "application/json" : {
+                "schema" : {
+                  "$ref" : "#/components/schemas/BrokerApiKeys"
                 }
               },
-              "application/hal+json": {
-                "schema": {
-                  "$ref": "#/components/schemas/BrokerApiKeys"
+              "application/hal+json" : {
+                "schema" : {
+                  "$ref" : "#/components/schemas/BrokerApiKeys"
                 }
               }
             }
           },
-          "404": {
-            "description": "Not Found",
-            "content": {
-              "application/json": {
-                "schema": {
-                  "$ref": "#/components/schemas/BrokerApiKeys"
+          "404" : {
+            "description" : "Not Found",
+            "content" : {
+              "application/json" : {
+                "schema" : {
+                  "$ref" : "#/components/schemas/BrokerApiKeys"
                 }
               },
-              "application/hal+json": {
-                "schema": {
-                  "$ref": "#/components/schemas/BrokerApiKeys"
+              "application/hal+json" : {
+                "schema" : {
+                  "$ref" : "#/components/schemas/BrokerApiKeys"
                 }
               }
             }
           },
-          "500": {
-            "description": "Internal Server Error",
-            "content": {
-              "application/json": {
-                "schema": {
-                  "$ref": "#/components/schemas/BrokerApiKeys"
+          "500" : {
+            "description" : "Internal Server Error",
+            "content" : {
+              "application/json" : {
+                "schema" : {
+                  "$ref" : "#/components/schemas/BrokerApiKeys"
                 }
               },
-              "application/hal+json": {
-                "schema": {
-                  "$ref": "#/components/schemas/BrokerApiKeys"
+              "application/hal+json" : {
+                "schema" : {
+                  "$ref" : "#/components/schemas/BrokerApiKeys"
                 }
               }
             }
@@ -728,545 +658,533 @@
       }
     }
   },
-  "components": {
-    "schemas": {
-      "AbstractJsonSchemaPropertyObject": {
-        "type": "object",
-        "properties": {
-          "title": {
-            "type": "string"
+  "components" : {
+    "schemas" : {
+      "AbstractJsonSchemaPropertyObject" : {
+        "type" : "object",
+        "properties" : {
+          "title" : {
+            "type" : "string"
           },
-          "readOnly": {
-            "type": "boolean"
+          "readOnly" : {
+            "type" : "boolean"
           }
         }
       },
-      "Item": {
-        "type": "object",
-        "properties": {
-          "type": {
-            "type": "string"
+      "Item" : {
+        "type" : "object",
+        "properties" : {
+          "type" : {
+            "type" : "string"
           },
-          "properties": {
-            "type": "object",
-            "additionalProperties": {
-              "$ref": "#/components/schemas/AbstractJsonSchemaPropertyObject"
+          "properties" : {
+            "type" : "object",
+            "additionalProperties" : {
+              "$ref" : "#/components/schemas/AbstractJsonSchemaPropertyObject"
             }
           },
-          "requiredProperties": {
-            "type": "array",
-            "items": {
-              "type": "string"
+          "requiredProperties" : {
+            "type" : "array",
+            "items" : {
+              "type" : "string"
             }
           }
         }
       },
-      "JsonSchema": {
-        "type": "object",
-        "properties": {
-          "title": {
-            "type": "string"
+      "JsonSchema" : {
+        "type" : "object",
+        "properties" : {
+          "title" : {
+            "type" : "string"
           },
-          "description": {
-            "type": "string"
+          "description" : {
+            "type" : "string"
           },
-          "properties": {
-            "type": "object",
-            "additionalProperties": {
-              "$ref": "#/components/schemas/AbstractJsonSchemaPropertyObject"
+          "properties" : {
+            "type" : "object",
+            "additionalProperties" : {
+              "$ref" : "#/components/schemas/AbstractJsonSchemaPropertyObject"
             }
           },
-          "requiredProperties": {
-            "type": "array",
-            "items": {
-              "type": "string"
+          "requiredProperties" : {
+            "type" : "array",
+            "items" : {
+              "type" : "string"
             }
           },
-          "definitions": {
-            "type": "object",
-            "additionalProperties": {
-              "$ref": "#/components/schemas/Item"
+          "definitions" : {
+            "type" : "object",
+            "additionalProperties" : {
+              "$ref" : "#/components/schemas/Item"
             }
           },
-          "type": {
-            "type": "string"
+          "type" : {
+            "type" : "string"
           },
-          "$schema": {
-            "type": "string"
+          "$schema" : {
+            "type" : "string"
           }
         }
       },
-      "Links": {
-        "type": "object",
-        "additionalProperties": {
-          "$ref": "#/components/schemas/Link"
+      "Links" : {
+        "type" : "object",
+        "additionalProperties" : {
+          "$ref" : "#/components/schemas/Link"
         }
       },
-      "RepresentationModelObject": {
-        "type": "object",
-        "properties": {
-          "_links": {
-            "$ref": "#/components/schemas/Links"
+      "RepresentationModelObject" : {
+        "type" : "object",
+        "properties" : {
+          "_links" : {
+            "$ref" : "#/components/schemas/Links"
           }
         }
       },
-      "EntityModelOrganization": {
-        "type": "object",
-        "properties": {
-          "organizationId": {
-            "type": "integer",
-            "format": "int64"
+      "PersonalisationFe" : {
+        "type" : "object",
+        "properties" : {
+          "headerAssistanceUrl" : {
+            "type" : "string"
           },
-          "ipaCode": {
-            "type": "string"
+          "logoFooterImg" : {
+            "type" : "string"
           },
-          "orgFiscalCode": {
-            "type": "string"
+          "footerDescText" : {
+            "type" : "string"
           },
-          "orgName": {
-            "type": "string"
+          "footerPrivacyInfoUrl" : {
+            "type" : "string"
           },
-          "adminEmail": {
-            "type": "string"
+          "footerGDPRUrl" : {
+            "type" : "string"
           },
-          "creationDate": {
-            "type": "string",
-            "format": "date-time"
+          "footerTermsCondUrl" : {
+            "type" : "string"
           },
-          "lastUpdateDate": {
-            "type": "string",
-            "format": "date-time"
-          },
-          "fee": {
-            "type": "integer",
-            "format": "int64"
-          },
-          "iban": {
-            "type": "string"
-          },
-          "urlOrgSendSilPaymentResult": {
-            "type": "string"
-          },
-          "password": {
-            "type": "string"
-          },
-          "creditBicSeller": {
-            "type": "boolean"
-          },
-          "beneficiaryOrgName": {
-            "type": "string"
-          },
-          "beneficiaryOrgAddress": {
-            "type": "string"
-          },
-          "beneficiaryOrgCivic": {
-            "type": "string"
-          },
-          "beneficiaryOrgPostalCode": {
-            "type": "string"
-          },
-          "beneficiaryOrgLocation": {
-            "type": "string"
-          },
-          "beneficiaryOrgProvince": {
-            "type": "string"
-          },
-          "beneficiaryOrgNation": {
-            "type": "string"
-          },
-          "beneficiaryOrgPhoneNumber": {
-            "type": "string"
-          },
-          "beneficiaryOrgWebSite": {
-            "type": "string"
-          },
-          "beneficiaryOrgEmail": {
-            "type": "string"
-          },
-          "applicationCode": {
-            "type": "string"
-          },
-          "cbillInterBankCode": {
-            "type": "string"
-          },
-          "orgInformation": {
-            "type": "string"
-          },
-          "orgLogoDesc": {
-            "type": "string"
-          },
-          "authorizationDesc": {
-            "type": "string"
-          },
-          "status": {
-            "type": "string"
-          },
-          "urlActiveExternal": {
-            "type": "string"
-          },
-          "additionalLanguage": {
-            "type": "string"
-          },
-          "orgTypeCode": {
-            "type": "string"
-          },
-          "startDate": {
-            "type": "string",
-            "format": "date"
-          },
-          "brokerId": {
-            "type": "integer",
-            "format": "int64"
-          },
-          "_links": {
-            "$ref": "#/components/schemas/Links"
+          "footerAccessibilityUrl" : {
+            "type" : "string"
           }
         }
       },
-      "PageMetadata": {
-        "type": "object",
-        "properties": {
-          "size": {
-            "type": "integer",
-            "format": "int64"
+      "EntityModelBroker" : {
+        "type" : "object",
+        "properties" : {
+          "brokerId" : {
+            "type" : "integer",
+            "format" : "int64"
           },
-          "totalElements": {
-            "type": "integer",
-            "format": "int64"
+          "organizationId" : {
+            "type" : "integer",
+            "format" : "int64"
           },
-          "totalPages": {
-            "type": "integer",
-            "format": "int64"
+          "brokerFiscalCode" : {
+            "type" : "string"
           },
-          "number": {
-            "type": "integer",
-            "format": "int64"
+          "brokerName" : {
+            "type" : "string"
+          },
+          "pagoPaInteractionModel" : {
+            "type" : "string",
+            "enum" : [ "SYNC", "SYNC_ACA", "SYNC$GPDPRELOAD", "SYNC_ACA$GPDPRELOAD", "ASYNC_GPD" ]
+          },
+          "stationId" : {
+            "type" : "string"
+          },
+          "broadcastStationId" : {
+            "type" : "string"
+          },
+          "syncKey" : {
+            "type" : "string",
+            "format" : "byte"
+          },
+          "gpdKey" : {
+            "type" : "string",
+            "format" : "byte"
+          },
+          "acaKey" : {
+            "type" : "string",
+            "format" : "byte"
+          },
+          "personalisationFe" : {
+            "$ref" : "#/components/schemas/PersonalisationFe"
+          },
+          "_links" : {
+            "$ref" : "#/components/schemas/Links"
           }
         }
       },
-      "PagedModelEntityModelOrganization": {
-        "type": "object",
-        "properties": {
-          "_embedded": {
-            "type": "object",
-            "properties": {
-              "organization": {
-                "type": "array",
-                "items": {
-                  "$ref": "#/components/schemas/EntityModelOrganization"
+      "PageMetadata" : {
+        "type" : "object",
+        "properties" : {
+          "size" : {
+            "type" : "integer",
+            "format" : "int64"
+          },
+          "totalElements" : {
+            "type" : "integer",
+            "format" : "int64"
+          },
+          "totalPages" : {
+            "type" : "integer",
+            "format" : "int64"
+          },
+          "number" : {
+            "type" : "integer",
+            "format" : "int64"
+          }
+        }
+      },
+      "PagedModelEntityModelBroker" : {
+        "type" : "object",
+        "properties" : {
+          "_embedded" : {
+            "type" : "object",
+            "properties" : {
+              "broker" : {
+                "type" : "array",
+                "items" : {
+                  "$ref" : "#/components/schemas/EntityModelBroker"
                 }
               }
             }
           },
-          "_links": {
-            "$ref": "#/components/schemas/Links"
+          "_links" : {
+            "$ref" : "#/components/schemas/Links"
           },
-          "page": {
-            "$ref": "#/components/schemas/PageMetadata"
+          "page" : {
+            "$ref" : "#/components/schemas/PageMetadata"
           }
         }
       },
-      "EntityModelBroker": {
-        "type": "object",
-        "properties": {
-          "brokerId": {
-            "type": "integer",
-            "format": "int64"
+      "EntityModelOrganization" : {
+        "type" : "object",
+        "properties" : {
+          "organizationId" : {
+            "type" : "integer",
+            "format" : "int64"
           },
-          "organizationId": {
-            "type": "integer",
-            "format": "int64"
+          "ipaCode" : {
+            "type" : "string"
           },
-          "brokerFiscalCode": {
-            "type": "string"
+          "orgFiscalCode" : {
+            "type" : "string"
           },
-          "brokerName": {
-            "type": "string"
+          "orgName" : {
+            "type" : "string"
           },
-          "pagoPaInteractionModel": {
-            "type": "string",
-            "enum": [
-              "SYNC",
-              "SYNC_ACA",
-              "SYNC$GPDPRELOAD",
-              "SYNC_ACA$GPDPRELOAD",
-              "ASYNC_GPD"
-            ]
+          "adminEmail" : {
+            "type" : "string"
           },
-          "stationId": {
-            "type": "string"
+          "creationDate" : {
+            "type" : "string",
+            "format" : "date-time"
           },
-          "broadcastStationId": {
-            "type": "string"
+          "lastUpdateDate" : {
+            "type" : "string",
+            "format" : "date-time"
           },
-          "syncKey": {
-            "type": "string",
-            "format": "byte"
+          "fee" : {
+            "type" : "integer",
+            "format" : "int64"
           },
-          "gpdKey": {
-            "type": "string",
-            "format": "byte"
+          "iban" : {
+            "type" : "string"
           },
-          "acaKey": {
-            "type": "string",
-            "format": "byte"
+          "urlOrgSendSilPaymentResult" : {
+            "type" : "string"
           },
-          "personalisationFe": {
-            "$ref": "#/components/schemas/PersonalisationFe"
+          "password" : {
+            "type" : "string"
           },
-          "_links": {
-            "$ref": "#/components/schemas/Links"
+          "creditBicSeller" : {
+            "type" : "boolean"
+          },
+          "beneficiaryOrgName" : {
+            "type" : "string"
+          },
+          "beneficiaryOrgAddress" : {
+            "type" : "string"
+          },
+          "beneficiaryOrgCivic" : {
+            "type" : "string"
+          },
+          "beneficiaryOrgPostalCode" : {
+            "type" : "string"
+          },
+          "beneficiaryOrgLocation" : {
+            "type" : "string"
+          },
+          "beneficiaryOrgProvince" : {
+            "type" : "string"
+          },
+          "beneficiaryOrgNation" : {
+            "type" : "string"
+          },
+          "beneficiaryOrgPhoneNumber" : {
+            "type" : "string"
+          },
+          "beneficiaryOrgWebSite" : {
+            "type" : "string"
+          },
+          "beneficiaryOrgEmail" : {
+            "type" : "string"
+          },
+          "applicationCode" : {
+            "type" : "string"
+          },
+          "cbillInterBankCode" : {
+            "type" : "string"
+          },
+          "orgInformation" : {
+            "type" : "string"
+          },
+          "orgLogoDesc" : {
+            "type" : "string"
+          },
+          "authorizationDesc" : {
+            "type" : "string"
+          },
+          "status" : {
+            "type" : "string"
+          },
+          "urlActiveExternal" : {
+            "type" : "string"
+          },
+          "additionalLanguage" : {
+            "type" : "string"
+          },
+          "orgTypeCode" : {
+            "type" : "string"
+          },
+          "startDate" : {
+            "type" : "string",
+            "format" : "date"
+          },
+          "brokerId" : {
+            "type" : "integer",
+            "format" : "int64"
+          },
+          "_links" : {
+            "$ref" : "#/components/schemas/Links"
           }
         }
       },
-      "PagedModelEntityModelBroker": {
-        "type": "object",
-        "properties": {
-          "_embedded": {
-            "type": "object",
-            "properties": {
-              "broker": {
-                "type": "array",
-                "items": {
-                  "$ref": "#/components/schemas/EntityModelBroker"
+      "PagedModelEntityModelOrganization" : {
+        "type" : "object",
+        "properties" : {
+          "_embedded" : {
+            "type" : "object",
+            "properties" : {
+              "organization" : {
+                "type" : "array",
+                "items" : {
+                  "$ref" : "#/components/schemas/EntityModelOrganization"
                 }
               }
             }
           },
-          "_links": {
-            "$ref": "#/components/schemas/Links"
+          "_links" : {
+            "$ref" : "#/components/schemas/Links"
           },
-          "page": {
-            "$ref": "#/components/schemas/PageMetadata"
+          "page" : {
+            "$ref" : "#/components/schemas/PageMetadata"
           }
         }
       },
-      "PersonalisationFe": {
-        "type": "object",
-        "properties": {
-          "headerAssistanceUrl": {
-            "type": "string"
+      "BrokerRequestBody" : {
+        "type" : "object",
+        "properties" : {
+          "brokerId" : {
+            "type" : "integer",
+            "format" : "int64"
           },
-          "logoFooterImg": {
-            "type": "string"
+          "organizationId" : {
+            "type" : "integer",
+            "format" : "int64"
           },
-          "footerDescText": {
-            "type": "string"
+          "brokerFiscalCode" : {
+            "type" : "string"
           },
-          "footerPrivacyInfoUrl": {
-            "type": "string"
+          "brokerName" : {
+            "type" : "string"
           },
-          "footerGDPRUrl": {
-            "type": "string"
+          "pagoPaInteractionModel" : {
+            "type" : "string",
+            "enum" : [ "SYNC", "SYNC_ACA", "SYNC$GPDPRELOAD", "SYNC_ACA$GPDPRELOAD", "ASYNC_GPD" ]
           },
-          "footerTermsCondUrl": {
-            "type": "string"
+          "stationId" : {
+            "type" : "string"
           },
-          "footerAccessibilityUrl": {
-            "type": "string"
+          "broadcastStationId" : {
+            "type" : "string"
+          },
+          "syncKey" : {
+            "type" : "string",
+            "format" : "byte"
+          },
+          "gpdKey" : {
+            "type" : "string",
+            "format" : "byte"
+          },
+          "acaKey" : {
+            "type" : "string",
+            "format" : "byte"
+          },
+          "personalisationFe" : {
+            "$ref" : "#/components/schemas/PersonalisationFe"
           }
         }
       },
-      "BrokerRequestBody": {
-        "type": "object",
-        "properties": {
-          "brokerId": {
-            "type": "integer",
-            "format": "int64"
+      "OrganizationRequestBody" : {
+        "type" : "object",
+        "properties" : {
+          "organizationId" : {
+            "type" : "integer",
+            "format" : "int64"
           },
-          "organizationId": {
-            "type": "integer",
-            "format": "int64"
+          "ipaCode" : {
+            "type" : "string"
           },
-          "brokerFiscalCode": {
-            "type": "string"
+          "orgFiscalCode" : {
+            "type" : "string"
           },
-          "brokerName": {
-            "type": "string"
+          "orgName" : {
+            "type" : "string"
           },
-          "pagoPaInteractionModel": {
-            "type": "string",
-            "enum": [
-              "SYNC",
-              "SYNC_ACA",
-              "SYNC$GPDPRELOAD",
-              "SYNC_ACA$GPDPRELOAD",
-              "ASYNC_GPD"
-            ]
+          "adminEmail" : {
+            "type" : "string"
           },
-          "stationId": {
-            "type": "string"
+          "creationDate" : {
+            "type" : "string",
+            "format" : "date-time"
           },
-          "broadcastStationId": {
-            "type": "string"
+          "lastUpdateDate" : {
+            "type" : "string",
+            "format" : "date-time"
           },
-          "syncKey": {
-            "type": "string",
-            "format": "byte"
+          "fee" : {
+            "type" : "integer",
+            "format" : "int64"
           },
-          "gpdKey": {
-            "type": "string",
-            "format": "byte"
+          "iban" : {
+            "type" : "string"
           },
-          "acaKey": {
-            "type": "string",
-            "format": "byte"
+          "urlOrgSendSilPaymentResult" : {
+            "type" : "string"
           },
-          "personalisationFe": {
-            "$ref": "#/components/schemas/PersonalisationFe"
+          "password" : {
+            "type" : "string"
+          },
+          "creditBicSeller" : {
+            "type" : "boolean"
+          },
+          "beneficiaryOrgName" : {
+            "type" : "string"
+          },
+          "beneficiaryOrgAddress" : {
+            "type" : "string"
+          },
+          "beneficiaryOrgCivic" : {
+            "type" : "string"
+          },
+          "beneficiaryOrgPostalCode" : {
+            "type" : "string"
+          },
+          "beneficiaryOrgLocation" : {
+            "type" : "string"
+          },
+          "beneficiaryOrgProvince" : {
+            "type" : "string"
+          },
+          "beneficiaryOrgNation" : {
+            "type" : "string"
+          },
+          "beneficiaryOrgPhoneNumber" : {
+            "type" : "string"
+          },
+          "beneficiaryOrgWebSite" : {
+            "type" : "string"
+          },
+          "beneficiaryOrgEmail" : {
+            "type" : "string"
+          },
+          "applicationCode" : {
+            "type" : "string"
+          },
+          "cbillInterBankCode" : {
+            "type" : "string"
+          },
+          "orgInformation" : {
+            "type" : "string"
+          },
+          "orgLogoDesc" : {
+            "type" : "string"
+          },
+          "authorizationDesc" : {
+            "type" : "string"
+          },
+          "status" : {
+            "type" : "string"
+          },
+          "urlActiveExternal" : {
+            "type" : "string"
+          },
+          "additionalLanguage" : {
+            "type" : "string"
+          },
+          "orgTypeCode" : {
+            "type" : "string"
+          },
+          "startDate" : {
+            "type" : "string",
+            "format" : "date"
+          },
+          "brokerId" : {
+            "type" : "integer",
+            "format" : "int64"
           }
         }
       },
-      "OrganizationRequestBody": {
-        "type": "object",
-        "properties": {
-          "organizationId": {
-            "type": "integer",
-            "format": "int64"
+      "BrokerApiKeys" : {
+        "type" : "object",
+        "properties" : {
+          "syncKey" : {
+            "type" : "string"
           },
-          "ipaCode": {
-            "type": "string"
+          "acaKey" : {
+            "type" : "string"
           },
-          "orgFiscalCode": {
-            "type": "string"
-          },
-          "orgName": {
-            "type": "string"
-          },
-          "adminEmail": {
-            "type": "string"
-          },
-          "creationDate": {
-            "type": "string",
-            "format": "date-time"
-          },
-          "lastUpdateDate": {
-            "type": "string",
-            "format": "date-time"
-          },
-          "fee": {
-            "type": "integer",
-            "format": "int64"
-          },
-          "iban": {
-            "type": "string"
-          },
-          "urlOrgSendSilPaymentResult": {
-            "type": "string"
-          },
-          "password": {
-            "type": "string"
-          },
-          "creditBicSeller": {
-            "type": "boolean"
-          },
-          "beneficiaryOrgName": {
-            "type": "string"
-          },
-          "beneficiaryOrgAddress": {
-            "type": "string"
-          },
-          "beneficiaryOrgCivic": {
-            "type": "string"
-          },
-          "beneficiaryOrgPostalCode": {
-            "type": "string"
-          },
-          "beneficiaryOrgLocation": {
-            "type": "string"
-          },
-          "beneficiaryOrgProvince": {
-            "type": "string"
-          },
-          "beneficiaryOrgNation": {
-            "type": "string"
-          },
-          "beneficiaryOrgPhoneNumber": {
-            "type": "string"
-          },
-          "beneficiaryOrgWebSite": {
-            "type": "string"
-          },
-          "beneficiaryOrgEmail": {
-            "type": "string"
-          },
-          "applicationCode": {
-            "type": "string"
-          },
-          "cbillInterBankCode": {
-            "type": "string"
-          },
-          "orgInformation": {
-            "type": "string"
-          },
-          "orgLogoDesc": {
-            "type": "string"
-          },
-          "authorizationDesc": {
-            "type": "string"
-          },
-          "status": {
-            "type": "string"
-          },
-          "urlActiveExternal": {
-            "type": "string"
-          },
-          "additionalLanguage": {
-            "type": "string"
-          },
-          "orgTypeCode": {
-            "type": "string"
-          },
-          "startDate": {
-            "type": "string",
-            "format": "date"
-          },
-          "brokerId": {
-            "type": "integer",
-            "format": "int64"
+          "gpdKey" : {
+            "type" : "string"
           }
         }
       },
-      "BrokerApiKeys": {
-        "type": "object",
-        "properties": {
-          "syncKey": {
-            "type": "string"
+      "Link" : {
+        "type" : "object",
+        "properties" : {
+          "href" : {
+            "type" : "string"
           },
-          "acaKey": {
-            "type": "string"
+          "hreflang" : {
+            "type" : "string"
           },
-          "gpdKey": {
-            "type": "string"
-          }
-        }
-      },
-      "Link": {
-        "type": "object",
-        "properties": {
-          "href": {
-            "type": "string"
+          "title" : {
+            "type" : "string"
           },
-          "hreflang": {
-            "type": "string"
+          "type" : {
+            "type" : "string"
           },
-          "title": {
-            "type": "string"
+          "deprecation" : {
+            "type" : "string"
           },
-          "type": {
-            "type": "string"
+          "profile" : {
+            "type" : "string"
           },
-          "deprecation": {
-            "type": "string"
+          "name" : {
+            "type" : "string"
           },
-          "profile": {
-            "type": "string"
-          },
-          "name": {
-            "type": "string"
-          },
-          "templated": {
-            "type": "boolean"
+          "templated" : {
+            "type" : "boolean"
           }
         }
       }
