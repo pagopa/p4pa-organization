@@ -1,6 +1,7 @@
 package it.gov.pagopa.pu.organization;
 
 import com.fasterxml.jackson.core.JsonProcessingException;
+import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.databind.SerializationFeature;
 import org.junit.jupiter.api.Assertions;
@@ -54,7 +55,7 @@ class OpenApiGeneratorTest {
 
   public String prettyPrint(String json) throws JsonProcessingException {
     ObjectMapper mapper = new ObjectMapper().enable(SerializationFeature.INDENT_OUTPUT);
-    Object jsonObject = mapper.readValue(json, Object.class);
+    JsonNode jsonObject = mapper.readTree(json);
     return mapper.writeValueAsString(jsonObject);
   }
 
