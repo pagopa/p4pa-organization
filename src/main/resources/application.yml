@@ -28,3 +28,6 @@ logging:
 
 app:
   brokerEncryptPassword: "\${BROKER_ENCRYPT_PASSWORD:ENCR_PSW}"
+
+springdoc:
+  writer-with-default-pretty-printer: true

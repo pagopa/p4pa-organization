@@ -1,16 +1,15 @@
 package it.gov.pagopa.pu.organization;
 
-import com.fasterxml.jackson.core.JsonProcessingException;
-import com.fasterxml.jackson.databind.JsonNode;
-import com.fasterxml.jackson.databind.ObjectMapper;
-import com.fasterxml.jackson.databind.SerializationFeature;
+import org.json.JSONException;
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.web.servlet.AutoConfigureMockMvc;
+import org.springframework.boot.test.autoconfigure.web.servlet.MockMvcPrint;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.http.MediaType;
 import org.springframework.test.context.TestPropertySource;
+import org.springframework.test.json.JsonCompareMode;
 import org.springframework.test.web.servlet.MockMvc;
 import org.springframework.test.web.servlet.MvcResult;
 
@@ -19,10 +18,11 @@ import java.nio.file.Path;
 import java.nio.file.StandardOpenOption;
 
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
+import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.content;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
 @SpringBootTest
-@AutoConfigureMockMvc()
+@AutoConfigureMockMvc(print = MockMvcPrint.NONE)
 @TestPropertySource(properties = {
   "spring.datasource.driver-class-name=org.h2.Driver",
   "spring.datasource.url=jdbc:h2:mem:db;DB_CLOSE_DELAY=-1",
@@ -42,21 +42,29 @@ class OpenApiGeneratorTest {
       get("/v3/api-docs")
         .contentType(MediaType.APPLICATION_JSON)
         .accept(MediaType.APPLICATION_JSON)
-    ).andExpect(status().isOk()).andReturn();
+    ).andExpect(status().isOk())
+      .andReturn();
 
-    String openApi = result.getResponse().getContentAsString();
-    Assertions.assertTrue(openApi.startsWith("{\"openapi\":\"3.0."));
+    String openApiResult = result.getResponse().getContentAsString();
+    Assertions.assertTrue(openApiResult.startsWith("{\n  \"openapi\" : \"3.0."));
 
-    Files.writeString(Path.of("openapi/generated.openapi.json"), prettyPrint(openApi), StandardOpenOption.TRUNCATE_EXISTING);
+    Path openApiGeneratedPath = Path.of("openapi/generated.openapi.json");
+    boolean toStore=true;
+    if(Files.exists(openApiGeneratedPath)){
+      String storedOpenApi = Files.readString(openApiGeneratedPath);
+      try {
+        content().json(storedOpenApi, JsonCompareMode.STRICT).match(result);
+        toStore=false;
+      } catch (JSONException e){
+        //Do Nothing
+      }
+    }
+    if(toStore){
+      Files.writeString(openApiGeneratedPath, openApiResult, StandardOpenOption.TRUNCATE_EXISTING);
+    }
 
     String gitStatus = execCmd("git", "status");
     Assertions.assertFalse(gitStatus.contains("openapi/generated.openapi.json"), "Generated OpenApi not committed");
-  }
-
-  public String prettyPrint(String json) throws JsonProcessingException {
-    ObjectMapper mapper = new ObjectMapper().enable(SerializationFeature.INDENT_OUTPUT);
-    JsonNode jsonObject = mapper.readTree(json);
-    return mapper.writeValueAsString(jsonObject);
   }
 
   public static String execCmd(String... cmd) throws java.io.IOException {
