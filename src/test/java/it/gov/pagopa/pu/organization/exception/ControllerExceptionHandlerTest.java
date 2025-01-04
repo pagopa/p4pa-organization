@@ -1,11 +1,15 @@
 package it.gov.pagopa.pu.organization.exception;
 
 import it.gov.pagopa.pu.organization.controller.BrokerController;
+import it.gov.pagopa.pu.organization.security.JwtAuthenticationFilter;
 import it.gov.pagopa.pu.organization.service.broker.BrokerService;
 import org.junit.jupiter.api.Test;
 import org.mockito.Mockito;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.boot.test.autoconfigure.web.servlet.AutoConfigureMockMvc;
 import org.springframework.boot.test.autoconfigure.web.servlet.WebMvcTest;
+import org.springframework.context.annotation.ComponentScan;
+import org.springframework.context.annotation.FilterType;
 import org.springframework.context.annotation.Import;
 import org.springframework.data.rest.webmvc.ResourceNotFoundException;
 import org.springframework.test.context.bean.override.mockito.MockitoBean;
@@ -13,8 +17,10 @@ import org.springframework.test.web.servlet.MockMvc;
 import org.springframework.test.web.servlet.request.MockMvcRequestBuilders;
 import org.springframework.test.web.servlet.result.MockMvcResultMatchers;
 
-@WebMvcTest
+@WebMvcTest(excludeFilters = @ComponentScan.Filter(type = FilterType.ASSIGNABLE_TYPE,
+  classes = JwtAuthenticationFilter.class))
 @Import({BrokerController.class})
+@AutoConfigureMockMvc(addFilters = false)
 class ControllerExceptionHandlerTest {
 
   @MockitoBean

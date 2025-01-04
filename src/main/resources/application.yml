@@ -28,3 +28,7 @@ logging:
 
 app:
   brokerEncryptPassword: \${BROKER_ENCRYPT_PASSWORD}
+
+jwt:
+  access-token:
+    public-key: "\${JWT_TOKEN_PUBLIC_KEY:}"
