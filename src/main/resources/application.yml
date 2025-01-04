@@ -4,9 +4,9 @@ spring:
     version: ${version}
   jmx.enabled: true
   datasource:
-    url: \${ORGANIZATION_DB_URL:jdbc:postgresql://\${ORGANIZATION_DB_HOST:localhost}:\${ORGANIZATION_DB_PORT:5432}/\${ORGANIZATION_DB_NAME:mypay}}
-    username: \${ORGANIZATION_DB_USER}
-    password: \${ORGANIZATION_DB_PASSWORD}
+    url: "\${ORGANIZATION_DB_URL:jdbc:postgresql://\${ORGANIZATION_DB_HOST:localhost}:\${ORGANIZATION_DB_PORT:5432}/\${ORGANIZATION_DB_NAME:mypay}}"
+    username: "\${ORGANIZATION_DB_USER}"
+    password: "\${ORGANIZATION_DB_PASSWORD}"
     driverClassName: org.postgresql.Driver
 
 management:
@@ -27,7 +27,10 @@ logging:
     it.gov.pagopa.pu.organization.exception.ControllerExceptionHandler: "\${LOGGING_LEVEL_CONTROLLER_EXCEPTION:INFO}"
 
 app:
-  brokerEncryptPassword: \${BROKER_ENCRYPT_PASSWORD}
+  brokerEncryptPassword: "\${BROKER_ENCRYPT_PASSWORD:ENCR_PSW}"
+
+springdoc:
+  writer-with-default-pretty-printer: true
 
 jwt:
   access-token:
