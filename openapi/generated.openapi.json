@@ -943,28 +943,6 @@
           }
         }
       },
-      "PagedModelEntityModelBroker" : {
-        "type" : "object",
-        "properties" : {
-          "_embedded" : {
-            "type" : "object",
-            "properties" : {
-              "broker" : {
-                "type" : "array",
-                "items" : {
-                  "$ref" : "#/components/schemas/EntityModelBroker"
-                }
-              }
-            }
-          },
-          "_links" : {
-            "$ref" : "#/components/schemas/Links"
-          },
-          "page" : {
-            "$ref" : "#/components/schemas/PageMetadata"
-          }
-        }
-      },
       "PersonalisationFe" : {
         "type" : "object",
         "properties" : {
@@ -988,6 +966,28 @@
           },
           "footerAccessibilityUrl" : {
             "type" : "string"
+          }
+        }
+      },
+      "PagedModelEntityModelBroker" : {
+        "type" : "object",
+        "properties" : {
+          "_embedded" : {
+            "type" : "object",
+            "properties" : {
+              "broker" : {
+                "type" : "array",
+                "items" : {
+                  "$ref" : "#/components/schemas/EntityModelBroker"
+                }
+              }
+            }
+          },
+          "_links" : {
+            "$ref" : "#/components/schemas/Links"
+          },
+          "page" : {
+            "$ref" : "#/components/schemas/PageMetadata"
           }
         }
       },
@@ -1187,6 +1187,13 @@
             "type" : "boolean"
           }
         }
+      }
+    },
+    "securitySchemes" : {
+      "Bearer Authentication" : {
+        "type" : "http",
+        "scheme" : "bearer",
+        "bearerFormat" : "JWT"
       }
     }
   }
