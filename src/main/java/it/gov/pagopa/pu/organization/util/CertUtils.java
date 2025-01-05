@@ -1,4 +1,4 @@
-package it.gov.pagopa.pu.organization.security;
+package it.gov.pagopa.pu.organization.util;
 
 import org.bouncycastle.jce.provider.BouncyCastleProvider;
 
