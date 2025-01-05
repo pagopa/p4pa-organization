@@ -740,32 +740,6 @@
           }
         }
       },
-      "PersonalisationFe" : {
-        "type" : "object",
-        "properties" : {
-          "headerAssistanceUrl" : {
-            "type" : "string"
-          },
-          "logoFooterImg" : {
-            "type" : "string"
-          },
-          "footerDescText" : {
-            "type" : "string"
-          },
-          "footerPrivacyInfoUrl" : {
-            "type" : "string"
-          },
-          "footerGDPRUrl" : {
-            "type" : "string"
-          },
-          "footerTermsCondUrl" : {
-            "type" : "string"
-          },
-          "footerAccessibilityUrl" : {
-            "type" : "string"
-          }
-        }
-      },
       "EntityModelBroker" : {
         "type" : "object",
         "properties" : {
@@ -853,6 +827,32 @@
           },
           "page" : {
             "$ref" : "#/components/schemas/PageMetadata"
+          }
+        }
+      },
+      "PersonalisationFe" : {
+        "type" : "object",
+        "properties" : {
+          "headerAssistanceUrl" : {
+            "type" : "string"
+          },
+          "logoFooterImg" : {
+            "type" : "string"
+          },
+          "footerDescText" : {
+            "type" : "string"
+          },
+          "footerPrivacyInfoUrl" : {
+            "type" : "string"
+          },
+          "footerGDPRUrl" : {
+            "type" : "string"
+          },
+          "footerTermsCondUrl" : {
+            "type" : "string"
+          },
+          "footerAccessibilityUrl" : {
+            "type" : "string"
           }
         }
       },
