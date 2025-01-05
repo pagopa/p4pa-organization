@@ -1,4 +1,4 @@
-package it.gov.pagopa.pu.organization.security;
+package it.gov.pagopa.pu.organization.config;
 
 import com.nimbusds.jose.JOSEObjectType;
 import com.nimbusds.jose.proc.DefaultJOSEObjectTypeVerifier;

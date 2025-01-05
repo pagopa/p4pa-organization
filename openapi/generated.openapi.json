@@ -9,6 +9,9 @@
     "url" : "http://localhost",
     "description" : "Generated server url"
   } ],
+  "security" : [ {
+    "BearerAuth" : [ ]
+  } ],
   "tags" : [ {
     "name" : "Broker",
     "description" : "the Broker API"
@@ -1190,7 +1193,7 @@
       }
     },
     "securitySchemes" : {
-      "BearerAuthentication" : {
+      "BearerAuth" : {
         "type" : "http",
         "scheme" : "bearer",
         "bearerFormat" : "JWT"

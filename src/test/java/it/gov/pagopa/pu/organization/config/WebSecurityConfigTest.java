@@ -1,4 +1,4 @@
-package it.gov.pagopa.pu.organization.security;
+package it.gov.pagopa.pu.organization.config;
 
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.Assertions;
