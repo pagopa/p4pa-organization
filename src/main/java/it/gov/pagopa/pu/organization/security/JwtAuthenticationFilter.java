@@ -46,7 +46,7 @@ public class JwtAuthenticationFilter extends OncePerRequestFilter {
       if (StringUtils.hasText(authorization)) {
         String token = authorization.replace("Bearer ", "");
         DecodedJWT decodedJWT = jwtVerifier.verify(token);
-        String externalUserId = decodedJWT.getIssuer();
+        String externalUserId = decodedJWT.getSubject();
         MDC.put("externalUserId", externalUserId);
         UsernamePasswordAuthenticationToken authToken = new UsernamePasswordAuthenticationToken(externalUserId, token, null);
         SecurityContextHolder.getContext().setAuthentication(authToken);

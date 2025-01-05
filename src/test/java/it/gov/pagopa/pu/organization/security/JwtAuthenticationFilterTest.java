@@ -22,6 +22,7 @@ import java.security.spec.InvalidKeySpecException;
 @ExtendWith(MockitoExtension.class)
 class JwtAuthenticationFilterTest {
 
+  // public key and JWT token sample obtained through p4pa-auth test it.gov.pagopa.payhub.auth.service.AccessTokenBuilderServiceTest
   private static final String PUBLIC_KEY = """
     -----BEGIN PUBLIC KEY-----
     MIIBIjANBgkqhkiG9w0BAQEFAAOCAQ8AMIIBCgKCAQEA2ovm/rd3g69dq9PisinQ
@@ -33,9 +34,8 @@ class JwtAuthenticationFilterTest {
     IwIDAQAB
     -----END PUBLIC KEY-----
     """;
-
-  private static final String JWT_TOKEN_USERID = "MAPPEDEXTERNALUSERID";
-  private static final String JWT_TOKEN = "eyJraWQiOiIyNWNhZDlkYi0wMDIyLTNiODctYTcwYS1mMmRhMjcyMTdjODgiLCJ0eXAiOiJhdCtKV1QiLCJhbGciOiJSUzUxMiJ9.eyJ0eXAiOiJiZWFyZXIiLCJpc3MiOiJNQVBQRURFWFRFUk5BTFVTRVJJRCIsImp0aSI6IjBlNTM5NzRlLTczMTktNGU4Yi04OTNhLTEzYWY0ZGY2MjA2ZCIsImlhdCI6MTczNjAwODAwMCwiZXhwIjoyNzM2MDA3OTk5fQ.e1eO-qN2wxgxuA90nFgO2vwPFbSkIJcvha8xu5spv6AxMB0r9o-WhrvxBGyn8DB9VUY-alQ6N7L0WNHf5exOi_Wc1ioz4bBIiI-u6_GeFJdMkUnrAiYNXXaIUKFonzSnDv5tzyqn9XJjS3-C-QLCjo0OvYfU19sOcMT0pRWNLYXIY5YatCHH1B7ICE6GKCARVvxse5i4F9sGe2H2S_glbZUuwOm0V9-iGMX7OYK9rgW7FxV1WTvuuCT2REl1Bd6FyQ5MqIk8gMyzG9pGX1_fAtWKBqnnYlRDbfPDjVyMOJy4yDIegY6leJlZf9fbcLdlCHGLkn6bSJ6MLgRqy3ZQMA";
+  private static final String JWT_TOKEN_USERID = "MAPPEDUSEREXTERNALID";
+  private static final String JWT_TOKEN = "eyJraWQiOiIyNWNhZDlkYi0wMDIyLTNiODctYTcwYS1mMmRhMjcyMTdjODgiLCJ0eXAiOiJhdCtKV1QiLCJhbGciOiJSUzUxMiJ9.eyJ0eXAiOiJiZWFyZXIiLCJpc3MiOiJBUFBMSUNBVElPTl9BVURJRU5DRSIsImp0aSI6IjA2ZWZmMzhjLTZhZDEtNGU5Ni1iYmYyLTUxYWVlMTFiNzZmYyIsInN1YiI6Ik1BUFBFRFVTRVJFWFRFUk5BTElEIiwiaWF0IjoxNzM2MDgwNTMzLCJleHAiOjI3MzYwODA1MzIsIm9yZ2FuaXphdGlvbklwYUNvZGUiOiJPUkdJUEFDT0RFIn0.qfcPvKVW6GOPC-Hb4QfqEpfT1zwrZ30QRbW2RPvrAlaBdYi51ZTmy6iWIcoy7YubkkctRp7xHDgcQuMRyRzGr2S-FayTA7kHXwa0y9UOnb7FXuZn9j0G6-4qVqlH6qo2KKTuDl_HykDAEmbI0AMJXilN8cM_ZkIQXCv6mDWsQCcxglsxcw89G0U9m5cZ5n9RxaAikMp8xRssiSqoFdhA67j-Iqs9P0vC-L0YvrIuqJ8CuJxoZQX_rPh-aLAzjPswctT_yaUk2tX5XpYG_1Yo0k9Mxy7CyyUa1JbRLRWbXkfOCPDbBOMn6KkXU_2w3pj4u6sIZsWuTNGT4d8zBye8JA";
 
   @Mock
   private HttpServletRequest httpServletRequestMock;
