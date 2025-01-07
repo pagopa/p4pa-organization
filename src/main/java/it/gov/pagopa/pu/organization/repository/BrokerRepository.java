@@ -7,7 +7,7 @@ import org.springframework.data.rest.core.annotation.RepositoryRestResource;
 
 import java.util.Optional;
 
-@RepositoryRestResource(collectionResourceRel = "broker", path = "brokers")
+@RepositoryRestResource(path = "brokers")
 public interface BrokerRepository extends JpaRepository<Broker,Long> {
 
   @Query("select b from broker b join Organization o on b.brokerId = o.brokerId " +
