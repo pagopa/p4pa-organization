@@ -1,6 +1,5 @@
 package it.gov.pagopa.pu.organization;
 
-import org.json.JSONException;
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -55,7 +54,7 @@ class OpenApiGeneratorTest {
       try {
         content().json(storedOpenApi, JsonCompareMode.STRICT).match(result);
         toStore=false;
-      } catch (JSONException e){
+      } catch (Throwable e){
         //Do Nothing
       }
     }

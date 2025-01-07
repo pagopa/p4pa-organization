@@ -68,6 +68,7 @@ microservice-chart:
     ORGANIZATION_DB_USER: db-mypay-login-username
     ORGANIZATION_DB_PASSWORD: db-mypay-login-password
     BROKER_ENCRYPT_PASSWORD: broker-encrypt-password
+    JWT_TOKEN_PUBLIC_KEY: jwt-public-key
 
   # nodeSelector: {}
 
