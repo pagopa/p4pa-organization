@@ -1,6 +1,5 @@
 package it.gov.pagopa.pu.organization;
 
-import org.json.JSONException;
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -39,27 +38,27 @@ class OpenApiGeneratorTest {
   @Test
   void generateAndVerifyCommit() throws Exception {
     MvcResult result = mockMvc.perform(
-      get("/v3/api-docs")
-        .contentType(MediaType.APPLICATION_JSON)
-        .accept(MediaType.APPLICATION_JSON)
-    ).andExpect(status().isOk())
+        get("/v3/api-docs")
+          .contentType(MediaType.APPLICATION_JSON)
+          .accept(MediaType.APPLICATION_JSON)
+      ).andExpect(status().isOk())
       .andReturn();
 
-    String openApiResult = result.getResponse().getContentAsString();
+    String openApiResult = result.getResponse().getContentAsString().replace("\r", "");
     Assertions.assertTrue(openApiResult.startsWith("{\n  \"openapi\" : \"3.0."));
 
     Path openApiGeneratedPath = Path.of("openapi/generated.openapi.json");
-    boolean toStore=true;
-    if(Files.exists(openApiGeneratedPath)){
+    boolean toStore = true;
+    if (Files.exists(openApiGeneratedPath)) {
       String storedOpenApi = Files.readString(openApiGeneratedPath);
       try {
         content().json(storedOpenApi, JsonCompareMode.STRICT).match(result);
-        toStore=false;
-      } catch (JSONException e){
+        toStore = false;
+      } catch (Throwable e) {
         //Do Nothing
       }
     }
-    if(toStore){
+    if (toStore) {
       Files.writeString(openApiGeneratedPath, openApiResult, StandardOpenOption.TRUNCATE_EXISTING);
     }
 

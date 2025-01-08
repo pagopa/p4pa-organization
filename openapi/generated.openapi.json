@@ -14,7 +14,7 @@
     "description" : "the Broker API"
   } ],
   "paths" : {
-    "/brokers" : {
+    "/crud/brokers" : {
       "get" : {
         "tags" : [ "broker-entity-controller" ],
         "description" : "get-broker",
@@ -102,7 +102,7 @@
         }
       }
     },
-    "/brokers/search/findByOrgFiscalCode" : {
+    "/crud/brokers/search/findByOrgFiscalCode" : {
       "get" : {
         "tags" : [ "broker-search-controller" ],
         "operationId" : "executeSearch-broker-get",
@@ -130,7 +130,7 @@
         }
       }
     },
-    "/brokers/{id}" : {
+    "/crud/brokers/{id}" : {
       "get" : {
         "tags" : [ "broker-entity-controller" ],
         "description" : "get-broker",
@@ -267,7 +267,7 @@
         }
       }
     },
-    "/organizations" : {
+    "/crud/organizations" : {
       "get" : {
         "tags" : [ "organization-entity-controller" ],
         "description" : "get-organization",
@@ -355,7 +355,7 @@
         }
       }
     },
-    "/organizations/search/findByIpaCode" : {
+    "/crud/organizations/search/findByIpaCode" : {
       "get" : {
         "tags" : [ "organization-search-controller" ],
         "operationId" : "executeSearch-organization-get",
@@ -383,7 +383,7 @@
         }
       }
     },
-    "/organizations/{id}" : {
+    "/crud/organizations/{id}" : {
       "get" : {
         "tags" : [ "organization-entity-controller" ],
         "description" : "get-organization",
@@ -520,7 +520,7 @@
         }
       }
     },
-    "/profile" : {
+    "/crud/profile" : {
       "get" : {
         "tags" : [ "profile-controller" ],
         "operationId" : "listAllFormsOfMetadata",
@@ -538,7 +538,7 @@
         }
       }
     },
-    "/profile/brokers" : {
+    "/crud/profile/brokers" : {
       "get" : {
         "tags" : [ "profile-controller" ],
         "operationId" : "descriptor",
@@ -566,7 +566,7 @@
         }
       }
     },
-    "/profile/organizations" : {
+    "/crud/profile/organizations" : {
       "get" : {
         "tags" : [ "profile-controller" ],
         "operationId" : "descriptor_1",
@@ -740,6 +740,122 @@
           }
         }
       },
+      "PersonalisationFe" : {
+        "type" : "object",
+        "properties" : {
+          "headerAssistanceUrl" : {
+            "type" : "string"
+          },
+          "logoFooterImg" : {
+            "type" : "string"
+          },
+          "footerDescText" : {
+            "type" : "string"
+          },
+          "footerPrivacyInfoUrl" : {
+            "type" : "string"
+          },
+          "footerGDPRUrl" : {
+            "type" : "string"
+          },
+          "footerTermsCondUrl" : {
+            "type" : "string"
+          },
+          "footerAccessibilityUrl" : {
+            "type" : "string"
+          }
+        }
+      },
+      "EntityModelBroker" : {
+        "type" : "object",
+        "properties" : {
+          "brokerId" : {
+            "type" : "integer",
+            "format" : "int64"
+          },
+          "organizationId" : {
+            "type" : "integer",
+            "format" : "int64"
+          },
+          "brokerFiscalCode" : {
+            "type" : "string"
+          },
+          "brokerName" : {
+            "type" : "string"
+          },
+          "pagoPaInteractionModel" : {
+            "type" : "string",
+            "enum" : [ "SYNC", "SYNC_ACA", "SYNC$GPDPRELOAD", "SYNC_ACA$GPDPRELOAD", "ASYNC_GPD" ]
+          },
+          "stationId" : {
+            "type" : "string"
+          },
+          "broadcastStationId" : {
+            "type" : "string"
+          },
+          "syncKey" : {
+            "type" : "string",
+            "format" : "byte"
+          },
+          "gpdKey" : {
+            "type" : "string",
+            "format" : "byte"
+          },
+          "acaKey" : {
+            "type" : "string",
+            "format" : "byte"
+          },
+          "personalisationFe" : {
+            "$ref" : "#/components/schemas/PersonalisationFe"
+          },
+          "_links" : {
+            "$ref" : "#/components/schemas/Links"
+          }
+        }
+      },
+      "PageMetadata" : {
+        "type" : "object",
+        "properties" : {
+          "size" : {
+            "type" : "integer",
+            "format" : "int64"
+          },
+          "totalElements" : {
+            "type" : "integer",
+            "format" : "int64"
+          },
+          "totalPages" : {
+            "type" : "integer",
+            "format" : "int64"
+          },
+          "number" : {
+            "type" : "integer",
+            "format" : "int64"
+          }
+        }
+      },
+      "PagedModelEntityModelBroker" : {
+        "type" : "object",
+        "properties" : {
+          "_embedded" : {
+            "type" : "object",
+            "properties" : {
+              "brokers" : {
+                "type" : "array",
+                "items" : {
+                  "$ref" : "#/components/schemas/EntityModelBroker"
+                }
+              }
+            }
+          },
+          "_links" : {
+            "$ref" : "#/components/schemas/Links"
+          },
+          "page" : {
+            "$ref" : "#/components/schemas/PageMetadata"
+          }
+        }
+      },
       "EntityModelOrganization" : {
         "type" : "object",
         "properties" : {
@@ -853,34 +969,13 @@
           }
         }
       },
-      "PageMetadata" : {
-        "type" : "object",
-        "properties" : {
-          "size" : {
-            "type" : "integer",
-            "format" : "int64"
-          },
-          "totalElements" : {
-            "type" : "integer",
-            "format" : "int64"
-          },
-          "totalPages" : {
-            "type" : "integer",
-            "format" : "int64"
-          },
-          "number" : {
-            "type" : "integer",
-            "format" : "int64"
-          }
-        }
-      },
       "PagedModelEntityModelOrganization" : {
         "type" : "object",
         "properties" : {
           "_embedded" : {
             "type" : "object",
             "properties" : {
-              "organization" : {
+              "organizations" : {
                 "type" : "array",
                 "items" : {
                   "$ref" : "#/components/schemas/EntityModelOrganization"
@@ -893,101 +988,6 @@
           },
           "page" : {
             "$ref" : "#/components/schemas/PageMetadata"
-          }
-        }
-      },
-      "EntityModelBroker" : {
-        "type" : "object",
-        "properties" : {
-          "brokerId" : {
-            "type" : "integer",
-            "format" : "int64"
-          },
-          "organizationId" : {
-            "type" : "integer",
-            "format" : "int64"
-          },
-          "brokerFiscalCode" : {
-            "type" : "string"
-          },
-          "brokerName" : {
-            "type" : "string"
-          },
-          "pagoPaInteractionModel" : {
-            "type" : "string",
-            "enum" : [ "SYNC", "SYNC_ACA", "SYNC$GPDPRELOAD", "SYNC_ACA$GPDPRELOAD", "ASYNC_GPD" ]
-          },
-          "stationId" : {
-            "type" : "string"
-          },
-          "broadcastStationId" : {
-            "type" : "string"
-          },
-          "syncKey" : {
-            "type" : "string",
-            "format" : "byte"
-          },
-          "gpdKey" : {
-            "type" : "string",
-            "format" : "byte"
-          },
-          "acaKey" : {
-            "type" : "string",
-            "format" : "byte"
-          },
-          "personalisationFe" : {
-            "$ref" : "#/components/schemas/PersonalisationFe"
-          },
-          "_links" : {
-            "$ref" : "#/components/schemas/Links"
-          }
-        }
-      },
-      "PagedModelEntityModelBroker" : {
-        "type" : "object",
-        "properties" : {
-          "_embedded" : {
-            "type" : "object",
-            "properties" : {
-              "broker" : {
-                "type" : "array",
-                "items" : {
-                  "$ref" : "#/components/schemas/EntityModelBroker"
-                }
-              }
-            }
-          },
-          "_links" : {
-            "$ref" : "#/components/schemas/Links"
-          },
-          "page" : {
-            "$ref" : "#/components/schemas/PageMetadata"
-          }
-        }
-      },
-      "PersonalisationFe" : {
-        "type" : "object",
-        "properties" : {
-          "headerAssistanceUrl" : {
-            "type" : "string"
-          },
-          "logoFooterImg" : {
-            "type" : "string"
-          },
-          "footerDescText" : {
-            "type" : "string"
-          },
-          "footerPrivacyInfoUrl" : {
-            "type" : "string"
-          },
-          "footerGDPRUrl" : {
-            "type" : "string"
-          },
-          "footerTermsCondUrl" : {
-            "type" : "string"
-          },
-          "footerAccessibilityUrl" : {
-            "type" : "string"
           }
         }
       },
