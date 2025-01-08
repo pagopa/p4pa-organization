@@ -60,12 +60,12 @@
             "content" : {
               "application/hal+json" : {
                 "schema" : {
-                  "$ref" : "#/components/schemas/PagedModelEntityModelBroker"
+                  "$ref" : "#/components/schemas/PagedModelBroker"
                 }
               },
               "application/x-spring-data-compact+json" : {
                 "schema" : {
-                  "$ref" : "#/components/schemas/PagedModelEntityModelBroker"
+                  "$ref" : "#/components/schemas/PagedModelBroker"
                 }
               },
               "text/uri-list" : {
@@ -97,7 +97,7 @@
             "content" : {
               "application/hal+json" : {
                 "schema" : {
-                  "$ref" : "#/components/schemas/EntityModelBroker"
+                  "$ref" : "#/components/schemas/Broker"
                 }
               }
             }
@@ -122,7 +122,7 @@
             "content" : {
               "application/hal+json" : {
                 "schema" : {
-                  "$ref" : "#/components/schemas/EntityModelBroker"
+                  "$ref" : "#/components/schemas/Broker"
                 }
               }
             }
@@ -152,7 +152,7 @@
             "content" : {
               "application/hal+json" : {
                 "schema" : {
-                  "$ref" : "#/components/schemas/EntityModelBroker"
+                  "$ref" : "#/components/schemas/Broker"
                 }
               }
             }
@@ -190,7 +190,7 @@
             "content" : {
               "application/hal+json" : {
                 "schema" : {
-                  "$ref" : "#/components/schemas/EntityModelBroker"
+                  "$ref" : "#/components/schemas/Broker"
                 }
               }
             }
@@ -200,7 +200,7 @@
             "content" : {
               "application/hal+json" : {
                 "schema" : {
-                  "$ref" : "#/components/schemas/EntityModelBroker"
+                  "$ref" : "#/components/schemas/Broker"
                 }
               }
             }
@@ -259,7 +259,7 @@
             "content" : {
               "application/hal+json" : {
                 "schema" : {
-                  "$ref" : "#/components/schemas/EntityModelBroker"
+                  "$ref" : "#/components/schemas/Broker"
                 }
               }
             }
@@ -313,12 +313,12 @@
             "content" : {
               "application/hal+json" : {
                 "schema" : {
-                  "$ref" : "#/components/schemas/PagedModelEntityModelOrganization"
+                  "$ref" : "#/components/schemas/PagedModelOrganization"
                 }
               },
               "application/x-spring-data-compact+json" : {
                 "schema" : {
-                  "$ref" : "#/components/schemas/PagedModelEntityModelOrganization"
+                  "$ref" : "#/components/schemas/PagedModelOrganization"
                 }
               },
               "text/uri-list" : {
@@ -350,7 +350,7 @@
             "content" : {
               "application/hal+json" : {
                 "schema" : {
-                  "$ref" : "#/components/schemas/EntityModelOrganization"
+                  "$ref" : "#/components/schemas/Organization"
                 }
               }
             }
@@ -375,7 +375,7 @@
             "content" : {
               "application/hal+json" : {
                 "schema" : {
-                  "$ref" : "#/components/schemas/EntityModelOrganization"
+                  "$ref" : "#/components/schemas/Organization"
                 }
               }
             }
@@ -405,7 +405,7 @@
             "content" : {
               "application/hal+json" : {
                 "schema" : {
-                  "$ref" : "#/components/schemas/EntityModelOrganization"
+                  "$ref" : "#/components/schemas/Organization"
                 }
               }
             }
@@ -443,7 +443,7 @@
             "content" : {
               "application/hal+json" : {
                 "schema" : {
-                  "$ref" : "#/components/schemas/EntityModelOrganization"
+                  "$ref" : "#/components/schemas/Organization"
                 }
               }
             }
@@ -453,7 +453,7 @@
             "content" : {
               "application/hal+json" : {
                 "schema" : {
-                  "$ref" : "#/components/schemas/EntityModelOrganization"
+                  "$ref" : "#/components/schemas/Organization"
                 }
               }
             }
@@ -512,7 +512,7 @@
             "content" : {
               "application/hal+json" : {
                 "schema" : {
-                  "$ref" : "#/components/schemas/EntityModelOrganization"
+                  "$ref" : "#/components/schemas/Organization"
                 }
               }
             }
@@ -743,7 +743,7 @@
           }
         }
       },
-      "EntityModelOrganization" : {
+      "Organization" : {
         "type" : "object",
         "properties" : {
           "organizationId" : {
@@ -877,7 +877,7 @@
           }
         }
       },
-      "PagedModelEntityModelOrganization" : {
+      "PagedModelOrganization" : {
         "type" : "object",
         "properties" : {
           "_embedded" : {
@@ -886,7 +886,7 @@
               "organizations" : {
                 "type" : "array",
                 "items" : {
-                  "$ref" : "#/components/schemas/EntityModelOrganization"
+                  "$ref" : "#/components/schemas/Organization"
                 }
               }
             }
@@ -899,7 +899,33 @@
           }
         }
       },
-      "EntityModelBroker" : {
+      "PersonalisationFe" : {
+        "type" : "object",
+        "properties" : {
+          "headerAssistanceUrl" : {
+            "type" : "string"
+          },
+          "logoFooterImg" : {
+            "type" : "string"
+          },
+          "footerDescText" : {
+            "type" : "string"
+          },
+          "footerPrivacyInfoUrl" : {
+            "type" : "string"
+          },
+          "footerGDPRUrl" : {
+            "type" : "string"
+          },
+          "footerTermsCondUrl" : {
+            "type" : "string"
+          },
+          "footerAccessibilityUrl" : {
+            "type" : "string"
+          }
+        }
+      },
+      "Broker" : {
         "type" : "object",
         "properties" : {
           "brokerId" : {
@@ -946,33 +972,7 @@
           }
         }
       },
-      "PersonalisationFe" : {
-        "type" : "object",
-        "properties" : {
-          "headerAssistanceUrl" : {
-            "type" : "string"
-          },
-          "logoFooterImg" : {
-            "type" : "string"
-          },
-          "footerDescText" : {
-            "type" : "string"
-          },
-          "footerPrivacyInfoUrl" : {
-            "type" : "string"
-          },
-          "footerGDPRUrl" : {
-            "type" : "string"
-          },
-          "footerTermsCondUrl" : {
-            "type" : "string"
-          },
-          "footerAccessibilityUrl" : {
-            "type" : "string"
-          }
-        }
-      },
-      "PagedModelEntityModelBroker" : {
+      "PagedModelBroker" : {
         "type" : "object",
         "properties" : {
           "_embedded" : {
@@ -981,7 +981,7 @@
               "brokers" : {
                 "type" : "array",
                 "items" : {
-                  "$ref" : "#/components/schemas/EntityModelBroker"
+                  "$ref" : "#/components/schemas/Broker"
                 }
               }
             }

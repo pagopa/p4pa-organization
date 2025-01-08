@@ -8,6 +8,7 @@ import org.springframework.boot.test.autoconfigure.web.servlet.MockMvcPrint;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.http.MediaType;
 import org.springframework.test.context.TestPropertySource;
+import org.springframework.test.json.JsonAssert;
 import org.springframework.test.json.JsonCompareMode;
 import org.springframework.test.web.servlet.MockMvc;
 import org.springframework.test.web.servlet.MvcResult;
@@ -17,7 +18,6 @@ import java.nio.file.Path;
 import java.nio.file.StandardOpenOption;
 
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
-import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.content;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
 @SpringBootTest
@@ -38,27 +38,30 @@ class OpenApiGeneratorTest {
   @Test
   void generateAndVerifyCommit() throws Exception {
     MvcResult result = mockMvc.perform(
-        get("/v3/api-docs")
-          .contentType(MediaType.APPLICATION_JSON)
-          .accept(MediaType.APPLICATION_JSON)
-      ).andExpect(status().isOk())
+      get("/v3/api-docs")
+        .contentType(MediaType.APPLICATION_JSON)
+        .accept(MediaType.APPLICATION_JSON)
+    ).andExpect(status().isOk())
       .andReturn();
 
-    String openApiResult = result.getResponse().getContentAsString().replace("\r", "");
+    String openApiResult = result.getResponse().getContentAsString()
+      .replace("\r", "")
+      .replace("EntityModel", "");
+
     Assertions.assertTrue(openApiResult.startsWith("{\n  \"openapi\" : \"3.0."));
 
     Path openApiGeneratedPath = Path.of("openapi/generated.openapi.json");
-    boolean toStore = true;
-    if (Files.exists(openApiGeneratedPath)) {
+    boolean toStore=true;
+    if(Files.exists(openApiGeneratedPath)){
       String storedOpenApi = Files.readString(openApiGeneratedPath);
       try {
-        content().json(storedOpenApi, JsonCompareMode.STRICT).match(result);
-        toStore = false;
-      } catch (Throwable e) {
+        JsonAssert.comparator(JsonCompareMode.STRICT).assertIsMatch(storedOpenApi, openApiResult);
+        toStore=false;
+      } catch (Throwable e){
         //Do Nothing
       }
     }
-    if (toStore) {
+    if(toStore){
       Files.writeString(openApiGeneratedPath, openApiResult, StandardOpenOption.TRUNCATE_EXISTING);
     }
 
