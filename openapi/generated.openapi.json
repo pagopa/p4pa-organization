@@ -21,7 +21,7 @@
       "get" : {
         "tags" : [ "broker-entity-controller" ],
         "description" : "get-broker",
-        "operationId" : "crud-get-broker",
+        "operationId" : "crud-get-brokers",
         "parameters" : [ {
           "name" : "page",
           "in" : "query",
@@ -137,7 +137,7 @@
       "get" : {
         "tags" : [ "broker-entity-controller" ],
         "description" : "get-broker",
-        "operationId" : "crud-get-broker_1",
+        "operationId" : "crud-get-broker",
         "parameters" : [ {
           "name" : "id",
           "in" : "path",
@@ -274,7 +274,7 @@
       "get" : {
         "tags" : [ "organization-entity-controller" ],
         "description" : "get-organization",
-        "operationId" : "crud-get-organization",
+        "operationId" : "crud-get-organizations",
         "parameters" : [ {
           "name" : "page",
           "in" : "query",
@@ -418,7 +418,7 @@
       "get" : {
         "tags" : [ "organization-entity-controller" ],
         "description" : "get-organization",
-        "operationId" : "crud-get-organization_1",
+        "operationId" : "crud-get-organization",
         "parameters" : [ {
           "name" : "id",
           "in" : "path",
@@ -554,7 +554,7 @@
     "/crud/profile" : {
       "get" : {
         "tags" : [ "profile-controller" ],
-        "operationId" : "crud-profile-profile",
+        "operationId" : "crud-profile-profiles",
         "responses" : {
           "200" : {
             "description" : "OK",
