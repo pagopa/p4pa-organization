@@ -5,6 +5,7 @@ import it.gov.pagopa.pu.organization.service.broker.BrokerService;
 import org.junit.jupiter.api.Test;
 import org.mockito.Mockito;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.boot.test.autoconfigure.web.servlet.AutoConfigureMockMvc;
 import org.springframework.boot.test.autoconfigure.web.servlet.WebMvcTest;
 import org.springframework.context.annotation.Import;
 import org.springframework.data.rest.webmvc.ResourceNotFoundException;
@@ -15,6 +16,7 @@ import org.springframework.test.web.servlet.result.MockMvcResultMatchers;
 
 @WebMvcTest
 @Import({BrokerController.class})
+@AutoConfigureMockMvc(addFilters = false)
 class ControllerExceptionHandlerTest {
 
   @MockitoBean

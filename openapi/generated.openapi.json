@@ -9,12 +9,15 @@
     "url" : "http://localhost",
     "description" : "Generated server url"
   } ],
+  "security" : [ {
+    "BearerAuth" : [ ]
+  } ],
   "tags" : [ {
     "name" : "Broker",
     "description" : "the Broker API"
   } ],
   "paths" : {
-    "/crud/brokers" : {
+    "/brokers" : {
       "get" : {
         "tags" : [ "broker-entity-controller" ],
         "description" : "get-broker",
@@ -102,7 +105,7 @@
         }
       }
     },
-    "/crud/brokers/search/findByOrgFiscalCode" : {
+    "/brokers/search/findByOrgFiscalCode" : {
       "get" : {
         "tags" : [ "broker-search-controller" ],
         "operationId" : "executeSearch-broker-get",
@@ -130,7 +133,7 @@
         }
       }
     },
-    "/crud/brokers/{id}" : {
+    "/brokers/{id}" : {
       "get" : {
         "tags" : [ "broker-entity-controller" ],
         "description" : "get-broker",
@@ -267,7 +270,7 @@
         }
       }
     },
-    "/crud/organizations" : {
+    "/organizations" : {
       "get" : {
         "tags" : [ "organization-entity-controller" ],
         "description" : "get-organization",
@@ -355,7 +358,7 @@
         }
       }
     },
-    "/crud/organizations/search/findByIpaCode" : {
+    "/organizations/search/findByIpaCode" : {
       "get" : {
         "tags" : [ "organization-search-controller" ],
         "operationId" : "executeSearch-organization-get",
@@ -383,7 +386,7 @@
         }
       }
     },
-    "/crud/organizations/{id}" : {
+    "/organizations/{id}" : {
       "get" : {
         "tags" : [ "organization-entity-controller" ],
         "description" : "get-organization",
@@ -520,7 +523,7 @@
         }
       }
     },
-    "/crud/profile" : {
+    "/profile" : {
       "get" : {
         "tags" : [ "profile-controller" ],
         "operationId" : "listAllFormsOfMetadata",
@@ -538,7 +541,7 @@
         }
       }
     },
-    "/crud/profile/brokers" : {
+    "/profile/brokers" : {
       "get" : {
         "tags" : [ "profile-controller" ],
         "operationId" : "descriptor",
@@ -566,7 +569,7 @@
         }
       }
     },
-    "/crud/profile/organizations" : {
+    "/profile/organizations" : {
       "get" : {
         "tags" : [ "profile-controller" ],
         "operationId" : "descriptor_1",
@@ -740,32 +743,6 @@
           }
         }
       },
-      "PersonalisationFe" : {
-        "type" : "object",
-        "properties" : {
-          "headerAssistanceUrl" : {
-            "type" : "string"
-          },
-          "logoFooterImg" : {
-            "type" : "string"
-          },
-          "footerDescText" : {
-            "type" : "string"
-          },
-          "footerPrivacyInfoUrl" : {
-            "type" : "string"
-          },
-          "footerGDPRUrl" : {
-            "type" : "string"
-          },
-          "footerTermsCondUrl" : {
-            "type" : "string"
-          },
-          "footerAccessibilityUrl" : {
-            "type" : "string"
-          }
-        }
-      },
       "EntityModelBroker" : {
         "type" : "object",
         "properties" : {
@@ -840,7 +817,7 @@
           "_embedded" : {
             "type" : "object",
             "properties" : {
-              "brokers" : {
+              "broker" : {
                 "type" : "array",
                 "items" : {
                   "$ref" : "#/components/schemas/EntityModelBroker"
@@ -853,6 +830,32 @@
           },
           "page" : {
             "$ref" : "#/components/schemas/PageMetadata"
+          }
+        }
+      },
+      "PersonalisationFe" : {
+        "type" : "object",
+        "properties" : {
+          "headerAssistanceUrl" : {
+            "type" : "string"
+          },
+          "logoFooterImg" : {
+            "type" : "string"
+          },
+          "footerDescText" : {
+            "type" : "string"
+          },
+          "footerPrivacyInfoUrl" : {
+            "type" : "string"
+          },
+          "footerGDPRUrl" : {
+            "type" : "string"
+          },
+          "footerTermsCondUrl" : {
+            "type" : "string"
+          },
+          "footerAccessibilityUrl" : {
+            "type" : "string"
           }
         }
       },
@@ -975,7 +978,7 @@
           "_embedded" : {
             "type" : "object",
             "properties" : {
-              "organizations" : {
+              "organization" : {
                 "type" : "array",
                 "items" : {
                   "$ref" : "#/components/schemas/EntityModelOrganization"
@@ -1187,6 +1190,13 @@
             "type" : "boolean"
           }
         }
+      }
+    },
+    "securitySchemes" : {
+      "BearerAuth" : {
+        "type" : "http",
+        "scheme" : "bearer",
+        "bearerFormat" : "JWT"
       }
     }
   }
