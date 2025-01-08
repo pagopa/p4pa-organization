@@ -10,5 +10,6 @@ import java.util.Optional;
 public interface OrganizationRepository extends JpaRepository<Organization, Long> {
 
   Optional<Organization> findByIpaCode(String ipaCode);
+  Optional<Organization> findByOrgFiscalCode(String orgFiscalCode);
 
 }
