@@ -21,7 +21,7 @@
       "get" : {
         "tags" : [ "broker-entity-controller" ],
         "description" : "get-broker",
-        "operationId" : "getCollectionResource-broker-get",
+        "operationId" : "crud-get-broker",
         "parameters" : [ {
           "name" : "page",
           "in" : "query",
@@ -80,7 +80,7 @@
       "post" : {
         "tags" : [ "broker-entity-controller" ],
         "description" : "create-broker",
-        "operationId" : "postCollectionResource-broker-post",
+        "operationId" : "crud-create-broker",
         "requestBody" : {
           "content" : {
             "application/json" : {
@@ -108,7 +108,7 @@
     "/crud/brokers/search/findByOrgFiscalCode" : {
       "get" : {
         "tags" : [ "broker-search-controller" ],
-        "operationId" : "executeSearch-broker-get",
+        "operationId" : "crud-brokers-findByOrgFiscalCode",
         "parameters" : [ {
           "name" : "orgFiscalCode",
           "in" : "query",
@@ -137,7 +137,7 @@
       "get" : {
         "tags" : [ "broker-entity-controller" ],
         "description" : "get-broker",
-        "operationId" : "getItemResource-broker-get",
+        "operationId" : "crud-get-broker_1",
         "parameters" : [ {
           "name" : "id",
           "in" : "path",
@@ -165,7 +165,7 @@
       "put" : {
         "tags" : [ "broker-entity-controller" ],
         "description" : "update-broker",
-        "operationId" : "putItemResource-broker-put",
+        "operationId" : "crud-update-broker",
         "parameters" : [ {
           "name" : "id",
           "in" : "path",
@@ -213,7 +213,7 @@
       "delete" : {
         "tags" : [ "broker-entity-controller" ],
         "description" : "delete-broker",
-        "operationId" : "deleteItemResource-broker-delete",
+        "operationId" : "crud-delete-broker",
         "parameters" : [ {
           "name" : "id",
           "in" : "path",
@@ -234,7 +234,7 @@
       "patch" : {
         "tags" : [ "broker-entity-controller" ],
         "description" : "patch-broker",
-        "operationId" : "patchItemResource-broker-patch",
+        "operationId" : "crud-patch-broker",
         "parameters" : [ {
           "name" : "id",
           "in" : "path",
@@ -274,7 +274,7 @@
       "get" : {
         "tags" : [ "organization-entity-controller" ],
         "description" : "get-organization",
-        "operationId" : "getCollectionResource-organization-get",
+        "operationId" : "crud-get-organization",
         "parameters" : [ {
           "name" : "page",
           "in" : "query",
@@ -333,7 +333,7 @@
       "post" : {
         "tags" : [ "organization-entity-controller" ],
         "description" : "create-organization",
-        "operationId" : "postCollectionResource-organization-post",
+        "operationId" : "crud-create-organization",
         "requestBody" : {
           "content" : {
             "application/json" : {
@@ -361,9 +361,37 @@
     "/crud/organizations/search/findByIpaCode" : {
       "get" : {
         "tags" : [ "organization-search-controller" ],
-        "operationId" : "executeSearch-organization-get",
+        "operationId" : "crud-organizations-findByIpaCode",
         "parameters" : [ {
           "name" : "ipaCode",
+          "in" : "query",
+          "schema" : {
+            "type" : "string"
+          }
+        } ],
+        "responses" : {
+          "200" : {
+            "description" : "OK",
+            "content" : {
+              "application/hal+json" : {
+                "schema" : {
+                  "$ref" : "#/components/schemas/Organization"
+                }
+              }
+            }
+          },
+          "404" : {
+            "description" : "Not Found"
+          }
+        }
+      }
+    },
+    "/crud/organizations/search/findByOrgFiscalCode" : {
+      "get" : {
+        "tags" : [ "organization-search-controller" ],
+        "operationId" : "crud-organizations-findByOrgFiscalCode",
+        "parameters" : [ {
+          "name" : "orgFiscalCode",
           "in" : "query",
           "schema" : {
             "type" : "string"
@@ -390,7 +418,7 @@
       "get" : {
         "tags" : [ "organization-entity-controller" ],
         "description" : "get-organization",
-        "operationId" : "getItemResource-organization-get",
+        "operationId" : "crud-get-organization_1",
         "parameters" : [ {
           "name" : "id",
           "in" : "path",
@@ -418,7 +446,7 @@
       "put" : {
         "tags" : [ "organization-entity-controller" ],
         "description" : "update-organization",
-        "operationId" : "putItemResource-organization-put",
+        "operationId" : "crud-update-organization",
         "parameters" : [ {
           "name" : "id",
           "in" : "path",
@@ -466,7 +494,7 @@
       "delete" : {
         "tags" : [ "organization-entity-controller" ],
         "description" : "delete-organization",
-        "operationId" : "deleteItemResource-organization-delete",
+        "operationId" : "crud-delete-organization",
         "parameters" : [ {
           "name" : "id",
           "in" : "path",
@@ -487,7 +515,7 @@
       "patch" : {
         "tags" : [ "organization-entity-controller" ],
         "description" : "patch-organization",
-        "operationId" : "patchItemResource-organization-patch",
+        "operationId" : "crud-patch-organization",
         "parameters" : [ {
           "name" : "id",
           "in" : "path",
@@ -526,7 +554,7 @@
     "/crud/profile" : {
       "get" : {
         "tags" : [ "profile-controller" ],
-        "operationId" : "listAllFormsOfMetadata",
+        "operationId" : "crud-profile-profile",
         "responses" : {
           "200" : {
             "description" : "OK",
@@ -544,7 +572,7 @@
     "/crud/profile/brokers" : {
       "get" : {
         "tags" : [ "profile-controller" ],
-        "operationId" : "descriptor",
+        "operationId" : "crud-profile-brokers",
         "responses" : {
           "200" : {
             "description" : "OK",
@@ -572,7 +600,7 @@
     "/crud/profile/organizations" : {
       "get" : {
         "tags" : [ "profile-controller" ],
-        "operationId" : "descriptor_1",
+        "operationId" : "crud-profile-organizations",
         "responses" : {
           "200" : {
             "description" : "OK",
@@ -743,6 +771,122 @@
           }
         }
       },
+      "Broker" : {
+        "type" : "object",
+        "properties" : {
+          "brokerId" : {
+            "type" : "integer",
+            "format" : "int64"
+          },
+          "organizationId" : {
+            "type" : "integer",
+            "format" : "int64"
+          },
+          "brokerFiscalCode" : {
+            "type" : "string"
+          },
+          "brokerName" : {
+            "type" : "string"
+          },
+          "pagoPaInteractionModel" : {
+            "type" : "string",
+            "enum" : [ "SYNC", "SYNC_ACA", "SYNC$GPDPRELOAD", "SYNC_ACA$GPDPRELOAD", "ASYNC_GPD" ]
+          },
+          "stationId" : {
+            "type" : "string"
+          },
+          "broadcastStationId" : {
+            "type" : "string"
+          },
+          "syncKey" : {
+            "type" : "string",
+            "format" : "byte"
+          },
+          "gpdKey" : {
+            "type" : "string",
+            "format" : "byte"
+          },
+          "acaKey" : {
+            "type" : "string",
+            "format" : "byte"
+          },
+          "personalisationFe" : {
+            "$ref" : "#/components/schemas/PersonalisationFe"
+          },
+          "_links" : {
+            "$ref" : "#/components/schemas/Links"
+          }
+        }
+      },
+      "PageMetadata" : {
+        "type" : "object",
+        "properties" : {
+          "size" : {
+            "type" : "integer",
+            "format" : "int64"
+          },
+          "totalElements" : {
+            "type" : "integer",
+            "format" : "int64"
+          },
+          "totalPages" : {
+            "type" : "integer",
+            "format" : "int64"
+          },
+          "number" : {
+            "type" : "integer",
+            "format" : "int64"
+          }
+        }
+      },
+      "PagedModelBroker" : {
+        "type" : "object",
+        "properties" : {
+          "_embedded" : {
+            "type" : "object",
+            "properties" : {
+              "brokers" : {
+                "type" : "array",
+                "items" : {
+                  "$ref" : "#/components/schemas/Broker"
+                }
+              }
+            }
+          },
+          "_links" : {
+            "$ref" : "#/components/schemas/Links"
+          },
+          "page" : {
+            "$ref" : "#/components/schemas/PageMetadata"
+          }
+        }
+      },
+      "PersonalisationFe" : {
+        "type" : "object",
+        "properties" : {
+          "headerAssistanceUrl" : {
+            "type" : "string"
+          },
+          "logoFooterImg" : {
+            "type" : "string"
+          },
+          "footerDescText" : {
+            "type" : "string"
+          },
+          "footerPrivacyInfoUrl" : {
+            "type" : "string"
+          },
+          "footerGDPRUrl" : {
+            "type" : "string"
+          },
+          "footerTermsCondUrl" : {
+            "type" : "string"
+          },
+          "footerAccessibilityUrl" : {
+            "type" : "string"
+          }
+        }
+      },
       "Organization" : {
         "type" : "object",
         "properties" : {
@@ -856,27 +1000,6 @@
           }
         }
       },
-      "PageMetadata" : {
-        "type" : "object",
-        "properties" : {
-          "size" : {
-            "type" : "integer",
-            "format" : "int64"
-          },
-          "totalElements" : {
-            "type" : "integer",
-            "format" : "int64"
-          },
-          "totalPages" : {
-            "type" : "integer",
-            "format" : "int64"
-          },
-          "number" : {
-            "type" : "integer",
-            "format" : "int64"
-          }
-        }
-      },
       "PagedModelOrganization" : {
         "type" : "object",
         "properties" : {
@@ -887,101 +1010,6 @@
                 "type" : "array",
                 "items" : {
                   "$ref" : "#/components/schemas/Organization"
-                }
-              }
-            }
-          },
-          "_links" : {
-            "$ref" : "#/components/schemas/Links"
-          },
-          "page" : {
-            "$ref" : "#/components/schemas/PageMetadata"
-          }
-        }
-      },
-      "PersonalisationFe" : {
-        "type" : "object",
-        "properties" : {
-          "headerAssistanceUrl" : {
-            "type" : "string"
-          },
-          "logoFooterImg" : {
-            "type" : "string"
-          },
-          "footerDescText" : {
-            "type" : "string"
-          },
-          "footerPrivacyInfoUrl" : {
-            "type" : "string"
-          },
-          "footerGDPRUrl" : {
-            "type" : "string"
-          },
-          "footerTermsCondUrl" : {
-            "type" : "string"
-          },
-          "footerAccessibilityUrl" : {
-            "type" : "string"
-          }
-        }
-      },
-      "Broker" : {
-        "type" : "object",
-        "properties" : {
-          "brokerId" : {
-            "type" : "integer",
-            "format" : "int64"
-          },
-          "organizationId" : {
-            "type" : "integer",
-            "format" : "int64"
-          },
-          "brokerFiscalCode" : {
-            "type" : "string"
-          },
-          "brokerName" : {
-            "type" : "string"
-          },
-          "pagoPaInteractionModel" : {
-            "type" : "string",
-            "enum" : [ "SYNC", "SYNC_ACA", "SYNC$GPDPRELOAD", "SYNC_ACA$GPDPRELOAD", "ASYNC_GPD" ]
-          },
-          "stationId" : {
-            "type" : "string"
-          },
-          "broadcastStationId" : {
-            "type" : "string"
-          },
-          "syncKey" : {
-            "type" : "string",
-            "format" : "byte"
-          },
-          "gpdKey" : {
-            "type" : "string",
-            "format" : "byte"
-          },
-          "acaKey" : {
-            "type" : "string",
-            "format" : "byte"
-          },
-          "personalisationFe" : {
-            "$ref" : "#/components/schemas/PersonalisationFe"
-          },
-          "_links" : {
-            "$ref" : "#/components/schemas/Links"
-          }
-        }
-      },
-      "PagedModelBroker" : {
-        "type" : "object",
-        "properties" : {
-          "_embedded" : {
-            "type" : "object",
-            "properties" : {
-              "brokers" : {
-                "type" : "array",
-                "items" : {
-                  "$ref" : "#/components/schemas/Broker"
                 }
               }
             }
