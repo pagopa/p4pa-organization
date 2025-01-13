@@ -621,6 +621,478 @@
           }
         }
       }
+    },
+    "/profile/taxonomy": {
+      "get": {
+        "tags": [
+          "profile-controller"
+        ],
+        "operationId": "descriptor_1_1_3",
+        "responses": {
+          "200": {
+            "description": "OK",
+            "content": {
+              "*/*": {
+                "schema": {
+                  "type": "string"
+                }
+              },
+              "application/alps+json": {
+                "schema": {
+                  "type": "string"
+                }
+              },
+              "application/schema+json": {
+                "schema": {
+                  "$ref": "#/components/schemas/JsonSchema"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/taxonomy": {
+      "get": {
+        "tags": [
+          "taxonomy-entity-controller"
+        ],
+        "description": "get-taxonomy",
+        "operationId": "getCollectionResource-taxonomy-get_1",
+        "parameters": [
+          {
+            "name": "page",
+            "in": "query",
+            "description": "Zero-based page index (0..N)",
+            "required": false,
+            "schema": {
+              "minimum": 0,
+              "type": "integer",
+              "default": 0
+            }
+          },
+          {
+            "name": "size",
+            "in": "query",
+            "description": "The size of the page to be returned",
+            "required": false,
+            "schema": {
+              "minimum": 1,
+              "type": "integer",
+              "default": 20
+            }
+          },
+          {
+            "name": "sort",
+            "in": "query",
+            "description": "Sorting criteria in the format: property,(asc|desc). Default sort order is ascending. Multiple sort criteria are supported.",
+            "required": false,
+            "schema": {
+              "type": "array",
+              "items": {
+                "type": "string"
+              }
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "OK",
+            "content": {
+              "application/hal+json": {
+                "schema": {
+                  "$ref": "#/components/schemas/PagedModelEntityModelTaxonomy"
+                }
+              },
+              "text/uri-list": {
+                "schema": {
+                  "type": "string"
+                }
+              },
+              "application/x-spring-data-compact+json": {
+                "schema": {
+                  "$ref": "#/components/schemas/PagedModelEntityModelTaxonomy"
+                }
+              }
+            }
+          }
+        }
+      },
+      "post": {
+        "tags": [
+          "taxonomy-entity-controller"
+        ],
+        "description": "create-taxonomy",
+        "operationId": "postCollectionResource-taxonomy-post",
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/TaxonomyRequestBody"
+              }
+            }
+          },
+          "required": true
+        },
+        "responses": {
+          "201": {
+            "description": "Created",
+            "content": {
+              "application/hal+json": {
+                "schema": {
+                  "$ref": "#/components/schemas/EntityModelTaxonomy"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/taxonomy/search/findDistinctCollectionReasonByOrganizationTypeAndMacroAreaCodeAndServiceTypeCode": {
+      "get": {
+        "tags": [
+          "taxonomy-search-controller"
+        ],
+        "operationId": "executeSearch-taxonomy-get",
+        "parameters": [
+          {
+            "name": "organizationType",
+            "in": "query",
+            "schema": {
+              "type": "string"
+            }
+          },
+          {
+            "name": "macroAreaCode",
+            "in": "query",
+            "schema": {
+              "type": "string"
+            }
+          },
+          {
+            "name": "serviceTypeCode",
+            "in": "query",
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "OK",
+            "content": {
+              "application/hal+json": {
+                "schema": {
+                  "$ref": "#/components/schemas/CollectionModelEntityModelTaxonomy"
+                }
+              }
+            }
+          },
+          "404": {
+            "description": "Not Found"
+          }
+        }
+      }
+    },
+    "/taxonomy/search/findDistinctMacroAreaCodeByOrganizationType": {
+      "get": {
+        "tags": [
+          "taxonomy-search-controller"
+        ],
+        "operationId": "executeSearch-taxonomy-get_1",
+        "parameters": [
+          {
+            "name": "organizationType",
+            "in": "query",
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "OK",
+            "content": {
+              "application/hal+json": {
+                "schema": {
+                  "$ref": "#/components/schemas/CollectionModelEntityModelTaxonomy"
+                }
+              }
+            }
+          },
+          "404": {
+            "description": "Not Found"
+          }
+        }
+      }
+    },
+    "/taxonomy/search/findDistinctServiceTypeCodeByOrganizationTypeAndMacroAreaCode": {
+      "get": {
+        "tags": [
+          "taxonomy-search-controller"
+        ],
+        "operationId": "executeSearch-taxonomy-get_2",
+        "parameters": [
+          {
+            "name": "organizationType",
+            "in": "query",
+            "schema": {
+              "type": "string"
+            }
+          },
+          {
+            "name": "macroAreaCode",
+            "in": "query",
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "OK",
+            "content": {
+              "application/hal+json": {
+                "schema": {
+                  "$ref": "#/components/schemas/CollectionModelEntityModelTaxonomy"
+                }
+              }
+            }
+          },
+          "404": {
+            "description": "Not Found"
+          }
+        }
+      }
+    },
+    "/taxonomy/search/findDistinctTaxonomyCodeByOrganizationTypeAndMacroAreaCodeAndServiceTypeCodeAndCollectionReason": {
+      "get": {
+        "tags": [
+          "taxonomy-search-controller"
+        ],
+        "operationId": "executeSearch-taxonomy-get_3",
+        "parameters": [
+          {
+            "name": "organizationType",
+            "in": "query",
+            "schema": {
+              "type": "string"
+            }
+          },
+          {
+            "name": "macroAreaName",
+            "in": "query",
+            "schema": {
+              "type": "string"
+            }
+          },
+          {
+            "name": "serviceType",
+            "in": "query",
+            "schema": {
+              "type": "string"
+            }
+          },
+          {
+            "name": "collectionReason",
+            "in": "query",
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "OK",
+            "content": {
+              "application/hal+json": {
+                "schema": {
+                  "$ref": "#/components/schemas/CollectionModelEntityModelTaxonomy"
+                }
+              }
+            }
+          },
+          "404": {
+            "description": "Not Found"
+          }
+        }
+      }
+    },
+    "/taxonomy/{id}": {
+      "get": {
+        "tags": [
+          "taxonomy-entity-controller"
+        ],
+        "description": "get-taxonomy",
+        "operationId": "getItemResource-taxonomy-get",
+        "parameters": [
+          {
+            "name": "id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "OK",
+            "content": {
+              "application/hal+json": {
+                "schema": {
+                  "$ref": "#/components/schemas/EntityModelTaxonomy"
+                }
+              }
+            }
+          },
+          "404": {
+            "description": "Not Found"
+          }
+        }
+      },
+      "put": {
+        "tags": [
+          "taxonomy-entity-controller"
+        ],
+        "description": "update-taxonomy",
+        "operationId": "putItemResource-taxonomy-put",
+        "parameters": [
+          {
+            "name": "id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/TaxonomyRequestBody"
+              }
+            }
+          },
+          "required": true
+        },
+        "responses": {
+          "200": {
+            "description": "OK",
+            "content": {
+              "application/hal+json": {
+                "schema": {
+                  "$ref": "#/components/schemas/EntityModelTaxonomy"
+                }
+              }
+            }
+          },
+          "201": {
+            "description": "Created",
+            "content": {
+              "application/hal+json": {
+                "schema": {
+                  "$ref": "#/components/schemas/EntityModelTaxonomy"
+                }
+              }
+            }
+          },
+          "204": {
+            "description": "No Content"
+          }
+        }
+      },
+      "delete": {
+        "tags": [
+          "taxonomy-entity-controller"
+        ],
+        "description": "delete-taxonomy",
+        "operationId": "deleteItemResource-taxonomy-delete",
+        "parameters": [
+          {
+            "name": "id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "204": {
+            "description": "No Content"
+          },
+          "404": {
+            "description": "Not Found"
+          }
+        }
+      },
+      "patch": {
+        "tags": [
+          "taxonomy-entity-controller"
+        ],
+        "description": "patch-taxonomy",
+        "operationId": "patchItemResource-taxonomy-patch",
+        "parameters": [
+          {
+            "name": "id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/TaxonomyRequestBody"
+              }
+            }
+          },
+          "required": true
+        },
+        "responses": {
+          "200": {
+            "description": "OK",
+            "content": {
+              "application/hal+json": {
+                "schema": {
+                  "$ref": "#/components/schemas/EntityModelTaxonomy"
+                }
+              }
+            }
+          },
+          "204": {
+            "description": "No Content"
+          }
+        }
+      }
+    },
+    "/taxonomy/custom/getDistinctOrganizationType": {
+      "get": {
+        "tags": [
+          "taxonomy-controller"
+        ],
+        "operationId": "getDistinctOrgType",
+        "responses": {
+          "200": {
+            "description": "OK",
+            "content": {
+              "application/hal+json": {
+                "schema": {
+                  "type": "array",
+                  "items": {
+                    "$ref": "#/components/schemas/DistinctOrganizationTypeDTO"
+                  }
+                }
+              }
+            }
+          }
+        }
+      }
     }
   },
   "components": {
@@ -700,6 +1172,134 @@
       "RepresentationModelObject": {
         "type": "object",
         "properties": {
+          "_links": {
+            "$ref": "#/components/schemas/Links"
+          }
+        }
+      },
+      "EntityModelTaxonomy": {
+        "type": "object",
+        "properties": {
+          "taxonomyId": {
+            "type": "integer",
+            "format": "int64"
+          },
+          "version": {
+            "type": "integer",
+            "format": "int64"
+          },
+          "organizationType": {
+            "type": "string"
+          },
+          "organizationTypeDescription": {
+            "type": "string"
+          },
+          "macroAreaCode": {
+            "type": "string"
+          },
+          "macroAreaName": {
+            "type": "string"
+          },
+          "macroAreaDescription": {
+            "type": "string"
+          },
+          "serviceTypeCode": {
+            "type": "string"
+          },
+          "serviceType": {
+            "type": "string"
+          },
+          "serviceTypeDescription": {
+            "type": "string"
+          },
+          "collectionReason": {
+            "type": "string"
+          },
+          "startDateValidity": {
+            "type": "string",
+            "format": "date-time"
+          },
+          "endDateOfValidity": {
+            "type": "string",
+            "format": "date-time"
+          },
+          "taxonomyCode": {
+            "type": "string"
+          },
+          "creationDate": {
+            "type": "string",
+            "format": "date-time"
+          },
+          "lastModifiedDate": {
+            "type": "string",
+            "format": "date-time"
+          },
+          "versionMyPay": {
+            "type": "integer",
+            "format": "int64"
+          },
+          "_links": {
+            "$ref": "#/components/schemas/Links"
+          }
+        }
+      },
+      "PageMetadata": {
+        "type": "object",
+        "properties": {
+          "size": {
+            "type": "integer",
+            "format": "int64"
+          },
+          "totalElements": {
+            "type": "integer",
+            "format": "int64"
+          },
+          "totalPages": {
+            "type": "integer",
+            "format": "int64"
+          },
+          "number": {
+            "type": "integer",
+            "format": "int64"
+          }
+        }
+      },
+      "PagedModelEntityModelTaxonomy": {
+        "type": "object",
+        "properties": {
+          "_embedded": {
+            "type": "object",
+            "properties": {
+              "taxonomy": {
+                "type": "array",
+                "items": {
+                  "$ref": "#/components/schemas/EntityModelTaxonomy"
+                }
+              }
+            }
+          },
+          "_links": {
+            "$ref": "#/components/schemas/Links"
+          },
+          "page": {
+            "$ref": "#/components/schemas/PageMetadata"
+          }
+        }
+      },
+      "CollectionModelEntityModelTaxonomy": {
+        "type": "object",
+        "properties": {
+          "_embedded": {
+            "type": "object",
+            "properties": {
+              "taxonomy": {
+                "type": "array",
+                "items": {
+                  "$ref": "#/components/schemas/EntityModelTaxonomy"
+                }
+              }
+            }
+          },
           "_links": {
             "$ref": "#/components/schemas/Links"
           }
@@ -818,27 +1418,6 @@
           }
         }
       },
-      "PageMetadata": {
-        "type": "object",
-        "properties": {
-          "size": {
-            "type": "integer",
-            "format": "int64"
-          },
-          "totalElements": {
-            "type": "integer",
-            "format": "int64"
-          },
-          "totalPages": {
-            "type": "integer",
-            "format": "int64"
-          },
-          "number": {
-            "type": "integer",
-            "format": "int64"
-          }
-        }
-      },
       "PagedModelEntityModelOrganization": {
         "type": "object",
         "properties": {
@@ -858,32 +1437,6 @@
           },
           "page": {
             "$ref": "#/components/schemas/PageMetadata"
-          }
-        }
-      },
-      "PersonalisationFe": {
-        "type": "object",
-        "properties": {
-          "headerAssistanceUrl": {
-            "type": "string"
-          },
-          "logoFooterImg": {
-            "type": "string"
-          },
-          "footerDescText": {
-            "type": "string"
-          },
-          "footerPrivacyInfoUrl": {
-            "type": "string"
-          },
-          "footerGDPRUrl": {
-            "type": "string"
-          },
-          "footerTermsCondUrl": {
-            "type": "string"
-          },
-          "footerAccessibilityUrl": {
-            "type": "string"
           }
         }
       },
@@ -959,6 +1512,32 @@
           },
           "page": {
             "$ref": "#/components/schemas/PageMetadata"
+          }
+        }
+      },
+      "PersonalisationFe": {
+        "type": "object",
+        "properties": {
+          "headerAssistanceUrl": {
+            "type": "string"
+          },
+          "logoFooterImg": {
+            "type": "string"
+          },
+          "footerDescText": {
+            "type": "string"
+          },
+          "footerPrivacyInfoUrl": {
+            "type": "string"
+          },
+          "footerGDPRUrl": {
+            "type": "string"
+          },
+          "footerTermsCondUrl": {
+            "type": "string"
+          },
+          "footerAccessibilityUrl": {
+            "type": "string"
           }
         }
       },
@@ -1119,6 +1698,80 @@
           "brokerId": {
             "type": "integer",
             "format": "int64"
+          }
+        }
+      },
+      "TaxonomyRequestBody": {
+        "type": "object",
+        "properties": {
+          "taxonomyId": {
+            "type": "integer",
+            "format": "int64"
+          },
+          "version": {
+            "type": "integer",
+            "format": "int64"
+          },
+          "organizationType": {
+            "type": "string"
+          },
+          "organizationTypeDescription": {
+            "type": "string"
+          },
+          "macroAreaCode": {
+            "type": "string"
+          },
+          "macroAreaName": {
+            "type": "string"
+          },
+          "macroAreaDescription": {
+            "type": "string"
+          },
+          "serviceTypeCode": {
+            "type": "string"
+          },
+          "serviceType": {
+            "type": "string"
+          },
+          "serviceTypeDescription": {
+            "type": "string"
+          },
+          "collectionReason": {
+            "type": "string"
+          },
+          "startDateValidity": {
+            "type": "string",
+            "format": "date-time"
+          },
+          "endDateOfValidity": {
+            "type": "string",
+            "format": "date-time"
+          },
+          "taxonomyCode": {
+            "type": "string"
+          },
+          "creationDate": {
+            "type": "string",
+            "format": "date-time"
+          },
+          "lastModifiedDate": {
+            "type": "string",
+            "format": "date-time"
+          },
+          "versionMyPay": {
+            "type": "integer",
+            "format": "int64"
+          }
+        }
+      },
+      "DistinctOrganizationTypeDTO": {
+        "type": "object",
+        "properties": {
+          "organizationTypeDescription": {
+            "type": "string"
+          },
+          "organizationType": {
+            "type": "string"
           }
         }
       },
