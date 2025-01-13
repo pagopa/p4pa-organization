@@ -20,7 +20,7 @@ class TaxonomyServiceTest {
   private TaxonomyRepository taxonomyRepository;
 
   @InjectMocks
-  private TaxonomyService taxonomyService;
+  private TaxonomyServiceImpl taxonomyService;
 
   @Test
   void testGetDistinctOrganizationType() {
