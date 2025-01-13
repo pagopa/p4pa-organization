@@ -64,8 +64,11 @@ microservice-chart:
   envSecret:
     APPLICATIONINSIGHTS_CONNECTION_STRING: appinsights-connection-string
     ORGANIZATION_DB_HOST: db-host
-    ORGANIZATION_DB_USER: db-piattaforma-unitaria-login-username
-    ORGANIZATION_DB_PASSWORD: db-piattaforma-unitaria-login-password
+    ORGANIZATION_DB_USER: db-mypay-login-username
+    ORGANIZATION_DB_PASSWORD: db-mypay-login-password
+    # To switch to new db
+    # ORGANIZATION_DB_USER: db-piattaforma-unitaria-login-username
+    # ORGANIZATION_DB_PASSWORD: db-piattaforma-unitaria-login-password
     BROKER_ENCRYPT_PASSWORD: broker-encrypt-password
     JWT_TOKEN_PUBLIC_KEY: jwt-public-key
 
