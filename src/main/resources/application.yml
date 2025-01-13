@@ -1,3 +1,6 @@
+server:
+  http: "\${SERVER_PORT:8080}"
+
 spring:
   application:
     name: ${artifactId}
@@ -7,7 +10,7 @@ spring:
     virtual:
       enabled: "\${VIRTUAL_THREADS_ENABLED:true}"
   datasource:
-    url: "\${ORGANIZATION_DB_URL:jdbc:postgresql://\${ORGANIZATION_DB_HOST:localhost}:\${ORGANIZATION_DB_PORT:5432}/\${ORGANIZATION_DB_NAME:mypay}}"
+    url: "\${ORGANIZATION_DB_URL:jdbc:postgresql://\${ORGANIZATION_DB_HOST:localhost}:\${ORGANIZATION_DB_PORT:5432}/\${ORGANIZATION_DB_NAME:payhub}?currentSchema=organization}"
     username: "\${ORGANIZATION_DB_USER}"
     password: "\${ORGANIZATION_DB_PASSWORD}"
     driverClassName: org.postgresql.Driver
@@ -16,17 +19,35 @@ spring:
       basePath: crud
 
 management:
+  endpoints:
+    jmx:
+      exposure.include: "*"
+    web:
+      exposure:
+        include: health, info, prometheus, metrics
+      base-path: /actuator
   endpoint:
     health:
       probes.enabled: true
       group:
         readiness.include: "*"
         liveness.include: livenessState,diskSpace,ping
-  endpoints:
-    jmx:
-      exposure.include: "*"
-    web:
-      exposure.include: info, health
+      prometheus:
+        enabled: true
+    metrics:
+      tags:
+        application: ${artifactId}
+      export:
+        prometheus:
+          enabled: true
+          step: 1m
+          descriptions: true
+      enable:
+        jvm: true
+        process: true
+        system: true
+        http: true
+        logback: true
 
 logging:
   level:
