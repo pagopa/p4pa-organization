@@ -1,7 +1,6 @@
 package it.gov.pagopa.pu.organization.exception;
 
 import it.gov.pagopa.pu.organization.controller.BrokerController;
-import it.gov.pagopa.pu.organization.controller.TaxonomyController;
 import it.gov.pagopa.pu.organization.service.broker.BrokerService;
 import org.junit.jupiter.api.Test;
 import org.mockito.Mockito;
@@ -22,9 +21,6 @@ class ControllerExceptionHandlerTest {
 
   @MockitoBean
   private BrokerService brokerServiceMock;
-
-  @MockitoBean
-  private TaxonomyController taxonomyController;
 
   @Autowired
   private MockMvc mockMvc;

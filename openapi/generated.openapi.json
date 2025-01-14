@@ -741,10 +741,10 @@
         }
       }
     },
-    "/crud/taxonomy/search/findDistinctCollectionReasonByOrganizationTypeAndMacroAreaCodeAndServiceTypeCode" : {
+    "/crud/taxonomy/search/findDistinctCollectionReasonByOrganizationTypeAndMacroAreaCodeAndServiceTypeCodeOrderByCollectionReasonAsc" : {
       "get" : {
         "tags" : [ "taxonomy-search-controller" ],
-        "operationId" : "crud-taxonomy-findDistinctCollectionReasonByOrganizationTypeAndMacroAreaCodeAndServiceTypeCode",
+        "operationId" : "crud-taxonomy-findDistinctCollectionReasonByOrganizationTypeAndMacroAreaCodeAndServiceTypeCodeOrderByCollectionReasonAsc",
         "parameters" : [ {
           "name" : "organizationType",
           "in" : "query",
@@ -781,10 +781,10 @@
         }
       }
     },
-    "/crud/taxonomy/search/findDistinctMacroAreaCodeByOrganizationType" : {
+    "/crud/taxonomy/search/findDistinctMacroAreaCodeByOrganizationTypeOrderByMacroAreaCodeAsc" : {
       "get" : {
         "tags" : [ "taxonomy-search-controller" ],
-        "operationId" : "crud-taxonomy-findDistinctMacroAreaCodeByOrganizationType",
+        "operationId" : "crud-taxonomy-findDistinctMacroAreaCodeByOrganizationTypeOrderByMacroAreaCodeAsc",
         "parameters" : [ {
           "name" : "organizationType",
           "in" : "query",
@@ -809,10 +809,31 @@
         }
       }
     },
-    "/crud/taxonomy/search/findDistinctServiceTypeCodeByOrganizationTypeAndMacroAreaCode" : {
+    "/crud/taxonomy/search/findDistinctOrganizationTypeByOrderByOrganizationTypeAsc" : {
       "get" : {
         "tags" : [ "taxonomy-search-controller" ],
-        "operationId" : "crud-taxonomy-findDistinctServiceTypeCodeByOrganizationTypeAndMacroAreaCode",
+        "operationId" : "crud-taxonomy-findDistinctOrganizationTypeByOrderByOrganizationTypeAsc",
+        "responses" : {
+          "200" : {
+            "description" : "OK",
+            "content" : {
+              "application/hal+json" : {
+                "schema" : {
+                  "$ref" : "#/components/schemas/CollectionModelTaxonomy"
+                }
+              }
+            }
+          },
+          "404" : {
+            "description" : "Not Found"
+          }
+        }
+      }
+    },
+    "/crud/taxonomy/search/findDistinctServiceTypeCodeByOrganizationTypeAndMacroAreaCodeOrderByServiceTypeCodeAsc" : {
+      "get" : {
+        "tags" : [ "taxonomy-search-controller" ],
+        "operationId" : "crud-taxonomy-findDistinctServiceTypeCodeByOrganizationTypeAndMacroAreaCodeOrderByServiceTypeCodeAsc",
         "parameters" : [ {
           "name" : "organizationType",
           "in" : "query",
@@ -843,10 +864,10 @@
         }
       }
     },
-    "/crud/taxonomy/search/findDistinctTaxonomyCodeByOrganizationTypeAndMacroAreaCodeAndServiceTypeCodeAndCollectionReason" : {
+    "/crud/taxonomy/search/findDistinctTaxonomyCodeByOrganizationTypeAndMacroAreaCodeAndServiceTypeCodeAndCollectionReasonOrderByTaxonomyCodeAsc" : {
       "get" : {
         "tags" : [ "taxonomy-search-controller" ],
-        "operationId" : "crud-taxonomy-findDistinctTaxonomyCodeByOrganizationTypeAndMacroAreaCodeAndServiceTypeCodeAndCollectionReason",
+        "operationId" : "crud-taxonomy-findDistinctTaxonomyCodeByOrganizationTypeAndMacroAreaCodeAndServiceTypeCodeAndCollectionReasonOrderByTaxonomyCodeAsc",
         "parameters" : [ {
           "name" : "organizationType",
           "in" : "query",
@@ -854,13 +875,13 @@
             "type" : "string"
           }
         }, {
-          "name" : "macroAreaName",
+          "name" : "macroAreaCode",
           "in" : "query",
           "schema" : {
             "type" : "string"
           }
         }, {
-          "name" : "serviceType",
+          "name" : "serviceTypeCode",
           "in" : "query",
           "schema" : {
             "type" : "string"
@@ -1026,27 +1047,6 @@
         }
       }
     },
-    "/taxonomy/custom/getDistinctOrganizationType" : {
-      "get" : {
-        "tags" : [ "taxonomy-controller" ],
-        "operationId" : "getDistinctOrgType",
-        "responses" : {
-          "200" : {
-            "description" : "OK",
-            "content" : {
-              "application/hal+json" : {
-                "schema" : {
-                  "type" : "array",
-                  "items" : {
-                    "$ref" : "#/components/schemas/DistinctOrganizationTypeDTO"
-                  }
-                }
-              }
-            }
-          }
-        }
-      }
-    },
     "/brokers/apiKey/{brokerId}" : {
       "get" : {
         "tags" : [ "Broker" ],
@@ -1193,122 +1193,6 @@
           }
         }
       },
-      "Broker" : {
-        "type" : "object",
-        "properties" : {
-          "brokerId" : {
-            "type" : "integer",
-            "format" : "int64"
-          },
-          "organizationId" : {
-            "type" : "integer",
-            "format" : "int64"
-          },
-          "brokerFiscalCode" : {
-            "type" : "string"
-          },
-          "brokerName" : {
-            "type" : "string"
-          },
-          "pagoPaInteractionModel" : {
-            "type" : "string",
-            "enum" : [ "SYNC", "SYNC_ACA", "SYNC$GPDPRELOAD", "SYNC_ACA$GPDPRELOAD", "ASYNC_GPD" ]
-          },
-          "stationId" : {
-            "type" : "string"
-          },
-          "broadcastStationId" : {
-            "type" : "string"
-          },
-          "syncKey" : {
-            "type" : "string",
-            "format" : "byte"
-          },
-          "gpdKey" : {
-            "type" : "string",
-            "format" : "byte"
-          },
-          "acaKey" : {
-            "type" : "string",
-            "format" : "byte"
-          },
-          "personalisationFe" : {
-            "$ref" : "#/components/schemas/PersonalisationFe"
-          },
-          "_links" : {
-            "$ref" : "#/components/schemas/Links"
-          }
-        }
-      },
-      "PageMetadata" : {
-        "type" : "object",
-        "properties" : {
-          "size" : {
-            "type" : "integer",
-            "format" : "int64"
-          },
-          "totalElements" : {
-            "type" : "integer",
-            "format" : "int64"
-          },
-          "totalPages" : {
-            "type" : "integer",
-            "format" : "int64"
-          },
-          "number" : {
-            "type" : "integer",
-            "format" : "int64"
-          }
-        }
-      },
-      "PagedModelBroker" : {
-        "type" : "object",
-        "properties" : {
-          "_embedded" : {
-            "type" : "object",
-            "properties" : {
-              "brokers" : {
-                "type" : "array",
-                "items" : {
-                  "$ref" : "#/components/schemas/Broker"
-                }
-              }
-            }
-          },
-          "_links" : {
-            "$ref" : "#/components/schemas/Links"
-          },
-          "page" : {
-            "$ref" : "#/components/schemas/PageMetadata"
-          }
-        }
-      },
-      "PersonalisationFe" : {
-        "type" : "object",
-        "properties" : {
-          "headerAssistanceUrl" : {
-            "type" : "string"
-          },
-          "logoFooterImg" : {
-            "type" : "string"
-          },
-          "footerDescText" : {
-            "type" : "string"
-          },
-          "footerPrivacyInfoUrl" : {
-            "type" : "string"
-          },
-          "footerGDPRUrl" : {
-            "type" : "string"
-          },
-          "footerTermsCondUrl" : {
-            "type" : "string"
-          },
-          "footerAccessibilityUrl" : {
-            "type" : "string"
-          }
-        }
-      },
       "Taxonomy" : {
         "type" : "object",
         "properties" : {
@@ -1372,6 +1256,27 @@
           },
           "_links" : {
             "$ref" : "#/components/schemas/Links"
+          }
+        }
+      },
+      "PageMetadata" : {
+        "type" : "object",
+        "properties" : {
+          "size" : {
+            "type" : "integer",
+            "format" : "int64"
+          },
+          "totalElements" : {
+            "type" : "integer",
+            "format" : "int64"
+          },
+          "totalPages" : {
+            "type" : "integer",
+            "format" : "int64"
+          },
+          "number" : {
+            "type" : "integer",
+            "format" : "int64"
           }
         }
       },
@@ -1539,6 +1444,101 @@
                 "type" : "array",
                 "items" : {
                   "$ref" : "#/components/schemas/Organization"
+                }
+              }
+            }
+          },
+          "_links" : {
+            "$ref" : "#/components/schemas/Links"
+          },
+          "page" : {
+            "$ref" : "#/components/schemas/PageMetadata"
+          }
+        }
+      },
+      "PersonalisationFe" : {
+        "type" : "object",
+        "properties" : {
+          "headerAssistanceUrl" : {
+            "type" : "string"
+          },
+          "logoFooterImg" : {
+            "type" : "string"
+          },
+          "footerDescText" : {
+            "type" : "string"
+          },
+          "footerPrivacyInfoUrl" : {
+            "type" : "string"
+          },
+          "footerGDPRUrl" : {
+            "type" : "string"
+          },
+          "footerTermsCondUrl" : {
+            "type" : "string"
+          },
+          "footerAccessibilityUrl" : {
+            "type" : "string"
+          }
+        }
+      },
+      "Broker" : {
+        "type" : "object",
+        "properties" : {
+          "brokerId" : {
+            "type" : "integer",
+            "format" : "int64"
+          },
+          "organizationId" : {
+            "type" : "integer",
+            "format" : "int64"
+          },
+          "brokerFiscalCode" : {
+            "type" : "string"
+          },
+          "brokerName" : {
+            "type" : "string"
+          },
+          "pagoPaInteractionModel" : {
+            "type" : "string",
+            "enum" : [ "SYNC", "SYNC_ACA", "SYNC$GPDPRELOAD", "SYNC_ACA$GPDPRELOAD", "ASYNC_GPD" ]
+          },
+          "stationId" : {
+            "type" : "string"
+          },
+          "broadcastStationId" : {
+            "type" : "string"
+          },
+          "syncKey" : {
+            "type" : "string",
+            "format" : "byte"
+          },
+          "gpdKey" : {
+            "type" : "string",
+            "format" : "byte"
+          },
+          "acaKey" : {
+            "type" : "string",
+            "format" : "byte"
+          },
+          "personalisationFe" : {
+            "$ref" : "#/components/schemas/PersonalisationFe"
+          },
+          "_links" : {
+            "$ref" : "#/components/schemas/Links"
+          }
+        }
+      },
+      "PagedModelBroker" : {
+        "type" : "object",
+        "properties" : {
+          "_embedded" : {
+            "type" : "object",
+            "properties" : {
+              "brokers" : {
+                "type" : "array",
+                "items" : {
+                  "$ref" : "#/components/schemas/Broker"
                 }
               }
             }
@@ -1765,17 +1765,6 @@
           "versionMyPay" : {
             "type" : "integer",
             "format" : "int64"
-          }
-        }
-      },
-      "DistinctOrganizationTypeDTO" : {
-        "type" : "object",
-        "properties" : {
-          "organizationType" : {
-            "type" : "string"
-          },
-          "organizationTypeDescription" : {
-            "type" : "string"
           }
         }
       },

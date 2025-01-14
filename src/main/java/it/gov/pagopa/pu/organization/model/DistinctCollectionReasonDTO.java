@@ -10,9 +10,16 @@ import lombok.Data;
 @AllArgsConstructor
 @Entity
 @Table(name = "taxonomy")
-public class DistinctOrganizationTypeDTO {
+public class DistinctCollectionReasonDTO {
+
   @Id
   private String organizationType;
   private String organizationTypeDescription;
-
+  private String macroAreaCode;
+  private String macroAreaName;
+  private String macroAreaDescription;
+  private String serviceTypeCode;
+  private String serviceType;
+  private String serviceTypeDescription;
+  private String collectionReason;
 }
