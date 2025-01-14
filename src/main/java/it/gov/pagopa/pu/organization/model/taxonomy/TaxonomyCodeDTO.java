@@ -16,12 +16,16 @@ public class TaxonomyCodeDTO {
   @Id
   private String organizationType;
   private String organizationTypeDescription;
+  @Id
   private String macroAreaCode;
   private String macroAreaName;
   private String macroAreaDescription;
+  @Id
   private String serviceTypeCode;
   private String serviceType;
   private String serviceTypeDescription;
+  @Id
   private String collectionReason;
+  @Id
   private String taxonomyCode;
 }
