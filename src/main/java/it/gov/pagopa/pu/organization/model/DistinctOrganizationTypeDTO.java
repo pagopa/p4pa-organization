@@ -10,7 +10,7 @@ import lombok.Data;
 @AllArgsConstructor
 @Entity
 @Table(name = "taxonomy")
-public class DistinctOrganizationTypeDTO {
+public class TaxonomyOrganizationTypeDTO {
   @Id
   private String organizationType;
   private String organizationTypeDescription;
