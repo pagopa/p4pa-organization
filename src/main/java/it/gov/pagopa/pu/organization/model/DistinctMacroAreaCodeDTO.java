@@ -10,7 +10,7 @@ import lombok.Data;
 @AllArgsConstructor
 @Entity
 @Table(name = "taxonomy")
-public class DistinctMacroAreaCodeDTO {
+public class TaxonomyMacroAreaCodeDTO {
 
   @Id
   private String organizationType;
