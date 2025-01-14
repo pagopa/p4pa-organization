@@ -625,10 +625,10 @@
         }
       }
     },
-    "/crud/profile/taxonomy" : {
+    "/crud/profile/taxonomies" : {
       "get" : {
         "tags" : [ "profile-controller" ],
-        "operationId" : "crud-profile-taxonomy",
+        "operationId" : "crud-profile-taxonomies",
         "responses" : {
           "200" : {
             "description" : "OK",
@@ -653,7 +653,7 @@
         }
       }
     },
-    "/crud/taxonomy" : {
+    "/crud/taxonomies" : {
       "get" : {
         "tags" : [ "taxonomy-entity-controller" ],
         "description" : "get-taxonomy",
@@ -741,10 +741,10 @@
         }
       }
     },
-    "/crud/taxonomy/search/findDistinctCollectionReasonByOrganizationTypeAndMacroAreaCodeAndServiceTypeCodeOrderByCollectionReasonAsc" : {
+    "/crud/taxonomies/search/findDistinctCollectionReasonByOrganizationTypeAndMacroAreaCodeAndServiceTypeCodeOrderByCollectionReasonAsc" : {
       "get" : {
         "tags" : [ "taxonomy-search-controller" ],
-        "operationId" : "crud-taxonomy-findDistinctCollectionReasonByOrganizationTypeAndMacroAreaCodeAndServiceTypeCodeOrderByCollectionReasonAsc",
+        "operationId" : "crud-taxonomies-findDistinctCollectionReasonByOrganizationTypeAndMacroAreaCodeAndServiceTypeCodeOrderByCollectionReasonAsc",
         "parameters" : [ {
           "name" : "organizationType",
           "in" : "query",
@@ -781,10 +781,10 @@
         }
       }
     },
-    "/crud/taxonomy/search/findDistinctMacroAreaCodeByOrganizationTypeOrderByMacroAreaCodeAsc" : {
+    "/crud/taxonomies/search/findDistinctMacroAreaCodeByOrganizationTypeOrderByMacroAreaCodeAsc" : {
       "get" : {
         "tags" : [ "taxonomy-search-controller" ],
-        "operationId" : "crud-taxonomy-findDistinctMacroAreaCodeByOrganizationTypeOrderByMacroAreaCodeAsc",
+        "operationId" : "crud-taxonomies-findDistinctMacroAreaCodeByOrganizationTypeOrderByMacroAreaCodeAsc",
         "parameters" : [ {
           "name" : "organizationType",
           "in" : "query",
@@ -809,10 +809,10 @@
         }
       }
     },
-    "/crud/taxonomy/search/findDistinctOrganizationTypeByOrderByOrganizationTypeAsc" : {
+    "/crud/taxonomies/search/findDistinctOrganizationTypeByOrderByOrganizationTypeAsc" : {
       "get" : {
         "tags" : [ "taxonomy-search-controller" ],
-        "operationId" : "crud-taxonomy-findDistinctOrganizationTypeByOrderByOrganizationTypeAsc",
+        "operationId" : "crud-taxonomies-findDistinctOrganizationTypeByOrderByOrganizationTypeAsc",
         "responses" : {
           "200" : {
             "description" : "OK",
@@ -830,10 +830,10 @@
         }
       }
     },
-    "/crud/taxonomy/search/findDistinctServiceTypeCodeByOrganizationTypeAndMacroAreaCodeOrderByServiceTypeCodeAsc" : {
+    "/crud/taxonomies/search/findDistinctServiceTypeCodeByOrganizationTypeAndMacroAreaCodeOrderByServiceTypeCodeAsc" : {
       "get" : {
         "tags" : [ "taxonomy-search-controller" ],
-        "operationId" : "crud-taxonomy-findDistinctServiceTypeCodeByOrganizationTypeAndMacroAreaCodeOrderByServiceTypeCodeAsc",
+        "operationId" : "crud-taxonomies-findDistinctServiceTypeCodeByOrganizationTypeAndMacroAreaCodeOrderByServiceTypeCodeAsc",
         "parameters" : [ {
           "name" : "organizationType",
           "in" : "query",
@@ -864,10 +864,10 @@
         }
       }
     },
-    "/crud/taxonomy/search/findDistinctTaxonomyCodeByOrganizationTypeAndMacroAreaCodeAndServiceTypeCodeAndCollectionReasonOrderByTaxonomyCodeAsc" : {
+    "/crud/taxonomies/search/findDistinctTaxonomyCodeByOrganizationTypeAndMacroAreaCodeAndServiceTypeCodeAndCollectionReasonOrderByTaxonomyCodeAsc" : {
       "get" : {
         "tags" : [ "taxonomy-search-controller" ],
-        "operationId" : "crud-taxonomy-findDistinctTaxonomyCodeByOrganizationTypeAndMacroAreaCodeAndServiceTypeCodeAndCollectionReasonOrderByTaxonomyCodeAsc",
+        "operationId" : "crud-taxonomies-findDistinctTaxonomyCodeByOrganizationTypeAndMacroAreaCodeAndServiceTypeCodeAndCollectionReasonOrderByTaxonomyCodeAsc",
         "parameters" : [ {
           "name" : "organizationType",
           "in" : "query",
@@ -910,7 +910,7 @@
         }
       }
     },
-    "/crud/taxonomy/{id}" : {
+    "/crud/taxonomies/{id}" : {
       "get" : {
         "tags" : [ "taxonomy-entity-controller" ],
         "description" : "get-taxonomy",
@@ -1193,134 +1193,6 @@
           }
         }
       },
-      "Taxonomy" : {
-        "type" : "object",
-        "properties" : {
-          "taxonomyId" : {
-            "type" : "integer",
-            "format" : "int64"
-          },
-          "version" : {
-            "type" : "integer",
-            "format" : "int64"
-          },
-          "organizationType" : {
-            "type" : "string"
-          },
-          "organizationTypeDescription" : {
-            "type" : "string"
-          },
-          "macroAreaCode" : {
-            "type" : "string"
-          },
-          "macroAreaName" : {
-            "type" : "string"
-          },
-          "macroAreaDescription" : {
-            "type" : "string"
-          },
-          "serviceTypeCode" : {
-            "type" : "string"
-          },
-          "serviceType" : {
-            "type" : "string"
-          },
-          "serviceTypeDescription" : {
-            "type" : "string"
-          },
-          "collectionReason" : {
-            "type" : "string"
-          },
-          "startDateValidity" : {
-            "type" : "string",
-            "format" : "date-time"
-          },
-          "endDateOfValidity" : {
-            "type" : "string",
-            "format" : "date-time"
-          },
-          "taxonomyCode" : {
-            "type" : "string"
-          },
-          "creationDate" : {
-            "type" : "string",
-            "format" : "date-time"
-          },
-          "lastModifiedDate" : {
-            "type" : "string",
-            "format" : "date-time"
-          },
-          "versionMyPay" : {
-            "type" : "integer",
-            "format" : "int64"
-          },
-          "_links" : {
-            "$ref" : "#/components/schemas/Links"
-          }
-        }
-      },
-      "PageMetadata" : {
-        "type" : "object",
-        "properties" : {
-          "size" : {
-            "type" : "integer",
-            "format" : "int64"
-          },
-          "totalElements" : {
-            "type" : "integer",
-            "format" : "int64"
-          },
-          "totalPages" : {
-            "type" : "integer",
-            "format" : "int64"
-          },
-          "number" : {
-            "type" : "integer",
-            "format" : "int64"
-          }
-        }
-      },
-      "PagedModelTaxonomy" : {
-        "type" : "object",
-        "properties" : {
-          "_embedded" : {
-            "type" : "object",
-            "properties" : {
-              "taxonomy" : {
-                "type" : "array",
-                "items" : {
-                  "$ref" : "#/components/schemas/Taxonomy"
-                }
-              }
-            }
-          },
-          "_links" : {
-            "$ref" : "#/components/schemas/Links"
-          },
-          "page" : {
-            "$ref" : "#/components/schemas/PageMetadata"
-          }
-        }
-      },
-      "CollectionModelTaxonomy" : {
-        "type" : "object",
-        "properties" : {
-          "_embedded" : {
-            "type" : "object",
-            "properties" : {
-              "taxonomy" : {
-                "type" : "array",
-                "items" : {
-                  "$ref" : "#/components/schemas/Taxonomy"
-                }
-              }
-            }
-          },
-          "_links" : {
-            "$ref" : "#/components/schemas/Links"
-          }
-        }
-      },
       "Organization" : {
         "type" : "object",
         "properties" : {
@@ -1431,6 +1303,27 @@
           },
           "_links" : {
             "$ref" : "#/components/schemas/Links"
+          }
+        }
+      },
+      "PageMetadata" : {
+        "type" : "object",
+        "properties" : {
+          "size" : {
+            "type" : "integer",
+            "format" : "int64"
+          },
+          "totalElements" : {
+            "type" : "integer",
+            "format" : "int64"
+          },
+          "totalPages" : {
+            "type" : "integer",
+            "format" : "int64"
+          },
+          "number" : {
+            "type" : "integer",
+            "format" : "int64"
           }
         }
       },
@@ -1548,6 +1441,113 @@
           },
           "page" : {
             "$ref" : "#/components/schemas/PageMetadata"
+          }
+        }
+      },
+      "Taxonomy" : {
+        "type" : "object",
+        "properties" : {
+          "taxonomyId" : {
+            "type" : "integer",
+            "format" : "int64"
+          },
+          "version" : {
+            "type" : "integer",
+            "format" : "int64"
+          },
+          "organizationType" : {
+            "type" : "string"
+          },
+          "organizationTypeDescription" : {
+            "type" : "string"
+          },
+          "macroAreaCode" : {
+            "type" : "string"
+          },
+          "macroAreaName" : {
+            "type" : "string"
+          },
+          "macroAreaDescription" : {
+            "type" : "string"
+          },
+          "serviceTypeCode" : {
+            "type" : "string"
+          },
+          "serviceType" : {
+            "type" : "string"
+          },
+          "serviceTypeDescription" : {
+            "type" : "string"
+          },
+          "collectionReason" : {
+            "type" : "string"
+          },
+          "startDateValidity" : {
+            "type" : "string",
+            "format" : "date-time"
+          },
+          "endDateOfValidity" : {
+            "type" : "string",
+            "format" : "date-time"
+          },
+          "taxonomyCode" : {
+            "type" : "string"
+          },
+          "creationDate" : {
+            "type" : "string",
+            "format" : "date-time"
+          },
+          "lastModifiedDate" : {
+            "type" : "string",
+            "format" : "date-time"
+          },
+          "versionMyPay" : {
+            "type" : "integer",
+            "format" : "int64"
+          },
+          "_links" : {
+            "$ref" : "#/components/schemas/Links"
+          }
+        }
+      },
+      "PagedModelTaxonomy" : {
+        "type" : "object",
+        "properties" : {
+          "_embedded" : {
+            "type" : "object",
+            "properties" : {
+              "taxonomies" : {
+                "type" : "array",
+                "items" : {
+                  "$ref" : "#/components/schemas/Taxonomy"
+                }
+              }
+            }
+          },
+          "_links" : {
+            "$ref" : "#/components/schemas/Links"
+          },
+          "page" : {
+            "$ref" : "#/components/schemas/PageMetadata"
+          }
+        }
+      },
+      "CollectionModelTaxonomy" : {
+        "type" : "object",
+        "properties" : {
+          "_embedded" : {
+            "type" : "object",
+            "properties" : {
+              "taxonomies" : {
+                "type" : "array",
+                "items" : {
+                  "$ref" : "#/components/schemas/Taxonomy"
+                }
+              }
+            }
+          },
+          "_links" : {
+            "$ref" : "#/components/schemas/Links"
           }
         }
       },
