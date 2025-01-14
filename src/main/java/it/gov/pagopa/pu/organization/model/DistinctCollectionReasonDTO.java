@@ -1,4 +1,4 @@
-package it.gov.pagopa.pu.organization.model;
+package it.gov.pagopa.pu.organization.model.taxonomy;
 
 import jakarta.persistence.Entity;
 import jakarta.persistence.Id;
