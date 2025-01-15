@@ -3,23 +3,24 @@ package it.gov.pagopa.pu.organization.model;
 import jakarta.persistence.*;
 import lombok.AllArgsConstructor;
 import lombok.Data;
+import lombok.EqualsAndHashCode;
 import lombok.NoArgsConstructor;
 
 import java.io.Serializable;
-import java.sql.Timestamp;
+import java.time.OffsetDateTime;
 
 @Entity
 @Table(name = "taxonomy")
 @AllArgsConstructor
 @NoArgsConstructor
 @Data
-public class Taxonomy implements Serializable {
+@EqualsAndHashCode(callSuper = false)
+public class Taxonomy extends BaseEntity implements Serializable {
 
   @Id
   @GeneratedValue(strategy = GenerationType.SEQUENCE, generator = "taxonomy_generator")
   @SequenceGenerator(name = "taxonomy_generator", sequenceName = "taxonomy_seq", allocationSize = 1)
   private Long taxonomyId;
-  private Long version;
   private String organizationType;
   private String organizationTypeDescription;
   private String macroAreaCode;
@@ -29,11 +30,8 @@ public class Taxonomy implements Serializable {
   private String serviceType;
   private String serviceTypeDescription;
   private String collectionReason;
-  private Timestamp startDateValidity;
-  private Timestamp endDateOfValidity;
+  private OffsetDateTime startDateValidity;
+  private OffsetDateTime endDateOfValidity;
   private String taxonomyCode;
-  private Timestamp creationDate;
-  private Timestamp lastModifiedDate;
-  private Long versionMyPay;
 
 }

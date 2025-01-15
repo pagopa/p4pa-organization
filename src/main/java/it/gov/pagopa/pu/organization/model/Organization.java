@@ -1,12 +1,13 @@
 package it.gov.pagopa.pu.organization.model;
 
+import it.gov.pagopa.pu.organization.enums.OrganizationStatus;
 import jakarta.persistence.*;
 import lombok.AllArgsConstructor;
 import lombok.Data;
+import lombok.EqualsAndHashCode;
 import lombok.NoArgsConstructor;
 
 import java.io.Serializable;
-import java.time.Instant;
 import java.time.LocalDate;
 
 @Entity
@@ -14,7 +15,8 @@ import java.time.LocalDate;
 @AllArgsConstructor
 @NoArgsConstructor
 @Data
-public class Organization implements Serializable {
+@EqualsAndHashCode(callSuper = false)
+public class Organization extends BaseEntity implements Serializable {
 
   @Id
   @GeneratedValue(strategy = GenerationType.SEQUENCE, generator = "organization_generator")
@@ -23,14 +25,11 @@ public class Organization implements Serializable {
   private String ipaCode;
   private String orgFiscalCode;
   private String orgName;
+  private String orgTypeCode;
   private String adminEmail;
-  private Instant creationDate;
-  private Instant lastUpdateDate;
-  private Long fee;
+  private String postalIban;
   private String iban;
-  private String urlOrgSendSilPaymentResult;
-  private String password;
-  private Boolean creditBicSeller;
+  private byte[] password;
   private String beneficiaryOrgName;
   private String beneficiaryOrgAddress;
   private String beneficiaryOrgCivic;
@@ -41,16 +40,15 @@ public class Organization implements Serializable {
   private String beneficiaryOrgPhoneNumber;
   private String beneficiaryOrgWebSite;
   private String beneficiaryOrgEmail;
-  private String applicationCode;
+  private String segregationCode;
   private String cbillInterBankCode;
-  private String orgInformation;
-  private String orgLogoDesc;
-  private String authorizationDesc;
-  private String status;
-  private String urlActiveExternal;
+  private String orgLogo;
+  @Enumerated(EnumType.STRING)
+  private OrganizationStatus status;
   private String additionalLanguage;
-  private String orgTypeCode;
   private LocalDate startDate;
   private Long brokerId;
+  private boolean flagNotifyIo;
+  private boolean flagNotifyOutcomePush;
 
 }

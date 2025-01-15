@@ -10,10 +10,8 @@ import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
 import jakarta.persistence.SequenceGenerator;
 import java.io.Serializable;
-import lombok.AllArgsConstructor;
-import lombok.Builder;
-import lombok.Data;
-import lombok.NoArgsConstructor;
+
+import lombok.*;
 import org.hibernate.annotations.JdbcTypeCode;
 import org.hibernate.type.SqlTypes;
 
@@ -22,31 +20,23 @@ import org.hibernate.type.SqlTypes;
 @NoArgsConstructor
 @Builder
 @Data
-public class Broker implements Serializable {
+@EqualsAndHashCode(callSuper = false)
+public class Broker extends BaseEntity implements Serializable {
+
   @Id
   @GeneratedValue(strategy = GenerationType.SEQUENCE, generator = "broker_generator")
   @SequenceGenerator(name = "broker_generator", sequenceName = "broker_seq", allocationSize = 1)
   private Long brokerId;
-
   private Long organizationId;
-
   private String brokerFiscalCode;
-
   private String brokerName;
-
   @Enumerated(EnumType.STRING)
   private PagoPaInteractionModel pagoPaInteractionModel;
-
   private String stationId;
-
   private String broadcastStationId;
-
   private byte[] syncKey;
-
   private byte[] gpdKey;
-
   private byte[] acaKey;
-
   @JdbcTypeCode(SqlTypes.JSON)
   private PersonalisationFe personalisationFe;
 
