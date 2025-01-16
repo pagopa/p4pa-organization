@@ -25,10 +25,10 @@ import java.time.LocalDateTime;
 public abstract class BaseEntity implements Serializable {
   @Column(updatable = false)
   @CreatedDate
-  @JsonFormat(shape=JsonFormat.Shape.STRING, pattern="yyyy-MM-ddTHH:mm:ss.SSS")
+  @JsonFormat(shape=JsonFormat.Shape.STRING, pattern="yyyy-MM-dd HH:mm:ss.SSS")
   private LocalDateTime creationDate;
   @LastModifiedDate
-  @JsonFormat(shape=JsonFormat.Shape.STRING, pattern="yyyy-MM-ddTHH:mm:ss.SSS")
+  @JsonFormat(shape=JsonFormat.Shape.STRING, pattern="yyyy-MM-dd HH:mm:ss.SSS")
   private LocalDateTime updateDate;
   @LastModifiedBy
   private String updateOperatorExternalId;
