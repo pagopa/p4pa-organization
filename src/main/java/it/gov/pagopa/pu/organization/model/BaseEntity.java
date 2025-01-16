@@ -1,8 +1,5 @@
 package it.gov.pagopa.pu.organization.model;
 
-import com.fasterxml.jackson.core.JsonGenerator;
-import com.fasterxml.jackson.databind.JsonSerializer;
-import com.fasterxml.jackson.databind.SerializerProvider;
 import com.fasterxml.jackson.databind.annotation.JsonSerialize;
 import it.gov.pagopa.pu.organization.config.json.LocalDateTimeToOffsetDateTimeSerializer;
 import jakarta.persistence.Column;
@@ -17,11 +14,8 @@ import org.springframework.data.annotation.LastModifiedBy;
 import org.springframework.data.annotation.LastModifiedDate;
 import org.springframework.data.jpa.domain.support.AuditingEntityListener;
 
-import java.io.IOException;
 import java.io.Serializable;
 import java.time.LocalDateTime;
-import java.time.OffsetDateTime;
-import java.time.ZoneOffset;
 
 @Data
 @SuperBuilder(toBuilder = true)
