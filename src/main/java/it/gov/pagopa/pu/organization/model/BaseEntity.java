@@ -4,6 +4,7 @@ import com.fasterxml.jackson.core.JsonGenerator;
 import com.fasterxml.jackson.databind.JsonSerializer;
 import com.fasterxml.jackson.databind.SerializerProvider;
 import com.fasterxml.jackson.databind.annotation.JsonSerialize;
+import it.gov.pagopa.pu.organization.config.json.LocalDateTimeToOffsetDateTimeSerializer;
 import jakarta.persistence.Column;
 import jakarta.persistence.EntityListeners;
 import jakarta.persistence.MappedSuperclass;
@@ -39,16 +40,6 @@ public abstract class BaseEntity implements Serializable {
   @LastModifiedBy
   private String updateOperatorExternalId;
 
-  public static class LocalDateTimeToOffsetDateTimeSerializer extends JsonSerializer<LocalDateTime> {
-
-    @Override
-    public void serialize(LocalDateTime value, JsonGenerator gen, SerializerProvider serializers) throws IOException {
-      if (value != null) {
-        OffsetDateTime offsetDateTime = value.atOffset(ZoneOffset.UTC);
-        gen.writeString(offsetDateTime.toString());
-      }
-    }
-  }
 }
 
 
