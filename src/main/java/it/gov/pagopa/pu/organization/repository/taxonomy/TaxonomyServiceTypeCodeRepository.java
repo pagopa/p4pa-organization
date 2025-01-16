@@ -2,6 +2,8 @@ package it.gov.pagopa.pu.organization.repository.taxonomy;
 
 import it.gov.pagopa.pu.organization.model.taxonomy.TaxonomyServiceTypeCodeDTO;
 import java.util.List;
+
+import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.Repository;
 import org.springframework.data.rest.core.annotation.RepositoryRestResource;
 
@@ -9,6 +11,10 @@ import org.springframework.data.rest.core.annotation.RepositoryRestResource;
 public interface TaxonomyServiceTypeCodeRepository extends
   Repository<TaxonomyServiceTypeCodeDTO, Long> {
 
-  List<TaxonomyServiceTypeCodeDTO> findDistinctServiceTypeCodeByOrganizationTypeAndMacroAreaCodeOrderByServiceTypeCodeAsc(String organizationType,String macroAreaCode);
+  @Query("SELECT distinct s FROM TaxonomyServiceTypeCodeDTO s WHERE " +
+    "s.organizationType=:organizationType AND " +
+    "s.macroAreaCode=:macroAreaCode " +
+    "ORDER BY s.serviceTypeCode")
+  List<TaxonomyServiceTypeCodeDTO> findServiceTypeCodes(String organizationType,String macroAreaCode);
 
 }
