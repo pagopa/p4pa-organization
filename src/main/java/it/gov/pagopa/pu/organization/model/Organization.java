@@ -26,20 +26,10 @@ public class Organization extends BaseEntity implements Serializable {
   private String orgFiscalCode;
   private String orgName;
   private String orgTypeCode;
-  private String adminEmail;
+  private String orgEmail;
   private String postalIban;
   private String iban;
   private byte[] password;
-  private String beneficiaryOrgName;
-  private String beneficiaryOrgAddress;
-  private String beneficiaryOrgCivic;
-  private String beneficiaryOrgPostalCode;
-  private String beneficiaryOrgLocation;
-  private String beneficiaryOrgProvince;
-  private String beneficiaryOrgNation;
-  private String beneficiaryOrgPhoneNumber;
-  private String beneficiaryOrgWebSite;
-  private String beneficiaryOrgEmail;
   private String segregationCode;
   private String cbillInterBankCode;
   private String orgLogo;
@@ -48,6 +38,7 @@ public class Organization extends BaseEntity implements Serializable {
   private String additionalLanguage;
   private LocalDate startDate;
   private Long brokerId;
+  private byte[] ioApiKey;
   private boolean flagNotifyIo;
   private boolean flagNotifyOutcomePush;
 
