@@ -14,4 +14,9 @@ public interface BrokerRepository extends JpaRepository<Broker,Long> {
     "where o.orgFiscalCode = :orgFiscalCode")
   Optional<Broker> findByOrgFiscalCode(String orgFiscalCode);
 
+
+  @Query("select b from broker b join Organization o on b.brokerId = o.brokerId " +
+    "where o.organizationId = :organizationId")
+  Optional<Broker> findByBrokeredOrganizationId(String organizationId);
+
 }
