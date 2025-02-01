@@ -135,6 +135,6 @@ tasks.register<org.openapitools.generator.gradle.plugin.tasks.GenerateTask>("ope
     "useBeanValidation" to "true",
     "generateConstructorWithAllArgs" to "true",
     "generatedConstructorWithRequiredArgs" to "true",
-    "additionalModelTypeAnnotations" to "@lombok.Builder"
+    "additionalModelTypeAnnotations" to "@lombok.experimental.SuperBuilder"
   ))
 }

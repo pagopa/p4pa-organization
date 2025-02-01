@@ -2,6 +2,7 @@ package it.gov.pagopa.pu.organization.model;
 
 import it.gov.pagopa.pu.organization.enums.OrganizationStatus;
 import jakarta.persistence.*;
+import jakarta.validation.constraints.NotNull;
 import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.EqualsAndHashCode;
@@ -21,9 +22,13 @@ public class Organization extends BaseEntity implements Serializable {
   @Id
   @GeneratedValue(strategy = GenerationType.SEQUENCE, generator = "organization_generator")
   @SequenceGenerator(name = "organization_generator", sequenceName = "organization_seq", allocationSize = 1)
+  @NotNull
   private Long organizationId;
+  @NotNull
   private String ipaCode;
+  @NotNull
   private String orgFiscalCode;
+  @NotNull
   private String orgName;
   private String orgTypeCode;
   private String orgEmail;
@@ -34,6 +39,7 @@ public class Organization extends BaseEntity implements Serializable {
   private String cbillInterBankCode;
   private String orgLogo;
   @Enumerated(EnumType.STRING)
+  @NotNull
   private OrganizationStatus status;
   private String additionalLanguage;
   private LocalDate startDate;
