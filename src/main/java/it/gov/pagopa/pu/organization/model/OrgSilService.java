@@ -20,7 +20,6 @@ public class OrgSilService extends BaseEntity implements Serializable {
   @Id
   @GeneratedValue(strategy = GenerationType.SEQUENCE, generator = "orgSilServiceGenerator")
   @SequenceGenerator(name = "orgSilServiceGenerator", sequenceName = "orgSilServiceSeq", allocationSize = 1)
-  @NotNull
   private Long orgSilServiceId;
   @NotNull
   private Long organizationId;

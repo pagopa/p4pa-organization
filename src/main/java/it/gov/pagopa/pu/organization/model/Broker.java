@@ -27,7 +27,6 @@ public class Broker extends BaseEntity implements Serializable {
   @Id
   @GeneratedValue(strategy = GenerationType.SEQUENCE, generator = "broker_generator")
   @SequenceGenerator(name = "broker_generator", sequenceName = "broker_seq", allocationSize = 1)
-  @NotNull
   private Long brokerId;
   @NotNull
   private Long organizationId;

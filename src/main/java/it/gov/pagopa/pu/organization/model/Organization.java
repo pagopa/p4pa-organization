@@ -22,7 +22,6 @@ public class Organization extends BaseEntity implements Serializable {
   @Id
   @GeneratedValue(strategy = GenerationType.SEQUENCE, generator = "organization_generator")
   @SequenceGenerator(name = "organization_generator", sequenceName = "organization_seq", allocationSize = 1)
-  @NotNull
   private Long organizationId;
   @NotNull
   private String ipaCode;

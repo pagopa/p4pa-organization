@@ -1560,7 +1560,7 @@
         }
       },
       "Taxonomy" : {
-        "required" : [ "collectionReason", "creationDate", "endDateOfValidity", "macroAreaCode", "macroAreaDescription", "macroAreaName", "organizationType", "organizationTypeDescription", "serviceType", "serviceTypeCode", "serviceTypeDescription", "startDateValidity", "taxonomyCode", "taxonomyId", "updateDate", "updateOperatorExternalId" ],
+        "required" : [ "collectionReason", "endDateOfValidity", "macroAreaCode", "macroAreaDescription", "macroAreaName", "organizationType", "organizationTypeDescription", "serviceType", "serviceTypeCode", "serviceTypeDescription", "startDateValidity", "taxonomyCode" ],
         "type" : "object",
         "properties" : {
           "creationDate" : {
@@ -1716,7 +1716,7 @@
         }
       },
       "OrgSilService" : {
-        "required" : [ "applicationName", "creationDate", "orgSilServiceId", "organizationId", "updateDate", "updateOperatorExternalId" ],
+        "required" : [ "applicationName", "organizationId" ],
         "type" : "object",
         "properties" : {
           "creationDate" : {
@@ -1847,7 +1847,7 @@
         }
       },
       "Broker" : {
-        "required" : [ "brokerFiscalCode", "brokerId", "brokerName", "creationDate", "organizationId", "pagoPaInteractionModel", "personalisationFe", "updateDate", "updateOperatorExternalId" ],
+        "required" : [ "brokerFiscalCode", "brokerName", "organizationId", "pagoPaInteractionModel", "personalisationFe" ],
         "type" : "object",
         "properties" : {
           "creationDate" : {
@@ -1928,7 +1928,7 @@
         }
       },
       "Organization" : {
-        "required" : [ "creationDate", "ipaCode", "orgFiscalCode", "orgName", "organizationId", "status", "updateDate", "updateOperatorExternalId" ],
+        "required" : [ "ipaCode", "orgFiscalCode", "orgName", "status" ],
         "type" : "object",
         "properties" : {
           "creationDate" : {
@@ -2129,7 +2129,7 @@
         }
       },
       "BrokerRequestBody" : {
-        "required" : [ "brokerFiscalCode", "brokerId", "brokerName", "creationDate", "organizationId", "pagoPaInteractionModel", "personalisationFe", "updateDate", "updateOperatorExternalId" ],
+        "required" : [ "brokerFiscalCode", "brokerName", "organizationId", "pagoPaInteractionModel", "personalisationFe" ],
         "type" : "object",
         "properties" : {
           "creationDate" : {
@@ -2185,7 +2185,7 @@
         }
       },
       "OrgSilServiceRequestBody" : {
-        "required" : [ "applicationName", "creationDate", "orgSilServiceId", "organizationId", "updateDate", "updateOperatorExternalId" ],
+        "required" : [ "applicationName", "organizationId" ],
         "type" : "object",
         "properties" : {
           "creationDate" : {
@@ -2232,7 +2232,7 @@
         }
       },
       "OrganizationRequestBody" : {
-        "required" : [ "creationDate", "ipaCode", "orgFiscalCode", "orgName", "organizationId", "status", "updateDate", "updateOperatorExternalId" ],
+        "required" : [ "ipaCode", "orgFiscalCode", "orgName", "status" ],
         "type" : "object",
         "properties" : {
           "creationDate" : {
@@ -2312,7 +2312,7 @@
         }
       },
       "TaxonomyRequestBody" : {
-        "required" : [ "collectionReason", "creationDate", "endDateOfValidity", "macroAreaCode", "macroAreaDescription", "macroAreaName", "organizationType", "organizationTypeDescription", "serviceType", "serviceTypeCode", "serviceTypeDescription", "startDateValidity", "taxonomyCode", "taxonomyId", "updateDate", "updateOperatorExternalId" ],
+        "required" : [ "collectionReason", "endDateOfValidity", "macroAreaCode", "macroAreaDescription", "macroAreaName", "organizationType", "organizationTypeDescription", "serviceType", "serviceTypeCode", "serviceTypeDescription", "startDateValidity", "taxonomyCode" ],
         "type" : "object",
         "properties" : {
           "creationDate" : {

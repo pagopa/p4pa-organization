@@ -21,7 +21,6 @@ public class Taxonomy extends BaseEntity implements Serializable {
   @Id
   @GeneratedValue(strategy = GenerationType.SEQUENCE, generator = "taxonomy_generator")
   @SequenceGenerator(name = "taxonomy_generator", sequenceName = "taxonomy_seq", allocationSize = 1)
-  @NotNull
   private Long taxonomyId;
   @NotNull
   private String organizationType;
