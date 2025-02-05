@@ -1,0 +1,66 @@
+openapi: 3.0.1
+info:
+  title: p4pa-organization
+  description: Api and Models
+  version: 0.0.1
+servers:
+  - url: http://localhost:8080
+    description: Generated server url
+paths:
+  /brokers/apiKey/{brokerId}:
+    get:
+      tags:
+        - Broker
+      summary: Retrieve decrypted API keys for a broker
+      operationId: getBrokerApiKeys
+      parameters:
+        - name: brokerId
+          in: path
+          required: true
+          schema:
+            type: integer
+            format: int64
+      responses:
+        '200':
+          description: OK
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/BrokerApiKeys'
+        '404':
+          description: Not Found
+          content:
+            application/hal+json:
+              schema:
+                $ref: '#/components/schemas/BrokerApiKeys'
+        '500':
+          description: Internal Server Error
+          content:
+            application/hal+json:
+              schema:
+                $ref: '#/components/schemas/BrokerApiKeys'
+components:
+  schemas:
+    BrokerApiKeys:
+      type: object
+      properties:
+        syncKey:
+          type: string
+        acaKey:
+          type: string
+        gpdKey:
+          type: string
+    OrganizationErrorDTO:
+      type: object
+      required:
+        - code
+        - message
+      properties:
+        code:
+          type: string
+          enum:
+            - ORGANIZATION_NOT_FOUND
+            - ORGANIZATION_BAD_REQUEST
+            - ORGANIZATION_GENERIC_ERROR
+        message:
+          type: string
