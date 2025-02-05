@@ -37,6 +37,7 @@ val bouncycastleVersion = "1.79"
 dependencies {
 	implementation("org.springframework.boot:spring-boot-starter")
 	implementation("org.springframework.boot:spring-boot-starter-web")
+  implementation("org.springframework.boot:spring-boot-starter-validation")
   implementation("org.springframework.boot:spring-boot-starter-oauth2-resource-server")
   implementation("org.springframework.boot:spring-boot-starter-data-rest")
   implementation("org.springframework.boot:spring-boot-starter-data-jpa")
@@ -55,6 +56,7 @@ dependencies {
 
 	compileOnly("org.projectlombok:lombok")
 	annotationProcessor("org.projectlombok:lombok")
+  testAnnotationProcessor("org.projectlombok:lombok")
 
 	//	Testing
 	testImplementation("org.springframework.boot:spring-boot-starter-test")
@@ -122,7 +124,7 @@ tasks.register<org.openapitools.generator.gradle.plugin.tasks.GenerateTask>("ope
   description = "description"
 
   generatorName.set("spring")
-  inputSpec.set("$rootDir/openapi/p4pa-organization.openapi.json")
+  inputSpec.set("$rootDir/openapi/p4pa-organization.openapi.yaml")
   outputDir.set("$projectDir/build/generated")
   apiPackage.set("it.gov.pagopa.pu.organization.controller.generated")
   modelPackage.set("it.gov.pagopa.pu.organization.dto.generated")
