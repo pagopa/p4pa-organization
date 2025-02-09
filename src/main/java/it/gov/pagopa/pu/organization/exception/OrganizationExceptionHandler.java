@@ -6,6 +6,7 @@ import jakarta.servlet.ServletException;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.validation.ValidationException;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.dao.DataIntegrityViolationException;
 import org.springframework.data.rest.webmvc.ResourceNotFoundException;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.HttpStatusCode;
@@ -28,6 +29,11 @@ public class OrganizationExceptionHandler {
   @ExceptionHandler(ResourceNotFoundException.class)
   public ResponseEntity<OrganizationErrorDTO> handleResourceNotFoundException(ResourceNotFoundException ex, HttpServletRequest request) {
     return handleException(ex, request, HttpStatus.NOT_FOUND, OrganizationErrorDTO.CodeEnum.NOT_FOUND);
+  }
+
+  @ExceptionHandler({DataIntegrityViolationException.class})
+  public ResponseEntity<OrganizationErrorDTO> handleDataIntegrityViolationException(Exception ex, HttpServletRequest request) {
+    return handleException(ex, request, HttpStatus.CONFLICT, OrganizationErrorDTO.CodeEnum.CONFLICT);
   }
 
   @ExceptionHandler({ValidationException.class, HttpMessageNotReadableException.class, MethodArgumentNotValidException.class, MethodArgumentTypeMismatchException.class})

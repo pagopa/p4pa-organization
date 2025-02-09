@@ -16,6 +16,7 @@ import org.junit.jupiter.api.extension.ExtendWith;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.autoconfigure.security.servlet.SecurityAutoConfiguration;
 import org.springframework.boot.test.autoconfigure.web.servlet.WebMvcTest;
+import org.springframework.dao.DataIntegrityViolationException;
 import org.springframework.data.rest.webmvc.ResourceNotFoundException;
 import org.springframework.http.MediaType;
 import org.springframework.test.context.ContextConfiguration;
@@ -100,17 +101,6 @@ class OrganizationExceptionHandlerTest {
   }
 
   @Test
-  void handleResourceNotFoundException() throws Exception {
-    doThrow(new ResourceNotFoundException("Error")).when(testControllerSpy).testEndpoint(DATA, BODY);
-
-    performRequest(DATA, MediaType.APPLICATION_JSON)
-      .andExpect(MockMvcResultMatchers.status().isNotFound())
-      .andExpect(MockMvcResultMatchers.jsonPath("$.code").value("ORGANIZATION_NOT_FOUND"))
-      .andExpect(MockMvcResultMatchers.jsonPath("$.message").value("Error"));
-
-  }
-
-  @Test
   void handleMissingServletRequestParameterException() throws Exception {
 
     performRequest(null, MediaType.APPLICATION_JSON)
@@ -155,6 +145,28 @@ class OrganizationExceptionHandlerTest {
       .andExpect(MockMvcResultMatchers.status().isNotFound())
       .andExpect(MockMvcResultMatchers.jsonPath("$.code").value("ORGANIZATION_NOT_FOUND"))
       .andExpect(MockMvcResultMatchers.jsonPath("$.message").value("No static resource NOTEXISTENTURL."));
+  }
+
+  @Test
+  void handleResourceNotFoundException() throws Exception {
+    doThrow(new ResourceNotFoundException("Error"))
+      .when(requestMappingHandlerAdapterSpy).handle(any(), any(), any());
+
+    performRequest(DATA, MediaType.APPLICATION_JSON)
+      .andExpect(MockMvcResultMatchers.status().isNotFound())
+      .andExpect(MockMvcResultMatchers.jsonPath("$.code").value("ORGANIZATION_NOT_FOUND"))
+      .andExpect(MockMvcResultMatchers.jsonPath("$.message").value("Error"));
+  }
+
+  @Test
+  void handleDataIntegrityViolationException() throws Exception {
+    doThrow(new DataIntegrityViolationException("Error"))
+      .when(requestMappingHandlerAdapterSpy).handle(any(), any(), any());
+
+    performRequest(DATA, MediaType.APPLICATION_JSON)
+      .andExpect(MockMvcResultMatchers.status().isConflict())
+      .andExpect(MockMvcResultMatchers.jsonPath("$.code").value("ORGANIZATION_CONFLICT"))
+      .andExpect(MockMvcResultMatchers.jsonPath("$.message").value("Error"));
   }
 
   @Test

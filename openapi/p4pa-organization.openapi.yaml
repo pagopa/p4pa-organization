@@ -60,6 +60,7 @@ components:
           type: string
           enum:
             - ORGANIZATION_NOT_FOUND
+            - ORGANIZATION_CONFLICT
             - ORGANIZATION_BAD_REQUEST
             - ORGANIZATION_GENERIC_ERROR
         message:
