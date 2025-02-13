@@ -39,7 +39,7 @@ paths:
             application/hal+json:
               schema:
                 $ref: '#/components/schemas/BrokerApiKeys'
-  /taxonomies/syncTaxonomy:
+  /taxonomies/sync:
     get:
       tags:
         - Taxonomy
