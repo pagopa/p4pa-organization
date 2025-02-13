@@ -70,7 +70,7 @@ springdoc:
 
 rest:
   pagopa-payments:
-    base-url: "\${PAGOPA_PAYMENTS_WSDL_BASE_URL:}"
+    base-url: "\${PAGOPA_PAYMENTS_BASE_URL:}"
 
 jwt:
   access-token:
