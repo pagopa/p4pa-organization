@@ -1,6 +1,6 @@
 package it.gov.pagopa.pu.organization.service.taxonomy;
 
-import it.gov.pagopa.pu.organization.connector.PagopaPaymentsClientImpl;
+import it.gov.pagopa.pu.organization.connector.taxonomy.TaxonomyServiceImpl;
 import it.gov.pagopa.pu.organization.repository.TaxonomyRepository;
 import it.gov.pagopa.pu.pagopapayments.dto.generated.Taxonomy;
 import lombok.extern.slf4j.Slf4j;
@@ -13,11 +13,11 @@ import java.util.List;
 public class TaxonomyService {
 
   private final TaxonomyRepository taxonomyRepository;
-  private final PagopaPaymentsClientImpl pagopaPaymentsClient;
+  private final TaxonomyServiceImpl pagopaPaymentsClient;
 
   public TaxonomyService(
     TaxonomyRepository taxonomyRepository,
-    PagopaPaymentsClientImpl pagopaPaymentsClient
+    TaxonomyServiceImpl pagopaPaymentsClient
   ) {
     this.taxonomyRepository = taxonomyRepository;
     this.pagopaPaymentsClient = pagopaPaymentsClient;
