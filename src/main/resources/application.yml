@@ -68,6 +68,10 @@ app:
 springdoc:
   writer-with-default-pretty-printer: true
 
+rest:
+  pagopa-payments:
+    base-url: "\${PAGOPA_PAYMENTS_BASE_URL:}"
+
 jwt:
   access-token:
     public-key: "\${JWT_TOKEN_PUBLIC_KEY:-----BEGIN PUBLIC KEY-----
