@@ -69,8 +69,14 @@ springdoc:
   writer-with-default-pretty-printer: true
 
 rest:
+  default-timeout:
+    connect-millis: "\${DEFAULT_REST_CONNECT_TIMEOUT_MILLIS:120000}"
+    read-millis: "\${DEFAULT_REST_READ_TIMEOUT_MILLIS:120000}"
   pagopa-payments:
     base-url: "\${PAGOPA_PAYMENTS_BASE_URL:}"
+    max-attempts: "\${PAGOPA_PAYMENTS_MAX_ATTEMPTS:3}" # It's counting also the first attempt
+    wait-time-millis: "\${PAGOPA_PAYMENTS_WAIT_TIME_MILLIS:500}"
+    print-body-when-error: "\${PAGOPA_PAYMENTS_PRINT_BODY_WHEN_ERROR:true}"
 
 jwt:
   access-token:
