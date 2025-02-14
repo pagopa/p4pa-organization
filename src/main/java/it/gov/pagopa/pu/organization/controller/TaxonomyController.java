@@ -23,7 +23,6 @@ public class TaxonomyController implements TaxonomyApi {
   public ResponseEntity<Void> syncTaxonomies() {
     log.info("invoking synchTaxonomies");
     taxonomyService.synchTaxonomies(SecurityUtils.getAccessToken());
-    //todo to be implemented in P4ADEV-2150
     return ResponseEntity.ofNullable(null);
   }
 

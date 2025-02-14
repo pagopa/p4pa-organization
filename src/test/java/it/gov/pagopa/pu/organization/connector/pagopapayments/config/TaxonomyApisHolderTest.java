@@ -1,4 +1,4 @@
-package it.gov.pagopa.pu.organization.connector.taxonomy.config;
+package it.gov.pagopa.pu.organization.connector.pagopapayments.config;
 
 import it.gov.pagopa.pu.organization.connector.BaseApiHolderTest;
 import it.gov.pagopa.pu.pagopapayments.controller.ApiClient;

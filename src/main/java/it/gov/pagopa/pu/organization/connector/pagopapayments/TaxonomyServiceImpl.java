@@ -1,6 +1,6 @@
-package it.gov.pagopa.pu.organization.connector.taxonomy;
+package it.gov.pagopa.pu.organization.connector.pagopapayments;
 
-import it.gov.pagopa.pu.organization.connector.taxonomy.client.TaxonomySyncClient;
+import it.gov.pagopa.pu.organization.connector.pagopapayments.client.TaxonomySyncClient;
 import it.gov.pagopa.pu.pagopapayments.dto.generated.Taxonomy;
 import org.springframework.stereotype.Service;
 
