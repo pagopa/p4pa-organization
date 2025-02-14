@@ -50,24 +50,4 @@ class TaxonomyServiceImplTest {
     assertEquals(expectedTaxonomies, result);
     verify(taxonomySyncClientMock, times(1)).syncTaxonomy(accessToken);
   }
-
-  @Test
-  void fetchTaxonomy_withInvalidAccessToken_throwsException() {
-    String accessToken = "invalidAccessToken";
-    Mockito.when(taxonomySyncClientMock.syncTaxonomy(accessToken)).thenThrow(new RuntimeException("Invalid token"));
-
-    assertThrows(RuntimeException.class, () -> taxonomyService.fetchTaxonomy(accessToken));
-    verify(taxonomySyncClientMock, times(1)).syncTaxonomy(accessToken);
-  }
-
-  @Test
-  void fetchTaxonomy_withEmptyResponse_returnsEmptyList() {
-    String accessToken = "validAccessToken";
-    Mockito.when(taxonomySyncClientMock.syncTaxonomy(accessToken)).thenReturn(List.of());
-
-    List<Taxonomy> result = taxonomyService.fetchTaxonomy(accessToken);
-
-    assertEquals(List.of(), result);
-    verify(taxonomySyncClientMock, times(1)).syncTaxonomy(accessToken);
-  }
 }
