@@ -1,5 +1,6 @@
 package it.gov.pagopa.pu.organization.connector.pagopapayments.config;
 
+import it.gov.pagopa.pu.organization.config.RestTemplateConfig;
 import it.gov.pagopa.pu.pagopapayments.controller.ApiClient;
 import it.gov.pagopa.pu.pagopapayments.controller.BaseApi;
 import it.gov.pagopa.pu.pagopapayments.controller.generated.TaxonomiesApi;
@@ -12,18 +13,25 @@ import org.springframework.web.client.RestTemplate;
 
 @Lazy
 @Service
-public class TaxonomyApisHolder {
+public class PagopaPaymentsApisHolder {
 
   private final TaxonomiesApi taxonomiesApi;
 
   private final ThreadLocal<String> bearerTokenHolder = new ThreadLocal<>();
 
-  public TaxonomyApisHolder(@Value("${rest.pagopa-payments.base-url}") String baseUrl,
-                            RestTemplateBuilder restTemplateBuilder) {
+  public PagopaPaymentsApisHolder(
+    PagopaPaymentsClientConfig clientConfig,
+    RestTemplateBuilder restTemplateBuilder
+  ) {
     RestTemplate restTemplate = restTemplateBuilder.build();
     ApiClient apiClient = new ApiClient(restTemplate);
-    apiClient.setBasePath(baseUrl);
+    apiClient.setBasePath(clientConfig.getBaseUrl());
     apiClient.setBearerToken(bearerTokenHolder::get);
+    apiClient.setMaxAttemptsForRetry(Math.max(1, clientConfig.getMaxAttempts()));
+    apiClient.setWaitTimeMillis(clientConfig.getWaitTimeMillis());
+    if (clientConfig.isPrintBodyWhenError()) {
+      restTemplate.setErrorHandler(RestTemplateConfig.bodyPrinterWhenError("ORGANIZATION"));
+    }
 
     this.taxonomiesApi = new TaxonomiesApi(apiClient);
   }

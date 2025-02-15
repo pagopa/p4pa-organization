@@ -15,12 +15,12 @@ import org.springframework.web.util.DefaultUriBuilderFactory;
 import java.util.List;
 
 @ExtendWith(MockitoExtension.class)
-class TaxonomyApisHolderTest extends BaseApiHolderTest {
+class PagopaPaymentsApisHolderTest extends BaseApiHolderTest {
 
   @Mock
   private RestTemplateBuilder restTemplateBuilderMock;
 
-  private TaxonomyApisHolder taxonomyApisHolder;
+  private PagopaPaymentsApisHolder pagopaPaymentsApisHolder;
 
   @BeforeEach
   void setUp() {
@@ -29,7 +29,7 @@ class TaxonomyApisHolderTest extends BaseApiHolderTest {
     ApiClient apiClient = new ApiClient(restTemplateMock);
     String baseUrl = "http://example.com";
     apiClient.setBasePath(baseUrl);
-    taxonomyApisHolder = new TaxonomyApisHolder(baseUrl, restTemplateBuilderMock);
+    pagopaPaymentsApisHolder = new PagopaPaymentsApisHolder(baseUrl, restTemplateBuilderMock);
   }
 
   @AfterEach
@@ -43,8 +43,8 @@ class TaxonomyApisHolderTest extends BaseApiHolderTest {
   @Test
   void whenGetTaxonomiesApiThenAuthenticationShouldBeSetInThreadSafeMode() throws InterruptedException {
     assertAuthenticationShouldBeSetInThreadSafeMode(
-      accessToken -> taxonomyApisHolder.getTaxonomiesApi(accessToken).fetchTaxonomies(),
+      accessToken -> pagopaPaymentsApisHolder.getTaxonomiesApi(accessToken).fetchTaxonomies(),
       List.class,
-      taxonomyApisHolder::unload);
+      pagopaPaymentsApisHolder::unload);
   }
 }
