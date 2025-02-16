@@ -5,13 +5,10 @@ import it.gov.pagopa.pu.pagopapayments.controller.ApiClient;
 import it.gov.pagopa.pu.pagopapayments.controller.BaseApi;
 import it.gov.pagopa.pu.pagopapayments.controller.generated.TaxonomiesApi;
 import jakarta.annotation.PreDestroy;
-import org.springframework.beans.factory.annotation.Value;
 import org.springframework.boot.web.client.RestTemplateBuilder;
-import org.springframework.context.annotation.Lazy;
 import org.springframework.stereotype.Service;
 import org.springframework.web.client.RestTemplate;
 
-@Lazy
 @Service
 public class PagopaPaymentsApisHolder {
 
@@ -20,7 +17,7 @@ public class PagopaPaymentsApisHolder {
   private final ThreadLocal<String> bearerTokenHolder = new ThreadLocal<>();
 
   public PagopaPaymentsApisHolder(
-    PagopaPaymentsClientConfig clientConfig,
+    PagopaPaymentsApiClientConfig clientConfig,
     RestTemplateBuilder restTemplateBuilder
   ) {
     RestTemplate restTemplate = restTemplateBuilder.build();
@@ -30,7 +27,7 @@ public class PagopaPaymentsApisHolder {
     apiClient.setMaxAttemptsForRetry(Math.max(1, clientConfig.getMaxAttempts()));
     apiClient.setWaitTimeMillis(clientConfig.getWaitTimeMillis());
     if (clientConfig.isPrintBodyWhenError()) {
-      restTemplate.setErrorHandler(RestTemplateConfig.bodyPrinterWhenError("ORGANIZATION"));
+      restTemplate.setErrorHandler(RestTemplateConfig.bodyPrinterWhenError("PAGOPA-PAYMENTS"));
     }
 
     this.taxonomiesApi = new TaxonomiesApi(apiClient);
