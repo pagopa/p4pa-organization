@@ -2,7 +2,7 @@ package it.gov.pagopa.pu.organization.connector.pagopapayments.client;
 
 import it.gov.pagopa.pu.organization.connector.pagopapayments.config.PagopaPaymentsApisHolder;
 import it.gov.pagopa.pu.pagopapayments.controller.generated.TaxonomiesApi;
-import it.gov.pagopa.pu.pagopapayments.dto.generated.Taxonomy;
+import it.gov.pagopa.pu.pagopapayments.dto.generated.TaxonomyDTO;
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.BeforeEach;
@@ -41,7 +41,7 @@ class TaxonomySyncClientTest {
   void whenFindByIdThenInvokeWithAccessToken() {
     // Given
     String accessToken = "ACCESSTOKEN";
-    List<Taxonomy> expectedResult = List.of(new Taxonomy());
+    List<TaxonomyDTO> expectedResult = List.of(new TaxonomyDTO());
 
     Mockito.when(pagopaPaymentsApisHolderMock.getTaxonomiesApi(accessToken))
       .thenReturn(taxonomiesApiMock);
@@ -49,7 +49,7 @@ class TaxonomySyncClientTest {
       .thenReturn(expectedResult);
 
     // When
-    List<Taxonomy> result = taxonomySyncClient.syncTaxonomy(accessToken);
+    List<TaxonomyDTO> result = taxonomySyncClient.syncTaxonomy(accessToken);
 
     // Then
     Assertions.assertSame(expectedResult, result);
