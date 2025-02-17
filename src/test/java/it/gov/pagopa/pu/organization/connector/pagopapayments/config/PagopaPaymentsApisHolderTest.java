@@ -1,7 +1,6 @@
 package it.gov.pagopa.pu.organization.connector.pagopapayments.config;
 
 import it.gov.pagopa.pu.organization.connector.BaseApiHolderTest;
-import it.gov.pagopa.pu.pagopapayments.controller.ApiClient;
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
@@ -15,21 +14,21 @@ import org.springframework.web.util.DefaultUriBuilderFactory;
 import java.util.List;
 
 @ExtendWith(MockitoExtension.class)
-class TaxonomyApisHolderTest extends BaseApiHolderTest {
+class PagopaPaymentsApisHolderTest extends BaseApiHolderTest {
 
   @Mock
   private RestTemplateBuilder restTemplateBuilderMock;
 
-  private TaxonomyApisHolder taxonomyApisHolder;
+  private PagopaPaymentsApisHolder pagopaPaymentsApisHolder;
 
   @BeforeEach
   void setUp() {
     Mockito.when(restTemplateBuilderMock.build()).thenReturn(restTemplateMock);
     Mockito.when(restTemplateMock.getUriTemplateHandler()).thenReturn(new DefaultUriBuilderFactory());
-    ApiClient apiClient = new ApiClient(restTemplateMock);
-    String baseUrl = "http://example.com";
-    apiClient.setBasePath(baseUrl);
-    taxonomyApisHolder = new TaxonomyApisHolder(baseUrl, restTemplateBuilderMock);
+    PagopaPaymentsApiClientConfig clientConfig = PagopaPaymentsApiClientConfig.builder()
+      .baseUrl("http://example.com")
+      .build();
+    pagopaPaymentsApisHolder = new PagopaPaymentsApisHolder(clientConfig, restTemplateBuilderMock);
   }
 
   @AfterEach
@@ -43,8 +42,8 @@ class TaxonomyApisHolderTest extends BaseApiHolderTest {
   @Test
   void whenGetTaxonomiesApiThenAuthenticationShouldBeSetInThreadSafeMode() throws InterruptedException {
     assertAuthenticationShouldBeSetInThreadSafeMode(
-      accessToken -> taxonomyApisHolder.getTaxonomiesApi(accessToken).fetchTaxonomies(),
+      accessToken -> pagopaPaymentsApisHolder.getTaxonomiesApi(accessToken).fetchTaxonomies(),
       List.class,
-      taxonomyApisHolder::unload);
+      pagopaPaymentsApisHolder::unload);
   }
 }

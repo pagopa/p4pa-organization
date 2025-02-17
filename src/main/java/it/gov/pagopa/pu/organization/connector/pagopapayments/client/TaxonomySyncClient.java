@@ -1,6 +1,6 @@
 package it.gov.pagopa.pu.organization.connector.pagopapayments.client;
 
-import it.gov.pagopa.pu.organization.connector.pagopapayments.config.TaxonomyApisHolder;
+import it.gov.pagopa.pu.organization.connector.pagopapayments.config.PagopaPaymentsApisHolder;
 import it.gov.pagopa.pu.pagopapayments.dto.generated.Taxonomy;
 import org.springframework.stereotype.Service;
 
@@ -10,15 +10,15 @@ import java.util.List;
 public class TaxonomySyncClient {
 
 
-  private final TaxonomyApisHolder taxonomyApisHolder;
+  private final PagopaPaymentsApisHolder pagopaPaymentsApisHolder;
 
-  public TaxonomySyncClient(TaxonomyApisHolder taxonomyApisHolder) {
-    this.taxonomyApisHolder = taxonomyApisHolder;
+  public TaxonomySyncClient(PagopaPaymentsApisHolder pagopaPaymentsApisHolder) {
+    this.pagopaPaymentsApisHolder = pagopaPaymentsApisHolder;
   }
 
 
   public List<Taxonomy> syncTaxonomy(String accessToken) {
-    return taxonomyApisHolder.getTaxonomiesApi(accessToken)
+    return pagopaPaymentsApisHolder.getTaxonomiesApi(accessToken)
             .fetchTaxonomies();
   }
 

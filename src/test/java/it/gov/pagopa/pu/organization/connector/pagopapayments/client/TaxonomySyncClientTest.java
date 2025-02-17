@@ -1,6 +1,6 @@
 package it.gov.pagopa.pu.organization.connector.pagopapayments.client;
 
-import it.gov.pagopa.pu.organization.connector.pagopapayments.config.TaxonomyApisHolder;
+import it.gov.pagopa.pu.organization.connector.pagopapayments.config.PagopaPaymentsApisHolder;
 import it.gov.pagopa.pu.pagopapayments.controller.generated.TaxonomiesApi;
 import it.gov.pagopa.pu.pagopapayments.dto.generated.Taxonomy;
 import org.junit.jupiter.api.AfterEach;
@@ -18,7 +18,7 @@ import java.util.List;
 class TaxonomySyncClientTest {
 
   @Mock
-  private TaxonomyApisHolder taxonomyApisHolderMock;
+  private PagopaPaymentsApisHolder pagopaPaymentsApisHolderMock;
 
   @Mock
   private TaxonomiesApi taxonomiesApiMock;
@@ -27,13 +27,13 @@ class TaxonomySyncClientTest {
 
   @BeforeEach
   void setUp() {
-    taxonomySyncClient = new TaxonomySyncClient(taxonomyApisHolderMock);
+    taxonomySyncClient = new TaxonomySyncClient(pagopaPaymentsApisHolderMock);
   }
 
   @AfterEach
   void verifyNoMoreInteractions() {
     Mockito.verifyNoMoreInteractions(
-      taxonomyApisHolderMock
+            pagopaPaymentsApisHolderMock
     );
   }
 
@@ -43,7 +43,7 @@ class TaxonomySyncClientTest {
     String accessToken = "ACCESSTOKEN";
     List<Taxonomy> expectedResult = List.of(new Taxonomy());
 
-    Mockito.when(taxonomyApisHolderMock.getTaxonomiesApi(accessToken))
+    Mockito.when(pagopaPaymentsApisHolderMock.getTaxonomiesApi(accessToken))
       .thenReturn(taxonomiesApiMock);
     Mockito.when(taxonomiesApiMock.fetchTaxonomies())
       .thenReturn(expectedResult);
