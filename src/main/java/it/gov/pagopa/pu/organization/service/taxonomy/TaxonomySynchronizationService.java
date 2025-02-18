@@ -37,10 +37,13 @@ public class TaxonomySynchronizationService {
 
     // Update or insert fetched taxonomies
     for (TaxonomyDTO fetchedTaxonomy : fetchedTaxonomies) {
-      Taxonomy existingTaxonomy = existingTaxonomies.stream()
-        .filter(t -> t.getTaxonomyCode().equals(fetchedTaxonomy.getTaxonomyCode()))
-        .findFirst()
-        .orElse(null);
+      Taxonomy existingTaxonomy = null;
+      if(existingTaxonomies != null){
+        existingTaxonomy = existingTaxonomies.stream()
+          .filter(t -> t.getTaxonomyCode().equals(fetchedTaxonomy.getTaxonomyCode()))
+          .findFirst()
+          .orElse(null);
+      }
 
       Taxonomy mappedTaxonomy = taxonomyMapper.toModel(fetchedTaxonomy);
 
