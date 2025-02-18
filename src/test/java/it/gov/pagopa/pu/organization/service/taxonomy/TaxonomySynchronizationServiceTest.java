@@ -79,6 +79,7 @@ class TaxonomySynchronizationServiceTest {
     List<Taxonomy> existingTaxonomies = List.of(existingTaxonomy);
 
     Taxonomy taxonomy1 = new Taxonomy();
+    taxonomy1.setTaxonomyId(1L);
     taxonomy1.setTaxonomyCode("code1");
     Taxonomy taxonomy2 = new Taxonomy();
     taxonomy2.setTaxonomyCode("code2");
@@ -93,19 +94,4 @@ class TaxonomySynchronizationServiceTest {
     verify(taxonomyRepository, times(2)).save(Mockito.any(Taxonomy.class));
   }
 
-  @Test
-  void synchTaxonomies_withExpiredTaxonomies_deletesExpiredTaxonomies() {
-    String accessToken = "validAccessToken";
-    List<TaxonomyDTO> fetchedTaxonomies = List.of(new TaxonomyDTO().taxonomyCode("code1").endDateOfValidity(OffsetDateTime.now().minusDays(3)));
-    Taxonomy existingTaxonomy = new Taxonomy();
-    existingTaxonomy.setTaxonomyCode("code1");
-    existingTaxonomy.setEndDateOfValidity(OffsetDateTime.now().minusDays(1));
-    List<Taxonomy> existingTaxonomies = List.of(existingTaxonomy);
-    Mockito.when(pagopaPaymentsClient.fetchTaxonomy(accessToken)).thenReturn(fetchedTaxonomies);
-    Mockito.when(taxonomyRepository.findAll()).thenReturn(existingTaxonomies);
-
-    taxonomySynchronizationService.synchronizeTaxonomies(accessToken);
-
-    verify(taxonomyRepository, times(1)).delete(existingTaxonomies.getFirst());
-  }
 }

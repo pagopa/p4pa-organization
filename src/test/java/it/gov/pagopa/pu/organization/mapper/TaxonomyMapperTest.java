@@ -1,6 +1,7 @@
 package it.gov.pagopa.pu.organization.mapper;
 
 import it.gov.pagopa.pu.organization.model.Taxonomy;
+import it.gov.pagopa.pu.organization.util.TestUtils;
 import it.gov.pagopa.pu.pagopapayments.dto.generated.TaxonomyDTO;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
@@ -46,6 +47,8 @@ class TaxonomyMapperTest {
     assertEquals(dto.getStartDateValidity(), result.getStartDateValidity());
     assertEquals(dto.getEndDateOfValidity(), result.getEndDateOfValidity());
     assertEquals("taxonomyCode", result.getTaxonomyCode());
+
+    TestUtils.checkNotNullFields(result, "taxonomyId", "creationDate", "updateDate", "updateOperatorExternalId");
   }
 
   @Test

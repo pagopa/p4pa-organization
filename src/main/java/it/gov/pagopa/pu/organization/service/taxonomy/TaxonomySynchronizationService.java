@@ -8,7 +8,6 @@ import it.gov.pagopa.pu.pagopapayments.dto.generated.TaxonomyDTO;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
 
-import java.time.OffsetDateTime;
 import java.util.List;
 
 @Service
@@ -36,18 +35,30 @@ public class TaxonomySynchronizationService {
 
     // Update or insert fetched taxonomies
     for (TaxonomyDTO fetchedTaxonomy : fetchedTaxonomies) {
+      Taxonomy existingTaxonomy = existingTaxonomies.stream()
+        .filter(t -> t.getTaxonomyCode().equals(fetchedTaxonomy.getTaxonomyCode()))
+        .findFirst()
+        .orElse(null);
+
       Taxonomy mappedTaxonomy = taxonomyMapper.toModel(fetchedTaxonomy);
-      taxonomyRepository.save(mappedTaxonomy);
-    }
 
-    // Delete taxonomies that are not in the fetched list or have expired endDateOfValidity
-    for (Taxonomy existingTaxonomy : existingTaxonomies) {
-      boolean existsInFetched = fetchedTaxonomies.stream()
-        .anyMatch(t -> t.getTaxonomyCode().equals(existingTaxonomy.getTaxonomyCode()));
+      boolean taxonomyIsUpdated = taxonomyIsUpdated(existingTaxonomy, mappedTaxonomy);
 
-      if (!existsInFetched || existingTaxonomy.getEndDateOfValidity().isBefore(OffsetDateTime.now())) {
-        taxonomyRepository.delete(existingTaxonomy);
+      if (taxonomyIsUpdated) {
+        // Update existing taxonomy
+        mappedTaxonomy.setTaxonomyId(existingTaxonomy.getTaxonomyId());
+        taxonomyRepository.save(mappedTaxonomy);
+      } else {
+        // Insert new taxonomy
+        taxonomyRepository.save(mappedTaxonomy);
       }
     }
+  }
+
+  private boolean taxonomyIsUpdated(Taxonomy existingTaxonomy, Taxonomy mappedTaxonomy) {
+    if(existingTaxonomy == null || mappedTaxonomy == null) {
+      return false;
+    }
+    return !existingTaxonomy.equals(mappedTaxonomy);
   }
 }
