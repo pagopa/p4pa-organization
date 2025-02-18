@@ -32,7 +32,7 @@ class TaxonomySynchronizationServiceTest {
   private TaxonomyMapper taxonomyMapperMock;
 
   private static final TaxonomyDTO TAXONOMY_DTO1 = TaxonomyDTO.builder()
-    .taxonomyCode("code1")
+    .taxonomyCode("taxonomyCode1")
     .version("1")
     .collectionReason("reason1")
     .macroAreaCode("macroAreaCode1")
@@ -87,7 +87,7 @@ class TaxonomySynchronizationServiceTest {
 
     taxonomySynchronizationService.synchronizeTaxonomies(accessToken);
 
-    verify(taxonomyRepository, times(2)).save(Mockito.any(Taxonomy.class));
+    verify(taxonomyRepository, times(1)).save(Mockito.any(Taxonomy.class));
   }
 
   @Test
