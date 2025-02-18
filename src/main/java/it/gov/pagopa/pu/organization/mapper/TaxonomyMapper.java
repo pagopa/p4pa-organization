@@ -12,7 +12,7 @@ public class TaxonomyMapper {
       return null;
     }
 
-    it.gov.pagopa.pu.organization.model.Taxonomy taxonomy = new it.gov.pagopa.pu.organization.model.Taxonomy();
+    Taxonomy taxonomy = new Taxonomy();
     taxonomy.setOrganizationType(taxonomyDTO.getOrganizationType());
     taxonomy.setOrganizationTypeDescription(taxonomyDTO.getOrganizationTypeDescription());
     taxonomy.setMacroAreaCode(taxonomyDTO.getMacroAreaCode());

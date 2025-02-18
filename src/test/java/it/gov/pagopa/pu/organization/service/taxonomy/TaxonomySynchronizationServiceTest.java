@@ -75,14 +75,50 @@ class TaxonomySynchronizationServiceTest {
     List<TaxonomyDTO> fetchedTaxonomies = List.of(TAXONOMY_DTO1, TAXONOMY_DTO2);
     Taxonomy existingTaxonomy = new Taxonomy();
     existingTaxonomy.setTaxonomyCode("code1");
+    existingTaxonomy.setOrganizationType("organizationType1");
+    existingTaxonomy.setOrganizationTypeDescription("organizationTypeDescription1");
+    existingTaxonomy.setMacroAreaCode("macroAreaCode1");
+    existingTaxonomy.setMacroAreaName("macroAreaName1");
+    existingTaxonomy.setMacroAreaDescription("macroAreaDescription1");
+    existingTaxonomy.setServiceTypeCode("serviceTypeCode1");
+    existingTaxonomy.setServiceType("serviceType1");
+    existingTaxonomy.setServiceTypeDescription("serviceTypeDescription1");
+    existingTaxonomy.setCollectionReason("reason1");
+    existingTaxonomy.setStartDateValidity(OffsetDateTime.now());
+    existingTaxonomy.setEndDateOfValidity(OffsetDateTime.now().plusDays(5));
+    existingTaxonomy.setTaxonomyCode("code1");
     existingTaxonomy.setEndDateOfValidity(OffsetDateTime.now().plusDays(5));
     List<Taxonomy> existingTaxonomies = List.of(existingTaxonomy);
 
     Taxonomy taxonomy1 = new Taxonomy();
     taxonomy1.setTaxonomyId(1L);
-    taxonomy1.setTaxonomyCode("code1");
+    taxonomy1.setOrganizationType("organizationType1_updated");
+    taxonomy1.setOrganizationTypeDescription("organizationTypeDescription1_updated");
+    taxonomy1.setMacroAreaCode("macroAreaCode1_updated");
+    taxonomy1.setMacroAreaName("macroAreaName1_updated");
+    taxonomy1.setMacroAreaDescription("macroAreaDescription1_updated");
+    taxonomy1.setServiceTypeCode("serviceTypeCode1_updated");
+    taxonomy1.setServiceType("serviceType1_updated");
+    taxonomy1.setServiceTypeDescription("serviceTypeDescription1_updated");
+    taxonomy1.setCollectionReason("reason1_updated");
+    taxonomy1.setStartDateValidity(OffsetDateTime.now().plusDays(1));
+    taxonomy1.setEndDateOfValidity(OffsetDateTime.now().plusDays(6));
+    taxonomy1.setTaxonomyCode("code1_updated");
+
     Taxonomy taxonomy2 = new Taxonomy();
+    taxonomy2.setOrganizationType("organizationType2");
+    taxonomy2.setOrganizationTypeDescription("organizationTypeDescription2");
+    taxonomy2.setMacroAreaCode("macroAreaCode2");
+    taxonomy2.setMacroAreaName("macroAreaName2");
+    taxonomy2.setMacroAreaDescription("macroAreaDescription2");
+    taxonomy2.setServiceTypeCode("serviceTypeCode2");
+    taxonomy2.setServiceType("serviceType2");
+    taxonomy2.setServiceTypeDescription("serviceTypeDescription2");
+    taxonomy2.setCollectionReason("reason2");
+    taxonomy2.setStartDateValidity(OffsetDateTime.now().plusDays(2));
+    taxonomy2.setEndDateOfValidity(OffsetDateTime.now().plusDays(7));
     taxonomy2.setTaxonomyCode("code2");
+
 
     Mockito.when(pagopaPaymentsClient.fetchTaxonomy(accessToken)).thenReturn(fetchedTaxonomies);
     Mockito.when(taxonomyRepository.findAll()).thenReturn(existingTaxonomies);

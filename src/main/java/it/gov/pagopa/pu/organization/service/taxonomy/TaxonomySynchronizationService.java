@@ -5,6 +5,7 @@ import it.gov.pagopa.pu.organization.mapper.TaxonomyMapper;
 import it.gov.pagopa.pu.organization.model.Taxonomy;
 import it.gov.pagopa.pu.organization.repository.TaxonomyRepository;
 import it.gov.pagopa.pu.pagopapayments.dto.generated.TaxonomyDTO;
+import jakarta.transaction.Transactional;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
 
@@ -27,6 +28,7 @@ public class TaxonomySynchronizationService {
     this.taxonomyMapper = taxonomyMapper;
   }
 
+  @Transactional
   public void synchronizeTaxonomies(String accessToken) {
     log.info("TaxonomySynchronizationService :: Synchronizing taxonomy");
     List<TaxonomyDTO> fetchedTaxonomies = pagopaPaymentsClient.fetchTaxonomy(accessToken);
@@ -42,23 +44,35 @@ public class TaxonomySynchronizationService {
 
       Taxonomy mappedTaxonomy = taxonomyMapper.toModel(fetchedTaxonomy);
 
-      boolean taxonomyIsUpdated = taxonomyIsUpdated(existingTaxonomy, mappedTaxonomy);
+      boolean taxonomyIsChanged = taxonomyIsChanged(existingTaxonomy, mappedTaxonomy);
 
-      if (taxonomyIsUpdated) {
-        // Update existing taxonomy
+      if (taxonomyIsChanged) {
+        // Update existing taxonomy if it has changed
         mappedTaxonomy.setTaxonomyId(existingTaxonomy.getTaxonomyId());
         taxonomyRepository.save(mappedTaxonomy);
-      } else {
+      } else if(existingTaxonomy ==  null){
         // Insert new taxonomy
         taxonomyRepository.save(mappedTaxonomy);
       }
     }
   }
 
-  private boolean taxonomyIsUpdated(Taxonomy existingTaxonomy, Taxonomy mappedTaxonomy) {
-    if(existingTaxonomy == null || mappedTaxonomy == null) {
+  private boolean taxonomyIsChanged(Taxonomy existingTax, Taxonomy mappedTax) {
+    if (existingTax == null || mappedTax == null) {
       return false;
     }
-    return !existingTaxonomy.equals(mappedTaxonomy);
+
+    return !existingTax.getOrganizationType().equals(mappedTax.getOrganizationType()) ||
+      !existingTax.getOrganizationTypeDescription().equals(mappedTax.getOrganizationTypeDescription()) ||
+      !existingTax.getMacroAreaCode().equals(mappedTax.getMacroAreaCode()) ||
+      !existingTax.getMacroAreaName().equals(mappedTax.getMacroAreaName()) ||
+      !existingTax.getMacroAreaDescription().equals(mappedTax.getMacroAreaDescription()) ||
+      !existingTax.getServiceTypeCode().equals(mappedTax.getServiceTypeCode()) ||
+      !existingTax.getServiceType().equals(mappedTax.getServiceType()) ||
+      !existingTax.getServiceTypeDescription().equals(mappedTax.getServiceTypeDescription()) ||
+      !existingTax.getCollectionReason().equals(mappedTax.getCollectionReason()) ||
+      !existingTax.getStartDateValidity().equals(mappedTax.getStartDateValidity()) ||
+      !existingTax.getEndDateOfValidity().equals(mappedTax.getEndDateOfValidity()) ||
+      !existingTax.getTaxonomyCode().equals(mappedTax.getTaxonomyCode());
   }
 }
