@@ -64,7 +64,6 @@ public class TaxonomySynchronizationService {
     if (existingTax == null || mappedTax == null) {
       return false;
     }
-
     return !existingTax.getOrganizationType().equals(mappedTax.getOrganizationType()) ||
       !existingTax.getOrganizationTypeDescription().equals(mappedTax.getOrganizationTypeDescription()) ||
       !existingTax.getMacroAreaCode().equals(mappedTax.getMacroAreaCode()) ||
