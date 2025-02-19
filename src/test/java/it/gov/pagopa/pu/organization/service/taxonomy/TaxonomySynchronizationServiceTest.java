@@ -34,8 +34,8 @@ class TaxonomySynchronizationServiceTest {
   private static final TaxonomyDTO TAXONOMY_DTO1 = TaxonomyDTO.builder()
     .taxonomyCode("taxonomyCode1")
     .version("1")
-    .collectionReason("reason1")
-    .macroAreaCode("macroAreaCode1Mod")
+    .collectionReason("collectionReason1Mod")
+    .macroAreaCode("macroAreaCode1")
     .macroAreaName("macroAreaName1")
     .macroAreaDescription("macroAreaDescription1")
     .serviceTypeCode("serviceTypeCode1")
@@ -50,7 +50,7 @@ class TaxonomySynchronizationServiceTest {
   private static final TaxonomyDTO TAXONOMY_DTO2 = TaxonomyDTO.builder()
     .taxonomyCode("code2")
     .version("2")
-    .collectionReason("reason2")
+    .collectionReason("collectionReason2")
     .macroAreaCode("macroAreaCode2")
     .macroAreaName("macroAreaName2")
     .macroAreaDescription("macroAreaDescription2")
@@ -78,7 +78,7 @@ class TaxonomySynchronizationServiceTest {
     List<Taxonomy> existingTaxonomies = List.of(existingTaxonomy);
 
     Taxonomy taxonomy1 = TaxonomyFaker.taxonomyBuilder(1L);
-    taxonomy1.setMacroAreaCode("macroAreaCode1Mod");
+    taxonomy1.setCollectionReason("collectionReason1Mod");
     Taxonomy taxonomy2 = TaxonomyFaker.taxonomyBuilder(2L);
 
     Mockito.when(pagopaPaymentsClient.fetchTaxonomy(accessToken)).thenReturn(fetchedTaxonomies);
