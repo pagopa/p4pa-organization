@@ -40,7 +40,7 @@ public class TaxonomySynchronizationService {
     Map<String, Taxonomy> existingTaxonomyMap = CollectionUtils.emptyMap();
     if(existingTaxonomies != null) {
       existingTaxonomyMap = existingTaxonomies.stream()
-        .collect(Collectors.toMap(Taxonomy::getTaxonomyCode, taxonomy -> taxonomy));
+        .collect(Collectors.toMap(Taxonomy::getTaxonomyCode, Function::identity));
     }
 
     // Update or insert fetched taxonomies
