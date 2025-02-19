@@ -61,7 +61,7 @@ public class TaxonomySynchronizationService {
   }
 
   private boolean taxonomyIsChanged(Taxonomy existingTax, Taxonomy mappedTax) {
-    if (existingTax == null || mappedTax == null) {
+    if (existingTax == null) {
       return false;
     }
     return !existingTax.getOrganizationType().equals(mappedTax.getOrganizationType()) ||
