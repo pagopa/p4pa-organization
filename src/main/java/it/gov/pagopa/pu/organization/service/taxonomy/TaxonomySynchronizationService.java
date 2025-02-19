@@ -9,9 +9,10 @@ import jakarta.transaction.Transactional;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
 
-import java.util.HashMap;
+import java.util.Collections;
 import java.util.List;
 import java.util.Map;
+import java.util.function.Function;
 import java.util.stream.Collectors;
 
 @Service
@@ -37,10 +38,10 @@ public class TaxonomySynchronizationService {
     List<TaxonomyDTO> fetchedTaxonomies = pagopaPaymentsClient.fetchTaxonomy(accessToken);
 
     List<Taxonomy> existingTaxonomies = taxonomyRepository.findAll();
-    Map<String, Taxonomy> existingTaxonomyMap = CollectionUtils.emptyMap();
+    Map<String, Taxonomy> existingTaxonomyMap = Collections.emptyMap();
     if(existingTaxonomies != null) {
       existingTaxonomyMap = existingTaxonomies.stream()
-        .collect(Collectors.toMap(Taxonomy::getTaxonomyCode, Function::identity));
+        .collect(Collectors.toMap(Taxonomy::getTaxonomyCode, Function.identity()));
     }
 
     // Update or insert fetched taxonomies
