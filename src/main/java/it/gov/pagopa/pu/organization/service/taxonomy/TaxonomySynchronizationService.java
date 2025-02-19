@@ -60,7 +60,7 @@ public class TaxonomySynchronizationService {
     }
   }
 
-  private boolean taxonomyIsChanged(Taxonomy existingTax, Taxonomy mappedTax) {
+  boolean taxonomyIsChanged(Taxonomy existingTax, Taxonomy mappedTax) {
     if (existingTax == null) {
       return false;
     }

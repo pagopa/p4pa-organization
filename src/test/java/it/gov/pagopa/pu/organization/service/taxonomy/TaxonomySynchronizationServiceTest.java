@@ -16,6 +16,7 @@ import org.mockito.junit.jupiter.MockitoExtension;
 import java.time.OffsetDateTime;
 import java.util.List;
 
+import static org.junit.jupiter.api.Assertions.assertTrue;
 import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.verify;
 
@@ -141,4 +142,143 @@ class TaxonomySynchronizationServiceTest {
 
     verify(taxonomyRepository, times(2)).save(Mockito.any(Taxonomy.class));
   }
+
+
+
+  @Test
+  void taxonomyIsChanged_withDifferentOrganizationType_returnsTrue() {
+    Taxonomy existingTax = TaxonomyFaker.taxonomyBuilder(1L);
+    Taxonomy mappedTax = TaxonomyFaker.taxonomyBuilder(1L);
+    mappedTax.setOrganizationType("differentType");
+
+    boolean result = taxonomySynchronizationService.taxonomyIsChanged(existingTax, mappedTax);
+
+    assertTrue(result);
+  }
+
+  @Test
+  void taxonomyIsChanged_withDifferentOrganizationTypeDescription_returnsTrue() {
+    Taxonomy existingTax = TaxonomyFaker.taxonomyBuilder(1L);
+    Taxonomy mappedTax = TaxonomyFaker.taxonomyBuilder(1L);
+    mappedTax.setOrganizationTypeDescription("differentDescription");
+
+    boolean result = taxonomySynchronizationService.taxonomyIsChanged(existingTax, mappedTax);
+
+    assertTrue(result);
+  }
+
+  @Test
+  void taxonomyIsChanged_withDifferentMacroAreaCode_returnsTrue() {
+    Taxonomy existingTax = TaxonomyFaker.taxonomyBuilder(1L);
+    Taxonomy mappedTax = TaxonomyFaker.taxonomyBuilder(1L);
+    mappedTax.setMacroAreaCode("differentCode");
+
+    boolean result = taxonomySynchronizationService.taxonomyIsChanged(existingTax, mappedTax);
+
+    assertTrue(result);
+  }
+
+  @Test
+  void taxonomyIsChanged_withDifferentMacroAreaName_returnsTrue() {
+    Taxonomy existingTax = TaxonomyFaker.taxonomyBuilder(1L);
+    Taxonomy mappedTax = TaxonomyFaker.taxonomyBuilder(1L);
+    mappedTax.setMacroAreaName("differentName");
+
+    boolean result = taxonomySynchronizationService.taxonomyIsChanged(existingTax, mappedTax);
+
+    assertTrue(result);
+  }
+
+  @Test
+  void taxonomyIsChanged_withDifferentMacroAreaDescription_returnsTrue() {
+    Taxonomy existingTax = TaxonomyFaker.taxonomyBuilder(1L);
+    Taxonomy mappedTax = TaxonomyFaker.taxonomyBuilder(1L);
+    mappedTax.setMacroAreaDescription("differentDescription");
+
+    boolean result = taxonomySynchronizationService.taxonomyIsChanged(existingTax, mappedTax);
+
+    assertTrue(result);
+  }
+
+  @Test
+  void taxonomyIsChanged_withDifferentServiceTypeCode_returnsTrue() {
+    Taxonomy existingTax = TaxonomyFaker.taxonomyBuilder(1L);
+    Taxonomy mappedTax = TaxonomyFaker.taxonomyBuilder(1L);
+    mappedTax.setServiceTypeCode("differentCode");
+
+    boolean result = taxonomySynchronizationService.taxonomyIsChanged(existingTax, mappedTax);
+
+    assertTrue(result);
+  }
+
+  @Test
+  void taxonomyIsChanged_withDifferentServiceType_returnsTrue() {
+    Taxonomy existingTax = TaxonomyFaker.taxonomyBuilder(1L);
+    Taxonomy mappedTax = TaxonomyFaker.taxonomyBuilder(1L);
+    mappedTax.setServiceType("differentType");
+
+    boolean result = taxonomySynchronizationService.taxonomyIsChanged(existingTax, mappedTax);
+
+    assertTrue(result);
+  }
+
+  @Test
+  void taxonomyIsChanged_withDifferentServiceTypeDescription_returnsTrue() {
+    Taxonomy existingTax = TaxonomyFaker.taxonomyBuilder(1L);
+    Taxonomy mappedTax = TaxonomyFaker.taxonomyBuilder(1L);
+    mappedTax.setServiceTypeDescription("differentDescription");
+
+    boolean result = taxonomySynchronizationService.taxonomyIsChanged(existingTax, mappedTax);
+
+    assertTrue(result);
+  }
+
+  @Test
+  void taxonomyIsChanged_withDifferentStartDateValidity_returnsTrue() {
+    Taxonomy existingTax = TaxonomyFaker.taxonomyBuilder(1L);
+    Taxonomy mappedTax = TaxonomyFaker.taxonomyBuilder(1L);
+    mappedTax.setStartDateValidity(OffsetDateTime.now().plusDays(1));
+
+    boolean result = taxonomySynchronizationService.taxonomyIsChanged(existingTax, mappedTax);
+
+    assertTrue(result);
+  }
+
+  @Test
+  void taxonomyIsChanged_withDifferentEndDateOfValidity_returnsTrue() {
+    Taxonomy existingTax = TaxonomyFaker.taxonomyBuilder(1L);
+    Taxonomy mappedTax = TaxonomyFaker.taxonomyBuilder(1L);
+    mappedTax.setEndDateOfValidity(OffsetDateTime.now().plusDays(2));
+
+    boolean result = taxonomySynchronizationService.taxonomyIsChanged(existingTax, mappedTax);
+
+    assertTrue(result);
+  }
+
+  @Test
+  void taxonomyIsChanged_withDifferentTaxonomyCode_returnsTrue() {
+    Taxonomy existingTax = TaxonomyFaker.taxonomyBuilder(1L);
+    Taxonomy mappedTax = TaxonomyFaker.taxonomyBuilder(1L);
+    mappedTax.setTaxonomyCode("differentCode");
+
+    boolean result = taxonomySynchronizationService.taxonomyIsChanged(existingTax, mappedTax);
+
+    assertTrue(result);
+  }
+
+  @Test
+  void taxonomyIsChanged_withDifferentCollectionReason_returnsTrue() {
+    Taxonomy existingTax = TaxonomyFaker.taxonomyBuilder(1L);
+    Taxonomy mappedTax = TaxonomyFaker.taxonomyBuilder(1L);
+    mappedTax.setCollectionReason("differentReason");
+
+    boolean result = taxonomySynchronizationService.taxonomyIsChanged(existingTax, mappedTax);
+
+    assertTrue(result);
+  }
+
+
+
+
+
 }
