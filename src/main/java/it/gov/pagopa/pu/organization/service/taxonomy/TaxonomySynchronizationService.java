@@ -9,7 +9,10 @@ import jakarta.transaction.Transactional;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
 
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
+import java.util.stream.Collectors;
 
 @Service
 @Slf4j
@@ -34,17 +37,15 @@ public class TaxonomySynchronizationService {
     List<TaxonomyDTO> fetchedTaxonomies = pagopaPaymentsClient.fetchTaxonomy(accessToken);
 
     List<Taxonomy> existingTaxonomies = taxonomyRepository.findAll();
+    Map<String, Taxonomy> existingTaxonomyMap = new HashMap<>();
+    if(existingTaxonomies != null) {
+      existingTaxonomyMap = existingTaxonomies.stream()
+        .collect(Collectors.toMap(Taxonomy::getTaxonomyCode, taxonomy -> taxonomy));
+    }
 
     // Update or insert fetched taxonomies
     for (TaxonomyDTO fetchedTaxonomy : fetchedTaxonomies) {
-      Taxonomy existingTaxonomy = null;
-      if(existingTaxonomies != null){
-        existingTaxonomy = existingTaxonomies.stream()
-          .filter(t -> t.getTaxonomyCode().equals(fetchedTaxonomy.getTaxonomyCode()))
-          .findFirst()
-          .orElse(null);
-      }
-
+      Taxonomy existingTaxonomy = existingTaxonomyMap.get(fetchedTaxonomy.getTaxonomyCode());
       Taxonomy mappedTaxonomy = taxonomyMapper.toModel(fetchedTaxonomy);
 
       boolean taxonomyIsChanged = taxonomyIsChanged(existingTaxonomy, mappedTaxonomy);
@@ -53,7 +54,7 @@ public class TaxonomySynchronizationService {
         // Update existing taxonomy if it has changed
         mappedTaxonomy.setTaxonomyId(existingTaxonomy.getTaxonomyId());
         taxonomyRepository.save(mappedTaxonomy);
-      } else if(existingTaxonomy ==  null){
+      } else if (existingTaxonomy == null) {
         // Insert new taxonomy
         taxonomyRepository.save(mappedTaxonomy);
       }
