@@ -37,7 +37,7 @@ public class TaxonomySynchronizationService {
     List<TaxonomyDTO> fetchedTaxonomies = pagopaPaymentsClient.fetchTaxonomy(accessToken);
 
     List<Taxonomy> existingTaxonomies = taxonomyRepository.findAll();
-    Map<String, Taxonomy> existingTaxonomyMap = new HashMap<>();
+    Map<String, Taxonomy> existingTaxonomyMap = CollectionUtils.emptyMap();
     if(existingTaxonomies != null) {
       existingTaxonomyMap = existingTaxonomies.stream()
         .collect(Collectors.toMap(Taxonomy::getTaxonomyCode, taxonomy -> taxonomy));
