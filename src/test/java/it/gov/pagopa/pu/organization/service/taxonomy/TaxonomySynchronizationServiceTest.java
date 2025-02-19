@@ -61,6 +61,20 @@ class TaxonomySynchronizationServiceTest {
     .startDateValidity(OffsetDateTime.now())
     .endDateOfValidity(OffsetDateTime.now().plusDays(4))
     .build();
+  private static final TaxonomyDTO TAXONOMY_DTO3 = TaxonomyDTO.builder()
+    .taxonomyCode("code3")
+    .version("3")
+    .collectionReason("collectionReason3")
+    .macroAreaCode("macroAreaCode3")
+    .macroAreaName("macroAreaName3")
+    .macroAreaDescription("macroAreaDescription3")
+    .serviceTypeCode("serviceTypeCode3")
+    .serviceType("serviceType3")
+    .organizationType("organizationType3")
+    .organizationTypeDescription("organizationTypeDescription3")
+    .startDateValidity(OffsetDateTime.now())
+    .endDateOfValidity(OffsetDateTime.now().plusDays(2))
+    .build();
 
 
   private TaxonomySynchronizationService taxonomySynchronizationService;
@@ -73,22 +87,27 @@ class TaxonomySynchronizationServiceTest {
   @Test
   void synchTaxonomies_withValidAccessToken_updatesAndInsertsTaxonomies() {
     String accessToken = "validAccessToken";
-    List<TaxonomyDTO> fetchedTaxonomies = List.of(TAXONOMY_DTO1, TAXONOMY_DTO2);
+
+    List<TaxonomyDTO> fetchedTaxonomies = List.of(TAXONOMY_DTO1, TAXONOMY_DTO2, TAXONOMY_DTO3);
+
     Taxonomy existingTaxonomy = TaxonomyFaker.taxonomyBuilder(1L);
-    List<Taxonomy> existingTaxonomies = List.of(existingTaxonomy);
+    Taxonomy existingTaxonomy2 = TaxonomyFaker.taxonomyBuilder(2L);
+    List<Taxonomy> existingTaxonomies = List.of(existingTaxonomy, existingTaxonomy2);
 
     Taxonomy taxonomy1 = TaxonomyFaker.taxonomyBuilder(1L);
     taxonomy1.setCollectionReason("collectionReason1Mod");
     Taxonomy taxonomy2 = TaxonomyFaker.taxonomyBuilder(2L);
+    Taxonomy taxonomy3 = TaxonomyFaker.taxonomyBuilder(3L);
 
     Mockito.when(pagopaPaymentsClient.fetchTaxonomy(accessToken)).thenReturn(fetchedTaxonomies);
     Mockito.when(taxonomyRepository.findAll()).thenReturn(existingTaxonomies);
     Mockito.when(taxonomyMapperMock.toModel(TAXONOMY_DTO1)).thenReturn(taxonomy1);
     Mockito.when(taxonomyMapperMock.toModel(TAXONOMY_DTO2)).thenReturn(taxonomy2);
+    Mockito.when(taxonomyMapperMock.toModel(TAXONOMY_DTO3)).thenReturn(taxonomy3);
 
     taxonomySynchronizationService.synchronizeTaxonomies(accessToken);
 
-    verify(taxonomyRepository, times(2)).save(Mockito.any(Taxonomy.class));
+    verify(taxonomyRepository, times(3)).save(Mockito.any(Taxonomy.class));
   }
 
   @Test
