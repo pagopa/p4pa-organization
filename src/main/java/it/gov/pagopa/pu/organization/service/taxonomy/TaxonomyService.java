@@ -15,7 +15,7 @@ public class TaxonomyService {
     this.taxonomySynchronizationService = taxonomySynchronizationService;
   }
 
-  public void synchTaxonomies(String accessToken) {
-    taxonomySynchronizationService.synchronizeTaxonomies(accessToken);
+  public Integer synchTaxonomies(String accessToken) {
+    return taxonomySynchronizationService.synchronizeTaxonomies(accessToken);
   }
 }

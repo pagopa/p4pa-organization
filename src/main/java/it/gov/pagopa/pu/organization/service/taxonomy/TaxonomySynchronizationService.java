@@ -33,7 +33,7 @@ public class TaxonomySynchronizationService {
   }
 
   @Transactional
-  public void synchronizeTaxonomies(String accessToken) {
+  public Integer synchronizeTaxonomies(String accessToken) {
     log.info("TaxonomySynchronizationService :: Synchronizing taxonomy");
     List<TaxonomyDTO> fetchedTaxonomies = pagopaPaymentsClient.fetchTaxonomy(accessToken);
 
@@ -43,6 +43,8 @@ public class TaxonomySynchronizationService {
       existingTaxonomyMap = existingTaxonomies.stream()
         .collect(Collectors.toMap(Taxonomy::getTaxonomyCode, Function.identity()));
     }
+
+    Integer upsertedRecordsCounter = 0;
 
     // Update or insert fetched taxonomies
     for (TaxonomyDTO fetchedTaxonomy : fetchedTaxonomies) {
@@ -55,11 +57,14 @@ public class TaxonomySynchronizationService {
         // Update existing taxonomy if it has changed
         mappedTaxonomy.setTaxonomyId(existingTaxonomy.getTaxonomyId());
         taxonomyRepository.save(mappedTaxonomy);
+        upsertedRecordsCounter++;
       } else if (existingTaxonomy == null) {
         // Insert new taxonomy
         taxonomyRepository.save(mappedTaxonomy);
+        upsertedRecordsCounter++;
       }
     }
+    return upsertedRecordsCounter;
   }
 
   boolean taxonomyIsChanged(Taxonomy existingTax, Taxonomy mappedTax) {

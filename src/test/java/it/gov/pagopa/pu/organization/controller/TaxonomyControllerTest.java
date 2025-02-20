@@ -33,9 +33,9 @@ class TaxonomyControllerTest {
   void syncTaxonomies_invokesServiceAndReturnsNull() {
     TestUtils.setFakeAccessTokenInContext();
 
-    ResponseEntity<Void> response = taxonomyController.syncTaxonomies();
+    ResponseEntity<Integer> response = taxonomyController.syncTaxonomies();
 
-    assertEquals(ResponseEntity.ofNullable(null), response);
+    assertEquals(ResponseEntity.ofNullable(0), response);
     verify(taxonomyServiceMock, times(1)).synchTaxonomies( TestUtils.getFakeAccessToken());
   }
 }

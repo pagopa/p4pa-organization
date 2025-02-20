@@ -20,10 +20,10 @@ public class TaxonomyController implements TaxonomyApi {
 
 
   @Override
-  public ResponseEntity<Void> syncTaxonomies() {
+  public ResponseEntity<Integer> syncTaxonomies() {
     log.info("invoking synchTaxonomies");
-    taxonomyService.synchTaxonomies(SecurityUtils.getAccessToken());
-    return ResponseEntity.ofNullable(null);
+    Integer upsertedRecordsCounter = taxonomyService.synchTaxonomies(SecurityUtils.getAccessToken());
+    return ResponseEntity.ofNullable(upsertedRecordsCounter);
   }
 
 }
