@@ -29,7 +29,7 @@ class TaxonomyServiceTest {
   @Test
   void synchTaxonomies_withValidAccessToken_invokesClientAndRepository() {
     String accessToken = "validAccessToken";
-    Mockito.doNothing().when(taxonomySynchronizationServiceMock).synchronizeTaxonomies(accessToken);
+    Mockito.when(taxonomySynchronizationServiceMock.synchronizeTaxonomies(accessToken)).thenReturn(1);
 
     taxonomyService.synchTaxonomies(accessToken);
 
@@ -48,7 +48,7 @@ class TaxonomyServiceTest {
   @Test
   void synchTaxonomies_withEmptyAccessToken_invokesClientAndRepository() {
     String accessToken = "";
-    Mockito.doNothing().when(taxonomySynchronizationServiceMock).synchronizeTaxonomies(accessToken);
+    Mockito.when(taxonomySynchronizationServiceMock.synchronizeTaxonomies(accessToken)).thenReturn(0);
 
     taxonomyService.synchTaxonomies(accessToken);
 

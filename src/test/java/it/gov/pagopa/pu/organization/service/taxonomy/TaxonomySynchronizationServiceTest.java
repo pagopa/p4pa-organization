@@ -1,19 +1,22 @@
 package it.gov.pagopa.pu.organization.service.taxonomy;
 
 import it.gov.pagopa.pu.organization.connector.pagopapayments.TaxonomyServiceImpl;
+import it.gov.pagopa.pu.organization.mapper.TaxonomyMapper;
+import it.gov.pagopa.pu.organization.model.Taxonomy;
 import it.gov.pagopa.pu.organization.repository.TaxonomyRepository;
-import it.gov.pagopa.pu.pagopapayments.dto.generated.Taxonomy;
+import it.gov.pagopa.pu.organization.util.faker.TaxonomyFaker;
+import it.gov.pagopa.pu.pagopapayments.dto.generated.TaxonomyDTO;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.Mock;
 import org.mockito.Mockito;
-import org.mockito.MockitoAnnotations;
 import org.mockito.junit.jupiter.MockitoExtension;
 
+import java.time.OffsetDateTime;
 import java.util.List;
 
-import static org.junit.jupiter.api.Assertions.assertThrows;
+import static org.junit.jupiter.api.Assertions.assertTrue;
 import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.verify;
 
@@ -26,42 +29,256 @@ class TaxonomySynchronizationServiceTest {
   @Mock
   private TaxonomyServiceImpl pagopaPaymentsClient;
 
+  @Mock
+  private TaxonomyMapper taxonomyMapperMock;
+
+  private static final TaxonomyDTO TAXONOMY_DTO1 = TaxonomyDTO.builder()
+    .taxonomyCode("taxonomyCode1")
+    .version("1")
+    .collectionReason("collectionReason1Mod")
+    .macroAreaCode("macroAreaCode1")
+    .macroAreaName("macroAreaName1")
+    .macroAreaDescription("macroAreaDescription1")
+    .serviceTypeCode("serviceTypeCode1")
+    .serviceType("serviceType1")
+    .organizationType("organizationType1")
+    .organizationTypeDescription("organizationTypeDescription1")
+    .startDateValidity(OffsetDateTime.now())
+    .endDateOfValidity(OffsetDateTime.now().plusDays(1))
+    .build();
+
+
+  private static final TaxonomyDTO TAXONOMY_DTO2 = TaxonomyDTO.builder()
+    .taxonomyCode("code2")
+    .version("2")
+    .collectionReason("collectionReason2")
+    .macroAreaCode("macroAreaCode2")
+    .macroAreaName("macroAreaName2")
+    .macroAreaDescription("macroAreaDescription2")
+    .serviceTypeCode("serviceTypeCode2")
+    .serviceType("serviceType2")
+    .organizationType("organizationType2")
+    .organizationTypeDescription("organizationTypeDescription2")
+    .startDateValidity(OffsetDateTime.now())
+    .endDateOfValidity(OffsetDateTime.now().plusDays(4))
+    .build();
+  private static final TaxonomyDTO TAXONOMY_DTO3 = TaxonomyDTO.builder()
+    .taxonomyCode("code3")
+    .version("3")
+    .collectionReason("collectionReason3")
+    .macroAreaCode("macroAreaCode3")
+    .macroAreaName("macroAreaName3")
+    .macroAreaDescription("macroAreaDescription3")
+    .serviceTypeCode("serviceTypeCode3")
+    .serviceType("serviceType3")
+    .organizationType("organizationType3")
+    .organizationTypeDescription("organizationTypeDescription3")
+    .startDateValidity(OffsetDateTime.now())
+    .endDateOfValidity(OffsetDateTime.now().plusDays(2))
+    .build();
+
+
   private TaxonomySynchronizationService taxonomySynchronizationService;
 
   @BeforeEach
   void setUp() {
-    MockitoAnnotations.openMocks(this);
-    taxonomySynchronizationService = new TaxonomySynchronizationService(taxonomyRepository, pagopaPaymentsClient);
+    taxonomySynchronizationService = new TaxonomySynchronizationService(taxonomyRepository, pagopaPaymentsClient, taxonomyMapperMock);
   }
 
   @Test
-  void synchTaxonomies_withValidAccessToken_invokesClientAndRepository() {
+  void synchTaxonomies_withValidAccessToken_updatesAndInsertsTaxonomies() {
     String accessToken = "validAccessToken";
-    List<Taxonomy> taxonomies = List.of(new Taxonomy());
-    Mockito.when(pagopaPaymentsClient.fetchTaxonomy(accessToken)).thenReturn(taxonomies);
+
+    List<TaxonomyDTO> fetchedTaxonomies = List.of(TAXONOMY_DTO1, TAXONOMY_DTO2, TAXONOMY_DTO3);
+
+    Taxonomy existingTaxonomy = TaxonomyFaker.taxonomyBuilder(1L);
+    Taxonomy existingTaxonomy2 = TaxonomyFaker.taxonomyBuilder(2L);
+    List<Taxonomy> existingTaxonomies = List.of(existingTaxonomy, existingTaxonomy2);
+
+    Taxonomy taxonomy1 = TaxonomyFaker.taxonomyBuilder(1L);
+    taxonomy1.setCollectionReason("collectionReason1Mod");
+    Taxonomy taxonomy2 = TaxonomyFaker.taxonomyBuilder(2L);
+    Taxonomy taxonomy3 = TaxonomyFaker.taxonomyBuilder(3L);
+
+    Mockito.when(pagopaPaymentsClient.fetchTaxonomy(accessToken)).thenReturn(fetchedTaxonomies);
+    Mockito.when(taxonomyRepository.findAll()).thenReturn(existingTaxonomies);
+    Mockito.when(taxonomyMapperMock.toModel(TAXONOMY_DTO1)).thenReturn(taxonomy1);
+    Mockito.when(taxonomyMapperMock.toModel(TAXONOMY_DTO2)).thenReturn(taxonomy2);
+    Mockito.when(taxonomyMapperMock.toModel(TAXONOMY_DTO3)).thenReturn(taxonomy3);
 
     taxonomySynchronizationService.synchronizeTaxonomies(accessToken);
 
-    verify(pagopaPaymentsClient, times(1)).fetchTaxonomy(accessToken);
+    verify(taxonomyRepository, times(3)).save(Mockito.any(Taxonomy.class));
   }
 
   @Test
-  void synchTaxonomies_withInvalidAccessToken_throwsException() {
-    String accessToken = "invalidAccessToken";
-    Mockito.when(pagopaPaymentsClient.fetchTaxonomy(accessToken)).thenThrow(new RuntimeException("Invalid token"));
-
-    assertThrows(RuntimeException.class, () -> taxonomySynchronizationService.synchronizeTaxonomies(accessToken));
-    verify(pagopaPaymentsClient, times(1)).fetchTaxonomy(accessToken);
-  }
-
-
-  @Test
-  void synchTaxonomies_withEmptyTaxonomies_doesNotInvokeRepository() {
+  void synchTaxonomies_withEmptyFetchedTaxonomies_doesNotSaveAnyTaxonomy() {
     String accessToken = "validAccessToken";
-    Mockito.when(pagopaPaymentsClient.fetchTaxonomy(accessToken)).thenReturn(List.of());
+    List<TaxonomyDTO> fetchedTaxonomies = List.of();
+    List<Taxonomy> existingTaxonomies = List.of();
+
+    Mockito.when(pagopaPaymentsClient.fetchTaxonomy(accessToken)).thenReturn(fetchedTaxonomies);
+    Mockito.when(taxonomyRepository.findAll()).thenReturn(existingTaxonomies);
 
     taxonomySynchronizationService.synchronizeTaxonomies(accessToken);
 
-    verify(pagopaPaymentsClient, times(1)).fetchTaxonomy(accessToken);
+    verify(taxonomyRepository, times(0)).save(Mockito.any(Taxonomy.class));
   }
+
+  @Test
+  void synchTaxonomies_withNullExistingTaxonomies_insertsAllFetchedTaxonomies() {
+    String accessToken = "validAccessToken";
+    List<TaxonomyDTO> fetchedTaxonomies = List.of(TAXONOMY_DTO1, TAXONOMY_DTO2);
+
+    Taxonomy taxonomy1 = TaxonomyFaker.taxonomyBuilder(1L);
+    Taxonomy taxonomy2 = TaxonomyFaker.taxonomyBuilder(2L);
+
+    Mockito.when(pagopaPaymentsClient.fetchTaxonomy(accessToken)).thenReturn(fetchedTaxonomies);
+    Mockito.when(taxonomyRepository.findAll()).thenReturn(null);
+    Mockito.when(taxonomyMapperMock.toModel(TAXONOMY_DTO1)).thenReturn(taxonomy1);
+    Mockito.when(taxonomyMapperMock.toModel(TAXONOMY_DTO2)).thenReturn(taxonomy2);
+
+    taxonomySynchronizationService.synchronizeTaxonomies(accessToken);
+
+    verify(taxonomyRepository, times(2)).save(Mockito.any(Taxonomy.class));
+  }
+
+
+
+  @Test
+  void taxonomyIsChanged_withDifferentOrganizationType_returnsTrue() {
+    Taxonomy existingTax = TaxonomyFaker.taxonomyBuilder(1L);
+    Taxonomy mappedTax = TaxonomyFaker.taxonomyBuilder(1L);
+    mappedTax.setOrganizationType("differentType");
+
+    boolean result = taxonomySynchronizationService.taxonomyIsChanged(existingTax, mappedTax);
+
+    assertTrue(result);
+  }
+
+  @Test
+  void taxonomyIsChanged_withDifferentOrganizationTypeDescription_returnsTrue() {
+    Taxonomy existingTax = TaxonomyFaker.taxonomyBuilder(1L);
+    Taxonomy mappedTax = TaxonomyFaker.taxonomyBuilder(1L);
+    mappedTax.setOrganizationTypeDescription("differentDescription");
+
+    boolean result = taxonomySynchronizationService.taxonomyIsChanged(existingTax, mappedTax);
+
+    assertTrue(result);
+  }
+
+  @Test
+  void taxonomyIsChanged_withDifferentMacroAreaCode_returnsTrue() {
+    Taxonomy existingTax = TaxonomyFaker.taxonomyBuilder(1L);
+    Taxonomy mappedTax = TaxonomyFaker.taxonomyBuilder(1L);
+    mappedTax.setMacroAreaCode("differentCode");
+
+    boolean result = taxonomySynchronizationService.taxonomyIsChanged(existingTax, mappedTax);
+
+    assertTrue(result);
+  }
+
+  @Test
+  void taxonomyIsChanged_withDifferentMacroAreaName_returnsTrue() {
+    Taxonomy existingTax = TaxonomyFaker.taxonomyBuilder(1L);
+    Taxonomy mappedTax = TaxonomyFaker.taxonomyBuilder(1L);
+    mappedTax.setMacroAreaName("differentName");
+
+    boolean result = taxonomySynchronizationService.taxonomyIsChanged(existingTax, mappedTax);
+
+    assertTrue(result);
+  }
+
+  @Test
+  void taxonomyIsChanged_withDifferentMacroAreaDescription_returnsTrue() {
+    Taxonomy existingTax = TaxonomyFaker.taxonomyBuilder(1L);
+    Taxonomy mappedTax = TaxonomyFaker.taxonomyBuilder(1L);
+    mappedTax.setMacroAreaDescription("differentDescription");
+
+    boolean result = taxonomySynchronizationService.taxonomyIsChanged(existingTax, mappedTax);
+
+    assertTrue(result);
+  }
+
+  @Test
+  void taxonomyIsChanged_withDifferentServiceTypeCode_returnsTrue() {
+    Taxonomy existingTax = TaxonomyFaker.taxonomyBuilder(1L);
+    Taxonomy mappedTax = TaxonomyFaker.taxonomyBuilder(1L);
+    mappedTax.setServiceTypeCode("differentCode");
+
+    boolean result = taxonomySynchronizationService.taxonomyIsChanged(existingTax, mappedTax);
+
+    assertTrue(result);
+  }
+
+  @Test
+  void taxonomyIsChanged_withDifferentServiceType_returnsTrue() {
+    Taxonomy existingTax = TaxonomyFaker.taxonomyBuilder(1L);
+    Taxonomy mappedTax = TaxonomyFaker.taxonomyBuilder(1L);
+    mappedTax.setServiceType("differentType");
+
+    boolean result = taxonomySynchronizationService.taxonomyIsChanged(existingTax, mappedTax);
+
+    assertTrue(result);
+  }
+
+  @Test
+  void taxonomyIsChanged_withDifferentServiceTypeDescription_returnsTrue() {
+    Taxonomy existingTax = TaxonomyFaker.taxonomyBuilder(1L);
+    Taxonomy mappedTax = TaxonomyFaker.taxonomyBuilder(1L);
+    mappedTax.setServiceTypeDescription("differentDescription");
+
+    boolean result = taxonomySynchronizationService.taxonomyIsChanged(existingTax, mappedTax);
+
+    assertTrue(result);
+  }
+
+  @Test
+  void taxonomyIsChanged_withDifferentStartDateValidity_returnsTrue() {
+    Taxonomy existingTax = TaxonomyFaker.taxonomyBuilder(1L);
+    Taxonomy mappedTax = TaxonomyFaker.taxonomyBuilder(1L);
+    mappedTax.setStartDateValidity(OffsetDateTime.now().plusDays(1));
+
+    boolean result = taxonomySynchronizationService.taxonomyIsChanged(existingTax, mappedTax);
+
+    assertTrue(result);
+  }
+
+  @Test
+  void taxonomyIsChanged_withDifferentEndDateOfValidity_returnsTrue() {
+    Taxonomy existingTax = TaxonomyFaker.taxonomyBuilder(1L);
+    Taxonomy mappedTax = TaxonomyFaker.taxonomyBuilder(1L);
+    mappedTax.setEndDateOfValidity(OffsetDateTime.now().plusDays(2));
+
+    boolean result = taxonomySynchronizationService.taxonomyIsChanged(existingTax, mappedTax);
+
+    assertTrue(result);
+  }
+
+  @Test
+  void taxonomyIsChanged_withDifferentTaxonomyCode_returnsTrue() {
+    Taxonomy existingTax = TaxonomyFaker.taxonomyBuilder(1L);
+    Taxonomy mappedTax = TaxonomyFaker.taxonomyBuilder(1L);
+    mappedTax.setTaxonomyCode("differentCode");
+
+    boolean result = taxonomySynchronizationService.taxonomyIsChanged(existingTax, mappedTax);
+
+    assertTrue(result);
+  }
+
+  @Test
+  void taxonomyIsChanged_withDifferentCollectionReason_returnsTrue() {
+    Taxonomy existingTax = TaxonomyFaker.taxonomyBuilder(1L);
+    Taxonomy mappedTax = TaxonomyFaker.taxonomyBuilder(1L);
+    mappedTax.setCollectionReason("differentReason");
+
+    boolean result = taxonomySynchronizationService.taxonomyIsChanged(existingTax, mappedTax);
+
+    assertTrue(result);
+  }
+
+
+
+
+
 }
