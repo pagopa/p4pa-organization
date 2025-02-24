@@ -1,6 +1,6 @@
 plugins {
 	java
-	id("org.springframework.boot") version "3.4.1"
+	id("org.springframework.boot") version "3.4.3"
 	id("io.spring.dependency-management") version "1.1.7"
 	jacoco
 	id("org.sonarqube") version "6.0.1.5171"
@@ -29,11 +29,11 @@ repositories {
 	mavenCentral()
 }
 
-val springDocOpenApiVersion = "2.7.0"
+val springDocOpenApiVersion = "2.8.5"
 val openApiToolsVersion = "0.2.6"
-val micrometerVersion = "1.4.1"
-val postgresJdbcVersion = "42.7.4"
-val bouncycastleVersion = "1.79"
+val micrometerVersion = "1.4.3"
+val postgresJdbcVersion = "42.7.5"
+val bouncycastleVersion = "1.80"
 
 dependencies {
 	implementation("org.springframework.boot:spring-boot-starter")
@@ -48,11 +48,7 @@ dependencies {
   implementation("io.micrometer:micrometer-registry-prometheus")
 	implementation("com.fasterxml.jackson.datatype:jackson-datatype-jsr310")
 	implementation("org.openapitools:jackson-databind-nullable:$openApiToolsVersion")
-
-  //security
   implementation("org.bouncycastle:bcprov-jdk18on:$bouncycastleVersion")
-
-  //postgres jdbc
   implementation("org.postgresql:postgresql:$postgresJdbcVersion")
 
 	compileOnly("org.projectlombok:lombok")
