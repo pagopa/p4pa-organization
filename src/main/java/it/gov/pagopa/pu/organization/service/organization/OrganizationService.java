@@ -19,11 +19,11 @@ public class OrganizationService {
 
   @Transactional
   public void encryptAndSaveApiKey(Long organizationId, OrganizationApiKeys organizationApiKeys){
-    if (!organizationRepository.existsById(organizationId)) {
-      throw new OrganizationNotFoundException(
-        "Organization with id %s was not found".formatted(organizationId)
-      );
-    }
+//    if (!organizationRepository.existsById(organizationId)) {
+//      throw new OrganizationNotFoundException(
+//        "Organization with id %s was not found".formatted(organizationId)
+//      );
+//    }
 
     byte[] encryptedApiKey = organizationEncryptionService.encrypt(organizationApiKeys.getApiKey());
 
