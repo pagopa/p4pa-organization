@@ -31,7 +31,7 @@ import java.util.stream.Collectors;
 public class OrganizationExceptionHandler {
 
   @ExceptionHandler({ResourceNotFoundException.class, OrganizationNotFoundException.class})
-  public ResponseEntity<OrganizationErrorDTO> handleResourceNotFoundException(ResourceNotFoundException ex, HttpServletRequest request) {
+  public ResponseEntity<OrganizationErrorDTO> handleResourceNotFoundException(RuntimeException ex, HttpServletRequest request) {
     return handleException(ex, request, HttpStatus.NOT_FOUND, OrganizationErrorDTO.CodeEnum.NOT_FOUND);
   }
 
