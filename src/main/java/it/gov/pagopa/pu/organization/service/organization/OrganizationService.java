@@ -27,6 +27,6 @@ public class OrganizationService {
 
     byte[] encryptedApiKey = organizationEncryptionService.encrypt(organizationApiKeys.getApiKey());
 
-    organizationRepository.updateApiKeyByType(organizationId, organizationApiKeys.getKeyType(), encryptedApiKey);
+    organizationRepository.updateApiKeyByType(organizationId, organizationApiKeys.getKeyType().name(), encryptedApiKey);
   }
 }
