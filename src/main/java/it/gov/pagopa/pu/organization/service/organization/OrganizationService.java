@@ -1,7 +1,6 @@
 package it.gov.pagopa.pu.organization.service.organization;
 
 import it.gov.pagopa.pu.organization.dto.generated.OrganizationApiKeys;
-import it.gov.pagopa.pu.organization.exception.custom.OrganizationNotFoundException;
 import it.gov.pagopa.pu.organization.repository.OrganizationRepository;
 import jakarta.transaction.Transactional;
 import org.springframework.stereotype.Service;
@@ -19,14 +18,13 @@ public class OrganizationService {
 
   @Transactional
   public void encryptAndSaveApiKey(Long organizationId, OrganizationApiKeys organizationApiKeys){
-    if (!organizationRepository.existsById(organizationId)) {
-      throw new OrganizationNotFoundException(
-        "Organization with id %s was not found".formatted(organizationId)
-      );
-    }
 
     byte[] encryptedApiKey = organizationEncryptionService.encrypt(organizationApiKeys.getApiKey());
 
-    organizationRepository.updateApiKeyByType(organizationId, organizationApiKeys.getKeyType().name(), encryptedApiKey);
+    switch (organizationApiKeys.getKeyType()) {
+      case IO -> organizationRepository.updateIoApiKey(organizationId, encryptedApiKey);
+      case SEND -> organizationRepository.updateSendApiKey(organizationId, encryptedApiKey);
+      default -> throw new IllegalArgumentException("Unsupported API key type: " + organizationApiKeys.getKeyType());
+    }
   }
 }

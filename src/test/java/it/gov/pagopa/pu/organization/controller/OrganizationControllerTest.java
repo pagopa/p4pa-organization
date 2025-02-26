@@ -34,7 +34,7 @@ class OrganizationControllerTest {
     OrganizationApiKeys organizationApiKeys = new OrganizationApiKeys(OrganizationApiKeys.KeyTypeEnum.IO, "apikey");
 
     mockMvc.perform(
-        put("/organization/apiKey/1")
+        put("/organization/1/apiKey")
           .contentType(MediaType.APPLICATION_JSON_VALUE)
           .content(objectMapper.writeValueAsString(organizationApiKeys)))
       .andExpect(status().isOk())

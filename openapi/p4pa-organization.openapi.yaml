@@ -7,7 +7,7 @@ servers:
   - url: http://localhost:8080
     description: Generated server url
 paths:
-  /organization/apiKey/{organizationId}:
+  /organization/{organizationId}/apiKey:
     put:
       tags:
         - Organization
@@ -95,10 +95,12 @@ components:
           type: string
     OrganizationApiKeys:
       type: object
+      required:
+        - keyType
+        - apiKey
       properties:
         keyType:
           type: string
-          description: The type of API key.
           enum:
             - IO
             - SEND
