@@ -23,8 +23,8 @@ public interface OrganizationRepository extends JpaRepository<Organization, Long
   @Transactional
   @RestResource(exported = false)
   @Query("UPDATE Organization o SET " +
-    "o.ioApiKey = CASE WHEN :typeEnum = 'IO' THEN :apiKey ELSE o.io_api_key END, " +
-    "o.sendApiKey = CASE WHEN :typeEnum = 'SEND' THEN :apiKey ELSE o.send_api_key END " +
+    "o.ioApiKey = CASE WHEN :typeEnum = 'IO' THEN :apiKey ELSE o.ioApiKey END, " +
+    "o.sendApiKey = CASE WHEN :typeEnum = 'SEND' THEN :apiKey ELSE o.sendApiKey END " +
     "WHERE o.id = :organizationId")
   void updateApiKeyByType(@Param("organizationId") Long organizationId,
                           @Param("typeEnum") String typeEnum,
