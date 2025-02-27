@@ -21,16 +21,13 @@ public class OrganizationService {
   public void encryptAndSaveApiKey(Long organizationId, OrganizationApiKeys organizationApiKeys) {
     byte[] encryptedApiKey = organizationEncryptionService.encrypt(organizationApiKeys.getApiKey());
 
-    int updatedRows;
-    switch (organizationApiKeys.getKeyType()) {
-      case IO -> updatedRows = organizationRepository.updateIoApiKey(organizationId, encryptedApiKey);
-      case SEND -> updatedRows = organizationRepository.updateSendApiKey(organizationId, encryptedApiKey);
-      default -> throw new IllegalArgumentException("Unsupported API key type: " + organizationApiKeys.getKeyType());
-    }
+    int updatedRows = switch (organizationApiKeys.getKeyType()) {
+      case IO -> organizationRepository.updateIoApiKey(organizationId, encryptedApiKey);
+      case SEND -> organizationRepository.updateSendApiKey(organizationId, encryptedApiKey);
+    };
 
     if (updatedRows == 0) {
       throw new OrganizationNotFoundException("Organization with ID %s was not found".formatted(organizationId));
     }
   }
-
 }
