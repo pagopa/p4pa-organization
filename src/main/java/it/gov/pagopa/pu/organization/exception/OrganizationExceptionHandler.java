@@ -2,10 +2,13 @@ package it.gov.pagopa.pu.organization.exception;
 
 import com.fasterxml.jackson.databind.JsonMappingException;
 import it.gov.pagopa.pu.organization.dto.generated.OrganizationErrorDTO;
+import it.gov.pagopa.pu.organization.exception.custom.OrganizationNotFoundException;
 import jakarta.servlet.ServletException;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.validation.ValidationException;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.core.Ordered;
+import org.springframework.core.annotation.Order;
 import org.springframework.dao.DataIntegrityViolationException;
 import org.springframework.data.rest.webmvc.ResourceNotFoundException;
 import org.springframework.http.HttpStatus;
@@ -24,10 +27,11 @@ import java.util.stream.Collectors;
 
 @RestControllerAdvice
 @Slf4j
+@Order(Ordered.HIGHEST_PRECEDENCE)
 public class OrganizationExceptionHandler {
 
-  @ExceptionHandler(ResourceNotFoundException.class)
-  public ResponseEntity<OrganizationErrorDTO> handleResourceNotFoundException(ResourceNotFoundException ex, HttpServletRequest request) {
+  @ExceptionHandler({ResourceNotFoundException.class, OrganizationNotFoundException.class})
+  public ResponseEntity<OrganizationErrorDTO> handleResourceNotFoundException(Exception ex, HttpServletRequest request) {
     return handleException(ex, request, HttpStatus.NOT_FOUND, OrganizationErrorDTO.CodeEnum.NOT_FOUND);
   }
 

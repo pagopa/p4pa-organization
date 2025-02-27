@@ -7,6 +7,32 @@ servers:
   - url: http://localhost:8080
     description: Generated server url
 paths:
+  /organization/{organizationId}/apiKey:
+    put:
+      tags:
+        - Organization
+      summary: Save encrypted API keys for IO or SEND
+      operationId: encryptAndSaveApiKey
+      parameters:
+        - name: organizationId
+          in: path
+          required: true
+          schema:
+            type: integer
+            format: int64
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/OrganizationApiKeys'
+      responses:
+        '200':
+          description: OK
+        '404':
+          description: Organization Not Found
+        '500':
+          description: Internal Server Error
   /brokers/apiKey/{brokerId}:
     get:
       tags:
@@ -66,6 +92,19 @@ components:
         acaKey:
           type: string
         gpdKey:
+          type: string
+    OrganizationApiKeys:
+      type: object
+      required:
+        - keyType
+        - apiKey
+      properties:
+        keyType:
+          type: string
+          enum:
+            - IO
+            - SEND
+        apiKey:
           type: string
     OrganizationErrorDTO:
       type: object
