@@ -2,6 +2,7 @@ package it.gov.pagopa.pu.organization.exception;
 
 import com.fasterxml.jackson.databind.JsonMappingException;
 import it.gov.pagopa.pu.organization.dto.generated.OrganizationErrorDTO;
+import it.gov.pagopa.pu.organization.exception.custom.OrganizationNotFoundException;
 import jakarta.servlet.ServletException;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.validation.ValidationException;
@@ -29,8 +30,8 @@ import java.util.stream.Collectors;
 @Order(Ordered.HIGHEST_PRECEDENCE)
 public class OrganizationExceptionHandler {
 
-  @ExceptionHandler(ResourceNotFoundException.class)
-  public ResponseEntity<OrganizationErrorDTO> handleResourceNotFoundException(RuntimeException ex, HttpServletRequest request) {
+  @ExceptionHandler({ResourceNotFoundException.class, OrganizationNotFoundException.class})
+  public ResponseEntity<OrganizationErrorDTO> handleResourceNotFoundException(Exception ex, HttpServletRequest request) {
     return handleException(ex, request, HttpStatus.NOT_FOUND, OrganizationErrorDTO.CodeEnum.NOT_FOUND);
   }
 
