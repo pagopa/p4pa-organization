@@ -33,6 +33,35 @@ paths:
           description: Organization Not Found
         '500':
           description: Internal Server Error
+  /organization/{organizationId}/apiKey/{keyType}:
+    get:
+      tags:
+        - Organization
+      summary: Get API keys for IO or SEND
+      operationId: getOrganizationApiKey
+      parameters:
+        - name: organizationId
+          in: path
+          required: true
+          schema:
+            type: integer
+            format: int64
+        - name: keyType
+          in: path
+          required: true
+          schema:
+            $ref: '#/components/schemas/OrganizationApiKeyType'
+      responses:
+        '200':
+          description: OK
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/OrganizationApiKeys'
+        '404':
+          description: Organization Not Found
+        '500':
+          description: Internal Server Error
   /brokers/apiKey/{brokerId}:
     get:
       tags:
@@ -106,6 +135,11 @@ components:
             - SEND
         apiKey:
           type: string
+    OrganizationApiKeyType:
+      type: string
+      enum:
+        - IO
+        - SEND
     OrganizationErrorDTO:
       type: object
       required:

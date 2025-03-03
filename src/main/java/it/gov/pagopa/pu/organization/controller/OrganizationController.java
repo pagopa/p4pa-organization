@@ -1,6 +1,7 @@
 package it.gov.pagopa.pu.organization.controller;
 
 import it.gov.pagopa.pu.organization.controller.generated.OrganizationApi;
+import it.gov.pagopa.pu.organization.dto.generated.OrganizationApiKeyType;
 import it.gov.pagopa.pu.organization.dto.generated.OrganizationApiKeys;
 import it.gov.pagopa.pu.organization.service.organization.OrganizationService;
 import lombok.extern.slf4j.Slf4j;
@@ -24,4 +25,9 @@ public class OrganizationController implements OrganizationApi {
     return new ResponseEntity<>(HttpStatus.OK);
   }
 
+  @Override
+  public ResponseEntity<OrganizationApiKeys> getOrganizationApiKey(Long organizationId, OrganizationApiKeyType keyType){
+    OrganizationApiKeys organizationApiKey = service.getApiKey(organizationId, keyType);
+    return new ResponseEntity<>(organizationApiKey, HttpStatus.OK);
+  }
 }

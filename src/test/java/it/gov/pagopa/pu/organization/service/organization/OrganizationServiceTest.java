@@ -1,7 +1,9 @@
 package it.gov.pagopa.pu.organization.service.organization;
 
+import it.gov.pagopa.pu.organization.dto.generated.OrganizationApiKeyType;
 import it.gov.pagopa.pu.organization.dto.generated.OrganizationApiKeys;
 import it.gov.pagopa.pu.organization.exception.custom.OrganizationNotFoundException;
+import it.gov.pagopa.pu.organization.model.Organization;
 import it.gov.pagopa.pu.organization.repository.OrganizationRepository;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
@@ -9,7 +11,11 @@ import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.Mock;
 import org.mockito.Mockito;
 import org.mockito.junit.jupiter.MockitoExtension;
+import org.springframework.data.rest.webmvc.ResourceNotFoundException;
 
+import java.util.Optional;
+
+import static it.gov.pagopa.pu.organization.util.faker.OrganizationFaker.buildOrganization;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.mockito.Mockito.verify;
@@ -89,5 +95,71 @@ class OrganizationServiceTest {
       service.encryptAndSaveApiKey(1L, organizationApiKeys));
 
     assertEquals("Organization with ID 1 was not found", exception.getMessage());
+  }
+
+  @Test
+  void givenGetApiKeyIOThenSuccess(){
+    Long organizationId = 1L;
+    Organization organization = buildOrganization();
+    OrganizationApiKeyType keyType = OrganizationApiKeyType.IO;
+
+    OrganizationApiKeys expectedResult = OrganizationApiKeys.builder()
+      .apiKey("apiKey").keyType(OrganizationApiKeys.KeyTypeEnum.IO).build();
+
+    Mockito.when(organizationRepositoryMock.findById(organizationId)).thenReturn(Optional.of(organization));
+    Mockito.when(organizationEncryptionServiceMock.decryptKey(organization.getIoApiKey()))
+      .thenReturn("apiKey");
+
+    OrganizationApiKeys result = service.getApiKey(organizationId, keyType);
+
+    assertEquals(result, expectedResult);
+  }
+
+  @Test
+  void givenGetApiKeyIOWithOrgNotEnabledThenSuccess(){
+    Long organizationId = 1L;
+    Organization organization = buildOrganization();
+    organization.setFlagNotifyIo(false);
+    OrganizationApiKeyType keyType = OrganizationApiKeyType.IO;
+
+    OrganizationApiKeys expectedResult = OrganizationApiKeys.builder()
+      .apiKey(null).keyType(OrganizationApiKeys.KeyTypeEnum.IO).build();
+
+    Mockito.when(organizationRepositoryMock.findById(organizationId)).thenReturn(Optional.of(organization));
+
+    OrganizationApiKeys result = service.getApiKey(organizationId, keyType);
+
+    assertEquals(result, expectedResult);
+  }
+
+  @Test
+  void givenGetApiKeySENDThenSuccess(){
+    Long organizationId = 1L;
+    Organization organization = buildOrganization();
+    OrganizationApiKeyType keyType = OrganizationApiKeyType.SEND;
+
+    OrganizationApiKeys expectedResult = OrganizationApiKeys.builder()
+      .apiKey("apiKey").keyType(OrganizationApiKeys.KeyTypeEnum.SEND).build();
+
+    Mockito.when(organizationRepositoryMock.findById(organizationId)).thenReturn(Optional.of(organization));
+    Mockito.when(organizationEncryptionServiceMock.decryptKey(organization.getSendApiKey()))
+      .thenReturn("apiKey");
+
+    OrganizationApiKeys result = service.getApiKey(organizationId, keyType);
+
+    assertEquals(result, expectedResult);
+  }
+
+  @Test
+  void givenGetApiKeyWithOrgNotFoundThenThrowException(){
+    Long organizationId = 1L;
+    OrganizationApiKeyType keyType = OrganizationApiKeyType.SEND;
+
+    Mockito.when(organizationRepositoryMock.findById(organizationId)).thenReturn(Optional.empty());
+
+    ResourceNotFoundException result = assertThrows(ResourceNotFoundException.class,
+      () -> service.getApiKey(organizationId, keyType));
+
+    assertEquals("Organization [1]", result.getMessage());
   }
 }
