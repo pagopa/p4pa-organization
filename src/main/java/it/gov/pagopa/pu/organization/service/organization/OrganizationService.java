@@ -1,9 +1,12 @@
 package it.gov.pagopa.pu.organization.service.organization;
 
+import it.gov.pagopa.pu.organization.dto.generated.OrganizationApiKeyType;
 import it.gov.pagopa.pu.organization.dto.generated.OrganizationApiKeys;
 import it.gov.pagopa.pu.organization.exception.custom.OrganizationNotFoundException;
+import it.gov.pagopa.pu.organization.model.Organization;
 import it.gov.pagopa.pu.organization.repository.OrganizationRepository;
 import jakarta.transaction.Transactional;
+import org.springframework.data.rest.webmvc.ResourceNotFoundException;
 import org.springframework.stereotype.Service;
 
 @Service
@@ -29,5 +32,15 @@ public class OrganizationService {
     if (updatedRows == 0) {
       throw new OrganizationNotFoundException("Organization with ID %s was not found".formatted(organizationId));
     }
+  }
+
+  public String getApiKey(Long organizationId, OrganizationApiKeyType keyType) {
+    Organization organization = organizationRepository.findById(organizationId)
+      .orElseThrow(() -> new ResourceNotFoundException("Organization [%s]".formatted(organizationId)));
+
+    return switch (keyType) {
+      case IO -> organization.isFlagNotifyIo() ? organizationEncryptionService.decryptKey(organization.getIoApiKey()) : null;
+      case SEND -> organizationEncryptionService.decryptKey(organization.getSendApiKey());
+    };
   }
 }
