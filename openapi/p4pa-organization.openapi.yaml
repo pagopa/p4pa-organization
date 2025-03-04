@@ -57,7 +57,7 @@ paths:
           content:
             application/json:
               schema:
-                $ref: '#/components/schemas/OrganizationApiKeys'
+                type: string
         '404':
           description: Organization Not Found
         '500':

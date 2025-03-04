@@ -16,7 +16,8 @@ import org.springframework.test.web.servlet.MvcResult;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.mockito.Mockito.verify;
-import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.*;
+import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
+import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.put;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
 @WebMvcTest(OrganizationController.class)
@@ -49,18 +50,15 @@ class OrganizationControllerTest {
 
   @Test
   void whenGetApiKeyThenOk() throws Exception {
-
-    OrganizationApiKeys organizationApiKeys = new OrganizationApiKeys(OrganizationApiKeys.KeyTypeEnum.IO, "apikey");
-    Mockito.when(organizationServiceMock.getApiKey(1L, OrganizationApiKeyType.IO)).thenReturn(organizationApiKeys);
+    String apiKey = "apikey";
+    Mockito.when(organizationServiceMock.getApiKey(1L, OrganizationApiKeyType.IO)).thenReturn(apiKey);
 
     MvcResult result = mockMvc.perform(
         get("/organization/1/apiKey/IO")
-          .contentType(MediaType.APPLICATION_JSON_VALUE)
-          .content(objectMapper.writeValueAsString(organizationApiKeys)))
+          .contentType(MediaType.APPLICATION_JSON_VALUE))
       .andExpect(status().isOk())
       .andReturn();
 
-    OrganizationApiKeys resultResponse = objectMapper.readValue(result.getResponse().getContentAsString(), OrganizationApiKeys.class);
-    assertEquals(resultResponse, organizationApiKeys);
+    assertEquals(apiKey, result.getResponse().getContentAsString());
   }
 }

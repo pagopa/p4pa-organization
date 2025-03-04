@@ -34,18 +34,13 @@ public class OrganizationService {
     }
   }
 
-  public OrganizationApiKeys getApiKey(Long organizationId, OrganizationApiKeyType keyType) {
+  public String getApiKey(Long organizationId, OrganizationApiKeyType keyType) {
     Organization organization = organizationRepository.findById(organizationId)
       .orElseThrow(() -> new ResourceNotFoundException("Organization [%s]".formatted(organizationId)));
 
-    String apiKey = switch (keyType) {
+    return switch (keyType) {
       case IO -> organization.isFlagNotifyIo() ? organizationEncryptionService.decryptKey(organization.getIoApiKey()) : null;
       case SEND -> organizationEncryptionService.decryptKey(organization.getSendApiKey());
     };
-
-    return OrganizationApiKeys.builder()
-      .keyType(OrganizationApiKeys.KeyTypeEnum.valueOf(keyType.getValue()))
-      .apiKey(apiKey)
-      .build();
   }
 }

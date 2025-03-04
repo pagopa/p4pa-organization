@@ -16,8 +16,7 @@ import org.springframework.data.rest.webmvc.ResourceNotFoundException;
 import java.util.Optional;
 
 import static it.gov.pagopa.pu.organization.util.faker.OrganizationFaker.buildOrganization;
-import static org.junit.jupiter.api.Assertions.assertEquals;
-import static org.junit.jupiter.api.Assertions.assertThrows;
+import static org.junit.jupiter.api.Assertions.*;
 import static org.mockito.Mockito.verify;
 
 @ExtendWith(MockitoExtension.class)
@@ -103,16 +102,15 @@ class OrganizationServiceTest {
     Organization organization = buildOrganization();
     OrganizationApiKeyType keyType = OrganizationApiKeyType.IO;
 
-    OrganizationApiKeys expectedResult = OrganizationApiKeys.builder()
-      .apiKey("apiKey").keyType(OrganizationApiKeys.KeyTypeEnum.IO).build();
+    String expectedApiKey = "apiKey";
 
     Mockito.when(organizationRepositoryMock.findById(organizationId)).thenReturn(Optional.of(organization));
     Mockito.when(organizationEncryptionServiceMock.decryptKey(organization.getIoApiKey()))
-      .thenReturn("apiKey");
+      .thenReturn(expectedApiKey);
 
-    OrganizationApiKeys result = service.getApiKey(organizationId, keyType);
+    String result = service.getApiKey(organizationId, keyType);
 
-    assertEquals(result, expectedResult);
+    assertEquals(expectedApiKey, result);
   }
 
   @Test
@@ -122,14 +120,11 @@ class OrganizationServiceTest {
     organization.setFlagNotifyIo(false);
     OrganizationApiKeyType keyType = OrganizationApiKeyType.IO;
 
-    OrganizationApiKeys expectedResult = OrganizationApiKeys.builder()
-      .apiKey(null).keyType(OrganizationApiKeys.KeyTypeEnum.IO).build();
-
     Mockito.when(organizationRepositoryMock.findById(organizationId)).thenReturn(Optional.of(organization));
 
-    OrganizationApiKeys result = service.getApiKey(organizationId, keyType);
+    String result = service.getApiKey(organizationId, keyType);
 
-    assertEquals(result, expectedResult);
+    assertNull(result);
   }
 
   @Test
@@ -138,16 +133,15 @@ class OrganizationServiceTest {
     Organization organization = buildOrganization();
     OrganizationApiKeyType keyType = OrganizationApiKeyType.SEND;
 
-    OrganizationApiKeys expectedResult = OrganizationApiKeys.builder()
-      .apiKey("apiKey").keyType(OrganizationApiKeys.KeyTypeEnum.SEND).build();
+    String expectedApiKey = "apiKey";
 
     Mockito.when(organizationRepositoryMock.findById(organizationId)).thenReturn(Optional.of(organization));
     Mockito.when(organizationEncryptionServiceMock.decryptKey(organization.getSendApiKey()))
-      .thenReturn("apiKey");
+      .thenReturn(expectedApiKey);
 
-    OrganizationApiKeys result = service.getApiKey(organizationId, keyType);
+    String result = service.getApiKey(organizationId, keyType);
 
-    assertEquals(result, expectedResult);
+    assertEquals(expectedApiKey, result);
   }
 
   @Test
