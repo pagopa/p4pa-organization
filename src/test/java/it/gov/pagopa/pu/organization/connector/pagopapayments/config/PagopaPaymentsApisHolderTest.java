@@ -9,9 +9,8 @@ import org.mockito.Mock;
 import org.mockito.Mockito;
 import org.mockito.junit.jupiter.MockitoExtension;
 import org.springframework.boot.web.client.RestTemplateBuilder;
+import org.springframework.core.ParameterizedTypeReference;
 import org.springframework.web.util.DefaultUriBuilderFactory;
-
-import java.util.List;
 
 @ExtendWith(MockitoExtension.class)
 class PagopaPaymentsApisHolderTest extends BaseApiHolderTest {
@@ -43,7 +42,7 @@ class PagopaPaymentsApisHolderTest extends BaseApiHolderTest {
   void whenGetTaxonomiesApiThenAuthenticationShouldBeSetInThreadSafeMode() throws InterruptedException {
     assertAuthenticationShouldBeSetInThreadSafeMode(
       accessToken -> pagopaPaymentsApisHolder.getTaxonomiesApi(accessToken).fetchTaxonomies(),
-      List.class,
+      new ParameterizedTypeReference<>() {},
       pagopaPaymentsApisHolder::unload);
   }
 }
