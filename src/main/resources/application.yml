@@ -23,6 +23,10 @@ spring:
       basePath: crud
 
 management:
+  info:
+    build.enabled: true
+    java.enabled: true
+    git.enabled: true
   endpoints:
     jmx:
       exposure.include: "*"
