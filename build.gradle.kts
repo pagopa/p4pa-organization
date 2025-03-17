@@ -35,6 +35,7 @@ val openApiToolsVersion = "0.2.6"
 val micrometerVersion = "1.4.3"
 val postgresJdbcVersion = "42.7.5"
 val bouncycastleVersion = "1.80"
+val httpClientVersion = "5.4.2"
 
 dependencies {
   implementation("org.springframework.boot:spring-boot-starter")
@@ -51,6 +52,7 @@ dependencies {
   implementation("org.openapitools:jackson-databind-nullable:$openApiToolsVersion")
   implementation("org.bouncycastle:bcprov-jdk18on:$bouncycastleVersion")
   implementation("org.postgresql:postgresql:$postgresJdbcVersion")
+  implementation("org.apache.httpcomponents.client5:httpclient5:$httpClientVersion")
 
   compileOnly("org.projectlombok:lombok")
   annotationProcessor("org.projectlombok:lombok")
