@@ -1,5 +1,6 @@
 package it.gov.pagopa.pu.organization.repository;
 
+import it.gov.pagopa.pu.organization.enums.OrganizationStatus;
 import it.gov.pagopa.pu.organization.model.Organization;
 import jakarta.transaction.Transactional;
 import org.springframework.data.jpa.repository.JpaRepository;
@@ -16,7 +17,7 @@ public interface OrganizationRepository extends JpaRepository<Organization, Long
 
   Optional<Organization> findByIpaCode(String ipaCode);
   Optional<Organization> findByOrgFiscalCode(String orgFiscalCode);
-  List<Organization> findByBrokerId(Long brokerId);
+  List<Organization> findByBrokerIdAndStatus(Long brokerId, OrganizationStatus status);
 
   @Modifying
   @Transactional
