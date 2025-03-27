@@ -6,6 +6,7 @@ import jakarta.transaction.Transactional;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Modifying;
 import org.springframework.data.jpa.repository.Query;
+import org.springframework.data.repository.query.Param;
 import org.springframework.data.rest.core.annotation.RepositoryRestResource;
 import org.springframework.data.rest.core.annotation.RestResource;
 
@@ -18,6 +19,10 @@ public interface OrganizationRepository extends JpaRepository<Organization, Long
   Optional<Organization> findByIpaCode(String ipaCode);
   Optional<Organization> findByOrgFiscalCode(String orgFiscalCode);
   List<Organization> findByBrokerIdAndStatus(Long brokerId, OrganizationStatus status);
+
+  @Query("SELECT o FROM Organization o WHERE o.brokerId = :brokerId AND " +
+  "(:orgName is null OR o.orgName = :orgName)")
+  List<Organization> findByBrokerIdAndOrgName(@Param("brokerId") Long brokerId, @Param("orgName") String orgName);
 
   @Modifying
   @Transactional
