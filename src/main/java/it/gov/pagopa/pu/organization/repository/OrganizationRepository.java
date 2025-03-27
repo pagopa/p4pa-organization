@@ -3,6 +3,8 @@ package it.gov.pagopa.pu.organization.repository;
 import it.gov.pagopa.pu.organization.enums.OrganizationStatus;
 import it.gov.pagopa.pu.organization.model.Organization;
 import jakarta.transaction.Transactional;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Modifying;
 import org.springframework.data.jpa.repository.Query;
@@ -22,10 +24,9 @@ public interface OrganizationRepository extends JpaRepository<Organization, Long
 
   @Query("SELECT o FROM Organization o WHERE o.brokerId = :brokerId AND " +
   "(:orgName is null OR o.orgName = :orgName)")
-  List<Organization> findByBrokerIdAndOrgName(@Param("brokerId") Long brokerId, @Param("orgName") String orgName);
+  Page<Organization> findByBrokerIdAndOrgName(@Param("brokerId") Long brokerId, @Param("orgName") String orgName, Pageable pageable);
 
   @Modifying
-  @Transactional
   @RestResource(exported = false)
   @Query("UPDATE Organization o SET o.ioApiKey = :apiKey WHERE o.id = :organizationId")
   int updateIoApiKey(Long organizationId, byte[] apiKey);
