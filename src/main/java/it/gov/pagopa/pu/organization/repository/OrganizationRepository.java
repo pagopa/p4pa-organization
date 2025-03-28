@@ -32,6 +32,7 @@ public interface OrganizationRepository extends
     @Param("orgName") String orgName, Pageable pageable);
 
   @Modifying
+  @Transactional
   @RestResource(exported = false)
   @Query("UPDATE Organization o SET o.ioApiKey = :apiKey WHERE o.id = :organizationId")
   int updateIoApiKey(Long organizationId, byte[] apiKey);
