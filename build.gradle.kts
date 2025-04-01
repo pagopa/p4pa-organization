@@ -1,3 +1,5 @@
+import java.util.*
+
 plugins {
   java
   id("org.springframework.boot") version "3.4.3"
@@ -132,7 +134,7 @@ springBoot {
   mainClass.value("it.gov.pagopa.pu.organization.OrganizationApplication")
 }
 
-var targetEnv = when (grgit.branch.current().name) {
+var targetEnv = when (Objects.requireNonNullElse(System.getProperty("targetBranch"), grgit.branch.current().name)) {
   "uat" -> "uat"
   "main" -> "main"
   else -> "develop"
