@@ -11,6 +11,7 @@ import org.mockito.MockedStatic;
 import org.mockito.Mockito;
 import org.mockito.junit.jupiter.MockitoExtension;
 
+import java.nio.charset.StandardCharsets;
 import java.util.List;
 import java.util.stream.Stream;
 
@@ -70,4 +71,26 @@ class BrokerEncryptionServiceTest {
     Assertions.assertNull(response.getGpdKey());
   }
 
+  @Test
+  void givenNullApiKeyWhenEncryptKeyThenNull(){
+    Assertions.assertNull(brokerEncryptionService.encryptKey(null));
+  }
+
+  @Test
+  void whenEncryptKeyThenOk(){
+
+    //given
+    try (MockedStatic<AESUtils> aesUtilsMock = Mockito.mockStatic(AESUtils.class)) {
+      String apiKey = "plainKey";
+      byte[] expectedEncryptedKey = "cipheredKey".getBytes(StandardCharsets.UTF_8);
+      aesUtilsMock.when(() -> AESUtils.encrypt(VALID_BROKER_ENCRYPT_PASSWORD, apiKey))
+        .thenReturn(expectedEncryptedKey);
+
+      //when
+      byte[] result = brokerEncryptionService.encryptKey(apiKey);
+
+      //verify
+      Assertions.assertSame(expectedEncryptedKey, result);
+    }
+  }
 }

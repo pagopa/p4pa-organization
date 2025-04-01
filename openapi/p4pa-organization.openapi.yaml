@@ -62,7 +62,7 @@ paths:
           description: Organization Not Found
         '500':
           description: Internal Server Error
-  /brokers/apiKey/{brokerId}:
+  /brokers/{brokerId}/apiKey:
     get:
       tags:
         - Broker
@@ -94,6 +94,31 @@ paths:
             application/hal+json:
               schema:
                 $ref: '#/components/schemas/BrokerApiKeys'
+    put:
+      tags:
+        - Broker
+      summary: Save encrypted API keys
+      operationId: encryptAndSaveBrokerApiKey
+      parameters:
+        - name: brokerId
+          in: path
+          required: true
+          schema:
+            type: integer
+            format: int64
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/BrokerApiKey'
+      responses:
+        '200':
+          description: OK
+        '404':
+          description: Organization Not Found
+        '500':
+          description: Internal Server Error
   /taxonomies/sync:
     get:
       tags:
@@ -121,6 +146,20 @@ components:
         acaKey:
           type: string
         gpdKey:
+          type: string
+    BrokerApiKey:
+      type: object
+      required:
+        - keyType
+        - apiKey
+      properties:
+        keyType:
+          type: string
+          enum:
+            - SYNC
+            - ACA
+            - GPD
+        apiKey:
           type: string
     OrganizationApiKeys:
       type: object
