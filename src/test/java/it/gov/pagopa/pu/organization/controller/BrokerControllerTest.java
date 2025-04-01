@@ -1,7 +1,9 @@
 package it.gov.pagopa.pu.organization.controller;
 
+import it.gov.pagopa.pu.organization.dto.generated.BrokerApiKey;
 import it.gov.pagopa.pu.organization.dto.generated.BrokerApiKeys;
 import it.gov.pagopa.pu.organization.service.broker.BrokerService;
+import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
@@ -20,6 +22,11 @@ class BrokerControllerTest {
   @InjectMocks
   private BrokerController brokerController;
 
+  @AfterEach
+  void verifyNoMoreInteractions(){
+    Mockito.verifyNoMoreInteractions(brokerServiceMock);
+  }
+
   private static final Long VALID_BROKER_ID = 1L;
 
   private static final BrokerApiKeys VALID_BROKER_API_KEYS = BrokerApiKeys.builder()
@@ -37,6 +44,19 @@ class BrokerControllerTest {
     //verify
     Assertions.assertNotNull(response);
     Assertions.assertEquals(VALID_BROKER_API_KEYS, response.getBody());
-    Mockito.verify(brokerServiceMock, Mockito.times(1)).getBrokerApiKeys(VALID_BROKER_ID);
+  }
+
+  @Test
+  void givenValidBrokerWhenEncryptAndSaveBrokerApiKeyThenOk(){
+    //given
+    BrokerApiKey brokerApiKey = new BrokerApiKey();
+
+    Mockito.doNothing().when(brokerServiceMock)
+      .encryptAndSaveApiKey(Mockito.same(VALID_BROKER_ID), Mockito.same(brokerApiKey));
+    //when
+    ResponseEntity<Void> response = brokerController.encryptAndSaveBrokerApiKey(VALID_BROKER_ID, brokerApiKey);
+    //verify
+    Assertions.assertNotNull(response);
+    Assertions.assertTrue(response.getStatusCode().is2xxSuccessful());
   }
 }

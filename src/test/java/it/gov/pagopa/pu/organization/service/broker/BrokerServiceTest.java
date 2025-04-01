@@ -1,12 +1,16 @@
 package it.gov.pagopa.pu.organization.service.broker;
 
+import it.gov.pagopa.pu.organization.dto.generated.BrokerApiKey;
 import it.gov.pagopa.pu.organization.dto.generated.BrokerApiKeys;
 import it.gov.pagopa.pu.organization.model.Broker;
 import it.gov.pagopa.pu.organization.repository.BrokerRepository;
+import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
+import org.junit.jupiter.params.ParameterizedTest;
+import org.junit.jupiter.params.provider.EnumSource;
 import org.mockito.Mock;
 import org.mockito.Mockito;
 import org.mockito.junit.jupiter.MockitoExtension;
@@ -38,20 +42,25 @@ class BrokerServiceTest {
   private BrokerRepository brokerRepositoryMock;
 
   @Mock
-  private BrokerEncryptionService brokerEncryptionService;
+  private BrokerEncryptionService brokerEncryptionServiceMock;
 
   private BrokerService brokerService;
 
   @BeforeEach
   void setUp() {
-    brokerService = new BrokerService(brokerRepositoryMock, brokerEncryptionService);
+    brokerService = new BrokerService(brokerRepositoryMock, brokerEncryptionServiceMock);
+  }
+
+  @AfterEach
+  void verifyNoMoreInteractions(){
+    Mockito.verifyNoMoreInteractions(brokerRepositoryMock, brokerEncryptionServiceMock);
   }
 
   @Test
   void givenValidBrokerIdWhenGetBrokerApiKeysThenOk(){
     //given
     Mockito.when(brokerRepositoryMock.findById(VALID_BROKER_ID)).thenReturn(Optional.of(VALID_BROKER));
-    Mockito.when(brokerEncryptionService.getBrokerDecryptedApiKeys(VALID_BROKER)).thenReturn(VALID_BROKER_API_KEYS);
+    Mockito.when(brokerEncryptionServiceMock.getBrokerDecryptedApiKeys(VALID_BROKER)).thenReturn(VALID_BROKER_API_KEYS);
 
     //when
     BrokerApiKeys response = brokerService.getBrokerApiKeys(VALID_BROKER_ID);
@@ -60,8 +69,6 @@ class BrokerServiceTest {
     Assertions.assertEquals(List.of(VALID_ENCRYPTED_SYNC_PASSWORD).toString(),response.getSyncKey());
     Assertions.assertEquals(List.of(VALID_ENCRYPTED_ACA_PASSWORD).toString(),response.getAcaKey());
     Assertions.assertEquals(List.of(VALID_ENCRYPTED_GPD_PASSWORD).toString(),response.getGpdKey());
-    Mockito.verify(brokerRepositoryMock, Mockito.times(1)).findById(VALID_BROKER_ID);
-    Mockito.verify(brokerEncryptionService, Mockito.times(1)).getBrokerDecryptedApiKeys(VALID_BROKER);
   }
 
   @Test
@@ -75,5 +82,58 @@ class BrokerServiceTest {
 
     //verify
     Assertions.assertEquals(errorMessage, exception.getMessage());
+  }
+
+  @Test
+  void givenNotFoundBrokerIdWhenEncryptAndSaveApiKeyThenException(){
+    //given
+    BrokerApiKey brokerApiKey = new BrokerApiKey();
+    String errorMessage = "broker [%s]".formatted(VALID_BROKER_ID);
+    Mockito.when(brokerRepositoryMock.findById(VALID_BROKER_ID)).thenThrow(new ResourceNotFoundException(errorMessage));
+
+    //when
+    ResourceNotFoundException exception = Assertions.assertThrows(ResourceNotFoundException.class, () -> brokerService.encryptAndSaveApiKey(VALID_BROKER_ID, brokerApiKey));
+
+    //verify
+    Assertions.assertEquals(errorMessage, exception.getMessage());
+  }
+
+  @ParameterizedTest
+  @EnumSource(BrokerApiKey.KeyTypeEnum.class)
+  void whenEncryptAndSaveApiKeyThenOk(BrokerApiKey.KeyTypeEnum keyType){
+    //given
+    Broker broker = new Broker();
+    String apiKey = "apiKey";
+    byte[] encryptedKey = new byte[0];
+
+    Mockito.when(brokerRepositoryMock.findById(VALID_BROKER_ID))
+      .thenReturn(Optional.of(broker));
+    Mockito.when(brokerEncryptionServiceMock.encryptKey(apiKey))
+      .thenReturn(encryptedKey);
+
+    Mockito.when(brokerRepositoryMock.save(Mockito.argThat(i -> {
+      Assertions.assertSame(i, broker);
+      byte[] storedKey = switch (keyType){
+        case SYNC -> broker.getSyncKey();
+        case ACA -> broker.getAcaKey();
+        case GPD -> broker.getGpdKey();
+      };
+      Assertions.assertSame(encryptedKey, storedKey);
+
+      if(!BrokerApiKey.KeyTypeEnum.SYNC.equals(keyType)){
+        Assertions.assertNull(broker.getSyncKey());
+      }
+      if(!BrokerApiKey.KeyTypeEnum.ACA.equals(keyType)){
+        Assertions.assertNull(broker.getAcaKey());
+      }
+      if(!BrokerApiKey.KeyTypeEnum.GPD.equals(keyType)){
+        Assertions.assertNull(broker.getGpdKey());
+      }
+      return true;
+    })))
+      .thenReturn(broker);
+
+    //when
+    brokerService.encryptAndSaveApiKey(VALID_BROKER_ID, new BrokerApiKey(keyType, apiKey));
   }
 }
