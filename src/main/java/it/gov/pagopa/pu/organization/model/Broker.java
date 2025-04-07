@@ -41,7 +41,7 @@ public class Broker extends BaseEntity implements Serializable {
   private String broadcastStationId;
   private byte[] syncKey;
   private byte[] gpdKey;
-  private byte[] printNoticeKey;
+  private byte[] generateNoticeKey;
   private byte[] acaKey;
   @JdbcTypeCode(SqlTypes.JSON)
   @NotNull

@@ -34,7 +34,7 @@ public class BrokerService {
       case SYNC -> broker.setSyncKey(encryptedKey);
       case ACA -> broker.setAcaKey(encryptedKey);
       case GPD -> broker.setGpdKey(encryptedKey);
-      case PRINT_NOTICE -> broker.setPrintNoticeKey(encryptedKey);
+      case GENERATE_NOTICE -> broker.setGenerateNoticeKey(encryptedKey);
     }
     brokerRepository.save(broker);
   }

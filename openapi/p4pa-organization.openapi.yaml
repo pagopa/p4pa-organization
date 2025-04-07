@@ -147,7 +147,7 @@ components:
           type: string
         gpdKey:
           type: string
-        printNoticeKey:
+        generateNoticeKey:
           type: string
     BrokerApiKey:
       type: object
@@ -161,7 +161,7 @@ components:
             - SYNC
             - ACA
             - GPD
-            - PRINT_NOTICE
+            - GENERATE_NOTICE
         apiKey:
           type: string
     OrganizationApiKeys:

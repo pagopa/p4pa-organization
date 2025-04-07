@@ -117,7 +117,7 @@ class BrokerServiceTest {
         case SYNC -> broker.getSyncKey();
         case ACA -> broker.getAcaKey();
         case GPD -> broker.getGpdKey();
-        case PRINT_NOTICE -> broker.getPrintNoticeKey();
+        case GENERATE_NOTICE -> broker.getGenerateNoticeKey();
       };
       Assertions.assertSame(encryptedKey, storedKey);
 
@@ -130,8 +130,8 @@ class BrokerServiceTest {
         if(!BrokerApiKey.KeyTypeEnum.GPD.equals(keyType)){
           Assertions.assertNull(broker.getGpdKey());
         }
-        if(!BrokerApiKey.KeyTypeEnum.PRINT_NOTICE.equals(keyType)){
-          Assertions.assertNull(broker.getPrintNoticeKey());
+        if(!BrokerApiKey.KeyTypeEnum.GENERATE_NOTICE.equals(keyType)){
+          Assertions.assertNull(broker.getGenerateNoticeKey());
         }
       return true;
     })))
