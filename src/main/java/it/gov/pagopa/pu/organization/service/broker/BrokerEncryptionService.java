@@ -1,6 +1,7 @@
 package it.gov.pagopa.pu.organization.service.broker;
 
 import it.gov.pagopa.pu.organization.dto.generated.BrokerApiKey;
+import it.gov.pagopa.pu.organization.dto.generated.BrokerApiKeyType;
 import it.gov.pagopa.pu.organization.dto.generated.BrokerApiKeys;
 import it.gov.pagopa.pu.organization.model.Broker;
 import it.gov.pagopa.pu.organization.util.AESUtils;
@@ -25,27 +26,40 @@ public class BrokerEncryptionService {
 
   private final Map<byte[], String> apiKeyDecryptMap = new ConcurrentHashMap<>();
 
-  public BrokerApiKeys getBrokerDecryptedApiKeys(Broker broker){
+  public BrokerApiKeys getBrokerDecryptedApiKeys(Broker broker) {
     return BrokerApiKeys.builder()
-      .syncKey(decryptKey(broker.getSyncKey(),BrokerApiKey.KeyTypeEnum.SYNC, broker.getBrokerId()))
-      .acaKey(decryptKey(broker.getAcaKey(),BrokerApiKey.KeyTypeEnum.ACA, broker.getBrokerId()))
-      .gpdKey(decryptKey(broker.getGpdKey(),BrokerApiKey.KeyTypeEnum.GPD, broker.getBrokerId()))
+      .syncKey(decryptKey(broker.getSyncKey(), BrokerApiKeyType.SYNC, broker.getBrokerId()))
+      .acaKey(decryptKey(broker.getAcaKey(), BrokerApiKeyType.ACA, broker.getBrokerId()))
+      .gpdKey(decryptKey(broker.getGpdKey(), BrokerApiKeyType.GPD, broker.getBrokerId()))
       .build();
   }
 
-  private String decryptKey(byte[] encryptedKey, BrokerApiKey.KeyTypeEnum type, Long brokerId){
-    if(encryptedKey==null || encryptedKey.length==0) {
+  public String getBrokerDecryptedApiKey(Broker broker, BrokerApiKeyType keyType) {
+    return switch (keyType) {
+      case SYNC ->
+        decryptKey(broker.getSyncKey(), BrokerApiKeyType.SYNC, broker.getBrokerId());
+      case ACA ->
+        decryptKey(broker.getAcaKey(), BrokerApiKeyType.ACA, broker.getBrokerId());
+      case GPD ->
+        decryptKey(broker.getGpdKey(), BrokerApiKeyType.GPD, broker.getBrokerId());
+      case GENERATE_NOTICE ->
+        decryptKey(broker.getGenerateNoticeKey(), BrokerApiKeyType.GENERATE_NOTICE, broker.getBrokerId());
+    };
+  }
+
+  private String decryptKey(byte[] encryptedKey, BrokerApiKeyType type, Long brokerId) {
+    if (encryptedKey == null || encryptedKey.length == 0) {
       log.debug("null or empty api-key");
       return null;
     }
     return apiKeyDecryptMap.computeIfAbsent(encryptedKey, c -> {
       log.debug("invoking AESUtils to decrypt api-key[{}] for broker[{}]", type, brokerId);
-      return AESUtils.decrypt(brokerEncryptPassword,c);
+      return AESUtils.decrypt(brokerEncryptPassword, c);
     });
   }
 
-  public byte[] encryptKey(String apiKey){
-    if(StringUtils.isEmpty(apiKey)) {
+  public byte[] encryptKey(String apiKey) {
+    if (StringUtils.isEmpty(apiKey)) {
       return null;
     }
     byte[] encryptedKey = AESUtils.encrypt(brokerEncryptPassword, apiKey);

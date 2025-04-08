@@ -1,7 +1,9 @@
 package it.gov.pagopa.pu.organization.controller;
 
 import it.gov.pagopa.pu.organization.dto.generated.BrokerApiKey;
+import it.gov.pagopa.pu.organization.dto.generated.BrokerApiKeyType;
 import it.gov.pagopa.pu.organization.dto.generated.BrokerApiKeys;
+import it.gov.pagopa.pu.organization.dto.generated.OrganizationApiKeyType;
 import it.gov.pagopa.pu.organization.service.broker.BrokerService;
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.Assertions;
@@ -11,7 +13,13 @@ import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.Mockito;
 import org.mockito.junit.jupiter.MockitoExtension;
+import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
+import org.springframework.test.web.servlet.MvcResult;
+
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
+import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
 @ExtendWith(MockitoExtension.class)
 class BrokerControllerTest {
@@ -33,6 +41,7 @@ class BrokerControllerTest {
     .syncKey("sync")
     .acaKey("aca")
     .gpdKey("gpd")
+    .generateNoticeKey("notice")
     .build();
 
   @Test
@@ -58,5 +67,16 @@ class BrokerControllerTest {
     //verify
     Assertions.assertNotNull(response);
     Assertions.assertTrue(response.getStatusCode().is2xxSuccessful());
+  }
+
+  @Test
+  void givenValidBrokerWhenGetApiKeyThenOk() {
+    //given
+    Mockito.when(brokerServiceMock.getBrokerApiKey(VALID_BROKER_ID, BrokerApiKeyType.GENERATE_NOTICE)).thenReturn("validKey");
+    //when
+    ResponseEntity<String> response = brokerController.getBrokerApiKey(VALID_BROKER_ID, BrokerApiKeyType.GENERATE_NOTICE);
+    //verify
+    Assertions.assertNotNull(response);
+    Assertions.assertEquals("validKey", response.getBody());
   }
 }

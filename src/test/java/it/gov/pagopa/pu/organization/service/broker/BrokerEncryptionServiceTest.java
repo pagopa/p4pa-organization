@@ -1,5 +1,6 @@
 package it.gov.pagopa.pu.organization.service.broker;
 
+import it.gov.pagopa.pu.organization.dto.generated.BrokerApiKeyType;
 import it.gov.pagopa.pu.organization.dto.generated.BrokerApiKeys;
 import it.gov.pagopa.pu.organization.model.Broker;
 import it.gov.pagopa.pu.organization.util.AESUtils;
@@ -22,12 +23,14 @@ class BrokerEncryptionServiceTest {
   private static final byte[] VALID_ENCRYPTED_SYNC_PASSWORD = new byte[]{1, 2, 3};
   private static final byte[] VALID_ENCRYPTED_ACA_PASSWORD = new byte[]{4, 5, 6};
   private static final byte[] VALID_ENCRYPTED_GPD_PASSWORD = new byte[]{7, 8, 9};
+  private static final byte[] VALID_ENCRYPTED_GENERATE_NOTICE_PASSWORD = new byte[]{10, 11, 12};
   private static final Long VALID_BROKER_ID = 1L;
   private static final Broker VALID_BROKER = Broker.builder()
     .brokerId(VALID_BROKER_ID)
     .syncKey(VALID_ENCRYPTED_SYNC_PASSWORD)
     .acaKey(VALID_ENCRYPTED_ACA_PASSWORD)
     .gpdKey(VALID_ENCRYPTED_GPD_PASSWORD)
+    .generateNoticeKey(VALID_ENCRYPTED_GENERATE_NOTICE_PASSWORD)
     .build();
 
   private BrokerEncryptionService brokerEncryptionService;
@@ -38,27 +41,27 @@ class BrokerEncryptionServiceTest {
   }
 
   @Test
-  void givenValidBrokerWhenGetBrokerDecryptedApiKeysThenOk(){
+  void givenValidBrokerWhenGetBrokerDecryptedApiKeysThenOk() {
     //given
     try (MockedStatic<AESUtils> aesUtilsMock = Mockito.mockStatic(AESUtils.class)) {
-      Stream.of(VALID_ENCRYPTED_SYNC_PASSWORD, VALID_ENCRYPTED_ACA_PASSWORD, VALID_ENCRYPTED_GPD_PASSWORD).forEach( p ->
+      Stream.of(VALID_ENCRYPTED_SYNC_PASSWORD, VALID_ENCRYPTED_ACA_PASSWORD, VALID_ENCRYPTED_GPD_PASSWORD).forEach(p ->
         aesUtilsMock.when(() -> AESUtils.decrypt(VALID_BROKER_ENCRYPT_PASSWORD, p))
           .thenReturn(List.of(p).toString())
-        );
+      );
 
       //when
       BrokerApiKeys response = brokerEncryptionService.getBrokerDecryptedApiKeys(VALID_BROKER);
 
       //verify
-      Assertions.assertEquals(List.of(VALID_ENCRYPTED_SYNC_PASSWORD).toString(),response.getSyncKey());
-      Assertions.assertEquals(List.of(VALID_ENCRYPTED_ACA_PASSWORD).toString(),response.getAcaKey());
-      Assertions.assertEquals(List.of(VALID_ENCRYPTED_GPD_PASSWORD).toString(),response.getGpdKey());
+      Assertions.assertEquals(List.of(VALID_ENCRYPTED_SYNC_PASSWORD).toString(), response.getSyncKey());
+      Assertions.assertEquals(List.of(VALID_ENCRYPTED_ACA_PASSWORD).toString(), response.getAcaKey());
+      Assertions.assertEquals(List.of(VALID_ENCRYPTED_GPD_PASSWORD).toString(), response.getGpdKey());
       aesUtilsMock.verify(() -> AESUtils.decrypt(Mockito.eq(VALID_BROKER_ENCRYPT_PASSWORD), Mockito.any(byte[].class)), Mockito.times(3));
     }
   }
 
   @Test
-  void givenValidBrokerIdWithoutKeyWhenGetBrokerDecryptedApiKeysThenNullKey(){
+  void givenValidBrokerIdWithoutKeyWhenGetBrokerDecryptedApiKeysThenNullKey() {
     //given
     Broker broker = Broker.builder().build();
 
@@ -72,12 +75,12 @@ class BrokerEncryptionServiceTest {
   }
 
   @Test
-  void givenNullApiKeyWhenEncryptKeyThenNull(){
+  void givenNullApiKeyWhenEncryptKeyThenNull() {
     Assertions.assertNull(brokerEncryptionService.encryptKey(null));
   }
 
   @Test
-  void whenEncryptKeyThenOk(){
+  void whenEncryptKeyThenOk() {
 
     //given
     try (MockedStatic<AESUtils> aesUtilsMock = Mockito.mockStatic(AESUtils.class)) {
@@ -91,6 +94,66 @@ class BrokerEncryptionServiceTest {
 
       //verify
       Assertions.assertSame(expectedEncryptedKey, result);
+    }
+  }
+
+  @Test
+  void givenGetApiKeyACAThenSuccess() {
+    //given
+    try (MockedStatic<AESUtils> aesUtilsMock = Mockito.mockStatic(AESUtils.class)) {
+      aesUtilsMock.when(() -> AESUtils.decrypt(VALID_BROKER_ENCRYPT_PASSWORD, VALID_ENCRYPTED_ACA_PASSWORD)).thenReturn("validKey");
+
+      //when
+      String result = brokerEncryptionService.getBrokerDecryptedApiKey(VALID_BROKER, BrokerApiKeyType.ACA);
+
+      //verify
+      Assertions.assertEquals("validKey", result);
+      aesUtilsMock.verify(() -> AESUtils.decrypt(Mockito.eq(VALID_BROKER_ENCRYPT_PASSWORD), Mockito.any(byte[].class)), Mockito.times(1));
+    }
+  }
+
+  @Test
+  void givenGetApiKeySYNCThenSuccess() {
+    //given
+    try (MockedStatic<AESUtils> aesUtilsMock = Mockito.mockStatic(AESUtils.class)) {
+      aesUtilsMock.when(() -> AESUtils.decrypt(VALID_BROKER_ENCRYPT_PASSWORD, VALID_ENCRYPTED_SYNC_PASSWORD)).thenReturn("validKey");
+
+      //when
+      String result = brokerEncryptionService.getBrokerDecryptedApiKey(VALID_BROKER, BrokerApiKeyType.SYNC);
+
+      //verify
+      Assertions.assertEquals("validKey", result);
+      aesUtilsMock.verify(() -> AESUtils.decrypt(Mockito.eq(VALID_BROKER_ENCRYPT_PASSWORD), Mockito.any(byte[].class)), Mockito.times(1));
+    }
+  }
+
+  @Test
+  void givenGetApiKeyGPDThenSuccess() {
+    //given
+    try (MockedStatic<AESUtils> aesUtilsMock = Mockito.mockStatic(AESUtils.class)) {
+      aesUtilsMock.when(() -> AESUtils.decrypt(VALID_BROKER_ENCRYPT_PASSWORD, VALID_ENCRYPTED_GPD_PASSWORD)).thenReturn("validKey");
+
+      //when
+      String result = brokerEncryptionService.getBrokerDecryptedApiKey(VALID_BROKER, BrokerApiKeyType.GPD);
+
+      //verify
+      Assertions.assertEquals("validKey", result);
+      aesUtilsMock.verify(() -> AESUtils.decrypt(Mockito.eq(VALID_BROKER_ENCRYPT_PASSWORD), Mockito.any(byte[].class)), Mockito.times(1));
+    }
+  }
+
+  @Test
+  void givenGetApiKeyNOTICEThenSuccess() {
+    //given
+    try (MockedStatic<AESUtils> aesUtilsMock = Mockito.mockStatic(AESUtils.class)) {
+      aesUtilsMock.when(() -> AESUtils.decrypt(VALID_BROKER_ENCRYPT_PASSWORD, VALID_ENCRYPTED_GENERATE_NOTICE_PASSWORD)).thenReturn("validKey");
+
+      //when
+      String result = brokerEncryptionService.getBrokerDecryptedApiKey(VALID_BROKER, BrokerApiKeyType.GENERATE_NOTICE);
+
+      //verify
+      Assertions.assertEquals("validKey", result);
+      aesUtilsMock.verify(() -> AESUtils.decrypt(Mockito.eq(VALID_BROKER_ENCRYPT_PASSWORD), Mockito.any(byte[].class)), Mockito.times(1));
     }
   }
 }
