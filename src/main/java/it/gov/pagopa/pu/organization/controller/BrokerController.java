@@ -2,6 +2,7 @@ package it.gov.pagopa.pu.organization.controller;
 
 import it.gov.pagopa.pu.organization.controller.generated.BrokerApi;
 import it.gov.pagopa.pu.organization.dto.generated.BrokerApiKey;
+import it.gov.pagopa.pu.organization.dto.generated.BrokerApiKeyType;
 import it.gov.pagopa.pu.organization.dto.generated.BrokerApiKeys;
 import it.gov.pagopa.pu.organization.service.broker.BrokerService;
 import lombok.extern.slf4j.Slf4j;
@@ -30,5 +31,11 @@ public class BrokerController implements BrokerApi {
     log.info("Storing new ApiKey {} for brokerId {}", brokerApiKey.getKeyType(), brokerId);
     brokerService.encryptAndSaveApiKey(brokerId, brokerApiKey);
     return new ResponseEntity<>(HttpStatus.OK);
+  }
+
+  @Override
+  public ResponseEntity<String> getBrokerApiKey(Long brokerId, BrokerApiKeyType keyType) {
+    log.info("invoking getBrokerApiKey, brokerId[{}], keyType[{}]", brokerId, keyType);
+    return ResponseEntity.ofNullable(brokerService.getBrokerApiKey(brokerId, keyType));
   }
 }
