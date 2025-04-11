@@ -1,4 +1,4 @@
-package it.gov.pagopa.pu.organization.config;
+package it.gov.pagopa.pu.organization.config.rest;
 
 import lombok.AllArgsConstructor;
 import lombok.Data;

@@ -1,6 +1,6 @@
 package it.gov.pagopa.pu.organization.connector.pagopapayments.config;
 
-import it.gov.pagopa.pu.organization.config.RestTemplateConfig;
+import it.gov.pagopa.pu.organization.config.rest.RestTemplateConfig;
 import it.gov.pagopa.pu.pagopapayments.controller.ApiClient;
 import it.gov.pagopa.pu.pagopapayments.controller.BaseApi;
 import it.gov.pagopa.pu.pagopapayments.controller.generated.TaxonomiesApi;
