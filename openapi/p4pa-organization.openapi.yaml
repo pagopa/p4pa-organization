@@ -119,6 +119,35 @@ paths:
           description: Organization Not Found
         '500':
           description: Internal Server Error
+  /broker/{brokerId}/apiKey/{keyType}:
+    get:
+      tags:
+        - Broker
+      summary: Get API key
+      operationId: getBrokerApiKey
+      parameters:
+        - name: brokerId
+          in: path
+          required: true
+          schema:
+            type: integer
+            format: int64
+        - name: keyType
+          in: path
+          required: true
+          schema:
+            $ref: '#/components/schemas/BrokerApiKeyType'
+      responses:
+        '200':
+          description: OK
+          content:
+            application/json:
+              schema:
+                type: string
+        '404':
+          description: Broker Not Found
+        '500':
+          description: Internal Server Error
   /taxonomies/sync:
     get:
       tags:
@@ -147,6 +176,8 @@ components:
           type: string
         gpdKey:
           type: string
+        generateNoticeKey:
+          type: string
     BrokerApiKey:
       type: object
       required:
@@ -154,13 +185,16 @@ components:
         - apiKey
       properties:
         keyType:
-          type: string
-          enum:
-            - SYNC
-            - ACA
-            - GPD
+          $ref: '#/components/schemas/BrokerApiKeyType'
         apiKey:
           type: string
+    BrokerApiKeyType:
+      type: string
+      enum:
+        - SYNC
+        - ACA
+        - GPD
+        - GENERATE_NOTICE
     OrganizationApiKeys:
       type: object
       required:

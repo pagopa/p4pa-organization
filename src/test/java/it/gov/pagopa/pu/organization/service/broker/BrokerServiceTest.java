@@ -1,6 +1,7 @@
 package it.gov.pagopa.pu.organization.service.broker;
 
 import it.gov.pagopa.pu.organization.dto.generated.BrokerApiKey;
+import it.gov.pagopa.pu.organization.dto.generated.BrokerApiKeyType;
 import it.gov.pagopa.pu.organization.dto.generated.BrokerApiKeys;
 import it.gov.pagopa.pu.organization.model.Broker;
 import it.gov.pagopa.pu.organization.repository.BrokerRepository;
@@ -25,17 +26,20 @@ class BrokerServiceTest {
   private static final byte[] VALID_ENCRYPTED_SYNC_PASSWORD = new byte[]{1, 2, 3};
   private static final byte[] VALID_ENCRYPTED_ACA_PASSWORD = new byte[]{4, 5, 6};
   private static final byte[] VALID_ENCRYPTED_GPD_PASSWORD = new byte[]{7, 8, 9};
+  private static final byte[] VALID_ENCRYPTED_GENERATE_NOTICE_PASSWORD = new byte[]{10, 11, 12};
   private static final Long VALID_BROKER_ID = 1L;
   private static final Broker VALID_BROKER = Broker.builder()
     .brokerId(VALID_BROKER_ID)
     .syncKey(VALID_ENCRYPTED_SYNC_PASSWORD)
     .acaKey(VALID_ENCRYPTED_ACA_PASSWORD)
     .gpdKey(VALID_ENCRYPTED_GPD_PASSWORD)
+    .generateNoticeKey(VALID_ENCRYPTED_GENERATE_NOTICE_PASSWORD)
     .build();
   private static final BrokerApiKeys VALID_BROKER_API_KEYS = BrokerApiKeys.builder()
     .syncKey(List.of(VALID_ENCRYPTED_SYNC_PASSWORD).toString())
     .acaKey(List.of(VALID_ENCRYPTED_ACA_PASSWORD).toString())
     .gpdKey(List.of(VALID_ENCRYPTED_GPD_PASSWORD).toString())
+    .generateNoticeKey(List.of(VALID_ENCRYPTED_GENERATE_NOTICE_PASSWORD).toString())
     .build();
 
   @Mock
@@ -99,8 +103,8 @@ class BrokerServiceTest {
   }
 
   @ParameterizedTest
-  @EnumSource(BrokerApiKey.KeyTypeEnum.class)
-  void whenEncryptAndSaveApiKeyThenOk(BrokerApiKey.KeyTypeEnum keyType){
+  @EnumSource(BrokerApiKeyType.class)
+  void whenEncryptAndSaveApiKeyThenOk(BrokerApiKeyType keyType){
     //given
     Broker broker = new Broker();
     String apiKey = "apiKey";
@@ -117,23 +121,53 @@ class BrokerServiceTest {
         case SYNC -> broker.getSyncKey();
         case ACA -> broker.getAcaKey();
         case GPD -> broker.getGpdKey();
+        case GENERATE_NOTICE -> broker.getGenerateNoticeKey();
       };
       Assertions.assertSame(encryptedKey, storedKey);
 
-      if(!BrokerApiKey.KeyTypeEnum.SYNC.equals(keyType)){
+      if(!BrokerApiKeyType.SYNC.equals(keyType)){
         Assertions.assertNull(broker.getSyncKey());
       }
-      if(!BrokerApiKey.KeyTypeEnum.ACA.equals(keyType)){
+      if(!BrokerApiKeyType.ACA.equals(keyType)){
         Assertions.assertNull(broker.getAcaKey());
       }
-      if(!BrokerApiKey.KeyTypeEnum.GPD.equals(keyType)){
-        Assertions.assertNull(broker.getGpdKey());
-      }
+        if(!BrokerApiKeyType.GPD.equals(keyType)){
+          Assertions.assertNull(broker.getGpdKey());
+        }
+        if(!BrokerApiKeyType.GENERATE_NOTICE.equals(keyType)){
+          Assertions.assertNull(broker.getGenerateNoticeKey());
+        }
       return true;
     })))
       .thenReturn(broker);
 
     //when
     brokerService.encryptAndSaveApiKey(VALID_BROKER_ID, new BrokerApiKey(keyType, apiKey));
+  }
+
+  @Test
+  void givenValidBrokerIdWhenGetBrokerApiKeyThenOk(){
+    //given
+    Mockito.when(brokerRepositoryMock.findById(VALID_BROKER_ID)).thenReturn(Optional.of(VALID_BROKER));
+    Mockito.when(brokerEncryptionServiceMock.getBrokerDecryptedApiKey(VALID_BROKER, BrokerApiKeyType.GENERATE_NOTICE)).thenReturn("noticeKey");
+
+    //when
+    String response = brokerService.getBrokerApiKey(VALID_BROKER_ID, BrokerApiKeyType.GENERATE_NOTICE);
+
+    //verify
+    Assertions.assertEquals("noticeKey", response);
+  }
+
+  @Test
+  void givenNotFoundBrokerIdWhenGetBrokerApiKeyThenException(){
+    //given
+    String errorMessage = "broker [%s]".formatted(VALID_BROKER_ID);
+    Mockito.when(brokerRepositoryMock.findById(VALID_BROKER_ID)).thenThrow(new ResourceNotFoundException(errorMessage));
+
+    //when
+    ResourceNotFoundException exception = Assertions.assertThrows(ResourceNotFoundException.class, () -> brokerService.getBrokerApiKey(VALID_BROKER_ID, BrokerApiKeyType.GENERATE_NOTICE));
+
+    //verify
+    Assertions.assertEquals(errorMessage, exception.getMessage());
   }
 }

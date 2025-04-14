@@ -1,6 +1,6 @@
 package it.gov.pagopa.pu.organization.util;
 
-import it.gov.pagopa.pu.organization.config.HttpClientConfig;
+import it.gov.pagopa.pu.organization.config.rest.HttpClientConfig;
 import org.apache.hc.client5.http.HttpRoute;
 import org.apache.hc.client5.http.classic.HttpClient;
 import org.apache.hc.client5.http.config.ConnectionConfig;
