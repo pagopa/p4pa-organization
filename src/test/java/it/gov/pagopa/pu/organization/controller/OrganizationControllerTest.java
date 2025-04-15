@@ -61,4 +61,14 @@ class OrganizationControllerTest {
 
     assertEquals(apiKey, result.getResponse().getContentAsString());
   }
+
+  @Test
+  void givenNoKeyWhenGetApiKeyThenOk() throws Exception {
+    Mockito.when(organizationServiceMock.getApiKey(1L, OrganizationApiKeyType.IO)).thenReturn(null);
+
+    mockMvc.perform(
+        get("/organization/1/apiKey/IO")
+          .contentType(MediaType.APPLICATION_JSON_VALUE))
+      .andExpect(status().isNoContent());
+  }
 }

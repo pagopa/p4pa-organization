@@ -36,6 +36,9 @@ public class BrokerController implements BrokerApi {
   @Override
   public ResponseEntity<String> getBrokerApiKey(Long brokerId, BrokerApiKeyType keyType) {
     log.info("invoking getBrokerApiKey, brokerId[{}], keyType[{}]", brokerId, keyType);
-    return ResponseEntity.ofNullable(brokerService.getBrokerApiKey(brokerId, keyType));
+    String apiKey = brokerService.getBrokerApiKey(brokerId, keyType);
+    return apiKey != null
+      ? ResponseEntity.ok(apiKey)
+      : ResponseEntity.noContent().build();
   }
 }
