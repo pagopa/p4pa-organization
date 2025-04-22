@@ -45,8 +45,11 @@ public class Organization extends BaseEntity implements Serializable {
   private Long brokerId;
   private byte[] ioApiKey;
   private byte[] sendApiKey;
+  @NotNull
   private boolean flagNotifyIo;
+  @NotNull
   private boolean flagNotifyOutcomePush;
+  @NotNull
   private boolean flagPaymentNotification;
 
 }

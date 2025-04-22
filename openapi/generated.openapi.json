@@ -2174,36 +2174,6 @@
         },
         "required" : [ "organizationType", "organizationTypeDescription" ]
       },
-      "PagoPaInteractionModel" : {
-        "type" : "string",
-        "enum" : [ "SYNC", "SYNC_ACA", "SYNC$GPDPRELOAD", "SYNC_ACA$GPDPRELOAD", "ASYNC_GPD" ]
-      },
-      "PersonalisationFe" : {
-        "type" : "object",
-        "properties" : {
-          "headerAssistanceUrl" : {
-            "type" : "string"
-          },
-          "logoFooterImg" : {
-            "type" : "string"
-          },
-          "footerDescText" : {
-            "type" : "string"
-          },
-          "footerPrivacyInfoUrl" : {
-            "type" : "string"
-          },
-          "footerGDPRUrl" : {
-            "type" : "string"
-          },
-          "footerTermsCondUrl" : {
-            "type" : "string"
-          },
-          "footerAccessibilityUrl" : {
-            "type" : "string"
-          }
-        }
-      },
       "Broker" : {
         "type" : "object",
         "properties" : {
@@ -2266,6 +2236,36 @@
         },
         "required" : [ "brokerFiscalCode", "brokerName", "organizationId", "pagoPaInteractionModel", "personalisationFe" ]
       },
+      "PagoPaInteractionModel" : {
+        "type" : "string",
+        "enum" : [ "SYNC", "SYNC_ACA", "SYNC$GPDPRELOAD", "SYNC_ACA$GPDPRELOAD", "ASYNC_GPD" ]
+      },
+      "PersonalisationFe" : {
+        "type" : "object",
+        "properties" : {
+          "headerAssistanceUrl" : {
+            "type" : "string"
+          },
+          "logoFooterImg" : {
+            "type" : "string"
+          },
+          "footerDescText" : {
+            "type" : "string"
+          },
+          "footerPrivacyInfoUrl" : {
+            "type" : "string"
+          },
+          "footerGDPRUrl" : {
+            "type" : "string"
+          },
+          "footerTermsCondUrl" : {
+            "type" : "string"
+          },
+          "footerAccessibilityUrl" : {
+            "type" : "string"
+          }
+        }
+      },
       "PagedModelBroker" : {
         "type" : "object",
         "properties" : {
@@ -2287,10 +2287,6 @@
             "$ref" : "#/components/schemas/PageMetadata"
           }
         }
-      },
-      "OrganizationStatus" : {
-        "type" : "string",
-        "enum" : [ "DRAFT", "ACTIVE" ]
       },
       "Organization" : {
         "type" : "object",
@@ -2379,7 +2375,11 @@
             "$ref" : "#/components/schemas/Links"
           }
         },
-        "required" : [ "ipaCode", "orgFiscalCode", "orgName", "status" ]
+        "required" : [ "flagNotifyIo", "flagNotifyOutcomePush", "flagPaymentNotification", "ipaCode", "orgFiscalCode", "orgName", "status" ]
+      },
+      "OrganizationStatus" : {
+        "type" : "string",
+        "enum" : [ "DRAFT", "ACTIVE" ]
       },
       "PagedModelOrganization" : {
         "type" : "object",
@@ -2684,7 +2684,7 @@
             "type" : "boolean"
           }
         },
-        "required" : [ "ipaCode", "orgFiscalCode", "orgName", "status" ]
+        "required" : [ "flagNotifyIo", "flagNotifyOutcomePush", "flagPaymentNotification", "ipaCode", "orgFiscalCode", "orgName", "status" ]
       },
       "TaxonomyRequestBody" : {
         "type" : "object",
