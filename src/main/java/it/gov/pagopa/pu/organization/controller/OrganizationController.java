@@ -26,8 +26,12 @@ public class OrganizationController implements OrganizationApi {
   }
 
   @Override
-  public ResponseEntity<String> getOrganizationApiKey(Long organizationId, OrganizationApiKeyType keyType){
+  public ResponseEntity<String> getOrganizationApiKey(Long organizationId, OrganizationApiKeyType keyType) {
     String apiKey = service.getApiKey(organizationId, keyType);
-    return new ResponseEntity<>(apiKey, HttpStatus.OK);
+    return new ResponseEntity<>(
+      apiKey,
+      apiKey != null
+        ? HttpStatus.OK
+        : HttpStatus.NO_CONTENT);
   }
 }
