@@ -47,5 +47,6 @@ public class Organization extends BaseEntity implements Serializable {
   private byte[] sendApiKey;
   private boolean flagNotifyIo;
   private boolean flagNotifyOutcomePush;
+  private boolean flagPaymentNotification;
 
 }
