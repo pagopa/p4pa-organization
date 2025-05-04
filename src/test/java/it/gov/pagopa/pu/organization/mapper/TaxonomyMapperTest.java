@@ -48,7 +48,7 @@ class TaxonomyMapperTest {
     assertEquals(dto.getEndDateOfValidity(), result.getEndDateOfValidity());
     assertEquals("taxonomyCode", result.getTaxonomyCode());
 
-    TestUtils.checkNotNullFields(result, "taxonomyId", "creationDate", "updateDate", "updateOperatorExternalId");
+    TestUtils.checkNotNullFields(result, "taxonomyId", "creationDate", "updateDate", "updateOperatorExternalId", "updateTraceId");
   }
 
   @Test
