@@ -13,7 +13,7 @@ public interface TaxonomyRepository extends JpaRepository<Taxonomy, Long> {
 
   Optional<Taxonomy> findByTaxonomyCode(String taxonomyCode);
 
-  @Query("SELECT distinct t from Taxonomy t WHERE " +
+  @Query("SELECT t from Taxonomy t WHERE " +
     "(:organizationType IS NULL OR t.organizationType=:organizationType) AND " +
     "(:macroAreaCode IS NULL OR t.macroAreaCode=:macroAreaCode) AND " +
     "(:serviceTypeCode IS NULL OR t.serviceTypeCode=:serviceTypeCode) AND " +
