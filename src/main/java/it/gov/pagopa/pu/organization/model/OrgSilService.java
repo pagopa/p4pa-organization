@@ -6,6 +6,8 @@ import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.EqualsAndHashCode;
 import lombok.NoArgsConstructor;
+import org.hibernate.annotations.JdbcTypeCode;
+import org.hibernate.type.SqlTypes;
 
 import java.io.Serializable;
 
@@ -25,10 +27,11 @@ public class OrgSilService extends BaseEntity implements Serializable {
   private Long organizationId;
   @NotNull
   private String applicationName;
-  private String notifyOutcomePushUrl;
+  @NotNull
+  private String serviceUrl;
+  @NotNull
+  private String serviceType;
   private boolean flagLegacy;
-  private String legacyJwtId;
-  private String legacyJwtMail;
-  private String legacyJwtSecretKeyId;
-  private byte[] legacyJwtSecretKey;
+  @JdbcTypeCode(SqlTypes.JSON)
+  private SilServiceLegacyAuthConfig authConfig;
 }
