@@ -33,5 +33,5 @@ public class OrgSilService extends BaseEntity implements Serializable {
   private String serviceType;
   private boolean flagLegacy;
   @JdbcTypeCode(SqlTypes.JSON)
-  private SilServiceLegacyAuthConfig authConfig;
+  private SilServiceAuthConfig authConfig;
 }
