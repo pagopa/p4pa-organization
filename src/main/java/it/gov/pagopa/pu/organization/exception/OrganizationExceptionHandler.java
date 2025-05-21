@@ -36,29 +36,29 @@ public class OrganizationExceptionHandler {
 
   @ExceptionHandler({ResourceNotFoundException.class, OrganizationNotFoundException.class})
   public ResponseEntity<OrganizationErrorDTO> handleResourceNotFoundException(Exception ex, HttpServletRequest request) {
-    return handleException(ex, request, HttpStatus.NOT_FOUND, OrganizationErrorDTO.CodeEnum.NOT_FOUND);
+    return handleException(ex, request, HttpStatus.NOT_FOUND, OrganizationErrorDTO.CodeEnum.ORGANIZATION_NOT_FOUND);
   }
 
   @ExceptionHandler({DataIntegrityViolationException.class})
   public ResponseEntity<OrganizationErrorDTO> handleDataIntegrityViolationException(Exception ex, HttpServletRequest request) {
-    return handleException(ex, request, HttpStatus.CONFLICT, OrganizationErrorDTO.CodeEnum.CONFLICT);
+    return handleException(ex, request, HttpStatus.CONFLICT, OrganizationErrorDTO.CodeEnum.ORGANIZATION_CONFLICT);
   }
 
   @ExceptionHandler({ValidationException.class, HttpMessageNotReadableException.class, MethodArgumentNotValidException.class, MethodArgumentTypeMismatchException.class})
   public ResponseEntity<OrganizationErrorDTO> handleViolationException(Exception ex, HttpServletRequest request) {
-    return handleException(ex, request, HttpStatus.BAD_REQUEST, OrganizationErrorDTO.CodeEnum.BAD_REQUEST);
+    return handleException(ex, request, HttpStatus.BAD_REQUEST, OrganizationErrorDTO.CodeEnum.ORGANIZATION_BAD_REQUEST);
   }
 
   @ExceptionHandler({ServletException.class, ErrorResponseException.class})
   public ResponseEntity<OrganizationErrorDTO> handleServletException(Exception ex, HttpServletRequest request) {
     HttpStatusCode httpStatus = HttpStatus.INTERNAL_SERVER_ERROR;
-    OrganizationErrorDTO.CodeEnum errorCode = OrganizationErrorDTO.CodeEnum.GENERIC_ERROR;
+    OrganizationErrorDTO.CodeEnum errorCode = OrganizationErrorDTO.CodeEnum.ORGANIZATION_GENERIC_ERROR;
     if (ex instanceof ErrorResponse errorResponse) {
       httpStatus = errorResponse.getStatusCode();
       if (httpStatus.isSameCodeAs(HttpStatus.NOT_FOUND)) {
-        errorCode = OrganizationErrorDTO.CodeEnum.NOT_FOUND;
+        errorCode = OrganizationErrorDTO.CodeEnum.ORGANIZATION_NOT_FOUND;
       } else if (httpStatus.is4xxClientError()) {
-        errorCode = OrganizationErrorDTO.CodeEnum.BAD_REQUEST;
+        errorCode = OrganizationErrorDTO.CodeEnum.ORGANIZATION_BAD_REQUEST;
       }
     }
     return handleException(ex, request, httpStatus, errorCode);
@@ -75,7 +75,7 @@ public class OrganizationExceptionHandler {
 
   @ExceptionHandler({RuntimeException.class})
   public ResponseEntity<OrganizationErrorDTO> handleRuntimeException(RuntimeException ex, HttpServletRequest request) {
-    return handleException(ex, request, HttpStatus.INTERNAL_SERVER_ERROR, OrganizationErrorDTO.CodeEnum.GENERIC_ERROR);
+    return handleException(ex, request, HttpStatus.INTERNAL_SERVER_ERROR, OrganizationErrorDTO.CodeEnum.ORGANIZATION_GENERIC_ERROR);
   }
 
   static ResponseEntity<OrganizationErrorDTO> handleException(Exception ex, HttpServletRequest request, HttpStatusCode httpStatus, OrganizationErrorDTO.CodeEnum errorEnum) {
