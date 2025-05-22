@@ -1,5 +1,6 @@
 package it.gov.pagopa.pu.organization.model;
 
+import it.gov.pagopa.pu.organization.enums.OrgSilServiceType;
 import jakarta.persistence.*;
 import jakarta.validation.constraints.NotNull;
 import lombok.AllArgsConstructor;
@@ -30,7 +31,8 @@ public class OrgSilService extends BaseEntity implements Serializable {
   @NotNull
   private String serviceUrl;
   @NotNull
-  private String serviceType;
+  @Enumerated(EnumType.STRING)
+  private OrgSilServiceType serviceType;
   private boolean flagLegacy;
   @JdbcTypeCode(SqlTypes.JSON)
   private SilServiceAuthConfig authConfig;
