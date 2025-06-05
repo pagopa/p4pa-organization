@@ -11,9 +11,9 @@ import lombok.NoArgsConstructor;
 @EqualsAndHashCode(callSuper = false)
 public class SilServiceLegacyAuthConfig implements SilServiceAuthConfig {
 
-  private String legacyJwtId;
-  private String legacyJwtMail;
-  private String legacyJwtSecretKeyId;
-  private byte[] legacyJwtSecretKey;
+  private String jwtId;
+  private String jwtMail;
+  private String jwtSecretKeyId;
+  private byte[] jwtSecretKey;
 
 }
