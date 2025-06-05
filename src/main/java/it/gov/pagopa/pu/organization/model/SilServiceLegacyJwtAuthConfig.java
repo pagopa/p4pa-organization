@@ -9,11 +9,11 @@ import lombok.NoArgsConstructor;
 @NoArgsConstructor
 @Data
 @EqualsAndHashCode(callSuper = false)
-public class SilServiceLegacyAuthConfig implements SilServiceAuthConfig {
+public class SilServiceLegacyJwtAuthConfig implements SilServiceAuthConfig {
 
-  private String jwtId;
-  private String jwtMail;
-  private String jwtSecretKeyId;
-  private byte[] jwtSecretKey;
+  private String kid;
+  private String subject;
+  private String issuer;
+  private byte[] privateKey;
 
 }
