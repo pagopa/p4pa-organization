@@ -9,6 +9,7 @@ import java.io.Serializable;
   property = "authConfig")
 @JsonSubTypes({
   @JsonSubTypes.Type(name = "legacyJwt", value = SilServiceLegacyJwtAuthConfig.class),
+  @JsonSubTypes.Type(name = "legacyBasic", value = SilServiceLegacyBasicAuthConfig.class),
 })
 public interface SilServiceAuthConfig extends Serializable {
 }
