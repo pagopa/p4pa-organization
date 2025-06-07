@@ -2041,7 +2041,10 @@
             "issuer" : {
               "type" : "string"
             },
-            "privateKey" : {
+            "algorithm" : {
+              "type" : "string"
+            },
+            "signingKey" : {
               "type" : "string",
               "format" : "byte"
             }

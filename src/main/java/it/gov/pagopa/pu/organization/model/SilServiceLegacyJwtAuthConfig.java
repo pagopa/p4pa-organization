@@ -14,6 +14,7 @@ public class SilServiceLegacyJwtAuthConfig implements SilServiceAuthConfig {
   private String kid;
   private String subject;
   private String issuer;
-  private byte[] privateKey;
+  private String algorithm;
+  private byte[] signingKey;
 
 }
