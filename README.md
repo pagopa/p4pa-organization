@@ -21,6 +21,10 @@ See [OpenAPI](openapi/generated.openapi.json), exposed through the following pat
 * `GET /organization/{organizationId}/apiKey/{keyType}`: To retrieve an organization api key;
 * `GET /taxonomies/sync`: To ask to synchronize taxonomies.
 
+### 📌 Common HTTP status returned:
+* `401`: Invalid access token provided, thus a new login is required;
+* `403`: Trying to access a not authorized resource.
+
 ## 🔎 Monitoring
 See available actuator endpoints through the following path:
 * `/actuator`
