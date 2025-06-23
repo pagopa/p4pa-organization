@@ -13,7 +13,7 @@ import org.hibernate.type.SqlTypes;
 import java.io.Serializable;
 
 @Entity
-@Table(name = "orgSilService")
+@Table(name = "org_sil_service")
 @AllArgsConstructor
 @NoArgsConstructor
 @Data
@@ -22,7 +22,7 @@ public class OrgSilService extends BaseEntity implements Serializable {
 
   @Id
   @GeneratedValue(strategy = GenerationType.SEQUENCE, generator = "orgSilServiceGenerator")
-  @SequenceGenerator(name = "orgSilServiceGenerator", sequenceName = "orgSilServiceSeq", allocationSize = 1)
+  @SequenceGenerator(name = "orgSilServiceGenerator", sequenceName = "org_sil_service_seq", allocationSize = 1)
   private Long orgSilServiceId;
   @NotNull
   private Long organizationId;
