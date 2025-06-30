@@ -1,5 +1,6 @@
 package it.gov.pagopa.pu.organization.model;
 
+import it.gov.pagopa.pu.organization.enums.JwtAlgorithm;
 import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.EqualsAndHashCode;
@@ -14,7 +15,7 @@ public class SilServiceLegacyJwtAuthConfig implements SilServiceAuthConfig {
   private String kid;
   private String subject;
   private String issuer;
-  private String algorithm;
+  private JwtAlgorithm algorithm;
   private byte[] signingKey;
 
 }
