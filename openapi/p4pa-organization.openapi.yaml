@@ -82,12 +82,12 @@ paths:
             schema:
               $ref: '#/components/schemas/OrgSilServiceDTO'
       responses:
-        '201':
+        '200':
           description: OK
           content:
             application/json:
               schema:
-                $ref: '#/components/schemas/OrganizationErrorDTO'
+                $ref: '#/components/schemas/OrgSilServiceDTO'
         '404':
           description: Organization Not Found
           content:
