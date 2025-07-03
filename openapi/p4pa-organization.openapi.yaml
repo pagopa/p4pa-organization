@@ -62,13 +62,12 @@ paths:
           description: Organization Not Found
         '500':
           description: Internal Server Error
-  /organization/{organizationId}/silService:
+  /organization-sil-service:
     post:
       tags:
-        - Organization
-        - SIL
+        - OrganizationSilService
       summary: Save SIL service configuration for an organization with encryption
-      operationId: orgSilServiceCreate
+      operationId: orgSilServiceCreateOrUpdate
       parameters:
         - name: organizationId
           in: path
@@ -88,33 +87,26 @@ paths:
           content:
             application/json:
               schema:
-                $ref: '#/components/schemas/OrgSilServiceDTO'
+                $ref: '#/components/schemas/OrganizationErrorDTO'
         '404':
           description: Organization Not Found
           content:
-            application/hal+json:
+            application/json:
               schema:
-                $ref: '#/components/schemas/OrgSilServiceErrorDTO'
+                $ref: '#/components/schemas/OrganizationErrorDTO'
         '500':
           description: Internal Server Error
           content:
-            application/hal+json:
+            application/json:
               schema:
-                $ref: '#/components/schemas/OrgSilServiceErrorDTO'
-  /organization/{organizationId}/silService/{orgSilServiceId}:
+                $ref: '#/components/schemas/OrganizationErrorDTO'
+  /organization-sil-service/{orgSilServiceId}:
     get:
       tags:
-        - Organization
-        - SIL
+        - OrganizationSilService
       summary: Get SIL service configuration for an organization by ID decrypted
       operationId: orgSilServiceGet
       parameters:
-        - name: organizationId
-          in: path
-          required: true
-          schema:
-            type: integer
-            format: int64
         - name: orgSilServiceId
           in: path
           required: true
@@ -131,59 +123,15 @@ paths:
         '404':
           description: Organization Not Found
           content:
-            application/hal+json:
+            application/json:
               schema:
-                $ref: '#/components/schemas/OrgSilServiceErrorDTO'
+                $ref: '#/components/schemas/OrganizationErrorDTO'
         '500':
           description: Internal Server Error
-          content:
-            application/hal+json:
-              schema:
-                $ref: '#/components/schemas/OrgSilServiceErrorDTO'
-    put:
-      tags:
-        - Organization
-        - SIL
-      summary: Update SIL service configuration for an organization by ID
-      operationId: orgSilServiceUpdate
-      parameters:
-        - name: organizationId
-          in: path
-          required: true
-          schema:
-            type: integer
-            format: int64
-        - name: orgSilServiceId
-          in: path
-          required: true
-          schema:
-            type: integer
-            format: int64
-      requestBody:
-        required: true
-        content:
-          application/json:
-            schema:
-              $ref: '#/components/schemas/OrgSilServiceDTO'
-      responses:
-        '200':
-          description: OK
           content:
             application/json:
               schema:
-                $ref: '#/components/schemas/OrgSilServiceDTO'
-        '404':
-          description: Organization Not Found
-          content:
-            application/hal+json:
-              schema:
-                $ref: '#/components/schemas/OrgSilServiceErrorDTO'
-        '500':
-          description: Internal Server Error
-          content:
-            application/hal+json:
-              schema:
-                $ref: '#/components/schemas/OrgSilServiceErrorDTO'
+                $ref: '#/components/schemas/OrganizationErrorDTO'
   /brokers/{brokerId}/apiKey:
     get:
       tags:
@@ -348,6 +296,10 @@ components:
             - ORGANIZATION_CONFLICT
             - ORGANIZATION_BAD_REQUEST
             - ORGANIZATION_GENERIC_ERROR
+            - ORGANIZATION_SIL_SERVICE_NOT_FOUND
+            - ORGANIZATION_SIL_SERVICE_CONFLICT
+            - ORGANIZATION_SIL_SERVICE_BAD_REQUEST
+            - ORGANIZATION_SIL_SERVICE_GENERIC_ERROR
         message:
           type: string
     OrgSilServiceDTO:
@@ -390,17 +342,3 @@ components:
         authConfig:
           type: object
           description: Configuration for authentication
-    OrgSilServiceErrorDTO:
-      type: object
-      required:
-        - code
-        - message
-      properties:
-        code:
-          type: string
-          enum:
-            - ORGANIZATION_SIL_SERV_NOT_FOUND
-            - ORGANIZATION_SIL_SERV_BAD_REQUEST
-            - ORGANIZATION_SIL_SERV_GENERIC_ERROR
-        message:
-          type: string
