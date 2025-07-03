@@ -164,6 +164,7 @@ tasks.register<org.openapitools.generator.gradle.plugin.tasks.GenerateTask>("ope
   ))
   typeMappings.set(mapOf(
     "OrgSilServiceType" to "it.gov.pagopa.pu.organization.enums.OrgSilServiceType",
+    "SilServiceAuthConfig" to "it.gov.pagopa.pu.organization.model.SilServiceAuthConfig"
   ))
 }
 

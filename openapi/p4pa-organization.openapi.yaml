@@ -68,13 +68,6 @@ paths:
         - OrganizationSilService
       summary: Save SIL service configuration for an organization with encryption
       operationId: orgSilServiceCreateOrUpdate
-      parameters:
-        - name: organizationId
-          in: path
-          required: true
-          schema:
-            type: integer
-            format: int64
       requestBody:
         required: true
         content:
@@ -328,7 +321,6 @@ components:
           example: "Example Application"
         serviceUrl:
           type: string
-          format: uri
           description: URL endpoint for the service
           maxLength: 500
           example: "https://app.example.com"
@@ -340,5 +332,5 @@ components:
           default: false
           example: false
         authConfig:
-          type: object
+          type: 'SilServiceAuthConfig'
           description: Configuration for authentication
