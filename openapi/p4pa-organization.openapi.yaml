@@ -62,6 +62,128 @@ paths:
           description: Organization Not Found
         '500':
           description: Internal Server Error
+  /organization/{organizationId}/silService:
+    post:
+      tags:
+        - Organization
+        - SIL
+      summary: Save SIL service configuration for an organization with encryption
+      operationId: orgSilServiceCreate
+      parameters:
+        - name: organizationId
+          in: path
+          required: true
+          schema:
+            type: integer
+            format: int64
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/OrgSilServiceDTO'
+      responses:
+        '201':
+          description: OK
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/OrgSilServiceDTO'
+        '404':
+          description: Organization Not Found
+          content:
+            application/hal+json:
+              schema:
+                $ref: '#/components/schemas/OrgSilServiceErrorDTO'
+        '500':
+          description: Internal Server Error
+          content:
+            application/hal+json:
+              schema:
+                $ref: '#/components/schemas/OrgSilServiceErrorDTO'
+  /organization/{organizationId}/silService/{orgSilServiceId}:
+    get:
+      tags:
+        - Organization
+        - SIL
+      summary: Get SIL service configuration for an organization by ID decrypted
+      operationId: orgSilServiceGet
+      parameters:
+        - name: organizationId
+          in: path
+          required: true
+          schema:
+            type: integer
+            format: int64
+        - name: orgSilServiceId
+          in: path
+          required: true
+          schema:
+            type: integer
+            format: int64
+      responses:
+        '200':
+          description: OK
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/OrgSilServiceDTO'
+        '404':
+          description: Organization Not Found
+          content:
+            application/hal+json:
+              schema:
+                $ref: '#/components/schemas/OrgSilServiceErrorDTO'
+        '500':
+          description: Internal Server Error
+          content:
+            application/hal+json:
+              schema:
+                $ref: '#/components/schemas/OrgSilServiceErrorDTO'
+    put:
+      tags:
+        - Organization
+        - SIL
+      summary: Update SIL service configuration for an organization by ID
+      operationId: orgSilServiceUpdate
+      parameters:
+        - name: organizationId
+          in: path
+          required: true
+          schema:
+            type: integer
+            format: int64
+        - name: orgSilServiceId
+          in: path
+          required: true
+          schema:
+            type: integer
+            format: int64
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/OrgSilServiceDTO'
+      responses:
+        '200':
+          description: OK
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/OrgSilServiceDTO'
+        '404':
+          description: Organization Not Found
+          content:
+            application/hal+json:
+              schema:
+                $ref: '#/components/schemas/OrgSilServiceErrorDTO'
+        '500':
+          description: Internal Server Error
+          content:
+            application/hal+json:
+              schema:
+                $ref: '#/components/schemas/OrgSilServiceErrorDTO'
   /brokers/{brokerId}/apiKey:
     get:
       tags:
@@ -226,5 +348,59 @@ components:
             - ORGANIZATION_CONFLICT
             - ORGANIZATION_BAD_REQUEST
             - ORGANIZATION_GENERIC_ERROR
+        message:
+          type: string
+    OrgSilServiceDTO:
+      type: object
+      required:
+        - organizationId
+        - applicationName
+        - serviceUrl
+        - serviceType
+        - flagLegacy
+      properties:
+        orgSilServiceId:
+          type: integer
+          format: int64
+          description: Unique identifier for the organization SIL service
+          example: 12345
+        organizationId:
+          type: integer
+          format: int64
+          description: ID of the organization this service belongs to
+          example: 67890
+        applicationName:
+          type: string
+          description: Name of the application
+          maxLength: 255
+          example: "Example Application"
+        serviceUrl:
+          type: string
+          format: uri
+          description: URL endpoint for the service
+          maxLength: 500
+          example: "https://app.example.com"
+        serviceType:
+          type: 'OrgSilServiceType'
+        flagLegacy:
+          type: boolean
+          description: Indicates if this is a legacy service
+          default: false
+          example: false
+        authConfig:
+          type: object
+          description: Configuration for authentication
+    OrgSilServiceErrorDTO:
+      type: object
+      required:
+        - code
+        - message
+      properties:
+        code:
+          type: string
+          enum:
+            - ORGANIZATION_SIL_SERV_NOT_FOUND
+            - ORGANIZATION_SIL_SERV_BAD_REQUEST
+            - ORGANIZATION_SIL_SERV_GENERIC_ERROR
         message:
           type: string
