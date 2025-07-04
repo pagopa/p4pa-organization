@@ -67,7 +67,7 @@ paths:
       tags:
         - OrganizationSilService
       summary: Save SIL service configuration for an organization with encryption
-      operationId: orgSilServiceCreateOrUpdate
+      operationId: createOrUpdateOrgSilService
       requestBody:
         required: true
         content:
@@ -98,7 +98,7 @@ paths:
       tags:
         - OrganizationSilService
       summary: Get SIL service configuration for an organization by ID decrypted
-      operationId: orgSilServiceGet
+      operationId: getOrgSilService
       parameters:
         - name: orgSilServiceId
           in: path
