@@ -3,9 +3,8 @@ package it.gov.pagopa.pu.organization.controller;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import it.gov.pagopa.pu.organization.dto.generated.OrgSilServiceDTO;
 import it.gov.pagopa.pu.organization.enums.OrgSilServiceType;
-import it.gov.pagopa.pu.organization.model.SilServiceLegacyBasicAuthConfig;
 import it.gov.pagopa.pu.organization.model.SilServiceLegacyBasicAuthConfigDTO;
-import it.gov.pagopa.pu.organization.service.organization.OrganizationSilService;
+import it.gov.pagopa.pu.organization.service.organization.OrgSilServiceService;
 import org.junit.jupiter.api.Test;
 import org.mockito.ArgumentCaptor;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -26,7 +25,7 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
 
 @WebMvcTest(OrganizationSilServiceController.class)
 @AutoConfigureMockMvc(addFilters = false)
-class OrganizationSilServiceControllerTest {
+class OrgSilServiceServiceControllerTest {
 
   @Autowired
   private MockMvc mockMvc;
@@ -35,7 +34,7 @@ class OrganizationSilServiceControllerTest {
   private ObjectMapper objectMapper;
 
   @MockitoBean
-  private OrganizationSilService organizationSilServiceMock;
+  private OrgSilServiceService orgSilServiceServiceMock;
 
   @Test
   void givenExistingOrgSilServiceIdThenReturnsDTO() throws Exception {
@@ -44,7 +43,7 @@ class OrganizationSilServiceControllerTest {
     orgSilServiceDTO.setOrgSilServiceId(1L);
     orgSilServiceDTO.setApplicationName("Test Service");
 
-    when(organizationSilServiceMock.getById(1L))
+    when(orgSilServiceServiceMock.getById(1L))
       .thenReturn(orgSilServiceDTO);
 
     // When
@@ -55,13 +54,13 @@ class OrganizationSilServiceControllerTest {
       .andReturn();
 
     // Then
-    verify(organizationSilServiceMock).getById(1L);
+    verify(orgSilServiceServiceMock).getById(1L);
   }
 
   @Test
   void givenNonExistingOrgSilServiceIdThenReturn404() throws Exception {
     // Given
-    when(organizationSilServiceMock.getById(1L))
+    when(orgSilServiceServiceMock.getById(1L))
       .thenThrow(new ResourceNotFoundException("OrgSilService not found with ID: 1"));
 
     // When
@@ -72,7 +71,7 @@ class OrganizationSilServiceControllerTest {
       .andReturn();
 
     // Then
-    verify(organizationSilServiceMock).getById(1L);
+    verify(orgSilServiceServiceMock).getById(1L);
   }
 
   @Test
@@ -87,7 +86,7 @@ class OrganizationSilServiceControllerTest {
     orgSilServiceDTO.setAuthConfig(new SilServiceLegacyBasicAuthConfigDTO());
     orgSilServiceDTO.setServiceUrl("http://localhost:8080/organization-sil-service/1");
 
-    when(organizationSilServiceMock.createOrUpdate(any(OrgSilServiceDTO.class)))
+    when(orgSilServiceServiceMock.createOrUpdate(any(OrgSilServiceDTO.class)))
       .thenReturn(orgSilServiceDTO);
 
     // When
@@ -100,7 +99,7 @@ class OrganizationSilServiceControllerTest {
 
     // Then
     ArgumentCaptor<OrgSilServiceDTO> captor = ArgumentCaptor.forClass(OrgSilServiceDTO.class);
-    verify(organizationSilServiceMock).createOrUpdate(captor.capture());
+    verify(orgSilServiceServiceMock).createOrUpdate(captor.capture());
     assertEquals(orgSilServiceDTO.getOrgSilServiceId(), captor.getValue().getOrgSilServiceId());
     assertEquals(orgSilServiceDTO.getApplicationName(), captor.getValue().getApplicationName());
   }

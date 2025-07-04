@@ -19,7 +19,7 @@ import static org.junit.jupiter.api.Assertions.*;
 import static org.mockito.Mockito.*;
 
 @ExtendWith(MockitoExtension.class)
-class OrganizationSilServiceTest {
+class OrgSilServiceServiceTest {
 
   @Mock
   private OrgSilServiceRepository orgSilServiceRepositoryMock;
@@ -28,7 +28,7 @@ class OrganizationSilServiceTest {
   private OrgSilServiceMapper orgSilServiceMapperMock;
 
   @InjectMocks
-  private OrganizationSilService organizationSilService;
+  private OrgSilServiceService orgSilServiceService;
 
   @Test
   void givenValidIdWhenGetByIdThenReturnsDecryptedDTO() {
@@ -47,7 +47,7 @@ class OrganizationSilServiceTest {
     when(orgSilServiceMapperMock.fromEntity(entity)).thenReturn(expectedDTO);
 
     // When
-    OrgSilServiceDTO result = organizationSilService.getById(orgSilServiceId);
+    OrgSilServiceDTO result = orgSilServiceService.getById(orgSilServiceId);
 
     // Then
     assertNotNull(result);
@@ -65,7 +65,7 @@ class OrganizationSilServiceTest {
     // When & Then
     OrgSilServiceNotFoundException exception = assertThrows(
       OrgSilServiceNotFoundException.class,
-      () -> organizationSilService.getById(orgSilServiceId)
+      () -> orgSilServiceService.getById(orgSilServiceId)
     );
 
     assertEquals("OrgSilService not found with ID: " + orgSilServiceId, exception.getMessage());
@@ -96,7 +96,7 @@ class OrganizationSilServiceTest {
     when(orgSilServiceMapperMock.fromEntity(entity)).thenReturn(expectedDTO);
 
     // When
-    OrgSilServiceDTO result = organizationSilService.createOrUpdate(inputDTO);
+    OrgSilServiceDTO result = orgSilServiceService.createOrUpdate(inputDTO);
 
     // Then
     assertNotNull(result);
@@ -124,7 +124,7 @@ class OrganizationSilServiceTest {
     when(orgSilServiceMapperMock.fromEntity(entity)).thenReturn(expectedDTO);
 
     // When
-    OrgSilServiceDTO result = organizationSilService.createOrUpdate(inputDTO);
+    OrgSilServiceDTO result = orgSilServiceService.createOrUpdate(inputDTO);
 
     // Then
     assertNotNull(result);
@@ -154,7 +154,7 @@ class OrganizationSilServiceTest {
     when(orgSilServiceMapperMock.fromEntity(any(OrgSilService.class))).thenReturn(expectedDTO);
 
     // When
-    OrgSilServiceDTO result = organizationSilService.createOrUpdate(inputDTO);
+    OrgSilServiceDTO result = orgSilServiceService.createOrUpdate(inputDTO);
 
     // Then
     assertNotNull(result);
@@ -179,7 +179,7 @@ class OrganizationSilServiceTest {
     when(orgSilServiceMapperMock.fromEntity(entity)).thenReturn(expectedDTO);
 
     // When
-    OrgSilServiceDTO result = organizationSilService.getById(orgSilServiceId);
+    OrgSilServiceDTO result = orgSilServiceService.getById(orgSilServiceId);
 
     // Then
     assertNotNull(result);
@@ -201,7 +201,7 @@ class OrganizationSilServiceTest {
     when(orgSilServiceMapperMock.fromEntity(entity)).thenReturn(expectedDTO);
 
     // When
-    OrgSilServiceDTO result = organizationSilService.createOrUpdate(inputDTO);
+    OrgSilServiceDTO result = orgSilServiceService.createOrUpdate(inputDTO);
 
     // Then
     assertNotNull(result);

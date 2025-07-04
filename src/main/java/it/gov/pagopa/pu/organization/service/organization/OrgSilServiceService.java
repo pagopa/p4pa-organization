@@ -12,7 +12,7 @@ import org.springframework.stereotype.Service;
 @Service
 @Slf4j
 @RequiredArgsConstructor
-public class OrganizationSilService {
+public class OrgSilServiceService {
 
   private final OrgSilServiceRepository orgSilServiceRepository;
   private final OrgSilServiceMapper orgSilServiceMapper;
