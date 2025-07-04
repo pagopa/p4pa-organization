@@ -62,6 +62,69 @@ paths:
           description: Organization Not Found
         '500':
           description: Internal Server Error
+  /organization-sil-service:
+    post:
+      tags:
+        - OrganizationSilService
+      summary: Save SIL service configuration for an organization with encryption
+      operationId: createOrUpdateOrgSilService
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/OrgSilServiceDTO'
+      responses:
+        '200':
+          description: OK
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/OrgSilServiceDTO'
+        '404':
+          description: Organization Not Found
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/OrganizationErrorDTO'
+        '500':
+          description: Internal Server Error
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/OrganizationErrorDTO'
+  /organization-sil-service/{orgSilServiceId}:
+    get:
+      tags:
+        - OrganizationSilService
+      summary: Get SIL service configuration for an organization by ID decrypted
+      operationId: getOrgSilService
+      parameters:
+        - name: orgSilServiceId
+          in: path
+          required: true
+          schema:
+            type: integer
+            format: int64
+      responses:
+        '200':
+          description: OK
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/OrgSilServiceDTO'
+        '404':
+          description: Organization Not Found
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/OrganizationErrorDTO'
+        '500':
+          description: Internal Server Error
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/OrganizationErrorDTO'
   /brokers/{brokerId}/apiKey:
     get:
       tags:
@@ -228,3 +291,41 @@ components:
             - ORGANIZATION_GENERIC_ERROR
         message:
           type: string
+    OrgSilServiceDTO:
+      type: object
+      required:
+        - organizationId
+        - applicationName
+        - serviceUrl
+        - serviceType
+        - flagLegacy
+      properties:
+        orgSilServiceId:
+          type: integer
+          format: int64
+          description: Unique identifier for the organization SIL service
+          example: 12345
+        organizationId:
+          type: integer
+          format: int64
+          description: ID of the organization this service belongs to
+          example: 67890
+        applicationName:
+          type: string
+          description: Name of the application
+          maxLength: 255
+          example: "Example Application"
+        serviceUrl:
+          type: string
+          description: URL endpoint for the service
+          maxLength: 500
+          example: "https://app.example.com"
+        serviceType:
+          type: 'OrgSilServiceType'
+        flagLegacy:
+          type: boolean
+          description: Indicates if this is a legacy service
+          default: false
+          example: false
+        authConfig:
+          type: 'SilServiceAuthConfigDTO'

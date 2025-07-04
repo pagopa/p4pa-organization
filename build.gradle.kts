@@ -162,6 +162,10 @@ tasks.register<org.openapitools.generator.gradle.plugin.tasks.GenerateTask>("ope
     "enumPropertyNaming" to "original",
     "additionalModelTypeAnnotations" to "@lombok.experimental.SuperBuilder(toBuilder = true)"
   ))
+  typeMappings.set(mapOf(
+    "OrgSilServiceType" to "it.gov.pagopa.pu.organization.enums.OrgSilServiceType",
+    "SilServiceAuthConfigDTO" to "it.gov.pagopa.pu.organization.model.SilServiceAuthConfigDTO"
+  ))
 }
 
 tasks.register<org.openapitools.generator.gradle.plugin.tasks.GenerateTask>("openApiGeneratePAGOPAPAYMENTS") {
