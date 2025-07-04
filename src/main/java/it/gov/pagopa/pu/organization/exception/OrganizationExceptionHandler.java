@@ -36,39 +36,19 @@ import java.util.stream.Collectors;
 @Order(Ordered.HIGHEST_PRECEDENCE)
 public class OrganizationExceptionHandler {
 
-  private final String ORG_SIL_SERVICE_PATH = "/organization-sil-service";
-
   @ExceptionHandler({ResourceNotFoundException.class, OrganizationNotFoundException.class, OrgSilServiceNotFoundException.class})
   public ResponseEntity<OrganizationErrorDTO> handleResourceNotFoundException(Exception ex, HttpServletRequest request) {
-    OrganizationErrorDTO.CodeEnum errorCode = OrganizationErrorDTO.CodeEnum.ORGANIZATION_NOT_FOUND;
-
-    if (request.getRequestURI().startsWith(ORG_SIL_SERVICE_PATH)) {
-      errorCode = OrganizationErrorDTO.CodeEnum.ORGANIZATION_SIL_SERVICE_NOT_FOUND;
-    }
-
-    return handleException(ex, request, HttpStatus.NOT_FOUND, errorCode);
+    return handleException(ex, request, HttpStatus.NOT_FOUND, OrganizationErrorDTO.CodeEnum.ORGANIZATION_NOT_FOUND);
   }
 
   @ExceptionHandler({DataIntegrityViolationException.class})
   public ResponseEntity<OrganizationErrorDTO> handleDataIntegrityViolationException(Exception ex, HttpServletRequest request) {
-    OrganizationErrorDTO.CodeEnum errorCode = OrganizationErrorDTO.CodeEnum.ORGANIZATION_CONFLICT;
-
-    if (request.getRequestURI().startsWith(ORG_SIL_SERVICE_PATH)) {
-      errorCode = OrganizationErrorDTO.CodeEnum.ORGANIZATION_SIL_SERVICE_CONFLICT;
-    }
-
-    return handleException(ex, request, HttpStatus.CONFLICT, errorCode);
+    return handleException(ex, request, HttpStatus.CONFLICT, OrganizationErrorDTO.CodeEnum.ORGANIZATION_CONFLICT);
   }
 
   @ExceptionHandler({ValidationException.class, HttpMessageNotReadableException.class, MethodArgumentNotValidException.class, MethodArgumentTypeMismatchException.class})
   public ResponseEntity<OrganizationErrorDTO> handleViolationException(Exception ex, HttpServletRequest request) {
-    OrganizationErrorDTO.CodeEnum errorCode = OrganizationErrorDTO.CodeEnum.ORGANIZATION_BAD_REQUEST;
-
-    if (request.getRequestURI().startsWith(ORG_SIL_SERVICE_PATH)) {
-      errorCode = OrganizationErrorDTO.CodeEnum.ORGANIZATION_SIL_SERVICE_BAD_REQUEST;
-    }
-
-    return handleException(ex, request, HttpStatus.BAD_REQUEST, errorCode);
+    return handleException(ex, request, HttpStatus.BAD_REQUEST, OrganizationErrorDTO.CodeEnum.ORGANIZATION_BAD_REQUEST);
   }
 
   @ExceptionHandler({ServletException.class, ErrorResponseException.class})
@@ -77,14 +57,10 @@ public class OrganizationExceptionHandler {
     OrganizationErrorDTO.CodeEnum errorCode = OrganizationErrorDTO.CodeEnum.ORGANIZATION_GENERIC_ERROR;
     if (ex instanceof ErrorResponse errorResponse) {
       httpStatus = errorResponse.getStatusCode();
-      if (httpStatus.isSameCodeAs(HttpStatus.NOT_FOUND) && !request.getRequestURI().startsWith(ORG_SIL_SERVICE_PATH)) {
+      if (httpStatus.isSameCodeAs(HttpStatus.NOT_FOUND)) {
         errorCode = OrganizationErrorDTO.CodeEnum.ORGANIZATION_NOT_FOUND;
-      } else if (httpStatus.is4xxClientError() && !request.getRequestURI().startsWith(ORG_SIL_SERVICE_PATH)) {
+      } else if (httpStatus.is4xxClientError()) {
         errorCode = OrganizationErrorDTO.CodeEnum.ORGANIZATION_BAD_REQUEST;
-      } else if (httpStatus.isSameCodeAs(HttpStatus.NOT_FOUND) && request.getRequestURI().startsWith(ORG_SIL_SERVICE_PATH)) {
-        errorCode = OrganizationErrorDTO.CodeEnum.ORGANIZATION_SIL_SERVICE_NOT_FOUND;
-      } else if (httpStatus.is4xxClientError() && request.getRequestURI().startsWith(ORG_SIL_SERVICE_PATH)) {
-        errorCode = OrganizationErrorDTO.CodeEnum.ORGANIZATION_SIL_SERVICE_BAD_REQUEST;
       }
     }
     return handleException(ex, request, httpStatus, errorCode);
@@ -101,13 +77,7 @@ public class OrganizationExceptionHandler {
 
   @ExceptionHandler({RuntimeException.class})
   public ResponseEntity<OrganizationErrorDTO> handleRuntimeException(RuntimeException ex, HttpServletRequest request) {
-    OrganizationErrorDTO.CodeEnum errorCode = OrganizationErrorDTO.CodeEnum.ORGANIZATION_GENERIC_ERROR;
-
-    if (request.getRequestURI().startsWith(ORG_SIL_SERVICE_PATH)) {
-      errorCode = OrganizationErrorDTO.CodeEnum.ORGANIZATION_SIL_SERVICE_GENERIC_ERROR;
-    }
-
-    return handleException(ex, request, HttpStatus.INTERNAL_SERVER_ERROR, errorCode);
+    return handleException(ex, request, HttpStatus.INTERNAL_SERVER_ERROR, OrganizationErrorDTO.CodeEnum.ORGANIZATION_GENERIC_ERROR);
   }
 
   static ResponseEntity<OrganizationErrorDTO> handleException(Exception ex, HttpServletRequest request, HttpStatusCode httpStatus, OrganizationErrorDTO.CodeEnum errorEnum) {

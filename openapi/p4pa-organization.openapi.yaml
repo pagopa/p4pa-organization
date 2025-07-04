@@ -289,10 +289,6 @@ components:
             - ORGANIZATION_CONFLICT
             - ORGANIZATION_BAD_REQUEST
             - ORGANIZATION_GENERIC_ERROR
-            - ORGANIZATION_SIL_SERVICE_NOT_FOUND
-            - ORGANIZATION_SIL_SERVICE_CONFLICT
-            - ORGANIZATION_SIL_SERVICE_BAD_REQUEST
-            - ORGANIZATION_SIL_SERVICE_GENERIC_ERROR
         message:
           type: string
     OrgSilServiceDTO:
