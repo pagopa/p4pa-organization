@@ -1,6 +1,7 @@
-package it.gov.pagopa.pu.organization.model;
+package it.gov.pagopa.pu.organization.model.orgsilservice;
 
 import it.gov.pagopa.pu.organization.enums.OrgSilServiceType;
+import it.gov.pagopa.pu.organization.model.BaseEntity;
 import jakarta.persistence.*;
 import jakarta.validation.constraints.NotNull;
 import lombok.AllArgsConstructor;

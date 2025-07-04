@@ -150,6 +150,10 @@ tasks.register<org.openapitools.generator.gradle.plugin.tasks.GenerateTask>("ope
   outputDir.set("$projectDir/build/generated")
   apiPackage.set("it.gov.pagopa.pu.organization.controller.generated")
   modelPackage.set("it.gov.pagopa.pu.organization.dto.generated")
+  typeMappings.set(mapOf(
+    "OrgSilServiceType" to "it.gov.pagopa.pu.organization.enums.OrgSilServiceType",
+    "SilServiceAuthConfigDTO" to "it.gov.pagopa.pu.organization.dto.orgsilservice.SilServiceAuthConfigDTO"
+  ))
   configOptions.set(mapOf(
     "dateLibrary" to "java8",
     "requestMappingMode" to "api_interface",
