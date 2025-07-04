@@ -3,7 +3,7 @@ package it.gov.pagopa.pu.organization.controller;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import it.gov.pagopa.pu.organization.dto.generated.OrgSilServiceDTO;
 import it.gov.pagopa.pu.organization.enums.OrgSilServiceType;
-import it.gov.pagopa.pu.organization.model.SilServiceLegacyBasicAuthConfigDTO;
+import it.gov.pagopa.pu.organization.dto.orgsilservice.SilServiceLegacyBasicAuthConfigDTO;
 import it.gov.pagopa.pu.organization.service.organization.OrgSilServiceService;
 import org.junit.jupiter.api.Test;
 import org.mockito.ArgumentCaptor;

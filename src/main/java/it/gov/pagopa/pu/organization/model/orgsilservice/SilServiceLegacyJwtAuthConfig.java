@@ -1,4 +1,4 @@
-package it.gov.pagopa.pu.organization.model;
+package it.gov.pagopa.pu.organization.model.orgsilservice;
 
 import it.gov.pagopa.pu.organization.enums.JwtAlgorithm;
 import lombok.AllArgsConstructor;

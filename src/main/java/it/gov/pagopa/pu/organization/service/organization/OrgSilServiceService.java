@@ -3,7 +3,7 @@ package it.gov.pagopa.pu.organization.service.organization;
 import it.gov.pagopa.pu.organization.dto.generated.OrgSilServiceDTO;
 import it.gov.pagopa.pu.organization.exception.custom.OrgSilServiceNotFoundException;
 import it.gov.pagopa.pu.organization.mapper.OrgSilServiceMapper;
-import it.gov.pagopa.pu.organization.model.OrgSilService;
+import it.gov.pagopa.pu.organization.model.orgsilservice.OrgSilService;
 import it.gov.pagopa.pu.organization.repository.OrgSilServiceRepository;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;

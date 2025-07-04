@@ -1,4 +1,4 @@
-package it.gov.pagopa.pu.organization.model;
+package it.gov.pagopa.pu.organization.model.orgsilservice;
 
 import lombok.AllArgsConstructor;
 import lombok.Data;
@@ -9,10 +9,10 @@ import lombok.NoArgsConstructor;
 @NoArgsConstructor
 @Data
 @EqualsAndHashCode(callSuper = false)
-public class SilServiceLegacyBasicAuthConfigDTO implements SilServiceAuthConfigDTO {
+public class SilServiceLegacyBasicAuthConfig implements SilServiceAuthConfig {
 
   private String authUrl;
-  private String user;
-  private String psw;
+  private byte[] user;
+  private byte[] psw;
 
 }

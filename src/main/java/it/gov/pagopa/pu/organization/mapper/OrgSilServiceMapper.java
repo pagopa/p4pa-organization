@@ -1,9 +1,13 @@
 package it.gov.pagopa.pu.organization.mapper;
 
-import com.fasterxml.jackson.databind.ObjectMapper;
 import it.gov.pagopa.pu.organization.dto.generated.OrgSilServiceDTO;
-import it.gov.pagopa.pu.organization.enums.JwtAlgorithm;
-import it.gov.pagopa.pu.organization.model.*;
+import it.gov.pagopa.pu.organization.dto.orgsilservice.SilServiceAuthConfigDTO;
+import it.gov.pagopa.pu.organization.dto.orgsilservice.SilServiceLegacyBasicAuthConfigDTO;
+import it.gov.pagopa.pu.organization.dto.orgsilservice.SilServiceLegacyJwtAuthConfigDTO;
+import it.gov.pagopa.pu.organization.model.orgsilservice.OrgSilService;
+import it.gov.pagopa.pu.organization.model.orgsilservice.SilServiceAuthConfig;
+import it.gov.pagopa.pu.organization.model.orgsilservice.SilServiceLegacyBasicAuthConfig;
+import it.gov.pagopa.pu.organization.model.orgsilservice.SilServiceLegacyJwtAuthConfig;
 import it.gov.pagopa.pu.organization.service.organization.OrganizationEncryptionService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Component;
@@ -12,7 +16,6 @@ import org.springframework.stereotype.Component;
 @RequiredArgsConstructor
 public class OrgSilServiceMapper {
 
-  private final ObjectMapper objectMapper;
   private final OrganizationEncryptionService encryptionService;
 
   public OrgSilServiceDTO fromEntity(OrgSilService orgSilService) {

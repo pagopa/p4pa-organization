@@ -1,10 +1,15 @@
 package it.gov.pagopa.pu.organization.mapper;
 
-import com.fasterxml.jackson.databind.ObjectMapper;
 import it.gov.pagopa.pu.organization.dto.generated.OrgSilServiceDTO;
+import it.gov.pagopa.pu.organization.dto.orgsilservice.SilServiceAuthConfigDTO;
+import it.gov.pagopa.pu.organization.dto.orgsilservice.SilServiceLegacyBasicAuthConfigDTO;
+import it.gov.pagopa.pu.organization.dto.orgsilservice.SilServiceLegacyJwtAuthConfigDTO;
 import it.gov.pagopa.pu.organization.enums.JwtAlgorithm;
 import it.gov.pagopa.pu.organization.enums.OrgSilServiceType;
-import it.gov.pagopa.pu.organization.model.*;
+import it.gov.pagopa.pu.organization.model.orgsilservice.OrgSilService;
+import it.gov.pagopa.pu.organization.model.orgsilservice.SilServiceAuthConfig;
+import it.gov.pagopa.pu.organization.model.orgsilservice.SilServiceLegacyBasicAuthConfig;
+import it.gov.pagopa.pu.organization.model.orgsilservice.SilServiceLegacyJwtAuthConfig;
 import it.gov.pagopa.pu.organization.service.organization.OrganizationEncryptionService;
 import it.gov.pagopa.pu.organization.util.TestUtils;
 import org.junit.jupiter.api.BeforeEach;
@@ -22,9 +27,6 @@ import static org.mockito.Mockito.*;
 
 @ExtendWith(MockitoExtension.class)
 class OrgSilServiceMapperTest {
-
-  @Mock
-  private ObjectMapper objectMapper;
 
   @Mock
   private OrganizationEncryptionService encryptionService;
@@ -127,7 +129,7 @@ class OrgSilServiceMapperTest {
     // Then
     assertNotNull(result);
     assertNotNull(result.getAuthConfig());
-    assertTrue(result.getAuthConfig() instanceof SilServiceLegacyBasicAuthConfigDTO);
+    assertInstanceOf(SilServiceLegacyBasicAuthConfigDTO.class, result.getAuthConfig());
 
     SilServiceLegacyBasicAuthConfigDTO authConfig = (SilServiceLegacyBasicAuthConfigDTO) result.getAuthConfig();
     assertEquals("https://auth.example.com", authConfig.getAuthUrl());
@@ -153,7 +155,7 @@ class OrgSilServiceMapperTest {
     // Then
     assertNotNull(result);
     assertNotNull(result.getAuthConfig());
-    assertTrue(result.getAuthConfig() instanceof SilServiceLegacyJwtAuthConfigDTO);
+    assertInstanceOf(SilServiceLegacyJwtAuthConfigDTO.class, result.getAuthConfig());
 
     SilServiceLegacyJwtAuthConfigDTO authConfig = (SilServiceLegacyJwtAuthConfigDTO) result.getAuthConfig();
     assertEquals("kid123", authConfig.getKid());
@@ -210,7 +212,7 @@ class OrgSilServiceMapperTest {
     // Then
     assertNotNull(result);
     assertNotNull(result.getAuthConfig());
-    assertTrue(result.getAuthConfig() instanceof SilServiceLegacyBasicAuthConfig);
+    assertInstanceOf(SilServiceLegacyBasicAuthConfig.class, result.getAuthConfig());
 
     SilServiceLegacyBasicAuthConfig authConfig = (SilServiceLegacyBasicAuthConfig) result.getAuthConfig();
     assertEquals("https://auth.example.com", authConfig.getAuthUrl());
@@ -236,7 +238,7 @@ class OrgSilServiceMapperTest {
     // Then
     assertNotNull(result);
     assertNotNull(result.getAuthConfig());
-    assertTrue(result.getAuthConfig() instanceof SilServiceLegacyJwtAuthConfig);
+    assertInstanceOf(SilServiceLegacyJwtAuthConfig.class, result.getAuthConfig());
 
     SilServiceLegacyJwtAuthConfig authConfig = (SilServiceLegacyJwtAuthConfig) result.getAuthConfig();
     assertEquals("kid123", authConfig.getKid());
@@ -309,7 +311,7 @@ class OrgSilServiceMapperTest {
     assertEquals(testEntity.getApplicationName(), convertedEntity.getApplicationName());
     assertEquals(testEntity.isFlagLegacy(), convertedEntity.isFlagLegacy());
 
-    assertTrue(convertedEntity.getAuthConfig() instanceof SilServiceLegacyBasicAuthConfig);
+    assertInstanceOf(SilServiceLegacyBasicAuthConfig.class, convertedEntity.getAuthConfig());
     SilServiceLegacyBasicAuthConfig convertedAuthConfig = (SilServiceLegacyBasicAuthConfig) convertedEntity.getAuthConfig();
     assertEquals(basicAuthConfig.getAuthUrl(), convertedAuthConfig.getAuthUrl());
     assertEquals(new String(basicAuthConfig.getUser(), StandardCharsets.UTF_8), new String(convertedAuthConfig.getUser(), StandardCharsets.UTF_8));
@@ -339,7 +341,7 @@ class OrgSilServiceMapperTest {
     assertEquals(testEntity.getApplicationName(), convertedEntity.getApplicationName());
     assertEquals(testEntity.isFlagLegacy(), convertedEntity.isFlagLegacy());
 
-    assertTrue(convertedEntity.getAuthConfig() instanceof SilServiceLegacyJwtAuthConfig);
+    assertInstanceOf(SilServiceLegacyJwtAuthConfig.class, convertedEntity.getAuthConfig());
     SilServiceLegacyJwtAuthConfig convertedAuthConfig = (SilServiceLegacyJwtAuthConfig) convertedEntity.getAuthConfig();
     assertEquals(jwtAuthConfig.getKid(), convertedAuthConfig.getKid());
     assertEquals(jwtAuthConfig.getSubject(), convertedAuthConfig.getSubject());
@@ -410,7 +412,7 @@ class OrgSilServiceMapperTest {
   }
 
   @Test
-  void givenNullBasicAuthConfigDTOWhenFromLegacyBasicAuthConfigDTOThenReturnsNull() {
+  void givenNullAuthConfigDTOWhenFromDTOThenReturnsNull() {
     // Given
     testDTO.setAuthConfig(null);
 
@@ -423,33 +425,7 @@ class OrgSilServiceMapperTest {
   }
 
   @Test
-  void givenNullJwtAuthConfigDTOWhenFromLegacyJwtAuthConfigDTOThenReturnsNull() {
-    // Given
-    testDTO.setAuthConfig(null);
-
-    // When
-    OrgSilService result = mapper.fromDTO(testDTO);
-
-    // Then
-    assertNotNull(result);
-    assertNull(result.getAuthConfig());
-  }
-
-  @Test
-  void givenNullBasicAuthConfigWhenToLegacyBasicAuthConfigDTOThenReturnsNull() {
-    // Given
-    testEntity.setAuthConfig(null);
-
-    // When
-    OrgSilServiceDTO result = mapper.fromEntity(testEntity);
-
-    // Then
-    assertNotNull(result);
-    assertNull(result.getAuthConfig());
-  }
-
-  @Test
-  void givenNullJwtAuthConfigWhenToLegacyJwtAuthConfigDTOThenReturnsNull() {
+  void givenNullAuthConfigWhenFromEntityThenReturnsNull() {
     // Given
     testEntity.setAuthConfig(null);
 

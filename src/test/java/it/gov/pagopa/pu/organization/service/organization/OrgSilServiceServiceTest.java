@@ -3,9 +3,9 @@ package it.gov.pagopa.pu.organization.service.organization;
 import it.gov.pagopa.pu.organization.dto.generated.OrgSilServiceDTO;
 import it.gov.pagopa.pu.organization.exception.custom.OrgSilServiceNotFoundException;
 import it.gov.pagopa.pu.organization.mapper.OrgSilServiceMapper;
-import it.gov.pagopa.pu.organization.model.OrgSilService;
-import it.gov.pagopa.pu.organization.model.SilServiceLegacyBasicAuthConfig;
-import it.gov.pagopa.pu.organization.model.SilServiceLegacyJwtAuthConfig;
+import it.gov.pagopa.pu.organization.model.orgsilservice.OrgSilService;
+import it.gov.pagopa.pu.organization.model.orgsilservice.SilServiceLegacyBasicAuthConfig;
+import it.gov.pagopa.pu.organization.model.orgsilservice.SilServiceLegacyJwtAuthConfig;
 import it.gov.pagopa.pu.organization.repository.OrgSilServiceRepository;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
@@ -84,9 +84,6 @@ class OrgSilServiceServiceTest {
 
     SilServiceLegacyBasicAuthConfig authConfig = new SilServiceLegacyBasicAuthConfig();
     entity.setAuthConfig(authConfig);
-
-    SilServiceLegacyBasicAuthConfig encryptedAuthConfig = new SilServiceLegacyBasicAuthConfig();
-    SilServiceLegacyBasicAuthConfig decryptedAuthConfig = new SilServiceLegacyBasicAuthConfig();
 
     OrgSilServiceDTO expectedDTO = new OrgSilServiceDTO();
     expectedDTO.setOrgSilServiceId(1L);
