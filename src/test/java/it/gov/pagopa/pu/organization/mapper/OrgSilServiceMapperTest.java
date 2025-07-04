@@ -12,14 +12,19 @@ import it.gov.pagopa.pu.organization.model.orgsilservice.SilServiceLegacyBasicAu
 import it.gov.pagopa.pu.organization.model.orgsilservice.SilServiceLegacyJwtAuthConfig;
 import it.gov.pagopa.pu.organization.service.organization.OrganizationEncryptionService;
 import it.gov.pagopa.pu.organization.util.TestUtils;
+import jakarta.validation.ValidationException;
+import org.junit.jupiter.api.AfterEach;
+import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
+import org.mockito.Mockito;
 import org.mockito.junit.jupiter.MockitoExtension;
 
 import java.nio.charset.StandardCharsets;
+import java.util.Base64;
 
 import static org.junit.jupiter.api.Assertions.*;
 import static org.mockito.ArgumentMatchers.anyString;
@@ -29,7 +34,7 @@ import static org.mockito.Mockito.*;
 class OrgSilServiceMapperTest {
 
   @Mock
-  private OrganizationEncryptionService encryptionService;
+  private OrganizationEncryptionService encryptionServiceMock;
 
   @InjectMocks
   private OrgSilServiceMapper mapper;
@@ -84,7 +89,14 @@ class OrgSilServiceMapperTest {
     jwtAuthConfigDTO.setSubject("subject");
     jwtAuthConfigDTO.setIssuer("issuer");
     jwtAuthConfigDTO.setAlgorithm(JwtAlgorithm.HS256);
-    jwtAuthConfigDTO.setSigningKey("plainSigningKey");
+    jwtAuthConfigDTO.setSigningKey(Base64.getEncoder().encodeToString("plainSigningKey".getBytes(StandardCharsets.UTF_8)));
+  }
+
+  @AfterEach
+  void verifyNoMoreInteractions(){
+    Mockito.verifyNoMoreInteractions(
+      encryptionServiceMock
+    );
   }
 
   @Test
@@ -120,8 +132,8 @@ class OrgSilServiceMapperTest {
   void givenEntityWithBasicAuthConfigWhenFromEntityThenReturnsDTOWithDecryptedValues() {
     // Given
     testEntity.setAuthConfig(basicAuthConfig);
-    when(encryptionService.decryptKey("encryptedUser".getBytes(StandardCharsets.UTF_8))).thenReturn("plainUser");
-    when(encryptionService.decryptKey("encryptedPassword".getBytes(StandardCharsets.UTF_8))).thenReturn("plainPassword");
+    when(encryptionServiceMock.decryptKey("encryptedUser".getBytes(StandardCharsets.UTF_8))).thenReturn("plainUser");
+    when(encryptionServiceMock.decryptKey("encryptedPassword".getBytes(StandardCharsets.UTF_8))).thenReturn("plainPassword");
 
     // When
     OrgSilServiceDTO result = mapper.fromEntity(testEntity);
@@ -138,16 +150,13 @@ class OrgSilServiceMapperTest {
 
     TestUtils.checkNotNullFields(result);
     TestUtils.checkNotNullFields(authConfig);
-
-    verify(encryptionService).decryptKey("encryptedUser".getBytes(StandardCharsets.UTF_8));
-    verify(encryptionService).decryptKey("encryptedPassword".getBytes(StandardCharsets.UTF_8));
   }
 
   @Test
   void givenEntityWithJwtAuthConfigWhenFromEntityThenReturnsDTOWithDecryptedValues() {
     // Given
     testEntity.setAuthConfig(jwtAuthConfig);
-    when(encryptionService.decryptKey("encryptedSigningKey".getBytes(StandardCharsets.UTF_8))).thenReturn("plainSigningKey");
+    when(encryptionServiceMock.decryptKey("encryptedSigningKey".getBytes(StandardCharsets.UTF_8))).thenReturn("plainSigningKey");
 
     // When
     OrgSilServiceDTO result = mapper.fromEntity(testEntity);
@@ -166,8 +175,6 @@ class OrgSilServiceMapperTest {
 
     TestUtils.checkNotNullFields(result);
     TestUtils.checkNotNullFields(authConfig);
-
-    verify(encryptionService).decryptKey("encryptedSigningKey".getBytes(StandardCharsets.UTF_8));
   }
 
   @Test
@@ -203,8 +210,8 @@ class OrgSilServiceMapperTest {
   void givenDTOWithBasicAuthConfigWhenFromDTOThenReturnsEntityWithEncryptedValues() {
     // Given
     testDTO.setAuthConfig(basicAuthConfigDTO);
-    when(encryptionService.encrypt("plainUser")).thenReturn("encryptedUser".getBytes(StandardCharsets.UTF_8));
-    when(encryptionService.encrypt("plainPassword")).thenReturn("encryptedPassword".getBytes(StandardCharsets.UTF_8));
+    when(encryptionServiceMock.encrypt("plainUser")).thenReturn("encryptedUser".getBytes(StandardCharsets.UTF_8));
+    when(encryptionServiceMock.encrypt("plainPassword")).thenReturn("encryptedPassword".getBytes(StandardCharsets.UTF_8));
 
     // When
     OrgSilService result = mapper.fromDTO(testDTO);
@@ -221,16 +228,13 @@ class OrgSilServiceMapperTest {
 
     TestUtils.checkNotNullFields(result, "authConfig", "creationDate", "updateDate", "updateOperatorExternalId", "updateTraceId");
     TestUtils.checkNotNullFields(authConfig);
-
-    verify(encryptionService).encrypt("plainUser");
-    verify(encryptionService).encrypt("plainPassword");
   }
 
   @Test
   void givenDTOWithJwtAuthConfigWhenFromDTOThenReturnsEntityWithEncryptedValues() {
     // Given
     testDTO.setAuthConfig(jwtAuthConfigDTO);
-    when(encryptionService.encrypt("plainSigningKey")).thenReturn("encryptedSigningKey".getBytes(StandardCharsets.UTF_8));
+    when(encryptionServiceMock.encrypt(jwtAuthConfigDTO.getSigningKey())).thenReturn("encryptedSigningKey".getBytes(StandardCharsets.UTF_8));
 
     // When
     OrgSilService result = mapper.fromDTO(testDTO);
@@ -249,8 +253,19 @@ class OrgSilServiceMapperTest {
 
     TestUtils.checkNotNullFields(result, "authConfig", "creationDate", "updateDate", "updateOperatorExternalId", "updateTraceId");
     TestUtils.checkNotNullFields(authConfig);
+  }
 
-    verify(encryptionService).encrypt("plainSigningKey");
+  @Test
+  void givenDTOWithJwtAuthConfigHavingNotValidSignignKeyWhenFromDTOThenThrowValidationException() {
+    // Given
+    testDTO.setAuthConfig(jwtAuthConfigDTO);
+    jwtAuthConfigDTO.setSigningKey("X");
+
+    // When
+    ValidationException result = assertThrows(ValidationException.class, () -> mapper.fromDTO(testDTO));
+
+    // Then
+    Assertions.assertEquals("Invalid legacyJwt signingKey! It should be Base64 encoded!", result.getMessage());
   }
 
   @Test
@@ -268,7 +283,6 @@ class OrgSilServiceMapperTest {
     assertNotNull(result);
     assertNull(result.getAuthConfig());
     TestUtils.checkNotNullFields(result, "authConfig", "creationDate", "updateDate", "updateOperatorExternalId", "updateTraceId");
-    verifyNoInteractions(encryptionService);
   }
 
   @Test
@@ -286,17 +300,16 @@ class OrgSilServiceMapperTest {
     assertNotNull(result);
     assertNull(result.getAuthConfig());
     TestUtils.checkNotNullFields(result, "authConfig", "creationDate", "updateDate", "updateOperatorExternalId", "updateTraceId");
-    verifyNoInteractions(encryptionService);
   }
 
   @Test
   void givenEntityWithBasicAuthConfigWhenRoundTripConversionThenMaintainsDataIntegrity() {
     // Given
     testEntity.setAuthConfig(basicAuthConfig);
-    when(encryptionService.decryptKey("encryptedUser".getBytes(StandardCharsets.UTF_8))).thenReturn("plainUser");
-    when(encryptionService.decryptKey("encryptedPassword".getBytes(StandardCharsets.UTF_8))).thenReturn("plainPassword");
-    when(encryptionService.encrypt("plainUser")).thenReturn("encryptedUser".getBytes(StandardCharsets.UTF_8));
-    when(encryptionService.encrypt("plainPassword")).thenReturn("encryptedPassword".getBytes(StandardCharsets.UTF_8));
+    when(encryptionServiceMock.decryptKey("encryptedUser".getBytes(StandardCharsets.UTF_8))).thenReturn("plainUser");
+    when(encryptionServiceMock.decryptKey("encryptedPassword".getBytes(StandardCharsets.UTF_8))).thenReturn("plainPassword");
+    when(encryptionServiceMock.encrypt("plainUser")).thenReturn("encryptedUser".getBytes(StandardCharsets.UTF_8));
+    when(encryptionServiceMock.encrypt("plainPassword")).thenReturn("encryptedPassword".getBytes(StandardCharsets.UTF_8));
 
     // When
     OrgSilServiceDTO dto = mapper.fromEntity(testEntity);
@@ -325,8 +338,8 @@ class OrgSilServiceMapperTest {
   void givenEntityWithJwtAuthConfigWhenRoundTripConversionThenMaintainsDataIntegrity() {
     // Given
     testEntity.setAuthConfig(jwtAuthConfig);
-    when(encryptionService.decryptKey("encryptedSigningKey".getBytes(StandardCharsets.UTF_8))).thenReturn("plainSigningKey");
-    when(encryptionService.encrypt("plainSigningKey")).thenReturn("encryptedSigningKey".getBytes(StandardCharsets.UTF_8));
+    when(encryptionServiceMock.decryptKey("encryptedSigningKey".getBytes(StandardCharsets.UTF_8))).thenReturn("plainSigningKey");
+    when(encryptionServiceMock.encrypt("plainSigningKey")).thenReturn("encryptedSigningKey".getBytes(StandardCharsets.UTF_8));
 
     // When
     OrgSilServiceDTO dto = mapper.fromEntity(testEntity);
@@ -385,30 +398,30 @@ class OrgSilServiceMapperTest {
   void givenDTOWithBasicAuthConfigWhenFromDTOThenEncryptionServiceCalledCorrectly() {
     // Given
     testDTO.setAuthConfig(basicAuthConfigDTO);
-    when(encryptionService.encrypt(anyString())).thenReturn("encrypted".getBytes(StandardCharsets.UTF_8));
+    when(encryptionServiceMock.encrypt(anyString())).thenReturn("encrypted".getBytes(StandardCharsets.UTF_8));
 
     // When
     mapper.fromDTO(testDTO);
 
     // Then
-    verify(encryptionService, times(2)).encrypt(anyString());
-    verify(encryptionService).encrypt("plainUser");
-    verify(encryptionService).encrypt("plainPassword");
+    verify(encryptionServiceMock, times(2)).encrypt(anyString());
+    verify(encryptionServiceMock).encrypt("plainUser");
+    verify(encryptionServiceMock).encrypt("plainPassword");
   }
 
   @Test
   void givenEntityWithBasicAuthConfigWhenFromEntityThenDecryptionServiceCalledCorrectly() {
     // Given
     testEntity.setAuthConfig(basicAuthConfig);
-    when(encryptionService.decryptKey(any())).thenReturn("decrypted");
+    when(encryptionServiceMock.decryptKey(any())).thenReturn("decrypted");
 
     // When
     mapper.fromEntity(testEntity);
 
     // Then
-    verify(encryptionService, times(2)).decryptKey(any());
-    verify(encryptionService).decryptKey("encryptedUser".getBytes(StandardCharsets.UTF_8));
-    verify(encryptionService).decryptKey("encryptedPassword".getBytes(StandardCharsets.UTF_8));
+    verify(encryptionServiceMock, times(2)).decryptKey(any());
+    verify(encryptionServiceMock).decryptKey("encryptedUser".getBytes(StandardCharsets.UTF_8));
+    verify(encryptionServiceMock).decryptKey("encryptedPassword".getBytes(StandardCharsets.UTF_8));
   }
 
   @Test
