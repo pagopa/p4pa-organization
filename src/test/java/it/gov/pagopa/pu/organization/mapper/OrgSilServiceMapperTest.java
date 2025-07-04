@@ -5,6 +5,8 @@ import it.gov.pagopa.pu.organization.dto.generated.OrgSilServiceDTO;
 import it.gov.pagopa.pu.organization.enums.OrgSilServiceType;
 import it.gov.pagopa.pu.organization.model.OrgSilService;
 import it.gov.pagopa.pu.organization.model.SilServiceLegacyBasicAuthConfig;
+import it.gov.pagopa.pu.organization.model.SilServiceLegacyBasicAuthConfigDTO;
+import it.gov.pagopa.pu.organization.service.organization.OrganizationEncryptionService;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
@@ -18,12 +20,14 @@ public class OrgSilServiceMapperTest {
 
   @Mock
   private ObjectMapper objectMapperMock;
+  @Mock
+  private OrganizationEncryptionService organizationEncryptionServiceMock;
 
   private OrgSilServiceMapper mapper;
 
   @BeforeEach
   void setUp() {
-    mapper = new OrgSilServiceMapper(objectMapperMock);
+    mapper = new OrgSilServiceMapper(objectMapperMock, organizationEncryptionServiceMock);
   }
 
   @Test
@@ -49,7 +53,7 @@ public class OrgSilServiceMapperTest {
     assertEquals("https://api.example.com", result.getServiceUrl());
     assertEquals("TestApp", result.getApplicationName());
     assertTrue(result.getFlagLegacy());
-    assertEquals(SilServiceLegacyBasicAuthConfig.class, result.getAuthConfig().getClass());
+    assertEquals(SilServiceLegacyBasicAuthConfigDTO.class, result.getAuthConfig().getClass());
   }
 
   @Test
@@ -71,7 +75,7 @@ public class OrgSilServiceMapperTest {
     dto.setServiceUrl("https://api.example.com");
     dto.setApplicationName("TestApp");
     dto.setFlagLegacy(true);
-    dto.setAuthConfig(new SilServiceLegacyBasicAuthConfig());
+    dto.setAuthConfig(new SilServiceLegacyBasicAuthConfigDTO());
 
     // When
     OrgSilService result = mapper.fromDTO(dto);

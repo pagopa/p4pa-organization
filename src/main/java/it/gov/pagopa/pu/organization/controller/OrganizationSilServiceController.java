@@ -17,11 +17,13 @@ public class OrganizationSilServiceController implements OrganizationSilServiceA
 
   @Override
   public ResponseEntity<OrgSilServiceDTO> createOrUpdateOrgSilService(OrgSilServiceDTO orgSilServiceDTO) {
+    log.info("Creating orgSilService having name {} on organization {}", orgSilServiceDTO.getApplicationName(), orgSilServiceDTO.getOrganizationId());
     return ResponseEntity.ok(organizationSilService.createOrUpdate(orgSilServiceDTO));
   }
 
   @Override
   public ResponseEntity<OrgSilServiceDTO> getOrgSilService(Long orgSilServiceId) {
+    log.info("Retrieving orgSilService {}", orgSilServiceId);
     return ResponseEntity.ok(organizationSilService.getById(orgSilServiceId));
   }
 

@@ -4,6 +4,7 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 import it.gov.pagopa.pu.organization.dto.generated.OrgSilServiceDTO;
 import it.gov.pagopa.pu.organization.enums.OrgSilServiceType;
 import it.gov.pagopa.pu.organization.model.SilServiceLegacyBasicAuthConfig;
+import it.gov.pagopa.pu.organization.model.SilServiceLegacyBasicAuthConfigDTO;
 import it.gov.pagopa.pu.organization.service.organization.OrganizationSilService;
 import org.junit.jupiter.api.Test;
 import org.mockito.ArgumentCaptor;
@@ -83,7 +84,7 @@ class OrganizationSilServiceControllerTest {
     orgSilServiceDTO.setOrganizationId(1L);
     orgSilServiceDTO.setServiceType(OrgSilServiceType.ACTUALIZATION);
     orgSilServiceDTO.setFlagLegacy(true);
-    orgSilServiceDTO.setAuthConfig(new SilServiceLegacyBasicAuthConfig());
+    orgSilServiceDTO.setAuthConfig(new SilServiceLegacyBasicAuthConfigDTO());
     orgSilServiceDTO.setServiceUrl("http://localhost:8080/organization-sil-service/1");
 
     when(organizationSilServiceMock.createOrUpdate(any(OrgSilServiceDTO.class)))

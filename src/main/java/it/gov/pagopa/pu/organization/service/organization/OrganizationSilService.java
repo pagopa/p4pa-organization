@@ -16,22 +16,16 @@ public class OrganizationSilService {
 
   private final OrgSilServiceRepository orgSilServiceRepository;
   private final OrgSilServiceMapper orgSilServiceMapper;
-  private final OrgSilServiceEncryptionService encryptionService;
 
   public OrgSilServiceDTO getById(Long orgSilServiceId) {
-    log.debug("Retrieving OrgSilService with ID: {}", orgSilServiceId);
     OrgSilService orgSilService = orgSilServiceRepository.findById(orgSilServiceId).orElseThrow(() ->
       new OrgSilServiceNotFoundException("OrgSilService not found with ID: " + orgSilServiceId));
-    encryptionService.decryptAuthConfig(orgSilService.getAuthConfig());
     return orgSilServiceMapper.fromEntity(orgSilService);
   }
 
   public OrgSilServiceDTO createOrUpdate(OrgSilServiceDTO orgSilServiceDTO) {
-    log.debug("Creating OrgSilService: {}", orgSilServiceDTO);
     OrgSilService orgSilService = orgSilServiceMapper.fromDTO(orgSilServiceDTO);
-    encryptionService.encryptAuthConfig(orgSilService.getAuthConfig());
     orgSilServiceRepository.save(orgSilService);
-    encryptionService.decryptAuthConfig(orgSilService.getAuthConfig());
 
     return orgSilServiceMapper.fromEntity(orgSilService);
   }

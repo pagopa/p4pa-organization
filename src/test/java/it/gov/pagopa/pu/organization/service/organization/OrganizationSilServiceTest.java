@@ -27,9 +27,6 @@ class OrganizationSilServiceTest {
   @Mock
   private OrgSilServiceMapper orgSilServiceMapperMock;
 
-  @Mock
-  private OrgSilServiceEncryptionService encryptionServiceMock;
-
   @InjectMocks
   private OrganizationSilService organizationSilService;
 
@@ -47,7 +44,6 @@ class OrganizationSilServiceTest {
     expectedDTO.setOrgSilServiceId(orgSilServiceId);
 
     when(orgSilServiceRepositoryMock.findById(orgSilServiceId)).thenReturn(Optional.of(entity));
-    when(encryptionServiceMock.decryptAuthConfig(authConfig)).thenReturn(authConfig);
     when(orgSilServiceMapperMock.fromEntity(entity)).thenReturn(expectedDTO);
 
     // When
@@ -57,7 +53,6 @@ class OrganizationSilServiceTest {
     assertNotNull(result);
     assertEquals(orgSilServiceId, result.getOrgSilServiceId());
     verify(orgSilServiceRepositoryMock).findById(orgSilServiceId);
-    verify(encryptionServiceMock).decryptAuthConfig(authConfig);
     verify(orgSilServiceMapperMock).fromEntity(entity);
   }
 
@@ -75,7 +70,6 @@ class OrganizationSilServiceTest {
 
     assertEquals("OrgSilService not found with ID: " + orgSilServiceId, exception.getMessage());
     verify(orgSilServiceRepositoryMock).findById(orgSilServiceId);
-    verifyNoInteractions(encryptionServiceMock);
     verifyNoInteractions(orgSilServiceMapperMock);
   }
 
@@ -98,9 +92,7 @@ class OrganizationSilServiceTest {
     expectedDTO.setOrgSilServiceId(1L);
 
     when(orgSilServiceMapperMock.fromDTO(inputDTO)).thenReturn(entity);
-    when(encryptionServiceMock.encryptAuthConfig(authConfig)).thenReturn(encryptedAuthConfig);
     when(orgSilServiceRepositoryMock.save(entity)).thenReturn(entity);
-    when(encryptionServiceMock.decryptAuthConfig(authConfig)).thenReturn(decryptedAuthConfig);
     when(orgSilServiceMapperMock.fromEntity(entity)).thenReturn(expectedDTO);
 
     // When
@@ -110,9 +102,7 @@ class OrganizationSilServiceTest {
     assertNotNull(result);
     assertEquals(1L, result.getOrgSilServiceId());
     verify(orgSilServiceMapperMock).fromDTO(inputDTO);
-    verify(encryptionServiceMock).encryptAuthConfig(authConfig);
     verify(orgSilServiceRepositoryMock).save(entity);
-    verify(encryptionServiceMock).decryptAuthConfig(authConfig);
     verify(orgSilServiceMapperMock).fromEntity(entity);
   }
 
@@ -130,9 +120,7 @@ class OrganizationSilServiceTest {
     expectedDTO.setOrgSilServiceId(1L);
 
     when(orgSilServiceMapperMock.fromDTO(inputDTO)).thenReturn(entity);
-    when(encryptionServiceMock.encryptAuthConfig(null)).thenReturn(null);
     when(orgSilServiceRepositoryMock.save(entity)).thenReturn(entity);
-    when(encryptionServiceMock.decryptAuthConfig(null)).thenReturn(null);
     when(orgSilServiceMapperMock.fromEntity(entity)).thenReturn(expectedDTO);
 
     // When
@@ -141,8 +129,6 @@ class OrganizationSilServiceTest {
     // Then
     assertNotNull(result);
     assertEquals(1L, result.getOrgSilServiceId());
-    verify(encryptionServiceMock).encryptAuthConfig(null);
-    verify(encryptionServiceMock).decryptAuthConfig(null);
   }
 
   @Test
@@ -164,9 +150,7 @@ class OrganizationSilServiceTest {
     expectedDTO.setApplicationName("TestApp");
 
     when(orgSilServiceMapperMock.fromDTO(inputDTO)).thenReturn(entity);
-    when(encryptionServiceMock.encryptAuthConfig(any())).thenReturn(null);
     when(orgSilServiceRepositoryMock.save(entity)).thenReturn(savedEntity);
-    when(encryptionServiceMock.decryptAuthConfig(any())).thenReturn(null);
     when(orgSilServiceMapperMock.fromEntity(any(OrgSilService.class))).thenReturn(expectedDTO);
 
     // When
@@ -192,7 +176,6 @@ class OrganizationSilServiceTest {
     OrgSilServiceDTO expectedDTO = new OrgSilServiceDTO();
 
     when(orgSilServiceRepositoryMock.findById(orgSilServiceId)).thenReturn(Optional.of(entity));
-    when(encryptionServiceMock.decryptAuthConfig(jwtAuthConfig)).thenReturn(jwtAuthConfig);
     when(orgSilServiceMapperMock.fromEntity(entity)).thenReturn(expectedDTO);
 
     // When
@@ -200,7 +183,6 @@ class OrganizationSilServiceTest {
 
     // Then
     assertNotNull(result);
-    verify(encryptionServiceMock).decryptAuthConfig(jwtAuthConfig);
   }
 
   @Test
@@ -215,9 +197,7 @@ class OrganizationSilServiceTest {
     OrgSilServiceDTO expectedDTO = new OrgSilServiceDTO();
 
     when(orgSilServiceMapperMock.fromDTO(inputDTO)).thenReturn(entity);
-    when(encryptionServiceMock.encryptAuthConfig(basicAuthConfig)).thenReturn(basicAuthConfig);
     when(orgSilServiceRepositoryMock.save(entity)).thenReturn(entity);
-    when(encryptionServiceMock.decryptAuthConfig(basicAuthConfig)).thenReturn(basicAuthConfig);
     when(orgSilServiceMapperMock.fromEntity(entity)).thenReturn(expectedDTO);
 
     // When
@@ -225,7 +205,5 @@ class OrganizationSilServiceTest {
 
     // Then
     assertNotNull(result);
-    verify(encryptionServiceMock).encryptAuthConfig(basicAuthConfig);
-    verify(encryptionServiceMock).decryptAuthConfig(basicAuthConfig);
   }
 }

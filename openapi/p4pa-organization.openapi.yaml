@@ -328,5 +328,4 @@ components:
           default: false
           example: false
         authConfig:
-          type: 'SilServiceAuthConfig'
-          description: Configuration for authentication
+          type: 'SilServiceAuthConfigDTO'
