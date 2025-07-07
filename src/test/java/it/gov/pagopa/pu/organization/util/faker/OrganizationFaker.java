@@ -28,6 +28,7 @@ public class OrganizationFaker {
     organization.setSendApiKey(new byte[]{4,5,6});
     organization.setFlagNotifyIo(true);
     organization.setFlagNotifyOutcomePush(true);
+    organization.setPdndEnabled(false);
     return organization;
   }
 }
