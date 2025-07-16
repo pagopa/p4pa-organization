@@ -15,16 +15,8 @@ import org.springframework.data.rest.core.annotation.RepositoryRestResource;
 public interface OrgSilServiceViewRepository extends Repository<OrgSilServiceView, Long> {
 
   @Query("""
-    SELECT new OrgSilServiceView(
-    o.orgSilServiceId,
-    o.organizationId,
-    o.applicationName,
-    o.serviceUrl,
-    o.serviceType,
-    o.flagLegacy,
-    o.updateDate
-    )
-    FROM OrgSilService o
+    SELECT o
+    FROM OrgSilServiceView o
     WHERE o.organizationId = :organizationId
     AND (:applicationName IS NULL OR o.applicationName = :applicationName)
     AND (:serviceType IS NULL OR o.serviceType = :serviceType)
