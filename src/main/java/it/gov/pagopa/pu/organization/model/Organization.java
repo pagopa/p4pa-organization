@@ -51,5 +51,7 @@ public class Organization extends BaseEntity implements Serializable {
   private boolean flagNotifyOutcomePush;
   @NotNull
   private boolean flagPaymentNotification;
+  @NotNull
+  private boolean pdndEnabled;
 
 }
