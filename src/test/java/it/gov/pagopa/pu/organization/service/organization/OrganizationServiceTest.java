@@ -4,6 +4,7 @@ import it.gov.pagopa.pu.organization.dto.generated.OrganizationApiKeyType;
 import it.gov.pagopa.pu.organization.dto.generated.OrganizationApiKeys;
 import it.gov.pagopa.pu.organization.exception.custom.OrganizationNotFoundException;
 import it.gov.pagopa.pu.organization.model.Organization;
+import it.gov.pagopa.pu.organization.repository.BrokerRepository;
 import it.gov.pagopa.pu.organization.repository.OrganizationRepository;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
@@ -26,12 +27,14 @@ class OrganizationServiceTest {
   private OrganizationEncryptionService organizationEncryptionServiceMock;
   @Mock
   private OrganizationRepository organizationRepositoryMock;
+  @Mock
+  private BrokerRepository brokerRepositoryMock;
 
   private OrganizationService service;
 
   @BeforeEach
   void setUp(){
-    service = new OrganizationService(organizationEncryptionServiceMock, organizationRepositoryMock);
+    service = new OrganizationService(organizationEncryptionServiceMock, organizationRepositoryMock, brokerRepositoryMock);
   }
 
 
