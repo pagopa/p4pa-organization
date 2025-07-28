@@ -31,6 +31,7 @@ public class OrganizationService {
     int updatedRows = switch (organizationApiKeys.getKeyType()) {
       case IO -> organizationRepository.updateIoApiKey(organizationId, encryptedApiKey);
       case SEND -> organizationRepository.updateSendApiKey(organizationId, encryptedApiKey);
+      case GENERATE_NOTICE -> organizationRepository.updateGenerateNoticeApiKey(organizationId, encryptedApiKey);
     };
 
     if (updatedRows == 0) {

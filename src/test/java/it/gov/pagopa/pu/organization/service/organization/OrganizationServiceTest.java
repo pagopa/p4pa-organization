@@ -3,6 +3,7 @@ package it.gov.pagopa.pu.organization.service.organization;
 import it.gov.pagopa.pu.organization.dto.generated.OrganizationApiKeyType;
 import it.gov.pagopa.pu.organization.dto.generated.OrganizationApiKeys;
 import it.gov.pagopa.pu.organization.exception.custom.OrganizationNotFoundException;
+import it.gov.pagopa.pu.organization.model.Broker;
 import it.gov.pagopa.pu.organization.model.Organization;
 import it.gov.pagopa.pu.organization.repository.BrokerRepository;
 import it.gov.pagopa.pu.organization.repository.OrganizationRepository;
@@ -33,13 +34,12 @@ class OrganizationServiceTest {
   private OrganizationService service;
 
   @BeforeEach
-  void setUp(){
+  void setUp() {
     service = new OrganizationService(organizationEncryptionServiceMock, organizationRepositoryMock, brokerRepositoryMock);
   }
 
-
   @Test
-  void givenEncryptAndSaveIOApiKeyThenSuccess(){
+  void givenEncryptAndSaveIOApiKeyThenSuccess() {
     // Given
     String plainText = "PLAINTEXT";
     byte[] encryptedKey = new byte[64];
@@ -58,9 +58,8 @@ class OrganizationServiceTest {
     verify(organizationRepositoryMock).updateIoApiKey(1L, encryptedKey);
   }
 
-
   @Test
-  void givenEncryptAndSaveSendApiKeyThenSuccess(){
+  void givenEncryptAndSaveSendApiKeyThenSuccess() {
     // Given
     String plainText = "PLAINTEXT";
     byte[] encryptedKey = new byte[64];
@@ -80,7 +79,7 @@ class OrganizationServiceTest {
   }
 
   @Test
-  void givenEncryptAndSaveApiKeyWhenOrganizationNotFoundThenThrowOrganizationNotFoundException(){
+  void givenEncryptAndSaveApiKeyWhenOrganizationNotFoundThenThrowOrganizationNotFoundException() {
     // Given
     String plainText = "PLAINTEXT";
     byte[] encryptedKey = new byte[64];
@@ -100,7 +99,7 @@ class OrganizationServiceTest {
   }
 
   @Test
-  void givenGetApiKeyIOThenSuccess(){
+  void givenGetApiKeyIOThenSuccess() {
     Long organizationId = 1L;
     Organization organization = buildOrganization();
     OrganizationApiKeyType keyType = OrganizationApiKeyType.IO;
@@ -117,7 +116,7 @@ class OrganizationServiceTest {
   }
 
   @Test
-  void givenGetApiKeyIOWithOrgNotEnabledThenSuccess(){
+  void givenGetApiKeyIOWithOrgNotEnabledThenSuccess() {
     Long organizationId = 1L;
     Organization organization = buildOrganization();
     organization.setFlagNotifyIo(false);
@@ -131,7 +130,7 @@ class OrganizationServiceTest {
   }
 
   @Test
-  void givenGetApiKeySENDThenSuccess(){
+  void givenGetApiKeySENDThenSuccess() {
     Long organizationId = 1L;
     Organization organization = buildOrganization();
     OrganizationApiKeyType keyType = OrganizationApiKeyType.SEND;
@@ -148,7 +147,7 @@ class OrganizationServiceTest {
   }
 
   @Test
-  void givenGetApiKeyWithOrgNotFoundThenThrowException(){
+  void givenGetApiKeyWithOrgNotFoundThenThrowException() {
     Long organizationId = 1L;
     OrganizationApiKeyType keyType = OrganizationApiKeyType.SEND;
 
@@ -158,5 +157,81 @@ class OrganizationServiceTest {
       () -> service.getApiKey(organizationId, keyType));
 
     assertEquals("Organization [1]", result.getMessage());
+  }
+
+  @Test
+  void givenEncryptAndSaveGenerateNoticeApiKeyThenSuccess(){
+    // Given
+    String plainText = "PLAINTEXT";
+    byte[] encryptedKey = new byte[64];
+    OrganizationApiKeys organizationApiKeys = new OrganizationApiKeys(OrganizationApiKeys.KeyTypeEnum.GENERATE_NOTICE, plainText);
+
+    Mockito.when(organizationEncryptionServiceMock.encrypt(plainText))
+      .thenReturn(encryptedKey);
+
+    Mockito.when(organizationRepositoryMock.updateGenerateNoticeApiKey(1L, encryptedKey))
+      .thenReturn(1);
+
+    // When
+    service.encryptAndSaveApiKey(1L, organizationApiKeys);
+
+    // Then
+    verify(organizationRepositoryMock).updateGenerateNoticeApiKey(1L, encryptedKey);
+  }
+
+  @Test
+  void givenGetApiKeyGenerateNoticeThenSuccess() {
+    Long organizationId = 1L;
+    Organization organization = buildOrganization();
+    OrganizationApiKeyType keyType = OrganizationApiKeyType.GENERATE_NOTICE;
+
+    String expectedApiKey = "apiKey";
+
+    Mockito.when(organizationRepositoryMock.findById(organizationId)).thenReturn(Optional.of(organization));
+    Mockito.when(organizationEncryptionServiceMock.decryptKey(organization.getGenerateNoticeApiKey()))
+      .thenReturn(expectedApiKey);
+
+    String result = service.getApiKey(organizationId, keyType);
+
+    assertEquals(expectedApiKey, result);
+  }
+
+  @Test
+  void givenGetApiKeyGenerateNoticeNoOrganizationThenSuccess() {
+    Long organizationId = 1L;
+    Organization organization = buildOrganization();
+    organization.setGenerateNoticeApiKey(null);
+    Broker broker = new Broker();
+    broker.setGenerateNoticeKey("apiKey".getBytes());
+    OrganizationApiKeyType keyType = OrganizationApiKeyType.GENERATE_NOTICE;
+
+    String expectedApiKey = "apiKey";
+
+    Mockito.when(organizationRepositoryMock.findById(organizationId)).thenReturn(Optional.of(organization));
+    Mockito.when(brokerRepositoryMock.findByBrokeredOrganizationId(String.valueOf(organizationId)))
+      .thenReturn(Optional.of(broker));
+    Mockito.when(organizationEncryptionServiceMock.decryptKey(broker.getGenerateNoticeKey()))
+      .thenReturn(expectedApiKey);
+
+    String result = service.getApiKey(organizationId, keyType);
+
+    assertEquals(expectedApiKey, result);
+  }
+
+  @Test
+  void givenGetApiKeyGenerateNoticeBrokerNotFoundThenThrowException() {
+    Long organizationId = 1L;
+    Organization organization = buildOrganization();
+    organization.setGenerateNoticeApiKey(null);
+    OrganizationApiKeyType keyType = OrganizationApiKeyType.GENERATE_NOTICE;
+
+    Mockito.when(organizationRepositoryMock.findById(organizationId)).thenReturn(Optional.of(organization));
+    Mockito.when(brokerRepositoryMock.findByBrokeredOrganizationId(String.valueOf(organizationId)))
+      .thenReturn(Optional.empty());
+
+    ResourceNotFoundException result = assertThrows(ResourceNotFoundException.class,
+      () -> service.getApiKey(organizationId, keyType));
+
+    assertEquals("Broker not found for orgId [1]", result.getMessage());
   }
 }

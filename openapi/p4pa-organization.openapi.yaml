@@ -269,6 +269,7 @@ components:
           enum:
             - IO
             - SEND
+            - GENERATE_NOTICE
         apiKey:
           type: string
     OrganizationApiKeyType:
