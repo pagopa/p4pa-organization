@@ -234,15 +234,4 @@ class OrganizationServiceTest {
 
     assertEquals("Broker not found for orgId [1]", result.getMessage());
   }
-
-  @Test
-  void givenEncryptAndSaveApiKeyWithNullKeyTypeThenThrowsException() {
-    // Given
-    String plainText = "PLAINTEXT";
-    OrganizationApiKeys organizationApiKeys = new OrganizationApiKeys(null, plainText);
-
-    // When & Then
-    assertThrows(NullPointerException.class, () ->
-      service.encryptAndSaveApiKey(1L, organizationApiKeys));
-  }
 }

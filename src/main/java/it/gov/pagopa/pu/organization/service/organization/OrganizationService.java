@@ -43,21 +43,18 @@ public class OrganizationService {
     Organization organization = organizationRepository.findById(organizationId)
       .orElseThrow(() -> new ResourceNotFoundException("Organization [%s]".formatted(organizationId)));
 
-    String apiKeyResult = null;
-    switch (keyType) {
-      case IO -> apiKeyResult = organization.isFlagNotifyIo() ? organizationEncryptionService.decryptKey(organization.getIoApiKey()) : null;
-      case SEND -> apiKeyResult = organizationEncryptionService.decryptKey(organization.getSendApiKey());
+    return switch (keyType) {
+      case IO -> organization.isFlagNotifyIo() ? organizationEncryptionService.decryptKey(organization.getIoApiKey()) : null;
+      case SEND -> organizationEncryptionService.decryptKey(organization.getSendApiKey());
       case GENERATE_NOTICE -> {
         if (organization.getGenerateNoticeApiKey() != null) {
-          apiKeyResult =  organizationEncryptionService.decryptKey(organization.getGenerateNoticeApiKey());
+          yield organizationEncryptionService.decryptKey(organization.getGenerateNoticeApiKey());
         } else {
           Broker broker = brokerRepository.findByBrokeredOrganizationId(String.valueOf(organizationId))
             .orElseThrow(() -> new ResourceNotFoundException("Broker not found for orgId [%s]".formatted(organizationId)));
-          apiKeyResult =  organizationEncryptionService.decryptKey(broker.getGenerateNoticeKey());
+          yield organizationEncryptionService.decryptKey(broker.getGenerateNoticeKey());
         }
       }
-    }
-
-    return apiKeyResult;
+    };
   }
 }
