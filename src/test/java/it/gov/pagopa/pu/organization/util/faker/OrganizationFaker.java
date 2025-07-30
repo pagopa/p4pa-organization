@@ -26,6 +26,7 @@ public class OrganizationFaker {
     organization.setBrokerId(1L);
     organization.setIoApiKey(new byte[]{1,2,3});
     organization.setSendApiKey(new byte[]{4,5,6});
+    organization.setGenerateNoticeApiKey(new byte[]{7,8,9});
     organization.setFlagNotifyIo(true);
     organization.setFlagNotifyOutcomePush(true);
     organization.setPdndEnabled(false);

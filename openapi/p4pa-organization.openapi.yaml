@@ -269,6 +269,7 @@ components:
           enum:
             - IO
             - SEND
+            - GENERATE_NOTICE
         apiKey:
           type: string
     OrganizationApiKeyType:
@@ -276,6 +277,7 @@ components:
       enum:
         - IO
         - SEND
+        - GENERATE_NOTICE
     OrganizationErrorDTO:
       type: object
       required:
