@@ -43,5 +43,10 @@ public interface OrganizationRepository extends
   @Query("UPDATE Organization o SET o.sendApiKey = :apiKey WHERE o.id = :organizationId")
   int updateSendApiKey(Long organizationId, byte[] apiKey);
 
+  @Modifying
+  @Transactional
+  @RestResource(exported = false)
+  @Query("UPDATE Organization o SET o.generateNoticeApiKey = :apiKey WHERE o.id = :organizationId")
+  int updateGenerateNoticeApiKey(Long organizationId, byte[] apiKey);
 
 }
