@@ -1,6 +1,5 @@
 package it.gov.pagopa.pu.organization.service.broker;
 
-import it.gov.pagopa.pu.organization.dto.generated.BrokerApiKey;
 import it.gov.pagopa.pu.organization.dto.generated.BrokerApiKeyType;
 import it.gov.pagopa.pu.organization.dto.generated.BrokerApiKeys;
 import it.gov.pagopa.pu.organization.model.Broker;
@@ -47,7 +46,7 @@ public class BrokerEncryptionService {
     };
   }
 
-  private String decryptKey(byte[] encryptedKey, BrokerApiKeyType type, Long brokerId) {
+  public String decryptKey(byte[] encryptedKey, BrokerApiKeyType type, Long brokerId) {
     if (encryptedKey == null || encryptedKey.length == 0) {
       log.debug("null or empty api-key");
       return null;

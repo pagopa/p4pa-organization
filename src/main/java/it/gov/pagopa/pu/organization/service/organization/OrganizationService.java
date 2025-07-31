@@ -1,5 +1,6 @@
 package it.gov.pagopa.pu.organization.service.organization;
 
+import it.gov.pagopa.pu.organization.dto.generated.BrokerApiKeyType;
 import it.gov.pagopa.pu.organization.dto.generated.OrganizationApiKeyType;
 import it.gov.pagopa.pu.organization.dto.generated.OrganizationApiKeys;
 import it.gov.pagopa.pu.organization.exception.custom.OrganizationNotFoundException;
@@ -7,6 +8,7 @@ import it.gov.pagopa.pu.organization.model.Broker;
 import it.gov.pagopa.pu.organization.model.Organization;
 import it.gov.pagopa.pu.organization.repository.BrokerRepository;
 import it.gov.pagopa.pu.organization.repository.OrganizationRepository;
+import it.gov.pagopa.pu.organization.service.broker.BrokerEncryptionService;
 import jakarta.transaction.Transactional;
 import org.springframework.data.rest.webmvc.ResourceNotFoundException;
 import org.springframework.stereotype.Service;
@@ -15,11 +17,13 @@ import org.springframework.stereotype.Service;
 public class OrganizationService {
 
   private final OrganizationEncryptionService organizationEncryptionService;
+  private final BrokerEncryptionService brokerEncryptionService;
   private final OrganizationRepository organizationRepository;
   private final BrokerRepository brokerRepository;
 
-  public OrganizationService(OrganizationEncryptionService organizationEncryptionService, OrganizationRepository organizationRepository, BrokerRepository brokerRepository) {
+  public OrganizationService(OrganizationEncryptionService organizationEncryptionService, BrokerEncryptionService brokerEncryptionService, OrganizationRepository organizationRepository, BrokerRepository brokerRepository) {
     this.organizationEncryptionService = organizationEncryptionService;
+    this.brokerEncryptionService = brokerEncryptionService;
     this.organizationRepository = organizationRepository;
     this.brokerRepository = brokerRepository;
   }
@@ -52,7 +56,7 @@ public class OrganizationService {
         } else {
           Broker broker = brokerRepository.findByBrokeredOrganizationId(String.valueOf(organizationId))
             .orElseThrow(() -> new ResourceNotFoundException("Broker not found for orgId [%s]".formatted(organizationId)));
-          yield organizationEncryptionService.decryptKey(broker.getGenerateNoticeKey());
+          yield brokerEncryptionService.decryptKey(broker.getGenerateNoticeKey(), BrokerApiKeyType.GENERATE_NOTICE, broker.getBrokerId());
         }
       }
     };
