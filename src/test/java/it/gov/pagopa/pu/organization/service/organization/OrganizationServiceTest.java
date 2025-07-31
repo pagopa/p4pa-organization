@@ -1,5 +1,6 @@
 package it.gov.pagopa.pu.organization.service.organization;
 
+import it.gov.pagopa.pu.organization.dto.generated.BrokerApiKeyType;
 import it.gov.pagopa.pu.organization.dto.generated.OrganizationApiKeyType;
 import it.gov.pagopa.pu.organization.dto.generated.OrganizationApiKeys;
 import it.gov.pagopa.pu.organization.exception.custom.OrganizationNotFoundException;
@@ -7,6 +8,7 @@ import it.gov.pagopa.pu.organization.model.Broker;
 import it.gov.pagopa.pu.organization.model.Organization;
 import it.gov.pagopa.pu.organization.repository.BrokerRepository;
 import it.gov.pagopa.pu.organization.repository.OrganizationRepository;
+import it.gov.pagopa.pu.organization.service.broker.BrokerEncryptionService;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
@@ -30,12 +32,14 @@ class OrganizationServiceTest {
   private OrganizationRepository organizationRepositoryMock;
   @Mock
   private BrokerRepository brokerRepositoryMock;
+  @Mock
+  private BrokerEncryptionService brokerEncryptionServiceMock;
 
   private OrganizationService service;
 
   @BeforeEach
   void setUp() {
-    service = new OrganizationService(organizationEncryptionServiceMock, organizationRepositoryMock, brokerRepositoryMock);
+    service = new OrganizationService(organizationEncryptionServiceMock, brokerEncryptionServiceMock, organizationRepositoryMock, brokerRepositoryMock);
   }
 
   @Test
@@ -210,7 +214,7 @@ class OrganizationServiceTest {
     Mockito.when(organizationRepositoryMock.findById(organizationId)).thenReturn(Optional.of(organization));
     Mockito.when(brokerRepositoryMock.findByBrokeredOrganizationId(String.valueOf(organizationId)))
       .thenReturn(Optional.of(broker));
-    Mockito.when(organizationEncryptionServiceMock.decryptKey(broker.getGenerateNoticeKey()))
+    Mockito.when(brokerEncryptionServiceMock.decryptKey(broker.getGenerateNoticeKey(), BrokerApiKeyType.GENERATE_NOTICE, broker.getBrokerId()))
       .thenReturn(expectedApiKey);
 
     String result = service.getApiKey(organizationId, keyType);
