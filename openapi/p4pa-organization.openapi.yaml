@@ -8,7 +8,7 @@ servers:
     description: Generated server url
 paths:
   /organization:
-    put:
+    post:
       tags:
         - Organization
       summary: Create an Organization

@@ -1,5 +1,6 @@
 package it.gov.pagopa.pu.organization.service.organization;
 
+import it.gov.pagopa.pu.organization.connector.debtposition.client.DebtPositionTypeOrgClient;
 import it.gov.pagopa.pu.organization.dto.generated.BrokerApiKeyType;
 import it.gov.pagopa.pu.organization.dto.generated.OrganizationApiKeyType;
 import it.gov.pagopa.pu.organization.dto.generated.OrganizationApiKeys;
@@ -23,14 +24,17 @@ public class OrganizationService {
   private final OrganizationMapper organizationMapper;
   private final OrganizationRepository organizationRepository;
   private final BrokerRepository brokerRepository;
+  private final DebtPositionTypeOrgClient debtPositionTypeOrgClient;
 
   public OrganizationService(OrganizationEncryptionService organizationEncryptionService, BrokerEncryptionService brokerEncryptionService,
-    OrganizationMapper organizationMapper, OrganizationRepository organizationRepository, BrokerRepository brokerRepository) {
+    OrganizationMapper organizationMapper, OrganizationRepository organizationRepository, BrokerRepository brokerRepository,
+    DebtPositionTypeOrgClient debtPositionTypeOrgClient) {
     this.organizationEncryptionService = organizationEncryptionService;
     this.brokerEncryptionService = brokerEncryptionService;
     this.organizationMapper = organizationMapper;
     this.organizationRepository = organizationRepository;
     this.brokerRepository = brokerRepository;
+    this.debtPositionTypeOrgClient = debtPositionTypeOrgClient;
   }
 
   @Transactional
@@ -49,8 +53,10 @@ public class OrganizationService {
   }
 
   @Transactional
-  public void createOrganization(OrganizationCreateDTO organizationCreateDTO) {
-    organizationRepository.save(organizationMapper.toModel(organizationCreateDTO));
+  public void createOrganization(OrganizationCreateDTO organizationCreateDTO, String accessToken) {
+    Organization organization = organizationRepository.save(organizationMapper.toModel(organizationCreateDTO));
+
+    debtPositionTypeOrgClient.createTechnicalDebtPositionTypeOrg(organization.getOrganizationId(), accessToken);
   }
 
   public String getApiKey(Long organizationId, OrganizationApiKeyType keyType) {

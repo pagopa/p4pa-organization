@@ -8,6 +8,7 @@ import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.verifyNoMoreInteractions;
 import static org.mockito.Mockito.when;
 
+import it.gov.pagopa.pu.organization.connector.debtposition.client.DebtPositionTypeOrgClient;
 import it.gov.pagopa.pu.organization.dto.generated.BrokerApiKeyType;
 import it.gov.pagopa.pu.organization.dto.generated.OrganizationApiKeyType;
 import it.gov.pagopa.pu.organization.dto.generated.OrganizationApiKeys;
@@ -19,6 +20,7 @@ import it.gov.pagopa.pu.organization.model.Organization;
 import it.gov.pagopa.pu.organization.repository.BrokerRepository;
 import it.gov.pagopa.pu.organization.repository.OrganizationRepository;
 import it.gov.pagopa.pu.organization.service.broker.BrokerEncryptionService;
+import it.gov.pagopa.pu.organization.util.TestUtils;
 import it.gov.pagopa.pu.organization.util.faker.OrganizationFaker;
 import java.util.Optional;
 import org.junit.jupiter.api.BeforeEach;
@@ -42,23 +44,31 @@ class OrganizationServiceTest {
   private BrokerEncryptionService brokerEncryptionServiceMock;
   @Mock
   private OrganizationMapper organizationMapperMock;
+  @Mock
+  private DebtPositionTypeOrgClient debtPositionTypeOrgClientMock;
 
   private OrganizationService service;
 
   @BeforeEach
   void setUp() {
-    service = new OrganizationService(organizationEncryptionServiceMock, brokerEncryptionServiceMock, organizationMapperMock, organizationRepositoryMock, brokerRepositoryMock);
+    service = new OrganizationService(organizationEncryptionServiceMock,
+      brokerEncryptionServiceMock, organizationMapperMock,
+      organizationRepositoryMock, brokerRepositoryMock,
+      debtPositionTypeOrgClientMock);
   }
 
   @Test
   void givenCreateOrganizationThenSuccess() {
+    String accessToken = TestUtils.getFakeAccessToken();
+
     OrganizationCreateDTO dto = new OrganizationCreateDTO();
     Organization organization = OrganizationFaker.buildOrganization();
     when(organizationMapperMock.toModel(dto)).thenReturn(organization);
     when(organizationRepositoryMock.save(organization)).thenReturn(organization);
 
-    service.createOrganization(dto);
+    service.createOrganization(dto, accessToken);
 
+    verify(debtPositionTypeOrgClientMock).createTechnicalDebtPositionTypeOrg(organization.getOrganizationId(), accessToken);
     verifyNoMoreInteractions(organizationRepositoryMock);
   }
 

@@ -124,8 +124,8 @@ tasks.register("dependenciesBuild") {
 
   dependsOn(
     "openApiGenerateORGANIZATION",
-    "openApiGeneratePAGOPAPAYMENTS"
-
+    "openApiGeneratePAGOPAPAYMENTS",
+    "openApiGenerateDEBTPOSITIONS"
   )
 }
 
@@ -167,6 +167,37 @@ var targetEnv = when (Objects.requireNonNullElse(System.getProperty("targetBranc
   "uat" -> "uat"
   "main" -> "main"
   else -> "develop"
+}
+
+
+tasks.register<org.openapitools.generator.gradle.plugin.tasks.GenerateTask>("openApiGenerateDEBTPOSITIONS") {
+  group = "AutomaticallyGeneratedCode"
+  description = "openapi"
+
+  generatorName.set("java")
+  remoteInputSpec.set("https://raw.githubusercontent.com/pagopa/p4pa-debt-positions/refs/heads/$targetEnv/openapi/generated.openapi.json")
+  outputDir.set("$projectDir/build/generated")
+  invokerPackage.set("it.gov.pagopa.pu.debtposition.generated")
+  apiPackage.set("it.gov.pagopa.pu.debtposition.client.generated")
+  modelPackage.set("it.gov.pagopa.pu.debtposition.dto.generated")
+  typeMappings.set(mapOf("LocalDateTime" to "java.time.LocalDateTime"))
+  configOptions.set(mapOf(
+    "swaggerAnnotations" to "false",
+    "openApiNullable" to "false",
+    "dateLibrary" to "java8",
+    "serializableModel" to "true",
+    "useSpringBoot3" to "true",
+    "useJakartaEe" to "true",
+    "useOneOfInterfaces" to "true",
+    "useBeanValidation" to "true",
+    "serializationLibrary" to "jackson",
+    "generateSupportingFiles" to "true",
+    "generateConstructorWithAllArgs" to "true",
+    "generatedConstructorWithRequiredArgs" to "true",
+    "enumPropertyNaming" to "original",
+    "additionalModelTypeAnnotations" to "@lombok.experimental.SuperBuilder(toBuilder = true)"
+  ))
+  library.set("resttemplate")
 }
 
 tasks.register<org.openapitools.generator.gradle.plugin.tasks.GenerateTask>("openApiGeneratePAGOPAPAYMENTS") {

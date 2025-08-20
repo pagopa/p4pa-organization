@@ -3,6 +3,7 @@ package it.gov.pagopa.pu.organization.controller;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.mockito.Mockito.verify;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
+import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.put;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
@@ -12,6 +13,7 @@ import it.gov.pagopa.pu.organization.dto.generated.OrganizationApiKeys;
 import it.gov.pagopa.pu.organization.dto.generated.OrganizationCreateDTO;
 import it.gov.pagopa.pu.organization.enums.OrganizationStatus;
 import it.gov.pagopa.pu.organization.service.organization.OrganizationService;
+import it.gov.pagopa.pu.organization.util.TestUtils;
 import java.time.LocalDate;
 import org.junit.jupiter.api.Test;
 import org.mockito.Mockito;
@@ -38,6 +40,8 @@ class OrganizationControllerTest {
 
   @Test
   void whenCreateOrganizationThenOk() throws Exception {
+    TestUtils.setFakeAccessTokenInContext();
+
     OrganizationCreateDTO organizationCreateDTO = OrganizationCreateDTO.builder()
       .externalOrganizationId("externalOrganizationId")
       .ipaCode("ipaCode")
@@ -65,13 +69,13 @@ class OrganizationControllerTest {
       .build();
 
     mockMvc.perform(
-        put("/organization")
+        post("/organization")
           .contentType(MediaType.APPLICATION_JSON_VALUE)
           .content(objectMapper.writeValueAsString(organizationCreateDTO)))
       .andExpect(status().isOk())
       .andReturn();
 
-    verify(organizationServiceMock).createOrganization(organizationCreateDTO);
+    verify(organizationServiceMock).createOrganization(organizationCreateDTO, TestUtils.getFakeAccessToken());
   }
 
   @Test
