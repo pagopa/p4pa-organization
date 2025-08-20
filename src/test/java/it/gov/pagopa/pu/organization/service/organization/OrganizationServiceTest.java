@@ -5,10 +5,13 @@ import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertNull;
 import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.mockito.Mockito.verify;
+import static org.mockito.Mockito.verifyNoMoreInteractions;
+import static org.mockito.Mockito.when;
 
 import it.gov.pagopa.pu.organization.dto.generated.BrokerApiKeyType;
 import it.gov.pagopa.pu.organization.dto.generated.OrganizationApiKeyType;
 import it.gov.pagopa.pu.organization.dto.generated.OrganizationApiKeys;
+import it.gov.pagopa.pu.organization.dto.generated.OrganizationCreateDTO;
 import it.gov.pagopa.pu.organization.exception.custom.OrganizationNotFoundException;
 import it.gov.pagopa.pu.organization.mapper.OrganizationMapper;
 import it.gov.pagopa.pu.organization.model.Broker;
@@ -16,6 +19,7 @@ import it.gov.pagopa.pu.organization.model.Organization;
 import it.gov.pagopa.pu.organization.repository.BrokerRepository;
 import it.gov.pagopa.pu.organization.repository.OrganizationRepository;
 import it.gov.pagopa.pu.organization.service.broker.BrokerEncryptionService;
+import it.gov.pagopa.pu.organization.util.faker.OrganizationFaker;
 import java.util.Optional;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
@@ -44,6 +48,18 @@ class OrganizationServiceTest {
   @BeforeEach
   void setUp() {
     service = new OrganizationService(organizationEncryptionServiceMock, brokerEncryptionServiceMock, organizationMapperMock, organizationRepositoryMock, brokerRepositoryMock);
+  }
+
+  @Test
+  void givenCreateOrganizationThenSuccess() {
+    OrganizationCreateDTO dto = new OrganizationCreateDTO();
+    Organization organization = OrganizationFaker.buildOrganization();
+    when(organizationMapperMock.toModel(dto)).thenReturn(organization);
+    when(organizationRepositoryMock.save(organization)).thenReturn(organization);
+
+    service.createOrganization(dto);
+
+    verifyNoMoreInteractions(organizationRepositoryMock);
   }
 
   @Test
