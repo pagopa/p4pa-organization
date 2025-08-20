@@ -1,9 +1,18 @@
 package it.gov.pagopa.pu.organization.controller;
 
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.mockito.Mockito.verify;
+import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
+import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.put;
+import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
+
 import com.fasterxml.jackson.databind.ObjectMapper;
 import it.gov.pagopa.pu.organization.dto.generated.OrganizationApiKeyType;
 import it.gov.pagopa.pu.organization.dto.generated.OrganizationApiKeys;
+import it.gov.pagopa.pu.organization.dto.generated.OrganizationCreateDTO;
+import it.gov.pagopa.pu.organization.enums.OrganizationStatus;
 import it.gov.pagopa.pu.organization.service.organization.OrganizationService;
+import java.time.LocalDate;
 import org.junit.jupiter.api.Test;
 import org.mockito.Mockito;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -13,12 +22,6 @@ import org.springframework.http.MediaType;
 import org.springframework.test.context.bean.override.mockito.MockitoBean;
 import org.springframework.test.web.servlet.MockMvc;
 import org.springframework.test.web.servlet.MvcResult;
-
-import static org.junit.jupiter.api.Assertions.assertEquals;
-import static org.mockito.Mockito.verify;
-import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
-import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.put;
-import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
 @WebMvcTest(OrganizationController.class)
 @AutoConfigureMockMvc(addFilters = false)
@@ -32,6 +35,44 @@ class OrganizationControllerTest {
 
   @MockitoBean
   private OrganizationService organizationServiceMock;
+
+  @Test
+  void whenCreateOrganizationThenOk() throws Exception {
+    OrganizationCreateDTO organizationCreateDTO = OrganizationCreateDTO.builder()
+      .externalOrganizationId("externalOrganizationId")
+      .ipaCode("ipaCode")
+      .orgFiscalCode("orgFiscalCode")
+      .orgName("orgName")
+      .orgTypeCode("orgTypeCode")
+      .orgEmail("orgEmail")
+      .postalIban("postalIban")
+      .iban("iban")
+      .password("plainPassword")
+      .segregationCode("segregationCode")
+      .cbillInterBankCode("cbillInterBankCode")
+      .orgLogo("orgLogo")
+      .status(OrganizationStatus.DRAFT)
+      .additionalLanguage("additionalLanguage")
+      .startDate(LocalDate.now())
+      .brokerId(1L)
+      .ioApiKey("ioApiKey")
+      .sendApiKey("sendApiKey")
+      .generateNoticeApiKey("generateNoticeApiKey")
+      .flagNotifyIo(false)
+      .flagNotifyOutcomePush(false)
+      .flagPaymentNotification(false)
+      .pdndEnabled(true)
+      .build();
+
+    mockMvc.perform(
+        put("/organization")
+          .contentType(MediaType.APPLICATION_JSON_VALUE)
+          .content(objectMapper.writeValueAsString(organizationCreateDTO)))
+      .andExpect(status().isOk())
+      .andReturn();
+
+    verify(organizationServiceMock).createOrganization(organizationCreateDTO);
+  }
 
   @Test
   void whenEncryptAndSaveApiKeyThenOk() throws Exception {

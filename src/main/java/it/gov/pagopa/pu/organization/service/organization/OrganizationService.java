@@ -3,7 +3,9 @@ package it.gov.pagopa.pu.organization.service.organization;
 import it.gov.pagopa.pu.organization.dto.generated.BrokerApiKeyType;
 import it.gov.pagopa.pu.organization.dto.generated.OrganizationApiKeyType;
 import it.gov.pagopa.pu.organization.dto.generated.OrganizationApiKeys;
+import it.gov.pagopa.pu.organization.dto.generated.OrganizationCreateDTO;
 import it.gov.pagopa.pu.organization.exception.custom.OrganizationNotFoundException;
+import it.gov.pagopa.pu.organization.mapper.OrganizationMapper;
 import it.gov.pagopa.pu.organization.model.Broker;
 import it.gov.pagopa.pu.organization.model.Organization;
 import it.gov.pagopa.pu.organization.repository.BrokerRepository;
@@ -18,12 +20,15 @@ public class OrganizationService {
 
   private final OrganizationEncryptionService organizationEncryptionService;
   private final BrokerEncryptionService brokerEncryptionService;
+  private final OrganizationMapper organizationMapper;
   private final OrganizationRepository organizationRepository;
   private final BrokerRepository brokerRepository;
 
-  public OrganizationService(OrganizationEncryptionService organizationEncryptionService, BrokerEncryptionService brokerEncryptionService, OrganizationRepository organizationRepository, BrokerRepository brokerRepository) {
+  public OrganizationService(OrganizationEncryptionService organizationEncryptionService, BrokerEncryptionService brokerEncryptionService,
+    OrganizationMapper organizationMapper, OrganizationRepository organizationRepository, BrokerRepository brokerRepository) {
     this.organizationEncryptionService = organizationEncryptionService;
     this.brokerEncryptionService = brokerEncryptionService;
+    this.organizationMapper = organizationMapper;
     this.organizationRepository = organizationRepository;
     this.brokerRepository = brokerRepository;
   }
@@ -41,6 +46,11 @@ public class OrganizationService {
     if (updatedRows == 0) {
       throw new OrganizationNotFoundException("Organization with ID %s was not found".formatted(organizationId));
     }
+  }
+
+  @Transactional
+  public void createOrganization(OrganizationCreateDTO organizationCreateDTO) {
+    organizationRepository.save(organizationMapper.toModel(organizationCreateDTO));
   }
 
   public String getApiKey(Long organizationId, OrganizationApiKeyType keyType) {

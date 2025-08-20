@@ -1,14 +1,22 @@
 package it.gov.pagopa.pu.organization.service.organization;
 
+import static it.gov.pagopa.pu.organization.util.faker.OrganizationFaker.buildOrganization;
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertNull;
+import static org.junit.jupiter.api.Assertions.assertThrows;
+import static org.mockito.Mockito.verify;
+
 import it.gov.pagopa.pu.organization.dto.generated.BrokerApiKeyType;
 import it.gov.pagopa.pu.organization.dto.generated.OrganizationApiKeyType;
 import it.gov.pagopa.pu.organization.dto.generated.OrganizationApiKeys;
 import it.gov.pagopa.pu.organization.exception.custom.OrganizationNotFoundException;
+import it.gov.pagopa.pu.organization.mapper.OrganizationMapper;
 import it.gov.pagopa.pu.organization.model.Broker;
 import it.gov.pagopa.pu.organization.model.Organization;
 import it.gov.pagopa.pu.organization.repository.BrokerRepository;
 import it.gov.pagopa.pu.organization.repository.OrganizationRepository;
 import it.gov.pagopa.pu.organization.service.broker.BrokerEncryptionService;
+import java.util.Optional;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
@@ -16,12 +24,6 @@ import org.mockito.Mock;
 import org.mockito.Mockito;
 import org.mockito.junit.jupiter.MockitoExtension;
 import org.springframework.data.rest.webmvc.ResourceNotFoundException;
-
-import java.util.Optional;
-
-import static it.gov.pagopa.pu.organization.util.faker.OrganizationFaker.buildOrganization;
-import static org.junit.jupiter.api.Assertions.*;
-import static org.mockito.Mockito.verify;
 
 @ExtendWith(MockitoExtension.class)
 class OrganizationServiceTest {
@@ -34,12 +36,14 @@ class OrganizationServiceTest {
   private BrokerRepository brokerRepositoryMock;
   @Mock
   private BrokerEncryptionService brokerEncryptionServiceMock;
+  @Mock
+  private OrganizationMapper organizationMapperMock;
 
   private OrganizationService service;
 
   @BeforeEach
   void setUp() {
-    service = new OrganizationService(organizationEncryptionServiceMock, brokerEncryptionServiceMock, organizationRepositoryMock, brokerRepositoryMock);
+    service = new OrganizationService(organizationEncryptionServiceMock, brokerEncryptionServiceMock, organizationMapperMock, organizationRepositoryMock, brokerRepositoryMock);
   }
 
   @Test
