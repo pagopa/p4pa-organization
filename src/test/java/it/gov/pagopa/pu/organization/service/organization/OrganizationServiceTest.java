@@ -54,7 +54,7 @@ class OrganizationServiceTest {
     service = new OrganizationService(organizationEncryptionServiceMock,
       brokerEncryptionServiceMock, organizationMapperMock,
       organizationRepositoryMock, brokerRepositoryMock,
-      debtPositionTypeOrgClientMock);
+      debtPositionTypeOrgClientMock, true);
   }
 
   @Test
@@ -62,6 +62,10 @@ class OrganizationServiceTest {
     String accessToken = TestUtils.getFakeAccessToken();
 
     OrganizationCreateDTO dto = new OrganizationCreateDTO();
+    dto.setOrgFiscalCode("12345678903");
+    dto.setIban("IT60X0542811101000000123456");
+    dto.setPostalIban("IT60X0542811101000000123456");
+
     Organization organization = OrganizationFaker.buildOrganization();
     when(organizationMapperMock.toModel(dto)).thenReturn(organization);
     when(organizationRepositoryMock.save(organization)).thenReturn(organization);

@@ -110,3 +110,7 @@ jwt:
                 odND6HPvvvmgbK1/2qTHn/HJjWUm11LUC73BszR32BKbdEEhxPQnnwswVekWzPi1
                 IwIDAQAB
                 -----END PUBLIC KEY-----}"
+
+features:
+  organization:
+    piva-check: "\${FEATURE_ORGANIZATION_PIVA_CHECK:true}"
