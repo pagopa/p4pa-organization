@@ -68,8 +68,7 @@ public class OrganizationService {
 
   @Transactional
   public void createOrganization(OrganizationCreateDTO organizationCreateDTO, String accessToken) {
-    validateOrgFiscalCode(organizationCreateDTO);
-    validateIban(organizationCreateDTO);
+    validateOrganizationCreateDTO(organizationCreateDTO);
 
     Organization organization = organizationRepository.save(organizationMapper.toModel(organizationCreateDTO));
 
@@ -93,6 +92,11 @@ public class OrganizationService {
         }
       }
     };
+  }
+
+  private void validateOrganizationCreateDTO(OrganizationCreateDTO organizationCreateDTO) {
+    validateOrgFiscalCode(organizationCreateDTO);
+    validateIban(organizationCreateDTO);
   }
 
   private void validateOrgFiscalCode(OrganizationCreateDTO organizationCreateDTO) {
