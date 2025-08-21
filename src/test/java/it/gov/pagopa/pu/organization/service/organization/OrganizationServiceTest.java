@@ -13,6 +13,7 @@ import it.gov.pagopa.pu.organization.dto.generated.BrokerApiKeyType;
 import it.gov.pagopa.pu.organization.dto.generated.OrganizationApiKeyType;
 import it.gov.pagopa.pu.organization.dto.generated.OrganizationApiKeys;
 import it.gov.pagopa.pu.organization.dto.generated.OrganizationCreateDTO;
+import it.gov.pagopa.pu.organization.exception.custom.InvalidValueException;
 import it.gov.pagopa.pu.organization.exception.custom.OrganizationNotFoundException;
 import it.gov.pagopa.pu.organization.mapper.OrganizationMapper;
 import it.gov.pagopa.pu.organization.model.Broker;
@@ -26,6 +27,7 @@ import java.util.Optional;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
+import org.junit.jupiter.api.function.Executable;
 import org.mockito.Mock;
 import org.mockito.Mockito;
 import org.mockito.junit.jupiter.MockitoExtension;
@@ -74,6 +76,46 @@ class OrganizationServiceTest {
 
     verify(debtPositionTypeOrgClientMock).createTechnicalDebtPositionTypeOrg(organization.getOrganizationId(), accessToken);
     verifyNoMoreInteractions(organizationRepositoryMock);
+  }
+
+  @Test
+  void givenInvalidIbanWhenCreateOrganizationThenInvalidValueException() {
+    String accessToken = TestUtils.getFakeAccessToken();
+
+    OrganizationCreateDTO dto = new OrganizationCreateDTO();
+    dto.setOrgFiscalCode("12345678903");
+    dto.setIban("iban");
+
+    Executable exec = () -> service.createOrganization(dto, accessToken);
+
+    assertThrows(InvalidValueException.class, exec);
+  }
+
+  @Test
+  void givenInvalidPostalIbanWhenCreateOrganizationThenInvalidValueException() {
+    String accessToken = TestUtils.getFakeAccessToken();
+
+    OrganizationCreateDTO dto = new OrganizationCreateDTO();
+    dto.setOrgFiscalCode("12345678903");
+    dto.setIban("IT60X0542811101000000123456");
+    dto.setPostalIban("iban");
+
+    Executable exec = () -> service.createOrganization(dto, accessToken);
+
+    assertThrows(InvalidValueException.class, exec);
+  }
+
+  @Test
+  void givenInvalidOrgFiscalCodeWhenCreateOrganizationThenInvalidValueException() {
+    String accessToken = TestUtils.getFakeAccessToken();
+
+    OrganizationCreateDTO dto = new OrganizationCreateDTO();
+    dto.setIban("IT60X0542811101000000123456");
+    dto.setPostalIban("IT60X0542811101000000123456");
+
+    Executable exec = () -> service.createOrganization(dto, accessToken);
+
+    assertThrows(InvalidValueException.class, exec);
   }
 
   @Test
