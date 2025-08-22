@@ -26,7 +26,7 @@ public class OrganizationMapper {
     organization.setOrgEmail(createDTO.getOrgEmail());
     organization.setPostalIban(createDTO.getPostalIban());
     organization.setIban(createDTO.getIban());
-    organization.setPassword(encryptionService.encrypt(createDTO.getPassword()));
+    organization.setPassword(createDTO.getPassword() != null ? encryptionService.encrypt(createDTO.getPassword()) : null);
     organization.setSegregationCode(createDTO.getSegregationCode());
     organization.setCbillInterBankCode(createDTO.getCbillInterBankCode());
     organization.setOrgLogo(createDTO.getOrgLogo());
@@ -34,9 +34,9 @@ public class OrganizationMapper {
     organization.setAdditionalLanguage(createDTO.getAdditionalLanguage());
     organization.setStartDate(createDTO.getStartDate());
     organization.setBrokerId(createDTO.getBrokerId());
-    organization.setIoApiKey(encryptionService.encrypt(createDTO.getIoApiKey()));
-    organization.setSendApiKey(encryptionService.encrypt(createDTO.getSendApiKey()));
-    organization.setGenerateNoticeApiKey(encryptionService.encrypt(createDTO.getGenerateNoticeApiKey()));
+    organization.setIoApiKey(createDTO.getIoApiKey() != null ? encryptionService.encrypt(createDTO.getIoApiKey()) : null);
+    organization.setSendApiKey(createDTO.getSendApiKey() != null ? encryptionService.encrypt(createDTO.getSendApiKey()) : null);
+    organization.setGenerateNoticeApiKey(createDTO.getGenerateNoticeApiKey() != null ? encryptionService.encrypt(createDTO.getGenerateNoticeApiKey()) : null);
     organization.setFlagNotifyIo(createDTO.getFlagNotifyIo());
     organization.setFlagNotifyOutcomePush(createDTO.getFlagNotifyOutcomePush());
     organization.setFlagPaymentNotification(createDTO.getFlagPaymentNotification());
