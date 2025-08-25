@@ -1,13 +1,21 @@
 package it.gov.pagopa.pu.organization.exception;
 
+import static org.mockito.ArgumentMatchers.any;
+import static org.mockito.Mockito.doThrow;
+
 import com.fasterxml.jackson.databind.ObjectMapper;
 import it.gov.pagopa.pu.organization.config.json.JsonConfig;
+import it.gov.pagopa.pu.organization.dto.generated.OrganizationErrorDTO.CodeEnum;
+import it.gov.pagopa.pu.organization.exception.custom.InvalidValueException;
 import jakarta.persistence.RollbackException;
 import jakarta.servlet.ServletException;
 import jakarta.validation.ConstraintViolationException;
 import jakarta.validation.Valid;
 import jakarta.validation.constraints.NotNull;
 import jakarta.validation.constraints.Pattern;
+import java.time.LocalDateTime;
+import java.util.Map;
+import java.util.Set;
 import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
@@ -37,13 +45,6 @@ import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 import org.springframework.web.server.ServerErrorException;
 import org.springframework.web.servlet.mvc.method.annotation.RequestMappingHandlerAdapter;
-
-import java.time.LocalDateTime;
-import java.util.Map;
-import java.util.Set;
-
-import static org.mockito.ArgumentMatchers.any;
-import static org.mockito.Mockito.doThrow;
 
 @ExtendWith({SpringExtension.class})
 @WebMvcTest(value = {OrganizationExceptionHandlerTest.TestController.class}, excludeAutoConfiguration = SecurityAutoConfiguration.class)
@@ -103,6 +104,18 @@ class OrganizationExceptionHandlerTest {
     }
 
     return mockMvc.perform(requestBuilder);
+  }
+
+  @Test
+  void handleInvalidValueExceptionError() throws Exception {
+    doThrow(new InvalidValueException("Error")).when(testControllerSpy).testEndpoint(DATA,BODY);
+
+    performRequest(DATA, MediaType.APPLICATION_JSON)
+      .andExpect(MockMvcResultMatchers.status().isBadRequest())
+      .andExpect(MockMvcResultMatchers.jsonPath("$.code").value(
+        CodeEnum.ORGANIZATION_BAD_REQUEST.getValue()))
+      .andExpect(MockMvcResultMatchers.jsonPath("$.message").value("Error"));
+
   }
 
   @Test

@@ -1,27 +1,37 @@
 package it.gov.pagopa.pu.organization.service.organization;
 
+import static it.gov.pagopa.pu.organization.util.faker.OrganizationFaker.buildOrganization;
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertNull;
+import static org.junit.jupiter.api.Assertions.assertThrows;
+import static org.mockito.Mockito.verify;
+import static org.mockito.Mockito.verifyNoMoreInteractions;
+import static org.mockito.Mockito.when;
+
+import it.gov.pagopa.pu.organization.connector.debtposition.client.DebtPositionTypeOrgClient;
 import it.gov.pagopa.pu.organization.dto.generated.BrokerApiKeyType;
 import it.gov.pagopa.pu.organization.dto.generated.OrganizationApiKeyType;
 import it.gov.pagopa.pu.organization.dto.generated.OrganizationApiKeys;
+import it.gov.pagopa.pu.organization.dto.generated.OrganizationCreateDTO;
+import it.gov.pagopa.pu.organization.exception.custom.InvalidValueException;
 import it.gov.pagopa.pu.organization.exception.custom.OrganizationNotFoundException;
+import it.gov.pagopa.pu.organization.mapper.OrganizationMapper;
 import it.gov.pagopa.pu.organization.model.Broker;
 import it.gov.pagopa.pu.organization.model.Organization;
 import it.gov.pagopa.pu.organization.repository.BrokerRepository;
 import it.gov.pagopa.pu.organization.repository.OrganizationRepository;
 import it.gov.pagopa.pu.organization.service.broker.BrokerEncryptionService;
+import it.gov.pagopa.pu.organization.util.TestUtils;
+import it.gov.pagopa.pu.organization.util.faker.OrganizationFaker;
+import java.util.Optional;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
+import org.junit.jupiter.api.function.Executable;
 import org.mockito.Mock;
 import org.mockito.Mockito;
 import org.mockito.junit.jupiter.MockitoExtension;
 import org.springframework.data.rest.webmvc.ResourceNotFoundException;
-
-import java.util.Optional;
-
-import static it.gov.pagopa.pu.organization.util.faker.OrganizationFaker.buildOrganization;
-import static org.junit.jupiter.api.Assertions.*;
-import static org.mockito.Mockito.verify;
 
 @ExtendWith(MockitoExtension.class)
 class OrganizationServiceTest {
@@ -34,12 +44,78 @@ class OrganizationServiceTest {
   private BrokerRepository brokerRepositoryMock;
   @Mock
   private BrokerEncryptionService brokerEncryptionServiceMock;
+  @Mock
+  private OrganizationMapper organizationMapperMock;
+  @Mock
+  private DebtPositionTypeOrgClient debtPositionTypeOrgClientMock;
 
   private OrganizationService service;
 
   @BeforeEach
   void setUp() {
-    service = new OrganizationService(organizationEncryptionServiceMock, brokerEncryptionServiceMock, organizationRepositoryMock, brokerRepositoryMock);
+    service = new OrganizationService(organizationEncryptionServiceMock,
+      brokerEncryptionServiceMock, organizationMapperMock,
+      organizationRepositoryMock, brokerRepositoryMock,
+      debtPositionTypeOrgClientMock, true);
+  }
+
+  @Test
+  void givenCreateOrganizationThenSuccess() {
+    String accessToken = TestUtils.getFakeAccessToken();
+
+    OrganizationCreateDTO dto = new OrganizationCreateDTO();
+    dto.setOrgFiscalCode("12345678903");
+    dto.setIban("IT60X0542811101000000123456");
+    dto.setPostalIban("IT60X0542811101000000123456");
+
+    Organization organization = OrganizationFaker.buildOrganization();
+    when(organizationMapperMock.toModel(dto)).thenReturn(organization);
+    when(organizationRepositoryMock.save(organization)).thenReturn(organization);
+
+    service.createOrganization(dto, accessToken);
+
+    verify(debtPositionTypeOrgClientMock).createTechnicalDebtPositionTypeOrg(organization.getOrganizationId(), accessToken);
+    verifyNoMoreInteractions(organizationRepositoryMock);
+  }
+
+  @Test
+  void givenInvalidIbanWhenCreateOrganizationThenInvalidValueException() {
+    String accessToken = TestUtils.getFakeAccessToken();
+
+    OrganizationCreateDTO dto = new OrganizationCreateDTO();
+    dto.setOrgFiscalCode("12345678903");
+    dto.setIban("iban");
+
+    Executable exec = () -> service.createOrganization(dto, accessToken);
+
+    assertThrows(InvalidValueException.class, exec);
+  }
+
+  @Test
+  void givenInvalidPostalIbanWhenCreateOrganizationThenInvalidValueException() {
+    String accessToken = TestUtils.getFakeAccessToken();
+
+    OrganizationCreateDTO dto = new OrganizationCreateDTO();
+    dto.setOrgFiscalCode("12345678903");
+    dto.setIban("IT60X0542811101000000123456");
+    dto.setPostalIban("iban");
+
+    Executable exec = () -> service.createOrganization(dto, accessToken);
+
+    assertThrows(InvalidValueException.class, exec);
+  }
+
+  @Test
+  void givenInvalidOrgFiscalCodeWhenCreateOrganizationThenInvalidValueException() {
+    String accessToken = TestUtils.getFakeAccessToken();
+
+    OrganizationCreateDTO dto = new OrganizationCreateDTO();
+    dto.setIban("IT60X0542811101000000123456");
+    dto.setPostalIban("IT60X0542811101000000123456");
+
+    Executable exec = () -> service.createOrganization(dto, accessToken);
+
+    assertThrows(InvalidValueException.class, exec);
   }
 
   @Test
