@@ -7,6 +7,23 @@ servers:
   - url: http://localhost:8080
     description: Generated server url
 paths:
+  /organization:
+    post:
+      tags:
+        - Organization
+      summary: Create an Organization
+      operationId: createOrganization
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/OrganizationCreateDTO'
+      responses:
+        '200':
+          description: OK
+        '500':
+          description: Internal Server Error
   /organization/{organizationId}/apiKey:
     put:
       tags:
@@ -272,6 +289,66 @@ components:
             - GENERATE_NOTICE
         apiKey:
           type: string
+    OrganizationCreateDTO:
+      type: object
+      required:
+        - ipaCode
+        - orgFiscalCode
+        - orgName
+        - status
+        - flagNotifyIo
+        - flagNotifyOutcomePush
+        - flagPaymentNotification
+        - pdndEnabled
+      properties:
+        externalOrganizationId:
+          type: string
+        ipaCode:
+          type: string
+        orgFiscalCode:
+          type: string
+        orgName:
+          type: string
+        orgTypeCode:
+          type: string
+        orgEmail:
+          type: string
+        postalIban:
+          type: string
+        iban:
+          type: string
+        password:
+          type: string
+        segregationCode:
+          type: string
+        cbillInterBankCode:
+          type: string
+        orgLogo:
+          type: string
+        status:
+          type: 'OrganizationStatus'
+        additionalLanguage:
+          type: string
+        startDate:
+          type: string
+          format: date
+        brokerId:
+          type: integer
+          format: int64
+        ioApiKey:
+          type: string
+        sendApiKey:
+          type: string
+        generateNoticeApiKey:
+          type: string
+        flagNotifyIo:
+          type: boolean
+        flagNotifyOutcomePush:
+          type: boolean
+        flagPaymentNotification:
+          type: boolean
+        pdndEnabled:
+          type: boolean
     OrganizationApiKeyType:
       type: string
       enum:

@@ -23,6 +23,7 @@ public class Organization extends BaseEntity implements Serializable {
   @GeneratedValue(strategy = GenerationType.SEQUENCE, generator = "organization_generator")
   @SequenceGenerator(name = "organization_generator", sequenceName = "organization_seq", allocationSize = 1)
   private Long organizationId;
+  private String externalOrganizationId;
   @NotNull
   private String ipaCode;
   @NotNull
@@ -54,5 +55,7 @@ public class Organization extends BaseEntity implements Serializable {
   private boolean flagPaymentNotification;
   @NotNull
   private boolean pdndEnabled;
+  @NotNull
+  private boolean flagTreasury;
 
 }
