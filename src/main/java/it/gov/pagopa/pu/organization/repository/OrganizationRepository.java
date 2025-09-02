@@ -1,6 +1,7 @@
 package it.gov.pagopa.pu.organization.repository;
 
 import io.swagger.v3.oas.annotations.Parameter;
+import io.swagger.v3.oas.annotations.media.Schema;
 import it.gov.pagopa.pu.organization.enums.OrganizationStatus;
 import it.gov.pagopa.pu.organization.model.Organization;
 import jakarta.transaction.Transactional;
@@ -27,6 +28,8 @@ public interface OrganizationRepository extends
     OrganizationStatus status);
 
   Organization findByExternalOrganizationId(String externalOrganizationId);
+
+  Page<Organization> findByBrokerId(@Parameter(required = true, schema = @Schema(type = "integer", format = "int64")) @Param("brokerId") Long brokerId, Pageable pageable);
 
   @Query("SELECT o FROM Organization o WHERE o.brokerId = :brokerId AND " +
     "(:orgName is null OR o.orgName ILIKE CONCAT('%', cast(:orgName as text), '%'))")
