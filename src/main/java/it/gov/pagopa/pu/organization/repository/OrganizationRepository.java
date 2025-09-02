@@ -26,6 +26,8 @@ public interface OrganizationRepository extends
   List<Organization> findByBrokerIdAndStatus(Long brokerId,
     OrganizationStatus status);
 
+  Organization findByExternalOrganizationId(String externalOrganizationId);
+
   @Query("SELECT o FROM Organization o WHERE o.brokerId = :brokerId AND " +
     "(:orgName is null OR o.orgName ILIKE CONCAT('%', cast(:orgName as text), '%'))")
   Page<Organization> findByBrokerIdAndOrgName(@Parameter(required = true) @Param("brokerId") Long brokerId,
