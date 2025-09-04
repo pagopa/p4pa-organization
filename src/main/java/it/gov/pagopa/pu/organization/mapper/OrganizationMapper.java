@@ -1,6 +1,6 @@
 package it.gov.pagopa.pu.organization.mapper;
 
-import it.gov.pagopa.pu.organization.dto.OrganizationDTO;
+import it.gov.pagopa.pu.organization.dto.OrganizationDetailDTO;
 import it.gov.pagopa.pu.organization.dto.generated.OrganizationCreateDTO;
 import it.gov.pagopa.pu.organization.model.Organization;
 import it.gov.pagopa.pu.organization.service.organization.OrganizationEncryptionService;
@@ -46,12 +46,12 @@ public class OrganizationMapper {
     return organization;
   }
 
-  public OrganizationDTO mapToDTO(Organization org) {
+  public OrganizationDetailDTO mapToDTO(Organization org) {
     if (org == null) {
       return null;
     }
 
-    OrganizationDTO dto = new OrganizationDTO();
+    OrganizationDetailDTO dto = new OrganizationDetailDTO();
     dto.setPassword(org.getPassword() != null ? encryptionService.decryptKey(org.getPassword()) : null);
     dto.setGenerateNoticeApiKey(org.getGenerateNoticeApiKey() != null ? encryptionService.decryptKey(org.getGenerateNoticeApiKey()) : null);
     dto.setIoApiKey(org.getIoApiKey() != null ? encryptionService.decryptKey(org.getIoApiKey()) : null);

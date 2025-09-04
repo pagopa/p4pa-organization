@@ -8,7 +8,7 @@ import static org.springframework.test.web.servlet.request.MockMvcRequestBuilder
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
-import it.gov.pagopa.pu.organization.dto.OrganizationDTO;
+import it.gov.pagopa.pu.organization.dto.OrganizationDetailDTO;
 import it.gov.pagopa.pu.organization.dto.generated.OrganizationApiKeyType;
 import it.gov.pagopa.pu.organization.dto.generated.OrganizationApiKeys;
 import it.gov.pagopa.pu.organization.dto.generated.OrganizationCreateDTO;
@@ -120,7 +120,7 @@ class OrganizationControllerTest {
 
   @Test
   void whenGetOrganizationThenOk() throws Exception {
-    OrganizationDTO dto = new OrganizationDTO();
+    OrganizationDetailDTO dto = new OrganizationDetailDTO();
     dto.setOrganizationId(1L);
     dto.setOrgName("My Org");
     dto.setIpaCode("IPA123");
@@ -134,7 +134,7 @@ class OrganizationControllerTest {
       .andReturn();
 
     String responseBody = result.getResponse().getContentAsString();
-    OrganizationDTO responseDto = objectMapper.readValue(responseBody, OrganizationDTO.class);
+    OrganizationDetailDTO responseDto = objectMapper.readValue(responseBody, OrganizationDetailDTO.class);
 
     assertEquals(dto.getOrganizationId(), responseDto.getOrganizationId());
     assertEquals(dto.getOrgName(), responseDto.getOrgName());

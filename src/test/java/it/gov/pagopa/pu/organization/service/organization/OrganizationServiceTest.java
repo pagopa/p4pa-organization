@@ -5,7 +5,7 @@ import static org.junit.jupiter.api.Assertions.*;
 import static org.mockito.Mockito.*;
 
 import it.gov.pagopa.pu.organization.connector.debtposition.client.DebtPositionTypeOrgClient;
-import it.gov.pagopa.pu.organization.dto.OrganizationDTO;
+import it.gov.pagopa.pu.organization.dto.OrganizationDetailDTO;
 import it.gov.pagopa.pu.organization.dto.generated.BrokerApiKeyType;
 import it.gov.pagopa.pu.organization.dto.generated.OrganizationApiKeyType;
 import it.gov.pagopa.pu.organization.dto.generated.OrganizationApiKeys;
@@ -318,13 +318,13 @@ class OrganizationServiceTest {
     Organization org = new Organization();
     org.setOrganizationId(organizationId);
 
-    OrganizationDTO expectedDto = new OrganizationDTO();
+    OrganizationDetailDTO expectedDto = new OrganizationDetailDTO();
     expectedDto.setOrganizationId(organizationId);
 
     when(organizationRepositoryMock.findById(organizationId)).thenReturn(Optional.of(org));
     when(organizationMapperMock.mapToDTO(org)).thenReturn(expectedDto);
 
-    OrganizationDTO result = service.getOrganization(organizationId);
+    OrganizationDetailDTO result = service.getOrganization(organizationId);
 
     assertNotNull(result);
     assertEquals(expectedDto.getOrganizationId(), result.getOrganizationId());

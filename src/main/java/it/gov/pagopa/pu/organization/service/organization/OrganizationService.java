@@ -4,7 +4,7 @@ import static it.gov.pagopa.pu.organization.util.Utilities.isValidIban;
 import static it.gov.pagopa.pu.organization.util.Utilities.isValidPIVA;
 
 import it.gov.pagopa.pu.organization.connector.debtposition.client.DebtPositionTypeOrgClient;
-import it.gov.pagopa.pu.organization.dto.OrganizationDTO;
+import it.gov.pagopa.pu.organization.dto.OrganizationDetailDTO;
 import it.gov.pagopa.pu.organization.dto.generated.BrokerApiKeyType;
 import it.gov.pagopa.pu.organization.dto.generated.OrganizationApiKeyType;
 import it.gov.pagopa.pu.organization.dto.generated.OrganizationApiKeys;
@@ -118,7 +118,7 @@ public class OrganizationService {
     }
   }
 
-  public OrganizationDTO getOrganization(Long organizationId) {
+  public OrganizationDetailDTO getOrganization(Long organizationId) {
     Organization org = organizationRepository.findById(organizationId)
       .orElseThrow(() -> new ResourceNotFoundException("Organization [%s] not found".formatted(organizationId)));
 

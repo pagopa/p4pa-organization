@@ -1,12 +1,10 @@
 package it.gov.pagopa.pu.organization.mapper;
 
-import static org.junit.jupiter.api.Assertions.assertEquals;
-import static org.junit.jupiter.api.Assertions.assertNotNull;
-import static org.junit.jupiter.api.Assertions.assertNull;
+import static org.junit.jupiter.api.Assertions.*;
 import static org.mockito.Mockito.verifyNoInteractions;
 import static org.mockito.Mockito.when;
 
-import it.gov.pagopa.pu.organization.dto.OrganizationDTO;
+import it.gov.pagopa.pu.organization.dto.OrganizationDetailDTO;
 import it.gov.pagopa.pu.organization.dto.generated.OrganizationCreateDTO;
 import it.gov.pagopa.pu.organization.enums.OrganizationStatus;
 import it.gov.pagopa.pu.organization.model.Organization;
@@ -157,7 +155,7 @@ class OrganizationMapperTest {
     when(encryptionServiceMock.decryptKey(encryptedSendApiKey)).thenReturn("plainSendApiKey");
     when(encryptionServiceMock.decryptKey(encryptedGenerateNoticeApiKey)).thenReturn("plainGenerateNoticeApiKey");
 
-    OrganizationDTO dto = organizationMapper.mapToDTO(org);
+    OrganizationDetailDTO dto = organizationMapper.mapToDTO(org);
 
     assertNotNull(dto);
     assertEquals(org.getOrganizationId(), dto.getOrganizationId());
@@ -179,10 +177,10 @@ class OrganizationMapperTest {
     assertEquals(org.getStatus(), dto.getStatus());
     assertEquals(org.getAdditionalLanguage(), dto.getAdditionalLanguage());
     assertEquals(org.getStartDate(), dto.getStartDate());
-    assertEquals(org.isFlagNotifyOutcomePush(), dto.isFlagNotifyOutcomePush());
-    assertEquals(org.isFlagPaymentNotification(), dto.isFlagPaymentNotification());
-    assertEquals(org.isPdndEnabled(), dto.isPdndEnabled());
-    assertEquals(org.isFlagTreasury(), dto.isFlagTreasury());
+    assertFalse(dto.getFlagNotifyOutcomePush());
+    assertTrue(dto.getFlagPaymentNotification());
+    assertTrue(dto.getPdndEnabled());
+    assertFalse(dto.getFlagTreasury());
     assertEquals(org.getBrokerId(), dto.getBrokerId());
   }
 
@@ -199,7 +197,7 @@ class OrganizationMapperTest {
 
     org.setStatus(OrganizationStatus.DRAFT);
 
-    OrganizationDTO dto = organizationMapper.mapToDTO(org);
+    OrganizationDetailDTO dto = organizationMapper.mapToDTO(org);
 
     assertNotNull(dto);
     assertEquals(org.getOrganizationId(), dto.getOrganizationId());
