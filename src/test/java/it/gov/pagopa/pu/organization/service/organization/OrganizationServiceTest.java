@@ -353,7 +353,7 @@ class OrganizationServiceTest {
     organization.setIpaCode(organizationUpdateDTO.getIpaCode());
     organization.setOrgFiscalCode(organizationUpdateDTO.getOrgFiscalCode());
     organization.setOrgName(organizationUpdateDTO.getOrgName());
-    organization.setOrgTypeCode(organizationUpdateDTO.getOrgTypeCode()+"old");
+    organization.setOrgTypeCode(organizationUpdateDTO.getOrgTypeCode());
     organization.setStatus(OrganizationStatus.DRAFT);
     when(organizationRepositoryMock.findById(organizationUpdateDTO.getOrganizationId())).thenReturn(Optional.of(organization));
 
