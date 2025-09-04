@@ -1,5 +1,6 @@
 package it.gov.pagopa.pu.organization.mapper;
 
+import it.gov.pagopa.pu.organization.dto.OrganizationDTO;
 import it.gov.pagopa.pu.organization.dto.generated.OrganizationCreateDTO;
 import it.gov.pagopa.pu.organization.model.Organization;
 import it.gov.pagopa.pu.organization.service.organization.OrganizationEncryptionService;
@@ -45,4 +46,38 @@ public class OrganizationMapper {
     return organization;
   }
 
+  public OrganizationDTO mapToDTO(Organization org) {
+    if (org == null) {
+      return null;
+    }
+
+    OrganizationDTO dto = new OrganizationDTO();
+    dto.setPassword(org.getPassword() != null ? encryptionService.decryptKey(org.getPassword()) : null);
+    dto.setGenerateNoticeApiKey(org.getGenerateNoticeApiKey() != null ? encryptionService.decryptKey(org.getGenerateNoticeApiKey()) : null);
+    dto.setIoApiKey(org.getIoApiKey() != null ? encryptionService.decryptKey(org.getIoApiKey()) : null);
+    dto.setSendApiKey(org.getSendApiKey() != null ? encryptionService.decryptKey(org.getSendApiKey()) : null);
+    dto.setOrganizationId(org.getOrganizationId());
+    dto.setExternalOrganizationId(org.getExternalOrganizationId());
+    dto.setIpaCode(org.getIpaCode());
+    dto.setOrgFiscalCode(org.getOrgFiscalCode());
+    dto.setOrgName(org.getOrgName());
+    dto.setOrgTypeCode(org.getOrgTypeCode());
+    dto.setOrgEmail(org.getOrgEmail());
+    dto.setPostalIban(org.getPostalIban());
+    dto.setIban(org.getIban());
+    dto.setSegregationCode(org.getSegregationCode());
+    dto.setCbillInterBankCode(org.getCbillInterBankCode());
+    dto.setOrgLogo(org.getOrgLogo());
+    dto.setStatus(org.getStatus());
+    dto.setAdditionalLanguage(org.getAdditionalLanguage());
+    dto.setStartDate(org.getStartDate());
+    dto.setFlagNotifyIo(org.isFlagNotifyIo());
+    dto.setFlagNotifyOutcomePush(org.isFlagNotifyOutcomePush());
+    dto.setFlagPaymentNotification(org.isFlagPaymentNotification());
+    dto.setPdndEnabled(org.isPdndEnabled());
+    dto.setFlagTreasury(org.isFlagTreasury());
+    dto.setBrokerId(org.getBrokerId());
+
+    return dto;
+  }
 }

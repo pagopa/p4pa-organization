@@ -1,14 +1,11 @@
 package it.gov.pagopa.pu.organization.service.organization;
 
 import static it.gov.pagopa.pu.organization.util.faker.OrganizationFaker.buildOrganization;
-import static org.junit.jupiter.api.Assertions.assertEquals;
-import static org.junit.jupiter.api.Assertions.assertNull;
-import static org.junit.jupiter.api.Assertions.assertThrows;
-import static org.mockito.Mockito.verify;
-import static org.mockito.Mockito.verifyNoMoreInteractions;
-import static org.mockito.Mockito.when;
+import static org.junit.jupiter.api.Assertions.*;
+import static org.mockito.Mockito.*;
 
 import it.gov.pagopa.pu.organization.connector.debtposition.client.DebtPositionTypeOrgClient;
+import it.gov.pagopa.pu.organization.dto.OrganizationDTO;
 import it.gov.pagopa.pu.organization.dto.generated.BrokerApiKeyType;
 import it.gov.pagopa.pu.organization.dto.generated.OrganizationApiKeyType;
 import it.gov.pagopa.pu.organization.dto.generated.OrganizationApiKeys;
@@ -313,5 +310,39 @@ class OrganizationServiceTest {
       () -> service.getApiKey(organizationId, keyType));
 
     assertEquals("Broker not found for orgId [1]", result.getMessage());
+  }
+
+  @Test
+  void givenExistingOrganizationWhenGetOrganizationThenReturnDTO() {
+    Long organizationId = 1L;
+    Organization org = new Organization();
+    org.setOrganizationId(organizationId);
+
+    OrganizationDTO expectedDto = new OrganizationDTO();
+    expectedDto.setOrganizationId(organizationId);
+
+    when(organizationRepositoryMock.findById(organizationId)).thenReturn(Optional.of(org));
+    when(organizationMapperMock.mapToDTO(org)).thenReturn(expectedDto);
+
+    OrganizationDTO result = service.getOrganization(organizationId);
+
+    assertNotNull(result);
+    assertEquals(expectedDto.getOrganizationId(), result.getOrganizationId());
+    verify(organizationRepositoryMock).findById(organizationId);
+    verify(organizationMapperMock).mapToDTO(org);
+    verifyNoMoreInteractions(organizationRepositoryMock, organizationMapperMock);
+  }
+
+  @Test
+  void givenNonExistingOrganizationWhenGetOrganizationThenThrowException() {
+    Long organizationId = 99L;
+
+    when(organizationRepositoryMock.findById(organizationId)).thenReturn(Optional.empty());
+
+    assertThrows(ResourceNotFoundException.class, () -> service.getOrganization(organizationId));
+
+    verify(organizationRepositoryMock).findById(organizationId);
+    verifyNoInteractions(organizationMapperMock);
+    verifyNoMoreInteractions(organizationRepositoryMock);
   }
 }
