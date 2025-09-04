@@ -52,10 +52,10 @@ public class OrganizationMapper {
     }
 
     OrganizationDetailDTO dto = new OrganizationDetailDTO();
-    dto.setPassword(org.getPassword() != null ? encryptionService.decryptKey(org.getPassword()) : null);
-    dto.setGenerateNoticeApiKey(org.getGenerateNoticeApiKey() != null ? encryptionService.decryptKey(org.getGenerateNoticeApiKey()) : null);
-    dto.setIoApiKey(org.getIoApiKey() != null ? encryptionService.decryptKey(org.getIoApiKey()) : null);
-    dto.setSendApiKey(org.getSendApiKey() != null ? encryptionService.decryptKey(org.getSendApiKey()) : null);
+    dto.setPassword(encryptionService.decryptKey(org.getPassword()));
+    dto.setGenerateNoticeApiKey(encryptionService.decryptKey(org.getGenerateNoticeApiKey()));
+    dto.setIoApiKey(encryptionService.decryptKey(org.getIoApiKey()));
+    dto.setSendApiKey(encryptionService.decryptKey(org.getSendApiKey()));
     dto.setOrganizationId(org.getOrganizationId());
     dto.setExternalOrganizationId(org.getExternalOrganizationId());
     dto.setIpaCode(org.getIpaCode());
