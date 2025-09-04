@@ -1,6 +1,7 @@
 package it.gov.pagopa.pu.organization.dto;
 
 import it.gov.pagopa.pu.organization.dto.generated.OrganizationCreateDTO;
+import jakarta.validation.constraints.NotNull;
 import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.EqualsAndHashCode;
@@ -13,6 +14,8 @@ import lombok.experimental.SuperBuilder;
 @NoArgsConstructor
 @SuperBuilder(toBuilder = true)
 public class OrganizationDetailDTO extends OrganizationCreateDTO {
+  @NotNull
   private Long organizationId;
+  @NotNull
   private Boolean flagTreasury;
 }
