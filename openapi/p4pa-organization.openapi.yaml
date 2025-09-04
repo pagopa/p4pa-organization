@@ -24,6 +24,24 @@ paths:
           description: OK
         '500':
           description: Internal Server Error
+    put:
+      tags:
+        - Organization
+      summary: Update an Organization
+      operationId: updateOrganization
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: 'OrganizationUpdateDTO'
+      responses:
+        '200':
+          description: OK
+        '404':
+          description: Not Found
+        '500':
+          description: Internal Server Error
   /organization/{organizationId}/apiKey:
     put:
       tags:

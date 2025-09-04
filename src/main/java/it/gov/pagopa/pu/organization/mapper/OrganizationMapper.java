@@ -1,5 +1,6 @@
 package it.gov.pagopa.pu.organization.mapper;
 
+import it.gov.pagopa.pu.organization.dto.OrganizationUpdateDTO;
 import it.gov.pagopa.pu.organization.dto.generated.OrganizationCreateDTO;
 import it.gov.pagopa.pu.organization.model.Organization;
 import it.gov.pagopa.pu.organization.service.organization.OrganizationEncryptionService;
@@ -45,4 +46,13 @@ public class OrganizationMapper {
     return organization;
   }
 
+  public Organization toModel(OrganizationUpdateDTO organizationUpdateDTO) {
+    if (organizationUpdateDTO == null) {
+      return null;
+    }
+    Organization organization = toModel((OrganizationCreateDTO) organizationUpdateDTO);
+    organization.setOrganizationId(organizationUpdateDTO.getOrganizationId());
+    organization.setFlagTreasury(organizationUpdateDTO.isFlagTreasury());
+    return organization;
+  }
 }
