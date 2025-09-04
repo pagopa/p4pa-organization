@@ -3,6 +3,7 @@ package it.gov.pagopa.pu.organization.mapper;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertNotNull;
 import static org.junit.jupiter.api.Assertions.assertNull;
+import static org.mockito.Mockito.verifyNoInteractions;
 import static org.mockito.Mockito.when;
 
 import it.gov.pagopa.pu.organization.dto.OrganizationDTO;
@@ -183,5 +184,34 @@ class OrganizationMapperTest {
     assertEquals(org.isPdndEnabled(), dto.isPdndEnabled());
     assertEquals(org.isFlagTreasury(), dto.isFlagTreasury());
     assertEquals(org.getBrokerId(), dto.getBrokerId());
+  }
+
+  @Test
+  void givenOrganizationWithNullPasswordAndNullApiKeysWhenMapToDTOThenReturnDTOWithNulls() {
+    Organization org = new Organization();
+    org.setOrganizationId(200L);
+    org.setOrgName("Null Org");
+    org.setIpaCode("IPA_NULL");
+    org.setPassword(null);
+    org.setIoApiKey(null);
+    org.setSendApiKey(null);
+    org.setGenerateNoticeApiKey(null);
+
+    org.setStatus(OrganizationStatus.DRAFT);
+
+    OrganizationDTO dto = organizationMapper.mapToDTO(org);
+
+    assertNotNull(dto);
+    assertEquals(org.getOrganizationId(), dto.getOrganizationId());
+    assertEquals(org.getOrgName(), dto.getOrgName());
+    assertEquals(org.getIpaCode(), dto.getIpaCode());
+    assertEquals(org.getStatus(), dto.getStatus());
+
+    assertNull(dto.getPassword());
+    assertNull(dto.getIoApiKey());
+    assertNull(dto.getSendApiKey());
+    assertNull(dto.getGenerateNoticeApiKey());
+
+    verifyNoInteractions(encryptionServiceMock);
   }
 }
