@@ -68,7 +68,7 @@ paths:
           content:
             application/json:
               schema:
-                type: 'OrganizationDTO'
+                type: 'OrganizationDetailDTO'
         '404':
           description: Organization Not Found
         '500':
