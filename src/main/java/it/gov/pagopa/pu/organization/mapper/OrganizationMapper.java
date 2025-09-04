@@ -1,5 +1,6 @@
 package it.gov.pagopa.pu.organization.mapper;
 
+import it.gov.pagopa.pu.organization.dto.OrganizationDetailDTO;
 import it.gov.pagopa.pu.organization.dto.OrganizationUpdateDTO;
 import it.gov.pagopa.pu.organization.dto.generated.OrganizationCreateDTO;
 import it.gov.pagopa.pu.organization.model.Organization;
@@ -44,6 +45,41 @@ public class OrganizationMapper {
     organization.setPdndEnabled(createDTO.getPdndEnabled());
 
     return organization;
+  }
+
+  public OrganizationDetailDTO mapToDTO(Organization org) {
+    if (org == null) {
+      return null;
+    }
+
+    OrganizationDetailDTO dto = new OrganizationDetailDTO();
+    dto.setPassword(encryptionService.decryptKey(org.getPassword()));
+    dto.setGenerateNoticeApiKey(encryptionService.decryptKey(org.getGenerateNoticeApiKey()));
+    dto.setIoApiKey(encryptionService.decryptKey(org.getIoApiKey()));
+    dto.setSendApiKey(encryptionService.decryptKey(org.getSendApiKey()));
+    dto.setOrganizationId(org.getOrganizationId());
+    dto.setExternalOrganizationId(org.getExternalOrganizationId());
+    dto.setIpaCode(org.getIpaCode());
+    dto.setOrgFiscalCode(org.getOrgFiscalCode());
+    dto.setOrgName(org.getOrgName());
+    dto.setOrgTypeCode(org.getOrgTypeCode());
+    dto.setOrgEmail(org.getOrgEmail());
+    dto.setPostalIban(org.getPostalIban());
+    dto.setIban(org.getIban());
+    dto.setSegregationCode(org.getSegregationCode());
+    dto.setCbillInterBankCode(org.getCbillInterBankCode());
+    dto.setOrgLogo(org.getOrgLogo());
+    dto.setStatus(org.getStatus());
+    dto.setAdditionalLanguage(org.getAdditionalLanguage());
+    dto.setStartDate(org.getStartDate());
+    dto.setFlagNotifyIo(org.isFlagNotifyIo());
+    dto.setFlagNotifyOutcomePush(org.isFlagNotifyOutcomePush());
+    dto.setFlagPaymentNotification(org.isFlagPaymentNotification());
+    dto.setPdndEnabled(org.isPdndEnabled());
+    dto.setFlagTreasury(org.isFlagTreasury());
+    dto.setBrokerId(org.getBrokerId());
+
+    return dto;
   }
 
   public Organization toModel(OrganizationUpdateDTO organizationUpdateDTO) {

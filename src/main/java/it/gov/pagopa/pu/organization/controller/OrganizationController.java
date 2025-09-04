@@ -1,6 +1,7 @@
 package it.gov.pagopa.pu.organization.controller;
 
 import it.gov.pagopa.pu.organization.controller.generated.OrganizationApi;
+import it.gov.pagopa.pu.organization.dto.OrganizationDetailDTO;
 import it.gov.pagopa.pu.organization.dto.OrganizationUpdateDTO;
 import it.gov.pagopa.pu.organization.dto.generated.OrganizationApiKeyType;
 import it.gov.pagopa.pu.organization.dto.generated.OrganizationApiKeys;
@@ -42,6 +43,11 @@ public class OrganizationController implements OrganizationApi {
       apiKey != null
         ? HttpStatus.OK
         : HttpStatus.NO_CONTENT);
+  }
+
+  @Override
+  public ResponseEntity<OrganizationDetailDTO> getOrganization(Long organizationId) {
+    return ResponseEntity.ok(service.getOrganization(organizationId));
   }
 
   @Override

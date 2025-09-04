@@ -150,6 +150,7 @@ tasks.register<org.openapitools.generator.gradle.plugin.tasks.GenerateTask>("ope
     "OrganizationStatus" to "it.gov.pagopa.pu.organization.enums.OrganizationStatus",
     "OrgSilServiceType" to "it.gov.pagopa.pu.organization.enums.OrgSilServiceType",
     "SilServiceAuthConfigDTO" to "it.gov.pagopa.pu.organization.dto.orgsilservice.SilServiceAuthConfigDTO",
+    "OrganizationDetailDTO" to "it.gov.pagopa.pu.organization.dto.OrganizationDetailDTO",
     "OrganizationUpdateDTO" to "it.gov.pagopa.pu.organization.dto.OrganizationUpdateDTO"
   ))
   configOptions.set(mapOf(
