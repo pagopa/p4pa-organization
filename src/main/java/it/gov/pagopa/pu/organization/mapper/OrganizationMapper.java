@@ -88,7 +88,7 @@ public class OrganizationMapper {
     }
     Organization organization = toModel((OrganizationCreateDTO) organizationUpdateDTO);
     organization.setOrganizationId(organizationUpdateDTO.getOrganizationId());
-    organization.setFlagTreasury(organizationUpdateDTO.isFlagTreasury());
+    organization.setFlagTreasury(organizationUpdateDTO.getFlagTreasury());
     return organization;
   }
 }

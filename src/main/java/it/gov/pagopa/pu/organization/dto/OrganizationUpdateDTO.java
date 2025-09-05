@@ -1,7 +1,6 @@
 package it.gov.pagopa.pu.organization.dto;
 
 import io.swagger.v3.oas.annotations.media.Schema;
-import it.gov.pagopa.pu.organization.dto.generated.OrganizationCreateDTO;
 import jakarta.validation.constraints.NotNull;
 import lombok.*;
 import lombok.experimental.SuperBuilder;
@@ -11,11 +10,7 @@ import lombok.experimental.SuperBuilder;
 @AllArgsConstructor
 @NoArgsConstructor
 @SuperBuilder(toBuilder = true)
-public class OrganizationUpdateDTO extends OrganizationCreateDTO {
-    @NotNull
-    private Long organizationId;
-    @NotNull
-    private boolean flagTreasury;
+public class OrganizationUpdateDTO extends OrganizationDetailDTO {
     @Setter
     @NotNull
     private String iban;
