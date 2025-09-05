@@ -388,7 +388,6 @@ class OrganizationServiceTest {
     organization.setOrgFiscalCode(organizationDetailDTO.getOrgFiscalCode());
     organization.setOrgName(organizationDetailDTO.getOrgName());
     organization.setOrgTypeCode(organizationDetailDTO.getOrgTypeCode());
-    organization.setStatus(OrganizationStatus.DRAFT);
     when(organizationRepositoryMock.findById(organizationDetailDTO.getOrganizationId())).thenReturn(Optional.of(organization));
 
     assertThrows(ValidationException.class,()->service.updateOrganization(organizationDetailDTO));

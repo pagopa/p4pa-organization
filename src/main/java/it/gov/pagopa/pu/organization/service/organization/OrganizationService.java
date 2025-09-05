@@ -141,12 +141,11 @@ public class OrganizationService {
   private void validateOrganizationDTO(OrganizationDetailDTO organization, Organization existingOrganization) {
     validateOrganizationCreateDTO(organization);
     checkReadOnlyFields(existingOrganization,organization);
-    validateStatusUpdate(organization, existingOrganization);
+    validateStatusUpdate(organization);
   }
 
-  private static void validateStatusUpdate(OrganizationDetailDTO organization, Organization existingOrganization) {
-    if(OrganizationStatus.ACTIVE.equals(organization.getStatus())
-            && !OrganizationStatus.ACTIVE.equals(existingOrganization.getStatus())){
+  private static void validateStatusUpdate(OrganizationDetailDTO organization) {
+    if(OrganizationStatus.ACTIVE.equals(organization.getStatus())){
       List<String> emptyOrNullFields = new ArrayList<>();
       checkBlankOrNullField("orgLogo", organization.getOrgLogo(),emptyOrNullFields);
       checkBlankOrNullField("iban", organization.getIban(),emptyOrNullFields);
