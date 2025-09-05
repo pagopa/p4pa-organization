@@ -48,4 +48,10 @@ public class OrganizationController implements OrganizationApi {
   public ResponseEntity<OrganizationDetailDTO> getOrganization(Long organizationId) {
     return ResponseEntity.ok(service.getOrganization(organizationId));
   }
+
+  @Override
+  public ResponseEntity<Void> updateOrganization(OrganizationDetailDTO organizationDetailDTO) {
+    service.updateOrganization(organizationDetailDTO);
+    return ResponseEntity.ok().build();
+  }
 }

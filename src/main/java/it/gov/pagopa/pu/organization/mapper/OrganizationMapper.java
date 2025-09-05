@@ -80,4 +80,14 @@ public class OrganizationMapper {
 
     return dto;
   }
+
+  public Organization toModel(OrganizationDetailDTO organizationDetailDTO) {
+    if (organizationDetailDTO == null) {
+      return null;
+    }
+    Organization organization = toModel((OrganizationCreateDTO) organizationDetailDTO);
+    organization.setOrganizationId(organizationDetailDTO.getOrganizationId());
+    organization.setFlagTreasury(organizationDetailDTO.getFlagTreasury());
+    return organization;
+  }
 }

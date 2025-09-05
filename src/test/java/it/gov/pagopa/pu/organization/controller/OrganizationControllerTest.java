@@ -1,12 +1,5 @@
 package it.gov.pagopa.pu.organization.controller;
 
-import static org.junit.jupiter.api.Assertions.assertEquals;
-import static org.mockito.Mockito.verify;
-import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
-import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
-import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.put;
-import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
-
 import com.fasterxml.jackson.databind.ObjectMapper;
 import it.gov.pagopa.pu.organization.dto.OrganizationDetailDTO;
 import it.gov.pagopa.pu.organization.dto.generated.OrganizationApiKeyType;
@@ -15,7 +8,6 @@ import it.gov.pagopa.pu.organization.dto.generated.OrganizationCreateDTO;
 import it.gov.pagopa.pu.organization.enums.OrganizationStatus;
 import it.gov.pagopa.pu.organization.service.organization.OrganizationService;
 import it.gov.pagopa.pu.organization.util.TestUtils;
-import java.time.LocalDate;
 import org.junit.jupiter.api.Test;
 import org.mockito.Mockito;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -25,11 +17,20 @@ import org.springframework.http.MediaType;
 import org.springframework.test.context.bean.override.mockito.MockitoBean;
 import org.springframework.test.web.servlet.MockMvc;
 import org.springframework.test.web.servlet.MvcResult;
+import uk.co.jemos.podam.api.PodamFactory;
+
+import java.time.LocalDate;
+
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.mockito.Mockito.verify;
+import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.*;
+import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
 @WebMvcTest(OrganizationController.class)
 @AutoConfigureMockMvc(addFilters = false)
 class OrganizationControllerTest {
 
+  public static final PodamFactory podamFactory = TestUtils.getPodamFactory();
   @Autowired
   private MockMvc mockMvc;
 
@@ -141,5 +142,22 @@ class OrganizationControllerTest {
     assertEquals(dto.getIpaCode(), responseDto.getIpaCode());
 
     verify(organizationServiceMock).getOrganization(1L);
+  }
+
+
+  @Test
+  void whenUpdateOrganizationThenOk() throws Exception {
+    TestUtils.setFakeAccessTokenInContext();
+
+    OrganizationDetailDTO organizationDetailDTO = podamFactory.manufacturePojo(OrganizationDetailDTO.class);
+
+    mockMvc.perform(
+                    put("/organization")
+                            .contentType(MediaType.APPLICATION_JSON_VALUE)
+                            .content(objectMapper.writeValueAsString(organizationDetailDTO)))
+            .andExpect(status().isOk())
+            .andReturn();
+
+    verify(organizationServiceMock).updateOrganization(organizationDetailDTO);
   }
 }
