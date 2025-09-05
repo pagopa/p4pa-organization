@@ -2,7 +2,6 @@ package it.gov.pagopa.pu.organization.service.organization;
 
 import it.gov.pagopa.pu.organization.connector.debtposition.client.DebtPositionTypeOrgClient;
 import it.gov.pagopa.pu.organization.dto.OrganizationDetailDTO;
-import it.gov.pagopa.pu.organization.dto.OrganizationUpdateDTO;
 import it.gov.pagopa.pu.organization.dto.generated.BrokerApiKeyType;
 import it.gov.pagopa.pu.organization.dto.generated.OrganizationApiKeyType;
 import it.gov.pagopa.pu.organization.dto.generated.OrganizationApiKeys;
@@ -132,20 +131,20 @@ public class OrganizationService {
   }
 
   @Transactional
-  public void updateOrganization(OrganizationUpdateDTO organization) {
+  public void updateOrganization(OrganizationDetailDTO organization) {
     Organization existingOrganization = organizationRepository.findById(organization.getOrganizationId())
             .orElseThrow(()->new ResourceNotFoundException("Organization having id "+organization.getOrganizationId()+" not found"));
     validateOrganizationDTO(organization, existingOrganization);
     organizationRepository.save(organizationMapper.toModel( organization));
   }
 
-  private void validateOrganizationDTO(OrganizationUpdateDTO organization, Organization existingOrganization) {
+  private void validateOrganizationDTO(OrganizationDetailDTO organization, Organization existingOrganization) {
     validateOrganizationCreateDTO(organization);
     checkReadOnlyFields(existingOrganization,organization);
     validateStatusUpdate(organization, existingOrganization);
   }
 
-  private static void validateStatusUpdate(OrganizationUpdateDTO organization, Organization existingOrganization) {
+  private static void validateStatusUpdate(OrganizationDetailDTO organization, Organization existingOrganization) {
     if(OrganizationStatus.ACTIVE.equals(organization.getStatus())
             && !OrganizationStatus.ACTIVE.equals(existingOrganization.getStatus())){
       List<String> emptyOrNullFields = new ArrayList<>();
@@ -158,7 +157,7 @@ public class OrganizationService {
     }
   }
 
-  private void checkReadOnlyFields(Organization existingOrganization, OrganizationUpdateDTO organization) {
+  private void checkReadOnlyFields(Organization existingOrganization, OrganizationDetailDTO organization) {
     List<String> modifiedFields = new ArrayList<>();
     checkImmutableField("brokerId", existingOrganization.getBrokerId(), organization.getBrokerId(), modifiedFields);
     checkImmutableField("externalOrganizationId", existingOrganization.getExternalOrganizationId(), organization.getExternalOrganizationId(), modifiedFields);

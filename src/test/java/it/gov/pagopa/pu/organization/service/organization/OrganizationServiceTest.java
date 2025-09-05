@@ -1,12 +1,7 @@
 package it.gov.pagopa.pu.organization.service.organization;
 
-import static it.gov.pagopa.pu.organization.util.faker.OrganizationFaker.buildOrganization;
-import static org.junit.jupiter.api.Assertions.*;
-import static org.mockito.Mockito.*;
-
 import it.gov.pagopa.pu.organization.connector.debtposition.client.DebtPositionTypeOrgClient;
 import it.gov.pagopa.pu.organization.dto.OrganizationDetailDTO;
-import it.gov.pagopa.pu.organization.dto.OrganizationUpdateDTO;
 import it.gov.pagopa.pu.organization.dto.generated.BrokerApiKeyType;
 import it.gov.pagopa.pu.organization.dto.generated.OrganizationApiKeyType;
 import it.gov.pagopa.pu.organization.dto.generated.OrganizationApiKeys;
@@ -358,75 +353,75 @@ class OrganizationServiceTest {
 
   @Test
   void givenValidOrganizationDTOWhenUpdateOrganizationThenOk(){
-    OrganizationUpdateDTO organizationUpdateDTO = podamFactory.manufacturePojo(OrganizationUpdateDTO.class);
-    organizationUpdateDTO.setOrgFiscalCode("12345678903");
-    organizationUpdateDTO.setIban("IT60X0542811101000000123456");
-    organizationUpdateDTO.setPostalIban("IT60X0542811101000000123456");
+    OrganizationDetailDTO organizationDetailDTO = podamFactory.manufacturePojo(OrganizationDetailDTO.class);
+    organizationDetailDTO.setOrgFiscalCode("12345678903");
+    organizationDetailDTO.setIban("IT60X0542811101000000123456");
+    organizationDetailDTO.setPostalIban("IT60X0542811101000000123456");
     Organization organization = OrganizationFaker.buildOrganization();
-    organization.setBrokerId(organizationUpdateDTO.getBrokerId());
-    organization.setExternalOrganizationId(organizationUpdateDTO.getExternalOrganizationId());
-    organization.setIpaCode(organizationUpdateDTO.getIpaCode());
-    organization.setOrgFiscalCode(organizationUpdateDTO.getOrgFiscalCode());
-    organization.setOrgName(organizationUpdateDTO.getOrgName());
-    organization.setOrgTypeCode(organizationUpdateDTO.getOrgTypeCode());
-    when(organizationRepositoryMock.findById(organizationUpdateDTO.getOrganizationId())).thenReturn(Optional.of(organization));
-    when(organizationMapperMock.toModel(organizationUpdateDTO)).thenReturn(organization);
+    organization.setBrokerId(organizationDetailDTO.getBrokerId());
+    organization.setExternalOrganizationId(organizationDetailDTO.getExternalOrganizationId());
+    organization.setIpaCode(organizationDetailDTO.getIpaCode());
+    organization.setOrgFiscalCode(organizationDetailDTO.getOrgFiscalCode());
+    organization.setOrgName(organizationDetailDTO.getOrgName());
+    organization.setOrgTypeCode(organizationDetailDTO.getOrgTypeCode());
+    when(organizationRepositoryMock.findById(organizationDetailDTO.getOrganizationId())).thenReturn(Optional.of(organization));
+    when(organizationMapperMock.toModel(organizationDetailDTO)).thenReturn(organization);
     when(organizationRepositoryMock.save(organization)).thenReturn(organization);
 
-    service.updateOrganization(organizationUpdateDTO);
+    service.updateOrganization(organizationDetailDTO);
 
     verifyNoMoreInteractions(organizationRepositoryMock);
   }
 
   @Test
   void givenStatusActiveAndNoMandatoryFieldWhenUpdateOrganizationThenValidationException(){
-    OrganizationUpdateDTO organizationUpdateDTO = podamFactory.manufacturePojo(OrganizationUpdateDTO.class);
-    organizationUpdateDTO.setOrgFiscalCode("12345678903");
-    organizationUpdateDTO.setIban("IT60X0542811101000000123456");
-    organizationUpdateDTO.setPostalIban("IT60X0542811101000000123456");
-    organizationUpdateDTO.setSegregationCode(null);
-    organizationUpdateDTO.setStatus(OrganizationStatus.ACTIVE);
+    OrganizationDetailDTO organizationDetailDTO = podamFactory.manufacturePojo(OrganizationDetailDTO.class);
+    organizationDetailDTO.setOrgFiscalCode("12345678903");
+    organizationDetailDTO.setIban("IT60X0542811101000000123456");
+    organizationDetailDTO.setPostalIban("IT60X0542811101000000123456");
+    organizationDetailDTO.setSegregationCode(null);
+    organizationDetailDTO.setStatus(OrganizationStatus.ACTIVE);
     Organization organization = OrganizationFaker.buildOrganization();
-    organization.setBrokerId(organizationUpdateDTO.getBrokerId());
-    organization.setExternalOrganizationId(organizationUpdateDTO.getExternalOrganizationId());
-    organization.setIpaCode(organizationUpdateDTO.getIpaCode());
-    organization.setOrgFiscalCode(organizationUpdateDTO.getOrgFiscalCode());
-    organization.setOrgName(organizationUpdateDTO.getOrgName());
-    organization.setOrgTypeCode(organizationUpdateDTO.getOrgTypeCode());
+    organization.setBrokerId(organizationDetailDTO.getBrokerId());
+    organization.setExternalOrganizationId(organizationDetailDTO.getExternalOrganizationId());
+    organization.setIpaCode(organizationDetailDTO.getIpaCode());
+    organization.setOrgFiscalCode(organizationDetailDTO.getOrgFiscalCode());
+    organization.setOrgName(organizationDetailDTO.getOrgName());
+    organization.setOrgTypeCode(organizationDetailDTO.getOrgTypeCode());
     organization.setStatus(OrganizationStatus.DRAFT);
-    when(organizationRepositoryMock.findById(organizationUpdateDTO.getOrganizationId())).thenReturn(Optional.of(organization));
+    when(organizationRepositoryMock.findById(organizationDetailDTO.getOrganizationId())).thenReturn(Optional.of(organization));
 
-    assertThrows(ValidationException.class,()->service.updateOrganization(organizationUpdateDTO));
+    assertThrows(ValidationException.class,()->service.updateOrganization(organizationDetailDTO));
 
     verifyNoInteractions(organizationMapperMock);
   }
 
   @Test
   void givenUpdatedImmutableFieldWhenUpdateOrganizationThenValidationException(){
-    OrganizationUpdateDTO organizationUpdateDTO = podamFactory.manufacturePojo(OrganizationUpdateDTO.class);
-    organizationUpdateDTO.setOrgFiscalCode("12345678903");
-    organizationUpdateDTO.setIban("IT60X0542811101000000123456");
-    organizationUpdateDTO.setPostalIban("IT60X0542811101000000123456");
+    OrganizationDetailDTO organizationDetailDTO = podamFactory.manufacturePojo(OrganizationDetailDTO.class);
+    organizationDetailDTO.setOrgFiscalCode("12345678903");
+    organizationDetailDTO.setIban("IT60X0542811101000000123456");
+    organizationDetailDTO.setPostalIban("IT60X0542811101000000123456");
     Organization organization = OrganizationFaker.buildOrganization();
-    organization.setBrokerId(organizationUpdateDTO.getBrokerId());
-    organization.setExternalOrganizationId(organizationUpdateDTO.getExternalOrganizationId());
-    organization.setIpaCode(organizationUpdateDTO.getIpaCode());
-    organization.setOrgFiscalCode(organizationUpdateDTO.getOrgFiscalCode());
-    organization.setOrgName(organizationUpdateDTO.getOrgName());
-    organization.setOrgTypeCode(organizationUpdateDTO.getOrgTypeCode()+"old");
-    when(organizationRepositoryMock.findById(organizationUpdateDTO.getOrganizationId())).thenReturn(Optional.of(organization));
+    organization.setBrokerId(organizationDetailDTO.getBrokerId());
+    organization.setExternalOrganizationId(organizationDetailDTO.getExternalOrganizationId());
+    organization.setIpaCode(organizationDetailDTO.getIpaCode());
+    organization.setOrgFiscalCode(organizationDetailDTO.getOrgFiscalCode());
+    organization.setOrgName(organizationDetailDTO.getOrgName());
+    organization.setOrgTypeCode(organizationDetailDTO.getOrgTypeCode()+"old");
+    when(organizationRepositoryMock.findById(organizationDetailDTO.getOrganizationId())).thenReturn(Optional.of(organization));
 
-    assertThrows(ValidationException.class,()->service.updateOrganization(organizationUpdateDTO));
+    assertThrows(ValidationException.class,()->service.updateOrganization(organizationDetailDTO));
 
     verifyNoInteractions(organizationMapperMock);
   }
 
   @Test
   void givenNonExistingOrganizationWhenUpdateOrganizationThenResourceNotFoundException(){
-    OrganizationUpdateDTO organizationUpdateDTO = podamFactory.manufacturePojo(OrganizationUpdateDTO.class);
-    when(organizationRepositoryMock.findById(organizationUpdateDTO.getOrganizationId())).thenReturn(Optional.empty());
+    OrganizationDetailDTO organizationDetailDTO = podamFactory.manufacturePojo(OrganizationDetailDTO.class);
+    when(organizationRepositoryMock.findById(organizationDetailDTO.getOrganizationId())).thenReturn(Optional.empty());
 
-    assertThrows(ResourceNotFoundException.class,()->service.updateOrganization(organizationUpdateDTO));
+    assertThrows(ResourceNotFoundException.class,()->service.updateOrganization(organizationDetailDTO));
 
     verifyNoInteractions(organizationMapperMock);
   }

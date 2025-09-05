@@ -1,7 +1,6 @@
 package it.gov.pagopa.pu.organization.controller;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
-import it.gov.pagopa.pu.organization.dto.OrganizationUpdateDTO;
 import it.gov.pagopa.pu.organization.dto.OrganizationDetailDTO;
 import it.gov.pagopa.pu.organization.dto.generated.OrganizationApiKeyType;
 import it.gov.pagopa.pu.organization.dto.generated.OrganizationApiKeys;
@@ -150,15 +149,15 @@ class OrganizationControllerTest {
   void whenUpdateOrganizationThenOk() throws Exception {
     TestUtils.setFakeAccessTokenInContext();
 
-    OrganizationUpdateDTO organizationUpdateDTO = podamFactory.manufacturePojo(OrganizationUpdateDTO.class);
+    OrganizationDetailDTO organizationDetailDTO = podamFactory.manufacturePojo(OrganizationDetailDTO.class);
 
     mockMvc.perform(
                     put("/organization")
                             .contentType(MediaType.APPLICATION_JSON_VALUE)
-                            .content(objectMapper.writeValueAsString(organizationUpdateDTO)))
+                            .content(objectMapper.writeValueAsString(organizationDetailDTO)))
             .andExpect(status().isOk())
             .andReturn();
 
-    verify(organizationServiceMock).updateOrganization(organizationUpdateDTO);
+    verify(organizationServiceMock).updateOrganization(organizationDetailDTO);
   }
 }

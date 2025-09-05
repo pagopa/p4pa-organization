@@ -1,10 +1,6 @@
 package it.gov.pagopa.pu.organization.mapper;
 
-import static org.junit.jupiter.api.Assertions.*;
-import static org.mockito.Mockito.when;
-
 import it.gov.pagopa.pu.organization.dto.OrganizationDetailDTO;
-import it.gov.pagopa.pu.organization.dto.OrganizationUpdateDTO;
 import it.gov.pagopa.pu.organization.dto.generated.OrganizationCreateDTO;
 import it.gov.pagopa.pu.organization.enums.OrganizationStatus;
 import it.gov.pagopa.pu.organization.model.Organization;
@@ -191,13 +187,13 @@ class OrganizationMapperTest {
   }
 
   @Test
-  void givenNullOrganizationDTOWhenMapToModelThenReturnNull() {
+  void givenNullOrganizationDetailDTOWhenMapToModelThenReturnNull() {
     assertNull(organizationMapper.toModel( null));
   }
 
   @Test
-  void givenValidOrganizationDTOWhenMapToModelThenReturnValidOrganization() {
-    OrganizationUpdateDTO dto = podamFactory.manufacturePojo(OrganizationUpdateDTO.class);
+  void givenValidOrganizationDetailDTOWhenMapToModelThenReturnValidOrganization() {
+    OrganizationDetailDTO dto = podamFactory.manufacturePojo(OrganizationDetailDTO.class);
 
     byte[] expectedEncryptedPassword = "encryptedPassword".getBytes(StandardCharsets.UTF_8);
     when(encryptionServiceMock.encrypt(dto.getPassword())).thenReturn(expectedEncryptedPassword);
