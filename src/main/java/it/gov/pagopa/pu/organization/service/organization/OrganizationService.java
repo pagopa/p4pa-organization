@@ -1,13 +1,12 @@
 package it.gov.pagopa.pu.organization.service.organization;
 
-import static it.gov.pagopa.pu.organization.util.Utilities.isValidIban;
-import static it.gov.pagopa.pu.organization.util.Utilities.isValidPIVA;
-
 import it.gov.pagopa.pu.organization.connector.debtposition.client.DebtPositionTypeOrgClient;
+import it.gov.pagopa.pu.organization.dto.OrganizationDetailDTO;
 import it.gov.pagopa.pu.organization.dto.generated.BrokerApiKeyType;
 import it.gov.pagopa.pu.organization.dto.generated.OrganizationApiKeyType;
 import it.gov.pagopa.pu.organization.dto.generated.OrganizationApiKeys;
 import it.gov.pagopa.pu.organization.dto.generated.OrganizationCreateDTO;
+import it.gov.pagopa.pu.organization.enums.OrganizationStatus;
 import it.gov.pagopa.pu.organization.exception.custom.InvalidValueException;
 import it.gov.pagopa.pu.organization.exception.custom.OrganizationNotFoundException;
 import it.gov.pagopa.pu.organization.mapper.OrganizationMapper;
@@ -17,10 +16,17 @@ import it.gov.pagopa.pu.organization.repository.BrokerRepository;
 import it.gov.pagopa.pu.organization.repository.OrganizationRepository;
 import it.gov.pagopa.pu.organization.service.broker.BrokerEncryptionService;
 import jakarta.transaction.Transactional;
+import jakarta.validation.ValidationException;
 import org.apache.commons.lang3.StringUtils;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.data.rest.webmvc.ResourceNotFoundException;
 import org.springframework.stereotype.Service;
+import org.springframework.util.CollectionUtils;
+
+import java.util.ArrayList;
+import java.util.List;
+
+import static it.gov.pagopa.pu.organization.util.Utilities.*;
 
 @Service
 public class OrganizationService {
@@ -114,6 +120,52 @@ public class OrganizationService {
       if (StringUtils.isNotBlank(dto.getPostalIban()) && !isValidIban(dto.getPostalIban())) {
         throw new InvalidValueException("Postal iban is not valid");
       }
+    }
+  }
+
+  public OrganizationDetailDTO getOrganization(Long organizationId) {
+    Organization org = organizationRepository.findById(organizationId)
+      .orElseThrow(() -> new ResourceNotFoundException("Organization [%s] not found".formatted(organizationId)));
+
+    return organizationMapper.mapToDTO(org);
+  }
+
+  @Transactional
+  public void updateOrganization(OrganizationDetailDTO organization) {
+    Organization existingOrganization = organizationRepository.findById(organization.getOrganizationId())
+            .orElseThrow(()->new ResourceNotFoundException("Organization having id "+organization.getOrganizationId()+" not found"));
+    validateOrganizationDTO(organization, existingOrganization);
+    organizationRepository.save(organizationMapper.toModel( organization));
+  }
+
+  private void validateOrganizationDTO(OrganizationDetailDTO organization, Organization existingOrganization) {
+    validateOrganizationCreateDTO(organization);
+    checkReadOnlyFields(existingOrganization,organization);
+    validateStatusUpdate(organization);
+  }
+
+  private static void validateStatusUpdate(OrganizationDetailDTO organization) {
+    if(OrganizationStatus.ACTIVE.equals(organization.getStatus())){
+      List<String> emptyOrNullFields = new ArrayList<>();
+      checkBlankOrNullField("orgLogo", organization.getOrgLogo(),emptyOrNullFields);
+      checkBlankOrNullField("iban", organization.getIban(),emptyOrNullFields);
+      checkBlankOrNullField("segregationCode", organization.getSegregationCode(),emptyOrNullFields);
+      if(!CollectionUtils.isEmpty(emptyOrNullFields)){
+        throw new ValidationException("The following Organization fields are required in order to change the organization’s status to ACTIVE. "+emptyOrNullFields);
+      }
+    }
+  }
+
+  private void checkReadOnlyFields(Organization existingOrganization, OrganizationDetailDTO organization) {
+    List<String> modifiedFields = new ArrayList<>();
+    checkImmutableField("brokerId", existingOrganization.getBrokerId(), organization.getBrokerId(), modifiedFields);
+    checkImmutableField("externalOrganizationId", existingOrganization.getExternalOrganizationId(), organization.getExternalOrganizationId(), modifiedFields);
+    checkImmutableField("ipaCode", existingOrganization.getIpaCode(), organization.getIpaCode(), modifiedFields);
+    checkImmutableField("orgFiscalCode", existingOrganization.getOrgFiscalCode(), organization.getOrgFiscalCode(), modifiedFields);
+    checkImmutableField("orgName", existingOrganization.getOrgName(), organization.getOrgName(), modifiedFields);
+    checkImmutableField("orgTypeCode", existingOrganization.getOrgTypeCode(), organization.getOrgTypeCode(), modifiedFields);
+    if(!CollectionUtils.isEmpty(modifiedFields)){
+      throw new ValidationException("The following Organization fields are readOnly. "+modifiedFields);
     }
   }
 }

@@ -38,6 +38,7 @@ val micrometerVersion = "1.5.1"
 val postgresJdbcVersion = "42.7.7"
 val bouncycastleVersion = "1.81"
 val httpClientVersion = "5.5"
+val podamVersion = "8.0.2.RELEASE"
 
 dependencies {
   implementation("org.springframework.boot:spring-boot-starter")
@@ -65,6 +66,7 @@ dependencies {
   testImplementation("org.mockito:mockito-core")
   testImplementation("org.projectlombok:lombok")
   testImplementation("com.h2database:h2")
+  testImplementation("uk.co.jemos.podam:podam:${podamVersion}")
 }
 
 tasks.withType<Test> {
@@ -147,7 +149,8 @@ tasks.register<org.openapitools.generator.gradle.plugin.tasks.GenerateTask>("ope
   typeMappings.set(mapOf(
     "OrganizationStatus" to "it.gov.pagopa.pu.organization.enums.OrganizationStatus",
     "OrgSilServiceType" to "it.gov.pagopa.pu.organization.enums.OrgSilServiceType",
-    "SilServiceAuthConfigDTO" to "it.gov.pagopa.pu.organization.dto.orgsilservice.SilServiceAuthConfigDTO"
+    "SilServiceAuthConfigDTO" to "it.gov.pagopa.pu.organization.dto.orgsilservice.SilServiceAuthConfigDTO",
+    "OrganizationDetailDTO" to "it.gov.pagopa.pu.organization.dto.OrganizationDetailDTO"
   ))
   configOptions.set(mapOf(
     "dateLibrary" to "java8",
