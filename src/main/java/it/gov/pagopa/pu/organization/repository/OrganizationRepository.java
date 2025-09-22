@@ -51,18 +51,18 @@ public interface OrganizationRepository extends
   @Transactional
   @RestResource(exported = false)
   @Query("UPDATE Organization o SET o.ioApiKey = :apiKey WHERE o.id = :organizationId")
-  int updateIoApiKey(Long organizationId, byte[] apiKey);
+  Integer updateIoApiKey(Long organizationId, byte[] apiKey);
 
   @Modifying
   @Transactional
   @RestResource(exported = false)
   @Query("UPDATE Organization o SET o.sendApiKey = :apiKey WHERE o.id = :organizationId")
-  int updateSendApiKey(Long organizationId, byte[] apiKey);
+  Integer updateSendApiKey(Long organizationId, byte[] apiKey);
 
   @Modifying
   @Transactional
   @RestResource(exported = false)
   @Query("UPDATE Organization o SET o.generateNoticeApiKey = :apiKey WHERE o.id = :organizationId")
-  int updateGenerateNoticeApiKey(Long organizationId, byte[] apiKey);
+  Integer updateGenerateNoticeApiKey(Long organizationId, byte[] apiKey);
 
 }
