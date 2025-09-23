@@ -18,7 +18,7 @@ public interface OrgSilServiceViewRepository extends Repository<OrgSilServiceVie
     SELECT o
     FROM OrgSilServiceView o
     WHERE o.organizationId = :organizationId
-    AND (:applicationName IS NULL OR o.applicationName = :applicationName)
+    AND (:applicationName IS NULL OR o.applicationName ILIKE CONCAT('%', CAST(:applicationName AS text), '%'))
     AND (:serviceType IS NULL OR o.serviceType = :serviceType)
     AND (:flagLegacy IS NULL OR o.flagLegacy = :flagLegacy)
     """)
