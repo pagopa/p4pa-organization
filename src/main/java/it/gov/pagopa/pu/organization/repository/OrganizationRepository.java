@@ -7,6 +7,8 @@ import it.gov.pagopa.pu.organization.model.Organization;
 import jakarta.transaction.Transactional;
 import java.util.List;
 import java.util.Optional;
+import java.util.Set;
+
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.jpa.repository.JpaRepository;
@@ -35,11 +37,13 @@ public interface OrganizationRepository extends
     WHERE o.brokerId = :brokerId
     AND (:orgName is null OR o.orgName ILIKE CONCAT('%', cast(:orgName as text), '%'))
     AND (:ipaCode is null OR o.ipaCode = :ipaCode)
+    AND (:allowedOrganizationIds is null OR o.organizationId IN :allowedOrganizationIds)
    """)
   Page<Organization> findByBrokerIdAndFilters(
     @Parameter(required = true, schema = @Schema(type = "integer", format = "int64")) @Param("brokerId") Long brokerId,
     @Param("orgName") String orgName,
     @Param("ipaCode") String ipaCode,
+    @Param("allowedOrganizationIds") Set<Long> allowedOrganizationIds,
     Pageable pageable);
 
   @Query("SELECT o FROM Organization o WHERE o.brokerId = :brokerId AND " +
@@ -51,18 +55,18 @@ public interface OrganizationRepository extends
   @Transactional
   @RestResource(exported = false)
   @Query("UPDATE Organization o SET o.ioApiKey = :apiKey WHERE o.id = :organizationId")
-  int updateIoApiKey(Long organizationId, byte[] apiKey);
+  Integer updateIoApiKey(Long organizationId, byte[] apiKey);
 
   @Modifying
   @Transactional
   @RestResource(exported = false)
   @Query("UPDATE Organization o SET o.sendApiKey = :apiKey WHERE o.id = :organizationId")
-  int updateSendApiKey(Long organizationId, byte[] apiKey);
+  Integer updateSendApiKey(Long organizationId, byte[] apiKey);
 
   @Modifying
   @Transactional
   @RestResource(exported = false)
   @Query("UPDATE Organization o SET o.generateNoticeApiKey = :apiKey WHERE o.id = :organizationId")
-  int updateGenerateNoticeApiKey(Long organizationId, byte[] apiKey);
+  Integer updateGenerateNoticeApiKey(Long organizationId, byte[] apiKey);
 
 }
