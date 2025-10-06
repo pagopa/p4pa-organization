@@ -29,6 +29,11 @@ public interface OrganizationRepository extends
   List<Organization> findByBrokerIdAndStatus(Long brokerId,
     OrganizationStatus status);
 
+  Page<Organization> findPagedOrganizationsByBrokerIdAndStatus(
+    @Parameter(required = true, schema = @Schema(type = "integer", format = "int64")) @Param("brokerId") Long brokerId,
+    @Param("status")OrganizationStatus status,
+    Pageable pageable);
+
   Organization findByExternalOrganizationId(String externalOrganizationId);
 
   @Query("""
