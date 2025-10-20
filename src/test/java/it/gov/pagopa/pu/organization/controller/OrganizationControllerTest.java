@@ -67,6 +67,7 @@ class OrganizationControllerTest {
       .flagNotifyIo(false)
       .flagNotifyOutcomePush(false)
       .flagPaymentNotification(false)
+      .flagTreasury(true)
       .pdndEnabled(true)
       .build();
 

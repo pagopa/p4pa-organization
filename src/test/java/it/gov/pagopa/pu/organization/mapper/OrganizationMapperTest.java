@@ -68,6 +68,7 @@ class OrganizationMapperTest {
       .flagNotifyIo(false)
       .flagNotifyOutcomePush(false)
       .flagPaymentNotification(false)
+      .flagTreasury(true)
       .pdndEnabled(true)
       .build();
 
@@ -87,29 +88,31 @@ class OrganizationMapperTest {
 
     assertNotNull(result);
     TestUtils.checkNotNullFields(result, "organizationId", "creationDate", "updateDate", "updateOperatorExternalId", "updateTraceId");
-    assertEquals(dto.getExternalOrganizationId(), result.getExternalOrganizationId());
-    assertEquals(dto.getIpaCode(), result.getIpaCode());
-    assertEquals(dto.getOrgFiscalCode(), result.getOrgFiscalCode());
-    assertEquals(dto.getOrgName(), result.getOrgName());
-    assertEquals(dto.getOrgTypeCode(), result.getOrgTypeCode());
-    assertEquals(dto.getOrgEmail(), result.getOrgEmail());
-    assertEquals(dto.getPostalIban(), result.getPostalIban());
-    assertEquals(dto.getIban(), result.getIban());
-    assertEquals(expectedEncryptedPassword, result.getPassword());
-    assertEquals(dto.getSegregationCode(), result.getSegregationCode());
-    assertEquals(dto.getCbillInterBankCode(), result.getCbillInterBankCode());
-    assertEquals(dto.getOrgLogo(), result.getOrgLogo());
-    assertEquals(dto.getStatus(), result.getStatus());
-    assertEquals(dto.getAdditionalLanguage(), result.getAdditionalLanguage());
-    assertEquals(dto.getStartDate(), result.getStartDate());
-    assertEquals(dto.getBrokerId(), result.getBrokerId());
-    assertEquals(expectedEncryptedIoApiKey, result.getIoApiKey());
-    assertEquals(expectedEncryptedSendApiKey, result.getSendApiKey());
-    assertEquals(expectedEncryptedGenerateNoticeApiKey, result.getGenerateNoticeApiKey());
-    assertEquals(dto.getFlagNotifyIo(), result.isFlagNotifyIo());
-    assertEquals(dto.getFlagNotifyOutcomePush(), result.isFlagNotifyOutcomePush());
-    assertEquals(dto.getFlagPaymentNotification(), result.isFlagPaymentNotification());
-    assertEquals(dto.getPdndEnabled(), result.isPdndEnabled());
+
+    assertSame(dto.getExternalOrganizationId(), result.getExternalOrganizationId());
+    assertSame(dto.getIpaCode(), result.getIpaCode());
+    assertSame(dto.getOrgFiscalCode(), result.getOrgFiscalCode());
+    assertSame(dto.getOrgName(), result.getOrgName());
+    assertSame(dto.getOrgTypeCode(), result.getOrgTypeCode());
+    assertSame(dto.getOrgEmail(), result.getOrgEmail());
+    assertSame(dto.getPostalIban(), result.getPostalIban());
+    assertSame(dto.getIban(), result.getIban());
+    assertSame(expectedEncryptedPassword, result.getPassword());
+    assertSame(dto.getSegregationCode(), result.getSegregationCode());
+    assertSame(dto.getCbillInterBankCode(), result.getCbillInterBankCode());
+    assertSame(dto.getOrgLogo(), result.getOrgLogo());
+    assertSame(dto.getStatus(), result.getStatus());
+    assertSame(dto.getAdditionalLanguage(), result.getAdditionalLanguage());
+    assertSame(dto.getStartDate(), result.getStartDate());
+    assertSame(dto.getBrokerId(), result.getBrokerId());
+    assertSame(expectedEncryptedIoApiKey, result.getIoApiKey());
+    assertSame(expectedEncryptedSendApiKey, result.getSendApiKey());
+    assertSame(expectedEncryptedGenerateNoticeApiKey, result.getGenerateNoticeApiKey());
+    assertSame(dto.getFlagNotifyIo(), result.isFlagNotifyIo());
+    assertSame(dto.getFlagNotifyOutcomePush(), result.isFlagNotifyOutcomePush());
+    assertSame(dto.getFlagPaymentNotification(), result.isFlagPaymentNotification());
+    assertSame(dto.getPdndEnabled(), result.isPdndEnabled());
+    assertSame(dto.getFlagTreasury(), result.isFlagTreasury());
   }
 
   @Test

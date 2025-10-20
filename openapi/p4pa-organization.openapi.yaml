@@ -344,6 +344,7 @@ components:
         - flagNotifyIo
         - flagNotifyOutcomePush
         - flagPaymentNotification
+        - flagTreasury
         - pdndEnabled
       properties:
         externalOrganizationId:
@@ -391,6 +392,8 @@ components:
         flagNotifyOutcomePush:
           type: boolean
         flagPaymentNotification:
+          type: boolean
+        flagTreasury:
           type: boolean
         pdndEnabled:
           type: boolean
