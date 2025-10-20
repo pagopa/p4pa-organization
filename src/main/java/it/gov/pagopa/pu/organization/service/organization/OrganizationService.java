@@ -73,12 +73,14 @@ public class OrganizationService {
   }
 
   @Transactional
-  public void createOrganization(OrganizationCreateDTO organizationCreateDTO, String accessToken) {
+  public Organization createOrganization(OrganizationCreateDTO organizationCreateDTO, String accessToken) {
     validateOrganizationCreateDTO(organizationCreateDTO);
 
     Organization organization = organizationRepository.save(organizationMapper.toModel(organizationCreateDTO));
 
     debtPositionTypeOrgClient.createTechnicalDebtPositionTypeOrg(organization.getOrganizationId(), accessToken);
+
+    return organization;
   }
 
   public String getApiKey(Long organizationId, OrganizationApiKeyType keyType) {

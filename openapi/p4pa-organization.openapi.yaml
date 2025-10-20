@@ -22,6 +22,10 @@ paths:
       responses:
         '200':
           description: OK
+          content:
+            application/json:
+              schema:
+                type: 'Organization'
         '500':
           description: Internal Server Error
     put:

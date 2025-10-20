@@ -18,6 +18,8 @@ import it.gov.pagopa.pu.organization.service.broker.BrokerEncryptionService;
 import it.gov.pagopa.pu.organization.util.TestUtils;
 import it.gov.pagopa.pu.organization.util.faker.OrganizationFaker;
 import jakarta.validation.ValidationException;
+import org.junit.jupiter.api.AfterEach;
+import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
@@ -32,12 +34,14 @@ import java.util.Optional;
 
 import static it.gov.pagopa.pu.organization.util.faker.OrganizationFaker.buildOrganization;
 import static org.junit.jupiter.api.Assertions.*;
-import static org.mockito.Mockito.*;
+import static org.mockito.Mockito.verify;
+import static org.mockito.Mockito.when;
 
 @ExtendWith(MockitoExtension.class)
 class OrganizationServiceTest {
 
   public static final PodamFactory podamFactory = TestUtils.getPodamFactory();
+
   @Mock
   private OrganizationEncryptionService organizationEncryptionServiceMock;
   @Mock
@@ -61,6 +65,17 @@ class OrganizationServiceTest {
       debtPositionTypeOrgClientMock, true);
   }
 
+  @AfterEach
+  void verifyNoMoreInteractions(){
+    Mockito.verifyNoMoreInteractions(
+      organizationEncryptionServiceMock,
+      organizationRepositoryMock,
+      brokerRepositoryMock,
+      brokerEncryptionServiceMock,
+      organizationMapperMock,
+      debtPositionTypeOrgClientMock);
+  }
+
   @Test
   void givenCreateOrganizationThenSuccess() {
     String accessToken = TestUtils.getFakeAccessToken();
@@ -74,10 +89,10 @@ class OrganizationServiceTest {
     when(organizationMapperMock.toModel(dto)).thenReturn(organization);
     when(organizationRepositoryMock.save(organization)).thenReturn(organization);
 
-    service.createOrganization(dto, accessToken);
+    Organization result = service.createOrganization(dto, accessToken);
 
+    Assertions.assertSame(organization, result);
     verify(debtPositionTypeOrgClientMock).createTechnicalDebtPositionTypeOrg(organization.getOrganizationId(), accessToken);
-    verifyNoMoreInteractions(organizationRepositoryMock);
   }
 
   @Test
@@ -335,7 +350,6 @@ class OrganizationServiceTest {
     assertEquals(expectedDto.getOrganizationId(), result.getOrganizationId());
     verify(organizationRepositoryMock).findById(organizationId);
     verify(organizationMapperMock).mapToDTO(org);
-    verifyNoMoreInteractions(organizationRepositoryMock, organizationMapperMock);
   }
 
   @Test
@@ -347,8 +361,6 @@ class OrganizationServiceTest {
     assertThrows(ResourceNotFoundException.class, () -> service.getOrganization(organizationId));
 
     verify(organizationRepositoryMock).findById(organizationId);
-    verifyNoInteractions(organizationMapperMock);
-    verifyNoMoreInteractions(organizationRepositoryMock);
   }
 
   @Test
@@ -369,8 +381,6 @@ class OrganizationServiceTest {
     when(organizationRepositoryMock.save(organization)).thenReturn(organization);
 
     service.updateOrganization(organizationDetailDTO);
-
-    verifyNoMoreInteractions(organizationRepositoryMock);
   }
 
   @Test
@@ -391,8 +401,6 @@ class OrganizationServiceTest {
     when(organizationRepositoryMock.findById(organizationDetailDTO.getOrganizationId())).thenReturn(Optional.of(organization));
 
     assertThrows(ValidationException.class,()->service.updateOrganization(organizationDetailDTO));
-
-    verifyNoInteractions(organizationMapperMock);
   }
 
   @Test
@@ -411,8 +419,6 @@ class OrganizationServiceTest {
     when(organizationRepositoryMock.findById(organizationDetailDTO.getOrganizationId())).thenReturn(Optional.of(organization));
 
     assertThrows(ValidationException.class,()->service.updateOrganization(organizationDetailDTO));
-
-    verifyNoInteractions(organizationMapperMock);
   }
 
   @Test
@@ -421,7 +427,5 @@ class OrganizationServiceTest {
     when(organizationRepositoryMock.findById(organizationDetailDTO.getOrganizationId())).thenReturn(Optional.empty());
 
     assertThrows(ResourceNotFoundException.class,()->service.updateOrganization(organizationDetailDTO));
-
-    verifyNoInteractions(organizationMapperMock);
   }
 }

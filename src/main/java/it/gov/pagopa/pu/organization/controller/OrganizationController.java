@@ -5,6 +5,7 @@ import it.gov.pagopa.pu.organization.dto.OrganizationDetailDTO;
 import it.gov.pagopa.pu.organization.dto.generated.OrganizationApiKeyType;
 import it.gov.pagopa.pu.organization.dto.generated.OrganizationApiKeys;
 import it.gov.pagopa.pu.organization.dto.generated.OrganizationCreateDTO;
+import it.gov.pagopa.pu.organization.model.Organization;
 import it.gov.pagopa.pu.organization.service.organization.OrganizationService;
 import it.gov.pagopa.pu.organization.util.SecurityUtils;
 import lombok.extern.slf4j.Slf4j;
@@ -23,9 +24,8 @@ public class OrganizationController implements OrganizationApi {
   }
 
   @Override
-  public ResponseEntity<Void> createOrganization(OrganizationCreateDTO organizationCreateDTO) {
-    service.createOrganization(organizationCreateDTO, SecurityUtils.getAccessToken());
-    return new ResponseEntity<>(HttpStatus.OK);
+  public ResponseEntity<Organization> createOrganization(OrganizationCreateDTO organizationCreateDTO) {
+    return ResponseEntity.ok(service.createOrganization(organizationCreateDTO, SecurityUtils.getAccessToken()));
   }
 
   @Override
