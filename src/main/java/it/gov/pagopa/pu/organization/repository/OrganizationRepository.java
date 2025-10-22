@@ -4,6 +4,7 @@ import io.swagger.v3.oas.annotations.Parameter;
 import io.swagger.v3.oas.annotations.media.Schema;
 import it.gov.pagopa.pu.organization.enums.OrganizationStatus;
 import it.gov.pagopa.pu.organization.model.Organization;
+import jakarta.annotation.Nonnull;
 import jakarta.transaction.Transactional;
 import java.util.List;
 import java.util.Optional;
@@ -21,6 +22,11 @@ import org.springframework.data.rest.core.annotation.RestResource;
 @RepositoryRestResource(path = "organizations")
 public interface OrganizationRepository extends
   JpaRepository<Organization, Long> {
+
+  @RestResource(exported = false)
+  @Nonnull
+  @Override
+  <S extends Organization> S save(@Nonnull S entity);
 
   Optional<Organization> findByIpaCode(String ipaCode);
 
@@ -73,5 +79,4 @@ public interface OrganizationRepository extends
   @RestResource(exported = false)
   @Query("UPDATE Organization o SET o.generateNoticeApiKey = :apiKey WHERE o.id = :organizationId")
   Integer updateGenerateNoticeApiKey(Long organizationId, byte[] apiKey);
-
 }

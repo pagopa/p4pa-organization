@@ -1,6 +1,7 @@
 package it.gov.pagopa.pu.organization.service.organization;
 
 import it.gov.pagopa.pu.organization.connector.debtposition.client.DebtPositionTypeOrgClient;
+import it.gov.pagopa.pu.organization.dto.BaseOrganization;
 import it.gov.pagopa.pu.organization.dto.OrganizationDetailDTO;
 import it.gov.pagopa.pu.organization.dto.generated.BrokerApiKeyType;
 import it.gov.pagopa.pu.organization.dto.generated.OrganizationApiKeyType;
@@ -73,12 +74,14 @@ public class OrganizationService {
   }
 
   @Transactional
-  public void createOrganization(OrganizationCreateDTO organizationCreateDTO, String accessToken) {
+  public Organization createOrganization(OrganizationCreateDTO organizationCreateDTO, String accessToken) {
     validateOrganizationCreateDTO(organizationCreateDTO);
 
     Organization organization = organizationRepository.save(organizationMapper.toModel(organizationCreateDTO));
 
     debtPositionTypeOrgClient.createTechnicalDebtPositionTypeOrg(organization.getOrganizationId(), accessToken);
+
+    return organization;
   }
 
   public String getApiKey(Long organizationId, OrganizationApiKeyType keyType) {
@@ -144,7 +147,7 @@ public class OrganizationService {
     validateStatusUpdate(organization);
   }
 
-  private static void validateStatusUpdate(OrganizationDetailDTO organization) {
+  private static void validateStatusUpdate(BaseOrganization organization) {
     if(OrganizationStatus.ACTIVE.equals(organization.getStatus())){
       List<String> emptyOrNullFields = new ArrayList<>();
       checkBlankOrNullField("orgLogo", organization.getOrgLogo(),emptyOrNullFields);
@@ -167,5 +170,13 @@ public class OrganizationService {
     if(!CollectionUtils.isEmpty(modifiedFields)){
       throw new ValidationException("The following Organization fields are readOnly. "+modifiedFields);
     }
+  }
+
+  public void updateOrganizationStatus(Long organizationId, OrganizationStatus newStatus) {
+    Organization organization = organizationRepository.findById(organizationId)
+      .orElseThrow(()->new ResourceNotFoundException("Organization having id "+organizationId+" not found"));
+    organization.setStatus(newStatus);
+    validateStatusUpdate(organization);
+    organizationRepository.save(organization);
   }
 }

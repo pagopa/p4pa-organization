@@ -41,6 +41,7 @@ public class OrganizationMapper {
     organization.setFlagNotifyIo(createDTO.getFlagNotifyIo());
     organization.setFlagNotifyOutcomePush(createDTO.getFlagNotifyOutcomePush());
     organization.setFlagPaymentNotification(createDTO.getFlagPaymentNotification());
+    organization.setFlagTreasury(createDTO.getFlagTreasury());
     organization.setPdndEnabled(createDTO.getPdndEnabled());
 
     return organization;

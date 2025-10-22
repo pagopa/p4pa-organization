@@ -67,6 +67,7 @@ class OrganizationControllerTest {
       .flagNotifyIo(false)
       .flagNotifyOutcomePush(false)
       .flagPaymentNotification(false)
+      .flagTreasury(true)
       .pdndEnabled(true)
       .build();
 
@@ -144,7 +145,6 @@ class OrganizationControllerTest {
     verify(organizationServiceMock).getOrganization(1L);
   }
 
-
   @Test
   void whenUpdateOrganizationThenOk() throws Exception {
     TestUtils.setFakeAccessTokenInContext();
@@ -160,4 +160,23 @@ class OrganizationControllerTest {
 
     verify(organizationServiceMock).updateOrganization(organizationDetailDTO);
   }
+
+  @Test
+  void whenUpdateOrganizationStatusThenOk() throws Exception {
+    TestUtils.setFakeAccessTokenInContext();
+
+    Long organizationId = 1L;
+    OrganizationStatus newStatus = OrganizationStatus.ACTIVE;
+
+    mockMvc.perform(
+        put("/organization/{organizationId}/status/{newStatus}",
+          organizationId, newStatus
+          )
+          .contentType(MediaType.APPLICATION_JSON_VALUE))
+      .andExpect(status().isOk())
+      .andReturn();
+
+    verify(organizationServiceMock).updateOrganizationStatus(organizationId, newStatus);
+  }
+
 }

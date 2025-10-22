@@ -1,5 +1,6 @@
 package it.gov.pagopa.pu.organization.model;
 
+import it.gov.pagopa.pu.organization.dto.BaseOrganization;
 import it.gov.pagopa.pu.organization.enums.OrganizationStatus;
 import jakarta.persistence.*;
 import jakarta.validation.constraints.NotNull;
@@ -17,7 +18,7 @@ import java.time.LocalDate;
 @NoArgsConstructor
 @Data
 @EqualsAndHashCode(callSuper = false)
-public class Organization extends BaseEntity implements Serializable {
+public class Organization extends BaseEntity implements Serializable, BaseOrganization {
 
   @Id
   @GeneratedValue(strategy = GenerationType.SEQUENCE, generator = "organization_generator")

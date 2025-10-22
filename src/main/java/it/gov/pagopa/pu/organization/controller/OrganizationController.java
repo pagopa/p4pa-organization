@@ -5,6 +5,8 @@ import it.gov.pagopa.pu.organization.dto.OrganizationDetailDTO;
 import it.gov.pagopa.pu.organization.dto.generated.OrganizationApiKeyType;
 import it.gov.pagopa.pu.organization.dto.generated.OrganizationApiKeys;
 import it.gov.pagopa.pu.organization.dto.generated.OrganizationCreateDTO;
+import it.gov.pagopa.pu.organization.enums.OrganizationStatus;
+import it.gov.pagopa.pu.organization.model.Organization;
 import it.gov.pagopa.pu.organization.service.organization.OrganizationService;
 import it.gov.pagopa.pu.organization.util.SecurityUtils;
 import lombok.extern.slf4j.Slf4j;
@@ -23,19 +25,21 @@ public class OrganizationController implements OrganizationApi {
   }
 
   @Override
-  public ResponseEntity<Void> createOrganization(OrganizationCreateDTO organizationCreateDTO) {
-    service.createOrganization(organizationCreateDTO, SecurityUtils.getAccessToken());
-    return new ResponseEntity<>(HttpStatus.OK);
+  public ResponseEntity<Organization> createOrganization(OrganizationCreateDTO organizationCreateDTO) {
+    log.info("Requested organization creation with CF {} and ipaCode {}", organizationCreateDTO.getOrgFiscalCode(), organizationCreateDTO.getIpaCode());
+    return ResponseEntity.ok(service.createOrganization(organizationCreateDTO, SecurityUtils.getAccessToken()));
   }
 
   @Override
   public ResponseEntity<Void> encryptAndSaveApiKey(Long organizationId, OrganizationApiKeys organizationApiKeys) {
+    log.info("Updating organization {} api key {}", organizationId, organizationApiKeys.getKeyType());
     service.encryptAndSaveApiKey(organizationId, organizationApiKeys);
     return new ResponseEntity<>(HttpStatus.OK);
   }
 
   @Override
   public ResponseEntity<String> getOrganizationApiKey(Long organizationId, OrganizationApiKeyType keyType) {
+    log.info("Retrieving organization {} api key {}", organizationId, keyType);
     String apiKey = service.getApiKey(organizationId, keyType);
     return new ResponseEntity<>(
       apiKey,
@@ -46,12 +50,21 @@ public class OrganizationController implements OrganizationApi {
 
   @Override
   public ResponseEntity<OrganizationDetailDTO> getOrganization(Long organizationId) {
+    log.info("Retrieving organization {}", organizationId);
     return ResponseEntity.ok(service.getOrganization(organizationId));
   }
 
   @Override
   public ResponseEntity<Void> updateOrganization(OrganizationDetailDTO organizationDetailDTO) {
+    log.info("Updating organization {}", organizationDetailDTO.getOrganizationId());
     service.updateOrganization(organizationDetailDTO);
+    return ResponseEntity.ok().build();
+  }
+
+  @Override
+  public ResponseEntity<Void> updateOrganizationStatus(Long organizationId, OrganizationStatus newStatus) {
+    log.info("Updating status of organization {} to {}", organizationId, newStatus);
+    service.updateOrganizationStatus(organizationId, newStatus);
     return ResponseEntity.ok().build();
   }
 }
