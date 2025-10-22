@@ -428,4 +428,40 @@ class OrganizationServiceTest {
 
     assertThrows(ResourceNotFoundException.class,()->service.updateOrganization(organizationDetailDTO));
   }
+
+  @Test
+  void givenNonExistingOrganizationWhenUpdateOrganizationStatusThenResourceNotFoundException(){
+    Long organizationId = 1L;
+    OrganizationStatus newStatus = OrganizationStatus.ACTIVE;
+
+    when(organizationRepositoryMock.findById(organizationId)).thenReturn(Optional.empty());
+
+    assertThrows(ResourceNotFoundException.class,()->service.updateOrganizationStatus(organizationId, newStatus));
+  }
+
+  @Test
+  void givenStatusActiveAndNoMandatoryFieldWhenUpdateOrganizationStatusThenValidationException(){
+    Long organizationId = 1L;
+    OrganizationStatus newStatus = OrganizationStatus.ACTIVE;
+
+    Organization organization = new Organization();
+    when(organizationRepositoryMock.findById(organizationId)).thenReturn(Optional.of(organization));
+
+    assertThrows(ValidationException.class,()->service.updateOrganizationStatus(organizationId, newStatus));
+  }
+
+  @Test
+  void givenValidRequestWhenUpdateOrganizationStatusThenOk(){
+    Long organizationId = 1L;
+    OrganizationStatus newStatus = OrganizationStatus.ACTIVE;
+
+    Organization organization = podamFactory.manufacturePojo(Organization.class);
+    organization.setStatus(OrganizationStatus.DRAFT);
+    when(organizationRepositoryMock.findById(organizationId)).thenReturn(Optional.of(organization));
+
+    service.updateOrganizationStatus(organizationId, newStatus);
+
+    Mockito.verify(organizationRepositoryMock).save(Mockito.same(organization));
+    Assertions.assertEquals(newStatus, organization.getStatus());
+  }
 }
