@@ -6,6 +6,7 @@ import it.gov.pagopa.pu.organization.dto.generated.OrganizationErrorDTO.CodeEnum
 import it.gov.pagopa.pu.organization.exception.custom.InvalidValueException;
 import it.gov.pagopa.pu.organization.exception.custom.OrgSilServiceNotFoundException;
 import it.gov.pagopa.pu.organization.exception.custom.OrganizationNotFoundException;
+import it.gov.pagopa.pu.organization.util.Utilities;
 import jakarta.persistence.RollbackException;
 import jakarta.servlet.ServletException;
 import jakarta.servlet.http.HttpServletRequest;
@@ -94,7 +95,7 @@ public class OrganizationExceptionHandler {
     return ResponseEntity
       .status(httpStatus)
       .contentType(MediaType.APPLICATION_JSON)
-      .body(new OrganizationErrorDTO(errorEnum, message));
+      .body(new OrganizationErrorDTO(errorEnum, message, Utilities.getTraceId()));
   }
 
   private static void logException(Exception ex, HttpServletRequest request, HttpStatusCode httpStatus) {

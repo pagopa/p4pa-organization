@@ -449,6 +449,8 @@ components:
             - ORGANIZATION_GENERIC_ERROR
         message:
           type: string
+        traceId:
+          type: string
     OrgSilServiceDTO:
       type: object
       required:
