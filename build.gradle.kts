@@ -1,4 +1,6 @@
 import java.util.*
+import com.github.jk1.license.render.*
+import com.github.jk1.license.filter.*
 
 plugins {
   java
@@ -10,6 +12,7 @@ plugins {
   id("org.openapi.generator") version "7.15.0"
   id("org.ajoberstar.grgit") version "5.3.2"
   id("com.gorylenko.gradle-git-properties") version "2.5.3"
+  id("com.github.jk1.dependency-license-report") version "3.0.1"
 }
 
 group = "it.gov.pagopa.payhub"
@@ -26,6 +29,18 @@ configurations {
   compileOnly {
     extendsFrom(configurations.annotationProcessor.get())
   }
+  compileClasspath {
+    resolutionStrategy.activateDependencyLocking()
+  }
+}
+
+licenseReport {
+  renderers = arrayOf(XmlReportRenderer("third-party-libs.xml", "Back-End Libraries"))
+  outputDir = "$projectDir/dependency-licenses"
+  filters = arrayOf(SpdxLicenseBundleNormalizer())
+}
+tasks.classes {
+  finalizedBy(tasks.generateLicenseReport)
 }
 
 repositories {
@@ -40,6 +55,7 @@ val postgresJdbcVersion = "42.7.7"
 val bouncycastleVersion = "1.82"
 val httpClientVersion = "5.5"
 val podamVersion = "8.0.2.RELEASE"
+val commonsLang3Version = "3.19.0"
 
 dependencies {
   implementation("org.springframework.boot:spring-boot-starter")
@@ -50,7 +66,10 @@ dependencies {
   implementation("org.springframework.boot:spring-boot-starter-data-jpa")
   implementation("org.springframework.boot:spring-boot-starter-actuator")
   implementation("io.micrometer:micrometer-tracing-bridge-otel:$micrometerVersion")
-  implementation("org.springdoc:springdoc-openapi-starter-webmvc-ui:$springDocOpenApiVersion")
+  implementation("org.springdoc:springdoc-openapi-starter-webmvc-ui:$springDocOpenApiVersion") {
+    exclude(group = "org.apache.commons", module = "commons-lang3")
+  }
+  implementation("org.apache.commons:commons-lang3:${commonsLang3Version}")
   implementation("org.codehaus.janino:janino:${janinoVersion}")
   implementation("io.micrometer:micrometer-registry-prometheus")
   implementation("com.fasterxml.jackson.datatype:jackson-datatype-jsr310")
@@ -103,12 +122,6 @@ tasks {
     filesMatching("**/application.yml") {
       expand(projectInfo)
     }
-  }
-}
-
-configurations {
-  compileClasspath {
-    resolutionStrategy.activateDependencyLocking()
   }
 }
 
