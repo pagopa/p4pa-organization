@@ -62,6 +62,20 @@ public interface OrganizationRepository extends
   Page<Organization> findByBrokerIdAndOrgName(@Parameter(required = true) @Param("brokerId") Long brokerId,
     @Param("orgName") String orgName, Pageable pageable);
 
+  @Query("""
+    SELECT o
+    FROM Organization o
+    WHERE
+    o.brokerId = :brokerId
+    AND (:orgName is null OR o.orgName ILIKE CONCAT('%', cast(:orgName as text), '%'))
+    AND (:orgFiscalCode is null OR o.orgFiscalCode ILIKE CONCAT('%', cast(:orgFiscalCode as text), '%'))
+  """)
+  Page<Organization> findByBrokerIdAndOrgNameAndOrgFiscalCode(
+    @Parameter(required = true) @Param("brokerId") Long brokerId,
+    @Param("orgName") String orgName,
+    @Param("orgFiscalCode") String orgFiscalCode,
+    Pageable pageable);
+
   @Modifying
   @Transactional
   @RestResource(exported = false)
