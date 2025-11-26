@@ -13,12 +13,28 @@ import java.util.ArrayList;
 import java.util.List;
 
 import static org.junit.jupiter.api.Assertions.assertFalse;
+import static org.junit.jupiter.api.Assertions.assertTrue;
 
 public class UtilitiesTest {
 
   @Test
-  void testIbanInvalid(){
-    assertFalse(Utilities.isValidIban("test"));
+  void givenInvalidIbanWhenIsValidIbanThenReturnFalse() {
+    String iban = "test";
+    boolean result = Utilities.isValidIban(iban);
+    assertFalse(result);
+  }
+
+  @Test
+  void givenNullIbanWhenIsValidIbanThenReturnFalse() {
+    boolean result = Utilities.isValidIban(null);
+    assertFalse(result);
+  }
+
+  @Test
+  void givenValidIbanWhenIsValidIbanThenReturnTrue() {
+    String iban = "IT0000000000000000000000000";
+    boolean result = Utilities.isValidIban(iban);
+    assertTrue(result);
   }
 
   @ParameterizedTest
