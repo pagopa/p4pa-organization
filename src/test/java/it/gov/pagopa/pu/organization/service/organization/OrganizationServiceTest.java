@@ -341,6 +341,7 @@ class OrganizationServiceTest {
     organizationDetailDTO.setOrgFiscalCode("12345678903");
     organizationDetailDTO.setIban("IT60X0542811101000000123456");
     organizationDetailDTO.setPostalIban("IT60X0542811101000000123456");
+    organizationDetailDTO.setSegregationCode("02");
     Organization organization = OrganizationFaker.buildOrganization();
     organization.setBrokerId(organizationDetailDTO.getBrokerId());
     organization.setExternalOrganizationId(organizationDetailDTO.getExternalOrganizationId());
@@ -348,6 +349,7 @@ class OrganizationServiceTest {
     organization.setOrgFiscalCode(organizationDetailDTO.getOrgFiscalCode());
     organization.setOrgName(organizationDetailDTO.getOrgName());
     organization.setOrgTypeCode(organizationDetailDTO.getOrgTypeCode());
+    organization.setSegregationCode(organizationDetailDTO.getSegregationCode());
     when(organizationRepositoryMock.findById(organizationDetailDTO.getOrganizationId())).thenReturn(Optional.of(organization));
     when(organizationMapperMock.toModel(organizationDetailDTO)).thenReturn(organization);
     when(organizationRepositoryMock.save(organization)).thenReturn(organization);
@@ -381,12 +383,14 @@ class OrganizationServiceTest {
     organizationDetailDTO.setOrgFiscalCode("12345678903");
     organizationDetailDTO.setIban("IT60X0542811101000000123456");
     organizationDetailDTO.setPostalIban("IT60X0542811101000000123456");
+    organizationDetailDTO.setSegregationCode("01");
     Organization organization = OrganizationFaker.buildOrganization();
     organization.setBrokerId(organizationDetailDTO.getBrokerId());
     organization.setExternalOrganizationId(organizationDetailDTO.getExternalOrganizationId());
     organization.setIpaCode(organizationDetailDTO.getIpaCode());
     organization.setOrgFiscalCode(organizationDetailDTO.getOrgFiscalCode());
     organization.setOrgName(organizationDetailDTO.getOrgName());
+    organization.setSegregationCode(organizationDetailDTO.getSegregationCode());
     organization.setOrgTypeCode(organizationDetailDTO.getOrgTypeCode()+"old");
     when(organizationRepositoryMock.findById(organizationDetailDTO.getOrganizationId())).thenReturn(Optional.of(organization));
 

@@ -75,6 +75,6 @@ public class Utilities {
   }
 
   public static boolean isValidSegregationCode(String segregationCode) {
-    return StringUtils.isNotBlank(segregationCode) && segregationCode.matches(SEGREGATION_CODE_REGEX);
+    return segregationCode != null && segregationCode.matches(SEGREGATION_CODE_REGEX);
   }
 }

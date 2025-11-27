@@ -182,8 +182,10 @@ public class OrganizationService {
   }
 
   private void validateSegregationCode(OrganizationCreateDTO organizationCreateDTO) {
-    if (!isValidSegregationCode(organizationCreateDTO.getSegregationCode())) {
-      throw new InvalidValueException("Segregation code is not valid");
+    if (StringUtils.isNotBlank(organizationCreateDTO.getSegregationCode())) {
+      if (!isValidSegregationCode(organizationCreateDTO.getSegregationCode())) {
+        throw new InvalidValueException("Segregation code is not valid");
+      }
     }
   }
 }
