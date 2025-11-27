@@ -104,6 +104,7 @@ public class OrganizationService {
   }
 
   private void validateOrganizationCreateDTO(OrganizationCreateDTO organizationCreateDTO) {
+    validateSegregationCode(organizationCreateDTO);
     validateOrgFiscalCode(organizationCreateDTO);
     validateIban(organizationCreateDTO);
   }
@@ -178,5 +179,11 @@ public class OrganizationService {
     organization.setStatus(newStatus);
     validateStatusUpdate(organization);
     organizationRepository.save(organization);
+  }
+
+  private void validateSegregationCode(OrganizationCreateDTO organizationCreateDTO) {
+    if (!isValidSegregationCode(organizationCreateDTO.getSegregationCode())) {
+      throw new InvalidValueException("Segregation code is not valid");
+    }
   }
 }
