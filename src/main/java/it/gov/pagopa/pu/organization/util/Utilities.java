@@ -9,9 +9,12 @@ import java.util.Objects;
 import java.util.regex.Pattern;
 
 public class Utilities {
+
+
   private Utilities(){}
 
   public static final Pattern IBAN_PATTERN = Pattern.compile("^[A-Z]{2}\\d{2}[A-Z0-9]{23,30}$");
+  public static final String SEGREGATION_CODE_REGEX = "^\\d{2}$";
 
   public static String getTraceId(){
     return MDC.get("traceId");
@@ -69,5 +72,9 @@ public class Utilities {
     if(emptyOrNullField){
       modifiedFields.add(fieldName);
     }
+  }
+
+  public static boolean isValidSegregationCode(String segregationCode) {
+    return StringUtils.isNotBlank(segregationCode) && segregationCode.matches(SEGREGATION_CODE_REGEX);
   }
 }

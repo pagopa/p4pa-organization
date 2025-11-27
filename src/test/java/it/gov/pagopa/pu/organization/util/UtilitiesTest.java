@@ -3,6 +3,7 @@ package it.gov.pagopa.pu.organization.util;
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.params.ParameterizedTest;
+import org.junit.jupiter.params.provider.CsvSource;
 import org.junit.jupiter.params.provider.ValueSource;
 import org.slf4j.MDC;
 
@@ -130,5 +131,24 @@ public class UtilitiesTest {
     Utilities.checkBlankOrNullField("fieldName", null, result);
 
     Assertions.assertEquals(List.of("fieldName"), result);
+  }
+
+  @ParameterizedTest
+  @CsvSource(value = {
+      "12,true",
+      "01,true",
+      "00,true",
+      "9,false",
+      "123,false",
+      "abc,false",
+      "1a,false",
+      "a1,false",
+      " ,false",
+      "'  ',false",
+      "null,false"
+  }, nullValues = {"null"})
+  void testIsValidSegregationCode(String segregationCode, boolean expected) {
+      boolean result = Utilities.isValidSegregationCode(segregationCode);
+      Assertions.assertEquals(expected, result);
   }
 }
