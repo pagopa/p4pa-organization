@@ -1,6 +1,7 @@
 package it.gov.pagopa.pu.organization.model;
 
 import it.gov.pagopa.pu.organization.dto.BaseOrganization;
+import it.gov.pagopa.pu.organization.enums.OrganizationAdditionalLanguage;
 import it.gov.pagopa.pu.organization.enums.OrganizationStatus;
 import jakarta.persistence.*;
 import jakarta.validation.constraints.NotNull;
@@ -42,7 +43,8 @@ public class Organization extends BaseEntity implements Serializable, BaseOrgani
   @Enumerated(EnumType.STRING)
   @NotNull
   private OrganizationStatus status;
-  private String additionalLanguage;
+  @Enumerated(EnumType.STRING)
+  private OrganizationAdditionalLanguage additionalLanguage;
   private LocalDate startDate;
   private Long brokerId;
   private byte[] ioApiKey;

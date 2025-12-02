@@ -1,5 +1,6 @@
 package it.gov.pagopa.pu.organization.util.faker;
 
+import it.gov.pagopa.pu.organization.enums.OrganizationAdditionalLanguage;
 import it.gov.pagopa.pu.organization.enums.OrganizationStatus;
 import it.gov.pagopa.pu.organization.model.Organization;
 
@@ -21,7 +22,7 @@ public class OrganizationFaker {
     organization.setCbillInterBankCode("XX");
     organization.setOrgLogo("orgLogo");
     organization.setStatus(OrganizationStatus.ACTIVE);
-    organization.setAdditionalLanguage("EN");
+    organization.setAdditionalLanguage(OrganizationAdditionalLanguage.FR);
     organization.setStartDate(LocalDate.now());
     organization.setBrokerId(1L);
     organization.setIoApiKey(new byte[]{1,2,3});
