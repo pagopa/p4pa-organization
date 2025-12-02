@@ -5,6 +5,7 @@ import it.gov.pagopa.pu.organization.dto.OrganizationDetailDTO;
 import it.gov.pagopa.pu.organization.dto.generated.OrganizationApiKeyType;
 import it.gov.pagopa.pu.organization.dto.generated.OrganizationApiKeys;
 import it.gov.pagopa.pu.organization.dto.generated.OrganizationCreateDTO;
+import it.gov.pagopa.pu.organization.enums.OrganizationAdditionalLanguage;
 import it.gov.pagopa.pu.organization.enums.OrganizationStatus;
 import it.gov.pagopa.pu.organization.service.organization.OrganizationService;
 import it.gov.pagopa.pu.organization.util.TestUtils;
@@ -58,7 +59,7 @@ class OrganizationControllerTest {
       .cbillInterBankCode("cbillInterBankCode")
       .orgLogo("orgLogo")
       .status(OrganizationStatus.DRAFT)
-      .additionalLanguage("additionalLanguage")
+      .additionalLanguage(OrganizationAdditionalLanguage.DE)
       .startDate(LocalDate.now())
       .brokerId(1L)
       .ioApiKey("ioApiKey")
