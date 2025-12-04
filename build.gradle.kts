@@ -166,7 +166,8 @@ tasks.register<org.openapitools.generator.gradle.plugin.tasks.GenerateTask>("ope
     "OrgSilServiceType" to "it.gov.pagopa.pu.organization.enums.OrgSilServiceType",
     "SilServiceAuthConfigDTO" to "it.gov.pagopa.pu.organization.dto.orgsilservice.SilServiceAuthConfigDTO",
     "OrganizationDetailDTO" to "it.gov.pagopa.pu.organization.dto.OrganizationDetailDTO",
-    "Organization" to "it.gov.pagopa.pu.organization.model.Organization"
+    "Organization" to "it.gov.pagopa.pu.organization.model.Organization",
+    "OrganizationAdditionalLanguage" to "it.gov.pagopa.pu.organization.enums.OrganizationAdditionalLanguage"
   ))
   configOptions.set(mapOf(
     "dateLibrary" to "java8",

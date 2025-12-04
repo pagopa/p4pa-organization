@@ -405,7 +405,7 @@ components:
         status:
           type: 'OrganizationStatus'
         additionalLanguage:
-          type: string
+          type: 'OrganizationAdditionalLanguage'
         startDate:
           type: string
           format: date

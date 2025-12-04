@@ -6,11 +6,15 @@ import org.slf4j.MDC;
 import java.time.OffsetDateTime;
 import java.util.List;
 import java.util.Objects;
+import java.util.regex.Pattern;
 
 public class Utilities {
+
+
   private Utilities(){}
 
-  public static final int IBAN_LENGTH = 27;
+  public static final Pattern IBAN_PATTERN = Pattern.compile("^[A-Z]{2}\\d{2}[A-Z0-9]{23,30}$");
+  public static final String SEGREGATION_CODE_REGEX = "^\\d{2}$";
 
   public static String getTraceId(){
     return MDC.get("traceId");
@@ -44,7 +48,7 @@ public class Utilities {
   }
 
   public static boolean isValidIban(String iban) {
-    return iban != null && iban.length() == IBAN_LENGTH;
+    return iban != null && IBAN_PATTERN.matcher(iban).matches();
   }
 
   public static <T> void checkImmutableField(String fieldName, T original, T updated, List<String> modifiedFields){
@@ -68,5 +72,9 @@ public class Utilities {
     if(emptyOrNullField){
       modifiedFields.add(fieldName);
     }
+  }
+
+  public static boolean isValidSegregationCode(String segregationCode) {
+    return segregationCode != null && segregationCode.matches(SEGREGATION_CODE_REGEX);
   }
 }

@@ -2,6 +2,7 @@ package it.gov.pagopa.pu.organization.mapper;
 
 import it.gov.pagopa.pu.organization.dto.OrganizationDetailDTO;
 import it.gov.pagopa.pu.organization.dto.generated.OrganizationCreateDTO;
+import it.gov.pagopa.pu.organization.enums.OrganizationAdditionalLanguage;
 import it.gov.pagopa.pu.organization.enums.OrganizationStatus;
 import it.gov.pagopa.pu.organization.model.Organization;
 import it.gov.pagopa.pu.organization.service.organization.OrganizationEncryptionService;
@@ -59,7 +60,7 @@ class OrganizationMapperTest {
       .cbillInterBankCode("cbillInterBankCode")
       .orgLogo("orgLogo")
       .status(OrganizationStatus.DRAFT)
-      .additionalLanguage("additionalLanguage")
+      .additionalLanguage(OrganizationAdditionalLanguage.EN)
       .startDate(LocalDate.now())
       .brokerId(1L)
       .ioApiKey("ioApiKey")
@@ -136,7 +137,7 @@ class OrganizationMapperTest {
     org.setCbillInterBankCode("cbillInterBankCode");
     org.setOrgLogo("orgLogo");
     org.setStatus(OrganizationStatus.DRAFT);
-    org.setAdditionalLanguage("additionalLanguage");
+    org.setAdditionalLanguage(OrganizationAdditionalLanguage.EN);
     org.setStartDate(LocalDate.now());
     org.setFlagNotifyIo(true);
     org.setFlagNotifyOutcomePush(false);
