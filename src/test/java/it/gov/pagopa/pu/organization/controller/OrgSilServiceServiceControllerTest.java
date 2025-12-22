@@ -83,7 +83,7 @@ class OrgSilServiceServiceControllerTest {
     orgSilServiceDTO.setOrganizationId(1L);
     orgSilServiceDTO.setServiceType(OrgSilServiceType.ACTUALIZATION);
     orgSilServiceDTO.setFlagLegacy(true);
-    orgSilServiceDTO.setAuthConfig(new SilServiceLegacyBasicAuthConfigDTO());
+    orgSilServiceDTO.setAuthConfig(new SilServiceLegacyBasicAuthConfigDTO("authUrl", "user", "psw"));
     orgSilServiceDTO.setServiceUrl("http://localhost:8080/organization-sil-service/1");
 
     when(orgSilServiceServiceMock.createOrUpdate(any(OrgSilServiceDTO.class)))
