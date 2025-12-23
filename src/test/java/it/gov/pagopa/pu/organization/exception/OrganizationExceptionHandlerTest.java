@@ -7,6 +7,7 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 import it.gov.pagopa.pu.organization.config.json.JsonConfig;
 import it.gov.pagopa.pu.organization.dto.generated.OrganizationErrorDTO.CodeEnum;
 import it.gov.pagopa.pu.organization.exception.custom.InvalidValueException;
+import it.gov.pagopa.pu.organization.util.TestUtils;
 import it.gov.pagopa.pu.organization.util.UtilitiesTest;
 import jakarta.persistence.RollbackException;
 import jakarta.servlet.ServletException;
@@ -78,6 +79,11 @@ class OrganizationExceptionHandlerTest {
     String testEndpoint(@RequestParam(DATA) String data, @Valid @RequestBody TestRequestBody body) {
       return "OK";
     }
+  }
+
+  @BeforeEach
+  void init() {
+    TestUtils.clearDefaultTimezone();
   }
 
   @Data
