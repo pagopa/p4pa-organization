@@ -1,6 +1,5 @@
 package it.gov.pagopa.pu.organization.controller;
 
-import com.fasterxml.jackson.databind.ObjectMapper;
 import it.gov.pagopa.pu.organization.dto.OrganizationDetailDTO;
 import it.gov.pagopa.pu.organization.dto.generated.OrganizationApiKeyType;
 import it.gov.pagopa.pu.organization.dto.generated.OrganizationApiKeys;
@@ -12,12 +11,13 @@ import it.gov.pagopa.pu.organization.util.TestUtils;
 import org.junit.jupiter.api.Test;
 import org.mockito.Mockito;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.boot.test.autoconfigure.web.servlet.AutoConfigureMockMvc;
-import org.springframework.boot.test.autoconfigure.web.servlet.WebMvcTest;
+import org.springframework.boot.webmvc.test.autoconfigure.AutoConfigureMockMvc;
+import org.springframework.boot.webmvc.test.autoconfigure.WebMvcTest;
 import org.springframework.http.MediaType;
 import org.springframework.test.context.bean.override.mockito.MockitoBean;
 import org.springframework.test.web.servlet.MockMvc;
 import org.springframework.test.web.servlet.MvcResult;
+import tools.jackson.databind.json.JsonMapper;
 import uk.co.jemos.podam.api.PodamFactory;
 
 import java.time.LocalDate;
@@ -36,7 +36,7 @@ class OrganizationControllerTest {
   private MockMvc mockMvc;
 
   @Autowired
-  private ObjectMapper objectMapper;
+  private JsonMapper jsonMapper;
 
   @MockitoBean
   private OrganizationService organizationServiceMock;
@@ -75,7 +75,7 @@ class OrganizationControllerTest {
     mockMvc.perform(
         post("/organization")
           .contentType(MediaType.APPLICATION_JSON_VALUE)
-          .content(objectMapper.writeValueAsString(organizationCreateDTO)))
+          .content(jsonMapper.writeValueAsString(organizationCreateDTO)))
       .andExpect(status().isOk())
       .andReturn();
 
@@ -90,7 +90,7 @@ class OrganizationControllerTest {
     mockMvc.perform(
         put("/organization/1/apiKey")
           .contentType(MediaType.APPLICATION_JSON_VALUE)
-          .content(objectMapper.writeValueAsString(organizationApiKeys)))
+          .content(jsonMapper.writeValueAsString(organizationApiKeys)))
       .andExpect(status().isOk())
       .andReturn();
 
@@ -137,7 +137,7 @@ class OrganizationControllerTest {
       .andReturn();
 
     String responseBody = result.getResponse().getContentAsString();
-    OrganizationDetailDTO responseDto = objectMapper.readValue(responseBody, OrganizationDetailDTO.class);
+    OrganizationDetailDTO responseDto = jsonMapper.readValue(responseBody, OrganizationDetailDTO.class);
 
     assertEquals(dto.getOrganizationId(), responseDto.getOrganizationId());
     assertEquals(dto.getOrgName(), responseDto.getOrgName());
@@ -155,7 +155,7 @@ class OrganizationControllerTest {
     mockMvc.perform(
                     put("/organization")
                             .contentType(MediaType.APPLICATION_JSON_VALUE)
-                            .content(objectMapper.writeValueAsString(organizationDetailDTO)))
+                            .content(jsonMapper.writeValueAsString(organizationDetailDTO)))
             .andExpect(status().isOk())
             .andReturn();
 

@@ -1,19 +1,19 @@
 package it.gov.pagopa.pu.organization.controller;
 
-import com.fasterxml.jackson.databind.ObjectMapper;
 import it.gov.pagopa.pu.organization.dto.generated.OrgSilServiceDTO;
-import it.gov.pagopa.pu.organization.enums.OrgSilServiceType;
 import it.gov.pagopa.pu.organization.dto.orgsilservice.SilServiceLegacyBasicAuthConfigDTO;
+import it.gov.pagopa.pu.organization.enums.OrgSilServiceType;
 import it.gov.pagopa.pu.organization.service.organization.OrgSilServiceService;
 import org.junit.jupiter.api.Test;
 import org.mockito.ArgumentCaptor;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.boot.test.autoconfigure.web.servlet.AutoConfigureMockMvc;
-import org.springframework.boot.test.autoconfigure.web.servlet.WebMvcTest;
+import org.springframework.boot.webmvc.test.autoconfigure.AutoConfigureMockMvc;
+import org.springframework.boot.webmvc.test.autoconfigure.WebMvcTest;
 import org.springframework.data.rest.webmvc.ResourceNotFoundException;
 import org.springframework.http.MediaType;
 import org.springframework.test.context.bean.override.mockito.MockitoBean;
 import org.springframework.test.web.servlet.MockMvc;
+import tools.jackson.databind.json.JsonMapper;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.mockito.ArgumentMatchers.any;
@@ -31,7 +31,7 @@ class OrgSilServiceServiceControllerTest {
   private MockMvc mockMvc;
 
   @Autowired
-  private ObjectMapper objectMapper;
+  private JsonMapper jsonMapper;
 
   @MockitoBean
   private OrgSilServiceService orgSilServiceServiceMock;
@@ -83,7 +83,7 @@ class OrgSilServiceServiceControllerTest {
     orgSilServiceDTO.setOrganizationId(1L);
     orgSilServiceDTO.setServiceType(OrgSilServiceType.ACTUALIZATION);
     orgSilServiceDTO.setFlagLegacy(true);
-    orgSilServiceDTO.setAuthConfig(new SilServiceLegacyBasicAuthConfigDTO());
+    orgSilServiceDTO.setAuthConfig(new SilServiceLegacyBasicAuthConfigDTO("authUrl", "user", "psw"));
     orgSilServiceDTO.setServiceUrl("http://localhost:8080/organization-sil-service/1");
 
     when(orgSilServiceServiceMock.createOrUpdate(any(OrgSilServiceDTO.class)))
@@ -93,7 +93,7 @@ class OrgSilServiceServiceControllerTest {
     mockMvc.perform(
         post("/organization-sil-service")
           .contentType(MediaType.APPLICATION_JSON_VALUE)
-          .content(objectMapper.writeValueAsString(orgSilServiceDTO)))
+          .content(jsonMapper.writeValueAsString(orgSilServiceDTO)))
       .andExpect(status().isOk())
       .andReturn();
 
