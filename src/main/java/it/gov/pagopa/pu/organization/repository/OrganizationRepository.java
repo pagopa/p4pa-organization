@@ -48,7 +48,7 @@ public interface OrganizationRepository extends
     WHERE o.brokerId = :brokerId
     AND (:orgName is null OR o.orgName ILIKE CONCAT('%', cast(:orgName as text), '%'))
     AND (:ipaCode is null OR o.ipaCode = :ipaCode)
-    AND (:orgFiscalCode is null OR o.orgFiscalCode ILIKE CONCAT('%', cast(:orgFiscalCode as text), '%'))
+    AND (:orgFiscalCode is null OR o.orgFiscalCode = :orgFiscalCode)
     AND (:allowedOrganizationIds is null OR o.organizationId IN :allowedOrganizationIds)
    """)
   Page<Organization> findByBrokerIdAndFilters(
