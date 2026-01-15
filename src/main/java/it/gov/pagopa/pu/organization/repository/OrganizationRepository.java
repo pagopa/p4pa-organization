@@ -48,12 +48,14 @@ public interface OrganizationRepository extends
     WHERE o.brokerId = :brokerId
     AND (:orgName is null OR o.orgName ILIKE CONCAT('%', cast(:orgName as text), '%'))
     AND (:ipaCode is null OR o.ipaCode = :ipaCode)
+    AND (:orgFiscalCode is null OR o.orgFiscalCode = :orgFiscalCode)
     AND (:allowedOrganizationIds is null OR o.organizationId IN :allowedOrganizationIds)
    """)
   Page<Organization> findByBrokerIdAndFilters(
     @Parameter(required = true, schema = @Schema(type = "integer", format = "int64")) @Param("brokerId") Long brokerId,
     @Param("orgName") String orgName,
     @Param("ipaCode") String ipaCode,
+    @Param("orgFiscalCode") String orgFiscalCode,
     @Param("allowedOrganizationIds") Set<Long> allowedOrganizationIds,
     Pageable pageable);
 
