@@ -41,6 +41,8 @@ public class OrganizationService {
 
   private final boolean isOrgPIvaCheckEnabled;
 
+  private static final String ORGANIZATION_NOT_FOUND_MSG = "[ORGANIZATION_NOT_FOUND] Organization with id %s not found";
+
   public OrganizationService(
     OrganizationEncryptionService organizationEncryptionService,
     BrokerEncryptionService brokerEncryptionService,
@@ -69,7 +71,7 @@ public class OrganizationService {
     };
 
     if (updatedRows == 0) {
-      throw new OrganizationNotFoundException("[ORGANIZATION_NOT_FOUND] Organization with id %s not found".formatted(organizationId));
+      throw new OrganizationNotFoundException(ORGANIZATION_NOT_FOUND_MSG.formatted(organizationId));
     }
   }
 
@@ -86,7 +88,7 @@ public class OrganizationService {
 
   public String getApiKey(Long organizationId, OrganizationApiKeyType keyType) {
     Organization organization = organizationRepository.findById(organizationId)
-      .orElseThrow(() -> new ResourceNotFoundException("[ORGANIZATION_NOT_FOUND] Organization with id %s not found".formatted(organizationId)));
+      .orElseThrow(() -> new ResourceNotFoundException(ORGANIZATION_NOT_FOUND_MSG.formatted(organizationId)));
 
     return switch (keyType) {
       case IO -> organization.isFlagNotifyIo() ? organizationEncryptionService.decryptKey(organization.getIoApiKey()) : null;
@@ -129,7 +131,7 @@ public class OrganizationService {
 
   public OrganizationDetailDTO getOrganization(Long organizationId) {
     Organization org = organizationRepository.findById(organizationId)
-      .orElseThrow(() -> new ResourceNotFoundException("[ORGANIZATION_NOT_FOUND] Organization with id %s not found".formatted(organizationId)));
+      .orElseThrow(() -> new ResourceNotFoundException(ORGANIZATION_NOT_FOUND_MSG.formatted(organizationId)));
 
     return organizationMapper.mapToDTO(org);
   }
@@ -138,7 +140,7 @@ public class OrganizationService {
   public void updateOrganization(OrganizationDetailDTO organization) {
     Long organizationId = organization.getOrganizationId();
     Organization existingOrganization = organizationRepository.findById(organizationId)
-            .orElseThrow(()->new ResourceNotFoundException("[ORGANIZATION_NOT_FOUND] Organization with id %s not found".formatted(organizationId)));
+            .orElseThrow(()->new ResourceNotFoundException(ORGANIZATION_NOT_FOUND_MSG.formatted(organizationId)));
     validateOrganizationDTO(organization, existingOrganization);
     organizationRepository.save(organizationMapper.toModel( organization));
   }
@@ -176,7 +178,7 @@ public class OrganizationService {
 
   public void updateOrganizationStatus(Long organizationId, OrganizationStatus newStatus) {
     Organization organization = organizationRepository.findById(organizationId)
-      .orElseThrow(()->new ResourceNotFoundException("[ORGANIZATION_NOT_FOUND] Organization with id %s not found".formatted(organizationId)));
+      .orElseThrow(()->new ResourceNotFoundException(ORGANIZATION_NOT_FOUND_MSG.formatted(organizationId)));
     organization.setStatus(newStatus);
     validateStatusUpdate(organization);
     organizationRepository.save(organization);
