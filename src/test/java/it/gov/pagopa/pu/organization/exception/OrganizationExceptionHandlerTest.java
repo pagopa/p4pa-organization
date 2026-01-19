@@ -22,6 +22,7 @@ import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.apache.hc.client5.http.HttpHostConnectException;
 import org.hibernate.validator.internal.engine.ConstraintViolationImpl;
 import org.hibernate.validator.internal.engine.path.PathImpl;
 import org.junit.jupiter.api.AfterEach;
@@ -43,18 +44,16 @@ import org.springframework.test.web.servlet.request.MockHttpServletRequestBuilde
 import org.springframework.test.web.servlet.request.MockMvcRequestBuilders;
 import org.springframework.test.web.servlet.result.MockMvcResultMatchers;
 import org.springframework.transaction.TransactionSystemException;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.RequestBody;
-import org.springframework.web.bind.annotation.RequestParam;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
 import org.springframework.web.server.ServerErrorException;
 import org.springframework.web.servlet.mvc.method.annotation.RequestMappingHandlerAdapter;
 
 @ExtendWith({SpringExtension.class})
-@WebMvcTest(value = {OrganizationExceptionHandlerTest.TestController.class})
+@WebMvcTest(value = {OrganizationExceptionHandlerTest.TestController.class, OrganizationExceptionHandlerTest.TestCrudController.class})
 @AutoConfigureMockMvc(addFilters = false)
 @ContextConfiguration(classes = {
   OrganizationExceptionHandlerTest.TestController.class,
+  OrganizationExceptionHandlerTest.TestCrudController.class,
   OrganizationExceptionHandler.class,
   JsonConfig.class})
 class OrganizationExceptionHandlerTest {
@@ -70,6 +69,8 @@ class OrganizationExceptionHandlerTest {
   @MockitoSpyBean
   private TestController testControllerSpy;
   @MockitoSpyBean
+  private TestCrudController testCrudControllerSpy;
+  @MockitoSpyBean
   private RequestMappingHandlerAdapter requestMappingHandlerAdapterSpy;
 
   @RestController
@@ -84,6 +85,15 @@ class OrganizationExceptionHandlerTest {
   @BeforeEach
   void init() {
     TestUtils.clearDefaultTimezone();
+  }
+
+  @RestController
+  @Slf4j
+  static class TestCrudController {
+    @GetMapping(value = "/crud/brokers/{id}", produces = MediaType.APPLICATION_JSON_VALUE)
+    String testCrudEndpoint(@PathVariable("id") Long id) {
+      return "OK";
+    }
   }
 
   @Data
@@ -271,6 +281,17 @@ class OrganizationExceptionHandlerTest {
   }
 
   @Test
+  void handleHttpHostConnectionExceptionException() throws Exception {
+    doThrow(new RuntimeException("connection refused", new HttpHostConnectException("error"))).when(testControllerSpy).testEndpoint(DATA, BODY);
+
+    performRequest(DATA, MediaType.APPLICATION_JSON)
+      .andExpect(MockMvcResultMatchers.status().isInternalServerError())
+      .andExpect(MockMvcResultMatchers.jsonPath("$.code").value("ORGANIZATION_GENERIC_ERROR"))
+      .andExpect(MockMvcResultMatchers.jsonPath("$.message").value("[ORGANIZATION_CONNECTION_ERROR] connection refused"))
+      .andExpect(MockMvcResultMatchers.jsonPath("$.traceId").value(traceId));
+  }
+
+  @Test
   void handleTransactionException_invalidData() throws Exception {
     doThrow(new TransactionSystemException("TransactionError", new RollbackException("rollbackException", constraintViolationException)))
       .when(testControllerSpy).testEndpoint(DATA, BODY);
@@ -291,6 +312,18 @@ class OrganizationExceptionHandlerTest {
       .andExpect(MockMvcResultMatchers.status().isInternalServerError())
       .andExpect(MockMvcResultMatchers.jsonPath("$.code").value("ORGANIZATION_GENERIC_ERROR"))
       .andExpect(MockMvcResultMatchers.jsonPath("$.message").value("TransactionError"))
+      .andExpect(MockMvcResultMatchers.jsonPath("$.traceId").value(traceId));
+  }
+
+  @Test
+  void handleCrudResourceNotFoundException() throws Exception {
+    Long id = -12L;
+    doThrow(new ResourceNotFoundException()).when(testCrudControllerSpy).testCrudEndpoint(id);
+
+    mockMvc.perform(MockMvcRequestBuilders.get("/crud/brokers/-12"))
+      .andExpect(MockMvcResultMatchers.status().isNotFound())
+      .andExpect(MockMvcResultMatchers.jsonPath("$.code").value("ORGANIZATION_NOT_FOUND"))
+      .andExpect(MockMvcResultMatchers.jsonPath("$.message").value("[BROKER_NOT_FOUND] EntityRepresentationModel not found"))
       .andExpect(MockMvcResultMatchers.jsonPath("$.traceId").value(traceId));
   }
 
