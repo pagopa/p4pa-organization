@@ -1,7 +1,6 @@
 package it.gov.pagopa.pu.organization.exception;
 
 import it.gov.pagopa.pu.organization.dto.generated.OrganizationErrorDTO;
-import it.gov.pagopa.pu.organization.dto.generated.OrganizationErrorDTO.CodeEnum;
 import it.gov.pagopa.pu.organization.exception.custom.InvalidValueException;
 import it.gov.pagopa.pu.organization.exception.custom.OrgSilServiceNotFoundException;
 import it.gov.pagopa.pu.organization.exception.custom.OrganizationNotFoundException;
@@ -12,6 +11,7 @@ import jakarta.servlet.http.HttpServletRequest;
 import jakarta.validation.ConstraintViolationException;
 import jakarta.validation.ValidationException;
 import lombok.extern.slf4j.Slf4j;
+import org.apache.hc.client5.http.HttpHostConnectException;
 import org.slf4j.event.Level;
 import org.springframework.core.Ordered;
 import org.springframework.core.annotation.Order;
@@ -33,16 +33,18 @@ import org.springframework.web.method.annotation.MethodArgumentTypeMismatchExcep
 import tools.jackson.core.JacksonException;
 import tools.jackson.databind.DatabindException;
 
+import java.util.Optional;
 import java.util.stream.Collectors;
 
 @RestControllerAdvice
 @Slf4j
 @Order(Ordered.HIGHEST_PRECEDENCE)
 public class OrganizationExceptionHandler {
+  private static final String ERROR_MESSAGE_FORMAT = "[%s] %s";
 
   @ExceptionHandler({InvalidValueException.class})
   public ResponseEntity<OrganizationErrorDTO> handleInvalidValueException(RuntimeException ex, HttpServletRequest request){
-    return handleException(ex, request, HttpStatus.BAD_REQUEST, CodeEnum.ORGANIZATION_BAD_REQUEST);
+    return handleException(ex, request, HttpStatus.BAD_REQUEST, OrganizationErrorDTO.CodeEnum.ORGANIZATION_BAD_REQUEST);
   }
 
   @ExceptionHandler({ResourceNotFoundException.class, OrganizationNotFoundException.class, OrgSilServiceNotFoundException.class})
@@ -62,10 +64,10 @@ public class OrganizationExceptionHandler {
 
   @ExceptionHandler({ServletException.class, ErrorResponseException.class})
   public ResponseEntity<OrganizationErrorDTO> handleServletException(Exception ex, HttpServletRequest request) {
-    HttpStatusCode httpStatus = HttpStatus.INTERNAL_SERVER_ERROR;
+    HttpStatus httpStatus = HttpStatus.INTERNAL_SERVER_ERROR;
     OrganizationErrorDTO.CodeEnum errorCode = OrganizationErrorDTO.CodeEnum.ORGANIZATION_GENERIC_ERROR;
     if (ex instanceof ErrorResponse errorResponse) {
-      httpStatus = errorResponse.getStatusCode();
+      httpStatus = HttpStatus.valueOf((errorResponse.getStatusCode().value()));
       if (httpStatus.isSameCodeAs(HttpStatus.NOT_FOUND)) {
         errorCode = OrganizationErrorDTO.CodeEnum.ORGANIZATION_NOT_FOUND;
       } else if (httpStatus.is4xxClientError()) {
@@ -89,10 +91,13 @@ public class OrganizationExceptionHandler {
     return handleException(ex, request, HttpStatus.INTERNAL_SERVER_ERROR, OrganizationErrorDTO.CodeEnum.ORGANIZATION_GENERIC_ERROR);
   }
 
-  static ResponseEntity<OrganizationErrorDTO> handleException(Exception ex, HttpServletRequest request, HttpStatusCode httpStatus, OrganizationErrorDTO.CodeEnum errorEnum) {
+  static ResponseEntity<OrganizationErrorDTO> handleException(Exception ex, HttpServletRequest request, HttpStatus httpStatus, OrganizationErrorDTO.CodeEnum errorEnum) {
     logException(ex, request, httpStatus);
 
-    String message = buildReturnedMessage(ex);
+    String message = Optional.of(request.getRequestURI())
+      .filter(path -> path.contains("/crud/"))
+      .map(path -> buildCrudErrorMessage(path, httpStatus, ex))
+      .orElseGet(() -> buildReturnedMessage(ex));
 
     return ResponseEntity
       .status(httpStatus)
@@ -120,36 +125,49 @@ public class OrganizationExceptionHandler {
     switch (ex) {
       case HttpMessageNotReadableException httpMessageNotReadableException -> {
         if (httpMessageNotReadableException.getCause() instanceof DatabindException jsonMappingException) {
-          return "Cannot parse body. " +
+          return String.format(ERROR_MESSAGE_FORMAT, OrganizationErrorDTO.CodeEnum.ORGANIZATION_BAD_REQUEST.name(),
+            "Cannot parse body. " +
             jsonMappingException.getPath().stream()
               .map(JacksonException.Reference::getPropertyName)
               .collect(Collectors.joining(".")) +
-            ": " + jsonMappingException.getOriginalMessage();
+            ": " + jsonMappingException.getOriginalMessage());
         }
-        return "Required request body is missing";
+        return String.format(ERROR_MESSAGE_FORMAT, OrganizationErrorDTO.CodeEnum.ORGANIZATION_BAD_REQUEST.name(), "Required request body is missing");
       }
       case MethodArgumentNotValidException methodArgumentNotValidException -> {
-        return "Invalid request content." +
+        return String.format(ERROR_MESSAGE_FORMAT, OrganizationErrorDTO.CodeEnum.ORGANIZATION_BAD_REQUEST.name(),
+          "Invalid request content." +
           methodArgumentNotValidException.getBindingResult()
             .getAllErrors().stream()
             .map(e -> " " +
               (e instanceof FieldError fieldError ? fieldError.getField() : e.getObjectName()) +
               ": " + e.getDefaultMessage())
             .sorted()
-            .collect(Collectors.joining(";"));
+            .collect(Collectors.joining(";")));
       }
       case ConstraintViolationException constraintViolationException -> {
-        return "Invalid request content." +
+        return String.format(ERROR_MESSAGE_FORMAT, OrganizationErrorDTO.CodeEnum.ORGANIZATION_BAD_REQUEST.name(),
+          "Invalid request content." +
           constraintViolationException.getConstraintViolations()
             .stream()
             .map(e -> " " + e.getPropertyPath() + ": " + e.getMessage())
             .sorted()
-            .collect(Collectors.joining(";"));
+            .collect(Collectors.joining(";")));
       }
       default -> {
+        if (ex.getCause() instanceof HttpHostConnectException) {
+          return String.format(ERROR_MESSAGE_FORMAT, "ORGANIZATION_CONNECTION_ERROR",
+            ex.getMessage());
+        }
         return ex.getMessage();
       }
     }
+  }
+
+  private static String buildCrudErrorMessage(String requestPath, HttpStatus httpStatus, Exception ex) {
+    String entity = requestPath.split("/crud/")[1].split("/")[0].replaceAll("s$", "");
+    String entityCode = entity.replace("-", "_").toUpperCase();
+    return String.format(ERROR_MESSAGE_FORMAT, entityCode + "_" + httpStatus.name(), ex.getMessage());
   }
 
   static String getRequestDetails(HttpServletRequest request) {

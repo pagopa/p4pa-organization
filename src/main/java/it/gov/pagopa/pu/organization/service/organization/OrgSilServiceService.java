@@ -19,7 +19,7 @@ public class OrgSilServiceService {
 
   public OrgSilServiceDTO getById(Long orgSilServiceId) {
     OrgSilService orgSilService = orgSilServiceRepository.findById(orgSilServiceId).orElseThrow(() ->
-      new OrgSilServiceNotFoundException("OrgSilService not found with ID: " + orgSilServiceId));
+      new OrgSilServiceNotFoundException("[ORG_SIL_SERVICE_NOT_FOUND] OrgSilService with id %s not found".formatted(orgSilServiceId)));
     return orgSilServiceMapper.fromEntity(orgSilService);
   }
 

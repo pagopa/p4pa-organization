@@ -41,6 +41,8 @@ public class OrganizationService {
 
   private final boolean isOrgPIvaCheckEnabled;
 
+  private static final String ORGANIZATION_NOT_FOUND_MSG = "[ORGANIZATION_NOT_FOUND] Organization with id %s not found";
+
   public OrganizationService(
     OrganizationEncryptionService organizationEncryptionService,
     BrokerEncryptionService brokerEncryptionService,
@@ -69,7 +71,7 @@ public class OrganizationService {
     };
 
     if (updatedRows == 0) {
-      throw new OrganizationNotFoundException("Organization with ID %s was not found".formatted(organizationId));
+      throw new OrganizationNotFoundException(ORGANIZATION_NOT_FOUND_MSG.formatted(organizationId));
     }
   }
 
@@ -86,7 +88,7 @@ public class OrganizationService {
 
   public String getApiKey(Long organizationId, OrganizationApiKeyType keyType) {
     Organization organization = organizationRepository.findById(organizationId)
-      .orElseThrow(() -> new ResourceNotFoundException("Organization [%s]".formatted(organizationId)));
+      .orElseThrow(() -> new ResourceNotFoundException(ORGANIZATION_NOT_FOUND_MSG.formatted(organizationId)));
 
     return switch (keyType) {
       case IO -> organization.isFlagNotifyIo() ? organizationEncryptionService.decryptKey(organization.getIoApiKey()) : null;
@@ -96,7 +98,7 @@ public class OrganizationService {
           yield organizationEncryptionService.decryptKey(organization.getGenerateNoticeApiKey());
         } else {
           Broker broker = brokerRepository.findByBrokeredOrganizationId(String.valueOf(organizationId))
-            .orElseThrow(() -> new ResourceNotFoundException("Broker not found for orgId [%s]".formatted(organizationId)));
+            .orElseThrow(() -> new ResourceNotFoundException("[BROKER_NOT_FOUND] Broker for org with id %s not found".formatted(organizationId)));
           yield brokerEncryptionService.decryptKey(broker.getGenerateNoticeKey(), BrokerApiKeyType.GENERATE_NOTICE, broker.getBrokerId());
         }
       }
@@ -112,32 +114,33 @@ public class OrganizationService {
   private void validateOrgFiscalCode(OrganizationCreateDTO organizationCreateDTO) {
     if (StringUtils.isBlank(organizationCreateDTO.getOrgFiscalCode()) ||
       !isValidPIVA(organizationCreateDTO.getOrgFiscalCode(), isOrgPIvaCheckEnabled)) {
-      throw new InvalidValueException("Fiscal code is not valid");
+      throw new InvalidValueException("[INVALID_VAT_CODE] Fiscal code is not valid");
     }
   }
 
   private void validateIban(OrganizationCreateDTO dto) {
     if (StringUtils.isNotBlank(dto.getIban())) {
       if (!isValidIban(dto.getIban())) {
-        throw new InvalidValueException("Iban is not valid");
+        throw new InvalidValueException("[INVALID_IBAN] Iban is not valid");
       }
       if (StringUtils.isNotBlank(dto.getPostalIban()) && !isValidIban(dto.getPostalIban())) {
-        throw new InvalidValueException("Postal iban is not valid");
+        throw new InvalidValueException("[INVALID_POSTAL_IBAN] Postal iban is not valid");
       }
     }
   }
 
   public OrganizationDetailDTO getOrganization(Long organizationId) {
     Organization org = organizationRepository.findById(organizationId)
-      .orElseThrow(() -> new ResourceNotFoundException("Organization [%s] not found".formatted(organizationId)));
+      .orElseThrow(() -> new ResourceNotFoundException(ORGANIZATION_NOT_FOUND_MSG.formatted(organizationId)));
 
     return organizationMapper.mapToDTO(org);
   }
 
   @Transactional
   public void updateOrganization(OrganizationDetailDTO organization) {
-    Organization existingOrganization = organizationRepository.findById(organization.getOrganizationId())
-            .orElseThrow(()->new ResourceNotFoundException("Organization having id "+organization.getOrganizationId()+" not found"));
+    Long organizationId = organization.getOrganizationId();
+    Organization existingOrganization = organizationRepository.findById(organizationId)
+            .orElseThrow(()->new ResourceNotFoundException(ORGANIZATION_NOT_FOUND_MSG.formatted(organizationId)));
     validateOrganizationDTO(organization, existingOrganization);
     organizationRepository.save(organizationMapper.toModel( organization));
   }
@@ -155,7 +158,7 @@ public class OrganizationService {
       checkBlankOrNullField("iban", organization.getIban(),emptyOrNullFields);
       checkBlankOrNullField("segregationCode", organization.getSegregationCode(),emptyOrNullFields);
       if(!CollectionUtils.isEmpty(emptyOrNullFields)){
-        throw new ValidationException("The following Organization fields are required in order to change the organization’s status to ACTIVE. "+emptyOrNullFields);
+        throw new ValidationException("[MISSING_ORGANIZATION_FIELDS] The following Organization fields are required in order to change the organization’s status to ACTIVE. "+emptyOrNullFields);
       }
     }
   }
@@ -169,13 +172,13 @@ public class OrganizationService {
     checkImmutableField("orgName", existingOrganization.getOrgName(), organization.getOrgName(), modifiedFields);
     checkImmutableField("orgTypeCode", existingOrganization.getOrgTypeCode(), organization.getOrgTypeCode(), modifiedFields);
     if(!CollectionUtils.isEmpty(modifiedFields)){
-      throw new ValidationException("The following Organization fields are readOnly. "+modifiedFields);
+      throw new ValidationException("[IMMUTABLE_FIELD] The following Organization fields are readOnly. "+modifiedFields);
     }
   }
 
   public void updateOrganizationStatus(Long organizationId, OrganizationStatus newStatus) {
     Organization organization = organizationRepository.findById(organizationId)
-      .orElseThrow(()->new ResourceNotFoundException("Organization having id "+organizationId+" not found"));
+      .orElseThrow(()->new ResourceNotFoundException(ORGANIZATION_NOT_FOUND_MSG.formatted(organizationId)));
     organization.setStatus(newStatus);
     validateStatusUpdate(organization);
     organizationRepository.save(organization);
@@ -184,7 +187,7 @@ public class OrganizationService {
   private void validateSegregationCode(OrganizationCreateDTO organizationCreateDTO) {
     if (StringUtils.isNotBlank(organizationCreateDTO.getSegregationCode()) &&
           !isValidSegregationCode(organizationCreateDTO.getSegregationCode())) {
-        throw new InvalidValueException("Segregation code is not valid");
+        throw new InvalidValueException("[INVALID_SEGREGATION_CODE] Segregation code is not valid");
     }
   }
 }

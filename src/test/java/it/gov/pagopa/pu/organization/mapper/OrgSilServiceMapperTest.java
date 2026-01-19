@@ -265,7 +265,7 @@ class OrgSilServiceMapperTest {
     ValidationException result = assertThrows(ValidationException.class, () -> mapper.fromDTO(testDTO));
 
     // Then
-    Assertions.assertEquals("Invalid legacyJwt signingKey! It should be Base64 encoded!", result.getMessage());
+    Assertions.assertEquals("[ORG_SIL_SERVICE_MAPPING_ERROR] Invalid legacyJwt signingKey! It should be Base64 encoded!", result.getMessage());
   }
 
   @Test
