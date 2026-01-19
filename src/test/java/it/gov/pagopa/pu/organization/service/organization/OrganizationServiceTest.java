@@ -163,7 +163,7 @@ class OrganizationServiceTest {
     OrganizationNotFoundException exception = assertThrows(OrganizationNotFoundException.class, () ->
       service.encryptAndSaveApiKey(1L, organizationApiKeys));
 
-    assertEquals("Organization with ID 1 was not found", exception.getMessage());
+    assertEquals("[ORGANIZATION_NOT_FOUND] Organization with id 1 not found", exception.getMessage());
   }
 
   @Test
@@ -224,7 +224,7 @@ class OrganizationServiceTest {
     ResourceNotFoundException result = assertThrows(ResourceNotFoundException.class,
       () -> service.getApiKey(organizationId, keyType));
 
-    assertEquals("Organization [1]", result.getMessage());
+    assertEquals("[ORGANIZATION_NOT_FOUND] Organization with id 1 not found", result.getMessage());
   }
 
   @Test
@@ -300,7 +300,7 @@ class OrganizationServiceTest {
     ResourceNotFoundException result = assertThrows(ResourceNotFoundException.class,
       () -> service.getApiKey(organizationId, keyType));
 
-    assertEquals("Broker not found for orgId [1]", result.getMessage());
+    assertEquals("[BROKER_NOT_FOUND] Broker for org with id 1 not found", result.getMessage());
   }
 
   @Test
