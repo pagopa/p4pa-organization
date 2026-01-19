@@ -158,7 +158,7 @@ public class OrganizationService {
       checkBlankOrNullField("iban", organization.getIban(),emptyOrNullFields);
       checkBlankOrNullField("segregationCode", organization.getSegregationCode(),emptyOrNullFields);
       if(!CollectionUtils.isEmpty(emptyOrNullFields)){
-        throw new ValidationException("[INVALID_FIELDS] The following Organization fields are required in order to change the organization’s status to ACTIVE. "+emptyOrNullFields);
+        throw new ValidationException("[MISSING_ORGANIZATION_FIELDS] The following Organization fields are required in order to change the organization’s status to ACTIVE. "+emptyOrNullFields);
       }
     }
   }
