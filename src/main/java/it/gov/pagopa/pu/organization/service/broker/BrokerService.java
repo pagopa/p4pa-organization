@@ -33,6 +33,7 @@ public class BrokerService {
     Broker broker = brokerRepository.findById(brokerId).orElseThrow(() -> new ResourceNotFoundException(BROKER.formatted(brokerId)));
     byte[] encryptedKey = brokerEncryptionService.encryptKey(brokerApiKey.getApiKey());
     switch (brokerApiKey.getKeyType()) {
+      case SYNC_PAYMENTS_REPORTING -> broker.setSyncPaymentsReportingKey(encryptedKey);
       case SYNC -> broker.setSyncKey(encryptedKey);
       case ACA -> broker.setAcaKey(encryptedKey);
       case GPD -> broker.setGpdKey(encryptedKey);

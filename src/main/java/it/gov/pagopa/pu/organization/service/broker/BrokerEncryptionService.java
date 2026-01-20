@@ -27,6 +27,7 @@ public class BrokerEncryptionService {
 
   public BrokerApiKeys getBrokerDecryptedApiKeys(Broker broker) {
     return BrokerApiKeys.builder()
+      .syncPaymentsReportingKey(decryptKey(broker.getSyncPaymentsReportingKey(), BrokerApiKeyType.SYNC_PAYMENTS_REPORTING, broker.getBrokerId()))
       .syncKey(decryptKey(broker.getSyncKey(), BrokerApiKeyType.SYNC, broker.getBrokerId()))
       .acaKey(decryptKey(broker.getAcaKey(), BrokerApiKeyType.ACA, broker.getBrokerId()))
       .gpdKey(decryptKey(broker.getGpdKey(), BrokerApiKeyType.GPD, broker.getBrokerId()))
@@ -35,6 +36,8 @@ public class BrokerEncryptionService {
 
   public String getBrokerDecryptedApiKey(Broker broker, BrokerApiKeyType keyType) {
     return switch (keyType) {
+      case SYNC_PAYMENTS_REPORTING ->
+        decryptKey(broker.getSyncPaymentsReportingKey(), BrokerApiKeyType.SYNC_PAYMENTS_REPORTING, broker.getBrokerId());
       case SYNC ->
         decryptKey(broker.getSyncKey(), BrokerApiKeyType.SYNC, broker.getBrokerId());
       case ACA ->
