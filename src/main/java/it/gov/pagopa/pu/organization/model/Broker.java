@@ -39,6 +39,7 @@ public class Broker extends BaseEntity implements Serializable {
   private PagoPaInteractionModel pagoPaInteractionModel;
   private String stationId;
   private String broadcastStationId;
+  private byte[] syncPaymentsReportingKey;
   private byte[] syncKey;
   private byte[] gpdKey;
   private byte[] generateNoticeKey;

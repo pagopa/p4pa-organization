@@ -326,6 +326,8 @@ components:
     BrokerApiKeys:
       type: object
       properties:
+        syncPaymentsReportingKey:
+          type: string
         syncKey:
           type: string
         acaKey:
@@ -347,6 +349,7 @@ components:
     BrokerApiKeyType:
       type: string
       enum:
+        - SYNC_PAYMENTS_REPORTING
         - SYNC
         - ACA
         - GPD
