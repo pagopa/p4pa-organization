@@ -7,6 +7,8 @@ import it.gov.pagopa.pu.organization.service.organization.OrganizationEncryption
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Component;
 
+import java.util.Optional;
+
 @Component
 @RequiredArgsConstructor
 public class OrganizationMapper {
@@ -42,6 +44,8 @@ public class OrganizationMapper {
     organization.setFlagNotifyOutcomePush(createDTO.getFlagNotifyOutcomePush());
     organization.setFlagPaymentNotification(createDTO.getFlagPaymentNotification());
     organization.setFlagTreasury(createDTO.getFlagTreasury());
+    organization.setFlagPaymentsReporting(Optional.ofNullable(createDTO.getFlagPaymentsReporting()).orElse(Boolean.TRUE));
+    organization.setFlagClassification(Optional.ofNullable(createDTO.getFlagClassification()).orElse(Boolean.TRUE));
     organization.setPdndEnabled(createDTO.getPdndEnabled());
 
     return organization;
@@ -77,6 +81,8 @@ public class OrganizationMapper {
     dto.setFlagPaymentNotification(org.isFlagPaymentNotification());
     dto.setPdndEnabled(org.isPdndEnabled());
     dto.setFlagTreasury(org.isFlagTreasury());
+    dto.setFlagPaymentsReporting(org.isFlagPaymentsReporting());
+    dto.setFlagClassification(org.isFlagClassification());
     dto.setBrokerId(org.getBrokerId());
 
     return dto;

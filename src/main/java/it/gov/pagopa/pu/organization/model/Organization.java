@@ -60,5 +60,8 @@ public class Organization extends BaseEntity implements Serializable, BaseOrgani
   private boolean pdndEnabled;
   @NotNull
   private boolean flagTreasury;
-
+  @NotNull
+  private boolean flagPaymentsReporting;
+  @NotNull
+  private boolean flagClassification;
 }
