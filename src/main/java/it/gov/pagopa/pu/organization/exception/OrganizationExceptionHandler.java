@@ -44,34 +44,34 @@ public class OrganizationExceptionHandler {
 
   @ExceptionHandler({InvalidValueException.class})
   public ResponseEntity<OrganizationErrorDTO> handleInvalidValueException(RuntimeException ex, HttpServletRequest request){
-    return handleException(ex, request, HttpStatus.BAD_REQUEST, OrganizationErrorDTO.CodeEnum.ORGANIZATION_BAD_REQUEST);
+    return handleException(ex, request, HttpStatus.BAD_REQUEST, OrganizationErrorDTO.CategoryEnum.ORGANIZATION_BAD_REQUEST);
   }
 
   @ExceptionHandler({ResourceNotFoundException.class, OrganizationNotFoundException.class, OrgSilServiceNotFoundException.class})
   public ResponseEntity<OrganizationErrorDTO> handleResourceNotFoundException(Exception ex, HttpServletRequest request) {
-    return handleException(ex, request, HttpStatus.NOT_FOUND, OrganizationErrorDTO.CodeEnum.ORGANIZATION_NOT_FOUND);
+    return handleException(ex, request, HttpStatus.NOT_FOUND, OrganizationErrorDTO.CategoryEnum.ORGANIZATION_NOT_FOUND);
   }
 
   @ExceptionHandler({DataIntegrityViolationException.class})
   public ResponseEntity<OrganizationErrorDTO> handleDataIntegrityViolationException(Exception ex, HttpServletRequest request) {
-    return handleException(ex, request, HttpStatus.CONFLICT, OrganizationErrorDTO.CodeEnum.ORGANIZATION_CONFLICT);
+    return handleException(ex, request, HttpStatus.CONFLICT, OrganizationErrorDTO.CategoryEnum.ORGANIZATION_CONFLICT);
   }
 
   @ExceptionHandler({ValidationException.class, HttpMessageNotReadableException.class, MethodArgumentNotValidException.class, MethodArgumentTypeMismatchException.class})
   public ResponseEntity<OrganizationErrorDTO> handleViolationException(Exception ex, HttpServletRequest request) {
-    return handleException(ex, request, HttpStatus.BAD_REQUEST, OrganizationErrorDTO.CodeEnum.ORGANIZATION_BAD_REQUEST);
+    return handleException(ex, request, HttpStatus.BAD_REQUEST, OrganizationErrorDTO.CategoryEnum.ORGANIZATION_BAD_REQUEST);
   }
 
   @ExceptionHandler({ServletException.class, ErrorResponseException.class})
   public ResponseEntity<OrganizationErrorDTO> handleServletException(Exception ex, HttpServletRequest request) {
     HttpStatus httpStatus = HttpStatus.INTERNAL_SERVER_ERROR;
-    OrganizationErrorDTO.CodeEnum errorCode = OrganizationErrorDTO.CodeEnum.ORGANIZATION_GENERIC_ERROR;
+    OrganizationErrorDTO.CategoryEnum errorCode = OrganizationErrorDTO.CategoryEnum.ORGANIZATION_GENERIC_ERROR;
     if (ex instanceof ErrorResponse errorResponse) {
       httpStatus = HttpStatus.valueOf((errorResponse.getStatusCode().value()));
       if (httpStatus.isSameCodeAs(HttpStatus.NOT_FOUND)) {
-        errorCode = OrganizationErrorDTO.CodeEnum.ORGANIZATION_NOT_FOUND;
+        errorCode = OrganizationErrorDTO.CategoryEnum.ORGANIZATION_NOT_FOUND;
       } else if (httpStatus.is4xxClientError()) {
-        errorCode = OrganizationErrorDTO.CodeEnum.ORGANIZATION_BAD_REQUEST;
+        errorCode = OrganizationErrorDTO.CategoryEnum.ORGANIZATION_BAD_REQUEST;
       }
     }
     return handleException(ex, request, httpStatus, errorCode);
@@ -88,10 +88,10 @@ public class OrganizationExceptionHandler {
 
   @ExceptionHandler({RuntimeException.class})
   public ResponseEntity<OrganizationErrorDTO> handleRuntimeException(RuntimeException ex, HttpServletRequest request) {
-    return handleException(ex, request, HttpStatus.INTERNAL_SERVER_ERROR, OrganizationErrorDTO.CodeEnum.ORGANIZATION_GENERIC_ERROR);
+    return handleException(ex, request, HttpStatus.INTERNAL_SERVER_ERROR, OrganizationErrorDTO.CategoryEnum.ORGANIZATION_GENERIC_ERROR);
   }
 
-  static ResponseEntity<OrganizationErrorDTO> handleException(Exception ex, HttpServletRequest request, HttpStatus httpStatus, OrganizationErrorDTO.CodeEnum errorEnum) {
+  static ResponseEntity<OrganizationErrorDTO> handleException(Exception ex, HttpServletRequest request, HttpStatus httpStatus, OrganizationErrorDTO.CategoryEnum errorEnum) {
     logException(ex, request, httpStatus);
 
     String message = Optional.of(request.getRequestURI())
@@ -125,17 +125,17 @@ public class OrganizationExceptionHandler {
     switch (ex) {
       case HttpMessageNotReadableException httpMessageNotReadableException -> {
         if (httpMessageNotReadableException.getCause() instanceof DatabindException jsonMappingException) {
-          return String.format(ERROR_MESSAGE_FORMAT, OrganizationErrorDTO.CodeEnum.ORGANIZATION_BAD_REQUEST.name(),
+          return String.format(ERROR_MESSAGE_FORMAT, OrganizationErrorDTO.CategoryEnum.ORGANIZATION_BAD_REQUEST.name(),
             "Cannot parse body. " +
             jsonMappingException.getPath().stream()
               .map(JacksonException.Reference::getPropertyName)
               .collect(Collectors.joining(".")) +
             ": " + jsonMappingException.getOriginalMessage());
         }
-        return String.format(ERROR_MESSAGE_FORMAT, OrganizationErrorDTO.CodeEnum.ORGANIZATION_BAD_REQUEST.name(), "Required request body is missing");
+        return String.format(ERROR_MESSAGE_FORMAT, OrganizationErrorDTO.CategoryEnum.ORGANIZATION_BAD_REQUEST.name(), "Required request body is missing");
       }
       case MethodArgumentNotValidException methodArgumentNotValidException -> {
-        return String.format(ERROR_MESSAGE_FORMAT, OrganizationErrorDTO.CodeEnum.ORGANIZATION_BAD_REQUEST.name(),
+        return String.format(ERROR_MESSAGE_FORMAT, OrganizationErrorDTO.CategoryEnum.ORGANIZATION_BAD_REQUEST.name(),
           "Invalid request content." +
           methodArgumentNotValidException.getBindingResult()
             .getAllErrors().stream()
@@ -146,7 +146,7 @@ public class OrganizationExceptionHandler {
             .collect(Collectors.joining(";")));
       }
       case ConstraintViolationException constraintViolationException -> {
-        return String.format(ERROR_MESSAGE_FORMAT, OrganizationErrorDTO.CodeEnum.ORGANIZATION_BAD_REQUEST.name(),
+        return String.format(ERROR_MESSAGE_FORMAT, OrganizationErrorDTO.CategoryEnum.ORGANIZATION_BAD_REQUEST.name(),
           "Invalid request content." +
           constraintViolationException.getConstraintViolations()
             .stream()
