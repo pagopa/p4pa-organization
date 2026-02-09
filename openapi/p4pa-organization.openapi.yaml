@@ -444,10 +444,10 @@ components:
     OrganizationErrorDTO:
       type: object
       required:
-        - code
+        - category
         - message
       properties:
-        code:
+        category:
           type: string
           enum:
             - ORGANIZATION_NOT_FOUND
