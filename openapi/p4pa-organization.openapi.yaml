@@ -431,6 +431,10 @@ components:
           type: boolean
         pdndEnabled:
           type: boolean
+        flagPaymentsReporting:
+          type: boolean
+        flagClassification:
+          type: boolean
     OrganizationApiKeyType:
       type: string
       enum:
