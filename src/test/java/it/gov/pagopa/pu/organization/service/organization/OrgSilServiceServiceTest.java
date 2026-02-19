@@ -68,7 +68,7 @@ class OrgSilServiceServiceTest {
       () -> orgSilServiceService.getById(orgSilServiceId)
     );
 
-    assertEquals("OrgSilService not found with ID: " + orgSilServiceId, exception.getMessage());
+    assertEquals("[ORG_SIL_SERVICE_NOT_FOUND] OrgSilService with id %s not found".formatted(orgSilServiceId), exception.getMessage());
     verify(orgSilServiceRepositoryMock).findById(orgSilServiceId);
     verifyNoInteractions(orgSilServiceMapperMock);
   }

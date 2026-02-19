@@ -118,6 +118,7 @@ class BrokerServiceTest {
     Mockito.when(brokerRepositoryMock.save(Mockito.argThat(i -> {
       Assertions.assertSame(i, broker);
       byte[] storedKey = switch (keyType){
+        case SYNC_PAYMENTS_REPORTING -> broker.getSyncPaymentsReportingKey();
         case SYNC -> broker.getSyncKey();
         case ACA -> broker.getAcaKey();
         case GPD -> broker.getGpdKey();

@@ -88,7 +88,7 @@ public class OrgSilServiceMapper {
     try{
       Base64.getDecoder().decode(dto.getSigningKey());
     } catch (IllegalArgumentException e){
-      throw new ValidationException("Invalid legacyJwt signingKey! It should be Base64 encoded!");
+      throw new ValidationException("[ORG_SIL_SERVICE_MAPPING_ERROR] Invalid legacyJwt signingKey! It should be Base64 encoded!");
     }
 
     SilServiceLegacyJwtAuthConfig legacyJwtAuthConfig = new SilServiceLegacyJwtAuthConfig();

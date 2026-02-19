@@ -2,19 +2,13 @@ package it.gov.pagopa.pu.organization.model;
 
 import it.gov.pagopa.pu.organization.dto.PersonalisationFe;
 import it.gov.pagopa.pu.organization.enums.PagoPaInteractionModel;
-import jakarta.persistence.Entity;
-import jakarta.persistence.EnumType;
-import jakarta.persistence.Enumerated;
-import jakarta.persistence.GeneratedValue;
-import jakarta.persistence.GenerationType;
-import jakarta.persistence.Id;
-import jakarta.persistence.SequenceGenerator;
-import java.io.Serializable;
-
+import jakarta.persistence.*;
 import jakarta.validation.constraints.NotNull;
 import lombok.*;
 import org.hibernate.annotations.JdbcTypeCode;
 import org.hibernate.type.SqlTypes;
+
+import java.io.Serializable;
 
 @Entity(name = "broker")
 @AllArgsConstructor
@@ -39,6 +33,7 @@ public class Broker extends BaseEntity implements Serializable {
   private PagoPaInteractionModel pagoPaInteractionModel;
   private String stationId;
   private String broadcastStationId;
+  private byte[] syncPaymentsReportingKey;
   private byte[] syncKey;
   private byte[] gpdKey;
   private byte[] generateNoticeKey;
@@ -46,5 +41,13 @@ public class Broker extends BaseEntity implements Serializable {
   @JdbcTypeCode(SqlTypes.JSON)
   @NotNull
   private PersonalisationFe personalisationFe;
-
+  @NotNull
+  private boolean flagDelegate;
+  @NotNull
+  private boolean flagPaymentsReporting;
+  @JdbcTypeCode(SqlTypes.JSON)
+  private String arpuConfig;
+  private String arpuPrivacyPolicyMd;
+  private String arpuTosMd;
+  private String externalId;
 }

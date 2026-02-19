@@ -1,12 +1,10 @@
 package it.gov.pagopa.pu.organization.exception;
 
-import static org.mockito.ArgumentMatchers.any;
-import static org.mockito.Mockito.doThrow;
-
 import com.fasterxml.jackson.databind.ObjectMapper;
 import it.gov.pagopa.pu.organization.config.json.JsonConfig;
-import it.gov.pagopa.pu.organization.dto.generated.OrganizationErrorDTO.CodeEnum;
+import it.gov.pagopa.pu.organization.dto.generated.OrganizationErrorDTO;
 import it.gov.pagopa.pu.organization.exception.custom.InvalidValueException;
+import it.gov.pagopa.pu.organization.util.TestUtils;
 import it.gov.pagopa.pu.organization.util.UtilitiesTest;
 import jakarta.persistence.RollbackException;
 import jakarta.servlet.ServletException;
@@ -14,13 +12,11 @@ import jakarta.validation.ConstraintViolationException;
 import jakarta.validation.Valid;
 import jakarta.validation.constraints.NotNull;
 import jakarta.validation.constraints.Pattern;
-import java.time.LocalDateTime;
-import java.util.Map;
-import java.util.Set;
 import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.apache.hc.client5.http.HttpHostConnectException;
 import org.hibernate.validator.internal.engine.ConstraintViolationImpl;
 import org.hibernate.validator.internal.engine.path.PathImpl;
 import org.junit.jupiter.api.AfterEach;
@@ -28,8 +24,8 @@ import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.boot.autoconfigure.security.servlet.SecurityAutoConfiguration;
-import org.springframework.boot.test.autoconfigure.web.servlet.WebMvcTest;
+import org.springframework.boot.webmvc.test.autoconfigure.AutoConfigureMockMvc;
+import org.springframework.boot.webmvc.test.autoconfigure.WebMvcTest;
 import org.springframework.dao.DataIntegrityViolationException;
 import org.springframework.data.rest.webmvc.ResourceNotFoundException;
 import org.springframework.http.MediaType;
@@ -42,17 +38,23 @@ import org.springframework.test.web.servlet.request.MockHttpServletRequestBuilde
 import org.springframework.test.web.servlet.request.MockMvcRequestBuilders;
 import org.springframework.test.web.servlet.result.MockMvcResultMatchers;
 import org.springframework.transaction.TransactionSystemException;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.RequestBody;
-import org.springframework.web.bind.annotation.RequestParam;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
 import org.springframework.web.server.ServerErrorException;
 import org.springframework.web.servlet.mvc.method.annotation.RequestMappingHandlerAdapter;
 
+import java.time.LocalDateTime;
+import java.util.Map;
+import java.util.Set;
+
+import static org.mockito.ArgumentMatchers.any;
+import static org.mockito.Mockito.doThrow;
+
 @ExtendWith({SpringExtension.class})
-@WebMvcTest(value = {OrganizationExceptionHandlerTest.TestController.class}, excludeAutoConfiguration = SecurityAutoConfiguration.class)
+@WebMvcTest(value = {OrganizationExceptionHandlerTest.TestController.class, OrganizationExceptionHandlerTest.TestCrudController.class})
+@AutoConfigureMockMvc(addFilters = false)
 @ContextConfiguration(classes = {
   OrganizationExceptionHandlerTest.TestController.class,
+  OrganizationExceptionHandlerTest.TestCrudController.class,
   OrganizationExceptionHandler.class,
   JsonConfig.class})
 class OrganizationExceptionHandlerTest {
@@ -68,6 +70,8 @@ class OrganizationExceptionHandlerTest {
   @MockitoSpyBean
   private TestController testControllerSpy;
   @MockitoSpyBean
+  private TestCrudController testCrudControllerSpy;
+  @MockitoSpyBean
   private RequestMappingHandlerAdapter requestMappingHandlerAdapterSpy;
 
   @RestController
@@ -75,6 +79,20 @@ class OrganizationExceptionHandlerTest {
   static class TestController {
     @PostMapping(value = "/test", produces = MediaType.APPLICATION_JSON_VALUE)
     String testEndpoint(@RequestParam(DATA) String data, @Valid @RequestBody TestRequestBody body) {
+      return "OK";
+    }
+  }
+
+  @BeforeEach
+  void init() {
+    TestUtils.clearDefaultTimezone();
+  }
+
+  @RestController
+  @Slf4j
+  static class TestCrudController {
+    @GetMapping(value = "/crud/brokers/{id}", produces = MediaType.APPLICATION_JSON_VALUE)
+    String testCrudEndpoint(@PathVariable("id") Long id) {
       return "OK";
     }
   }
@@ -125,8 +143,8 @@ class OrganizationExceptionHandlerTest {
 
     performRequest(DATA, MediaType.APPLICATION_JSON)
       .andExpect(MockMvcResultMatchers.status().isBadRequest())
-      .andExpect(MockMvcResultMatchers.jsonPath("$.code").value(
-        CodeEnum.ORGANIZATION_BAD_REQUEST.getValue()))
+      .andExpect(MockMvcResultMatchers.jsonPath("$.category").value(
+        OrganizationErrorDTO.CategoryEnum.ORGANIZATION_BAD_REQUEST.getValue()))
       .andExpect(MockMvcResultMatchers.jsonPath("$.message").value("Error"))
       .andExpect(MockMvcResultMatchers.jsonPath("$.traceId").value(traceId));
 
@@ -137,7 +155,7 @@ class OrganizationExceptionHandlerTest {
 
     performRequest(null, MediaType.APPLICATION_JSON)
       .andExpect(MockMvcResultMatchers.status().isBadRequest())
-      .andExpect(MockMvcResultMatchers.jsonPath("$.code").value("ORGANIZATION_BAD_REQUEST"))
+      .andExpect(MockMvcResultMatchers.jsonPath("$.category").value("ORGANIZATION_BAD_REQUEST"))
       .andExpect(MockMvcResultMatchers.jsonPath("$.message").value("Required request parameter 'data' for method parameter type String is not present"))
       .andExpect(MockMvcResultMatchers.jsonPath("$.traceId").value(traceId));
 
@@ -149,7 +167,7 @@ class OrganizationExceptionHandlerTest {
 
     performRequest(DATA, MediaType.APPLICATION_JSON)
       .andExpect(MockMvcResultMatchers.status().isInternalServerError())
-      .andExpect(MockMvcResultMatchers.jsonPath("$.code").value("ORGANIZATION_GENERIC_ERROR"))
+      .andExpect(MockMvcResultMatchers.jsonPath("$.category").value("ORGANIZATION_GENERIC_ERROR"))
       .andExpect(MockMvcResultMatchers.jsonPath("$.message").value("Error"))
       .andExpect(MockMvcResultMatchers.jsonPath("$.traceId").value(traceId));
   }
@@ -161,7 +179,7 @@ class OrganizationExceptionHandlerTest {
 
     performRequest(DATA, MediaType.APPLICATION_JSON)
       .andExpect(MockMvcResultMatchers.status().isInternalServerError())
-      .andExpect(MockMvcResultMatchers.jsonPath("$.code").value("ORGANIZATION_GENERIC_ERROR"))
+      .andExpect(MockMvcResultMatchers.jsonPath("$.category").value("ORGANIZATION_GENERIC_ERROR"))
       .andExpect(MockMvcResultMatchers.jsonPath("$.message").value("Error"))
       .andExpect(MockMvcResultMatchers.jsonPath("$.traceId").value(traceId));
   }
@@ -170,7 +188,7 @@ class OrganizationExceptionHandlerTest {
   void handle4xxHttpServletException() throws Exception {
     performRequest(DATA, MediaType.parseMediaType("application/hal+json"))
       .andExpect(MockMvcResultMatchers.status().isNotAcceptable())
-      .andExpect(MockMvcResultMatchers.jsonPath("$.code").value("ORGANIZATION_BAD_REQUEST"))
+      .andExpect(MockMvcResultMatchers.jsonPath("$.category").value("ORGANIZATION_BAD_REQUEST"))
       .andExpect(MockMvcResultMatchers.jsonPath("$.message").value("No acceptable representation"))
       .andExpect(MockMvcResultMatchers.jsonPath("$.traceId").value(traceId));
   }
@@ -179,8 +197,8 @@ class OrganizationExceptionHandlerTest {
   void handleUrlNotFound() throws Exception {
     mockMvc.perform(MockMvcRequestBuilders.post("/NOTEXISTENTURL"))
       .andExpect(MockMvcResultMatchers.status().isNotFound())
-      .andExpect(MockMvcResultMatchers.jsonPath("$.code").value("ORGANIZATION_NOT_FOUND"))
-      .andExpect(MockMvcResultMatchers.jsonPath("$.message").value("No static resource NOTEXISTENTURL."))
+      .andExpect(MockMvcResultMatchers.jsonPath("$.category").value("ORGANIZATION_NOT_FOUND"))
+      .andExpect(MockMvcResultMatchers.jsonPath("$.message").value("No static resource NOTEXISTENTURL for request '/NOTEXISTENTURL'."))
       .andExpect(MockMvcResultMatchers.jsonPath("$.traceId").value(traceId));
   }
 
@@ -191,7 +209,7 @@ class OrganizationExceptionHandlerTest {
 
     performRequest(DATA, MediaType.APPLICATION_JSON)
       .andExpect(MockMvcResultMatchers.status().isNotFound())
-      .andExpect(MockMvcResultMatchers.jsonPath("$.code").value("ORGANIZATION_NOT_FOUND"))
+      .andExpect(MockMvcResultMatchers.jsonPath("$.category").value("ORGANIZATION_NOT_FOUND"))
       .andExpect(MockMvcResultMatchers.jsonPath("$.message").value("Error"))
       .andExpect(MockMvcResultMatchers.jsonPath("$.traceId").value(traceId));
   }
@@ -203,7 +221,7 @@ class OrganizationExceptionHandlerTest {
 
     performRequest(DATA, MediaType.APPLICATION_JSON)
       .andExpect(MockMvcResultMatchers.status().isConflict())
-      .andExpect(MockMvcResultMatchers.jsonPath("$.code").value("ORGANIZATION_CONFLICT"))
+      .andExpect(MockMvcResultMatchers.jsonPath("$.category").value("ORGANIZATION_CONFLICT"))
       .andExpect(MockMvcResultMatchers.jsonPath("$.message").value("Error"))
       .andExpect(MockMvcResultMatchers.jsonPath("$.traceId").value(traceId));
   }
@@ -212,8 +230,8 @@ class OrganizationExceptionHandlerTest {
   void handleNoBodyException() throws Exception {
     performRequest(DATA, MediaType.APPLICATION_JSON, null)
       .andExpect(MockMvcResultMatchers.status().isBadRequest())
-      .andExpect(MockMvcResultMatchers.jsonPath("$.code").value("ORGANIZATION_BAD_REQUEST"))
-      .andExpect(MockMvcResultMatchers.jsonPath("$.message").value("Required request body is missing"))
+      .andExpect(MockMvcResultMatchers.jsonPath("$.category").value("ORGANIZATION_BAD_REQUEST"))
+      .andExpect(MockMvcResultMatchers.jsonPath("$.message").value("[ORGANIZATION_BAD_REQUEST] Required request body is missing"))
       .andExpect(MockMvcResultMatchers.jsonPath("$.traceId").value(traceId));
   }
 
@@ -222,8 +240,8 @@ class OrganizationExceptionHandlerTest {
     performRequest(DATA, MediaType.APPLICATION_JSON,
       "{\"notRequiredField\":\"notRequired\",\"lowerCaseAlphabeticField\":\"ABC\"}")
       .andExpect(MockMvcResultMatchers.status().isBadRequest())
-      .andExpect(MockMvcResultMatchers.jsonPath("$.code").value("ORGANIZATION_BAD_REQUEST"))
-      .andExpect(MockMvcResultMatchers.jsonPath("$.message").value("Invalid request content. lowerCaseAlphabeticField: must match \"[a-z]+\"; requiredField: must not be null"))
+      .andExpect(MockMvcResultMatchers.jsonPath("$.category").value("ORGANIZATION_BAD_REQUEST"))
+      .andExpect(MockMvcResultMatchers.jsonPath("$.message").value("[ORGANIZATION_BAD_REQUEST] Invalid request content. lowerCaseAlphabeticField: must match \"[a-z]+\"; requiredField: must not be null"))
       .andExpect(MockMvcResultMatchers.jsonPath("$.traceId").value(traceId));
   }
 
@@ -232,8 +250,8 @@ class OrganizationExceptionHandlerTest {
     performRequest(DATA, MediaType.APPLICATION_JSON,
       "{\"notRequiredField\":\"notRequired\",\"dateTimeField\":\"2025-02-05\"}")
       .andExpect(MockMvcResultMatchers.status().isBadRequest())
-      .andExpect(MockMvcResultMatchers.jsonPath("$.code").value("ORGANIZATION_BAD_REQUEST"))
-      .andExpect(MockMvcResultMatchers.jsonPath("$.message").value("Cannot parse body. dateTimeField: Text '2025-02-05' could not be parsed at index 10"))
+      .andExpect(MockMvcResultMatchers.jsonPath("$.category").value("ORGANIZATION_BAD_REQUEST"))
+      .andExpect(MockMvcResultMatchers.jsonPath("$.message").value("[ORGANIZATION_BAD_REQUEST] Cannot parse body. dateTimeField: Text '2025-02-05' could not be parsed at index 10"))
       .andExpect(MockMvcResultMatchers.jsonPath("$.traceId").value(traceId));
   }
 
@@ -244,7 +262,7 @@ class OrganizationExceptionHandlerTest {
 
     performRequest(DATA, MediaType.APPLICATION_JSON)
       .andExpect(MockMvcResultMatchers.status().isInternalServerError())
-      .andExpect(MockMvcResultMatchers.jsonPath("$.code").value("ORGANIZATION_GENERIC_ERROR"))
+      .andExpect(MockMvcResultMatchers.jsonPath("$.category").value("ORGANIZATION_GENERIC_ERROR"))
       .andExpect(MockMvcResultMatchers.jsonPath("$.message").value("500 INTERNAL_SERVER_ERROR \"Error\""))
       .andExpect(MockMvcResultMatchers.jsonPath("$.traceId").value(traceId));
   }
@@ -258,8 +276,19 @@ class OrganizationExceptionHandlerTest {
 
     performRequest(DATA, MediaType.APPLICATION_JSON)
       .andExpect(MockMvcResultMatchers.status().isBadRequest())
-      .andExpect(MockMvcResultMatchers.jsonPath("$.code").value("ORGANIZATION_BAD_REQUEST"))
-      .andExpect(MockMvcResultMatchers.jsonPath("$.message").value("Invalid request content. fieldName: resolved message"))
+      .andExpect(MockMvcResultMatchers.jsonPath("$.category").value("ORGANIZATION_BAD_REQUEST"))
+      .andExpect(MockMvcResultMatchers.jsonPath("$.message").value("[ORGANIZATION_BAD_REQUEST] Invalid request content. fieldName: resolved message"))
+      .andExpect(MockMvcResultMatchers.jsonPath("$.traceId").value(traceId));
+  }
+
+  @Test
+  void handleHttpHostConnectionExceptionException() throws Exception {
+    doThrow(new RuntimeException("connection refused", new HttpHostConnectException("error"))).when(testControllerSpy).testEndpoint(DATA, BODY);
+
+    performRequest(DATA, MediaType.APPLICATION_JSON)
+      .andExpect(MockMvcResultMatchers.status().isInternalServerError())
+      .andExpect(MockMvcResultMatchers.jsonPath("$.category").value("ORGANIZATION_GENERIC_ERROR"))
+      .andExpect(MockMvcResultMatchers.jsonPath("$.message").value("[ORGANIZATION_CONNECTION_ERROR] connection refused"))
       .andExpect(MockMvcResultMatchers.jsonPath("$.traceId").value(traceId));
   }
 
@@ -270,8 +299,8 @@ class OrganizationExceptionHandlerTest {
 
     performRequest(DATA, MediaType.APPLICATION_JSON)
       .andExpect(MockMvcResultMatchers.status().isBadRequest())
-      .andExpect(MockMvcResultMatchers.jsonPath("$.code").value("ORGANIZATION_BAD_REQUEST"))
-      .andExpect(MockMvcResultMatchers.jsonPath("$.message").value("Invalid request content. fieldName: resolved message"))
+      .andExpect(MockMvcResultMatchers.jsonPath("$.category").value("ORGANIZATION_BAD_REQUEST"))
+      .andExpect(MockMvcResultMatchers.jsonPath("$.message").value("[ORGANIZATION_BAD_REQUEST] Invalid request content. fieldName: resolved message"))
       .andExpect(MockMvcResultMatchers.jsonPath("$.traceId").value(traceId));
   }
 
@@ -282,8 +311,20 @@ class OrganizationExceptionHandlerTest {
 
     performRequest(DATA, MediaType.APPLICATION_JSON)
       .andExpect(MockMvcResultMatchers.status().isInternalServerError())
-      .andExpect(MockMvcResultMatchers.jsonPath("$.code").value("ORGANIZATION_GENERIC_ERROR"))
+      .andExpect(MockMvcResultMatchers.jsonPath("$.category").value("ORGANIZATION_GENERIC_ERROR"))
       .andExpect(MockMvcResultMatchers.jsonPath("$.message").value("TransactionError"))
+      .andExpect(MockMvcResultMatchers.jsonPath("$.traceId").value(traceId));
+  }
+
+  @Test
+  void handleCrudResourceNotFoundException() throws Exception {
+    Long id = -12L;
+    doThrow(new ResourceNotFoundException()).when(testCrudControllerSpy).testCrudEndpoint(id);
+
+    mockMvc.perform(MockMvcRequestBuilders.get("/crud/brokers/-12"))
+      .andExpect(MockMvcResultMatchers.status().isNotFound())
+      .andExpect(MockMvcResultMatchers.jsonPath("$.category").value("ORGANIZATION_NOT_FOUND"))
+      .andExpect(MockMvcResultMatchers.jsonPath("$.message").value("[BROKER_NOT_FOUND] EntityRepresentationModel not found"))
       .andExpect(MockMvcResultMatchers.jsonPath("$.traceId").value(traceId));
   }
 

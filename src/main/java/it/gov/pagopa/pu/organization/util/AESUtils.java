@@ -30,12 +30,13 @@ public class AESUtils {
     private static final int KEY_LENGTH = 256;
     private static final int ITERATION_COUNT = 65536;
     private static final Charset UTF_8 = StandardCharsets.UTF_8;
+    private static final SecureRandom SECURE_RANDOM = new SecureRandom();
 
     public static final String CIPHER_EXTENSION = ".cipher";
 
-    public static byte[] getRandomNonce(int length) {
+    private static byte[] getRandomNonce(int length) {
         byte[] nonce = new byte[length];
-        new SecureRandom().nextBytes(nonce);
+        SECURE_RANDOM.nextBytes(nonce);
         return nonce;
     }
 
@@ -46,7 +47,7 @@ public class AESUtils {
             SecretKeyFactory factory = SecretKeyFactory.getInstance(FACTORY_INSTANCE);
             return new SecretKeySpec(factory.generateSecret(spec).getEncoded(), ALGORITHM_TYPE);
         } catch (NoSuchAlgorithmException | InvalidKeySpecException e) {
-            throw new IllegalStateException("Cannot initialize cryptographic data", e);
+            throw new IllegalStateException("[CIPHERING_ERROR] Cannot initialize cryptographic data", e);
         }
     }
 
@@ -93,7 +94,7 @@ public class AESUtils {
             InputStream cipherStream = encrypt(password, fis)){
             Files.copy(cipherStream, cipherFile.toPath(), StandardCopyOption.REPLACE_EXISTING);
         } catch (IOException e) {
-            throw new IllegalStateException("Something went wrong when ciphering input file " + plainFile.getAbsolutePath(), e);
+            throw new IllegalStateException("[CIPHERING_ERROR] Something went wrong when ciphering input file " + plainFile.getAbsolutePath(), e);
         }
         return cipherFile;
     }
@@ -127,7 +128,7 @@ public class AESUtils {
 
             return new CipherInputStream(new BufferedInputStream(cipherStream), cipher);
         } catch (IOException e) {
-            throw new IllegalStateException("Cannot read AES prefix data", e);
+            throw new IllegalStateException("[DECIPHERING_ERROR] Cannot read AES prefix data", e);
         }
     }
 
@@ -136,7 +137,7 @@ public class AESUtils {
             InputStream plainStream = decrypt(password, fis)){
             Files.copy(plainStream, outputPlainFile.toPath(), StandardCopyOption.REPLACE_EXISTING);
         } catch (IOException e) {
-            throw new IllegalStateException("Something went wrong when deciphering input file " + cipherFile.getAbsolutePath(), e);
+            throw new IllegalStateException("[DECIPHERING_ERROR] Something went wrong when deciphering input file " + cipherFile.getAbsolutePath(), e);
         }
     }
 
@@ -144,7 +145,7 @@ public class AESUtils {
         try {
             return cipher.doFinal(encryptedByte);
         } catch (IllegalBlockSizeException | BadPaddingException e) {
-            throw new IllegalStateException("Cannot execute cipher op", e);
+            throw new IllegalStateException("[CIPHERING_ERROR] Cannot execute cipher op", e);
         }
     }
 
@@ -155,7 +156,7 @@ public class AESUtils {
             return cipher;
         } catch (NoSuchPaddingException | NoSuchAlgorithmException | InvalidKeyException
                  | InvalidAlgorithmParameterException e) {
-            throw new IllegalStateException("Cannot initialize cipher data", e);
+            throw new IllegalStateException("[CIPHERING_ERROR] Cannot initialize cipher data", e);
         }
     }
 
