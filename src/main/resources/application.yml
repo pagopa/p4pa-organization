@@ -18,6 +18,12 @@ spring:
     username: "\${ORGANIZATION_DB_USER}"
     password: "\${ORGANIZATION_DB_PASSWORD}"
     driverClassName: org.postgresql.Driver
+    idle-timeout: "\${ORGANIZATION_DB_CONNECTION_IDLE_TIMEOUT_MILLISECONDS:600000}"
+    connection-timeout: "\${ORGANIZATION_DB_CONNECTION_TIMEOUT_MILLISECONDS:30000}"
+    keepalive-time: "\${ORGANIZATION_DB_CONNECTION_KEEPALIVE_TIME_MILLISECONDS:120000}"
+    max-lifetime: "\${ORGANIZATION_DB_CONNECTION_MAX_LIFETIME_MILLISECONDS:1800000}"
+    maximum-pool-size: "\${ORGANIZATION_DB_CONNECTION_MAX_POOL_SIZE:10}"
+    minimum-idle: "\${ORGANIZATION_DB_CONNECTION_MIN_IDLE:10}"
   data:
     rest:
       basePath: crud
