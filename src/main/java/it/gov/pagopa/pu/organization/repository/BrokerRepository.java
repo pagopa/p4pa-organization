@@ -20,4 +20,6 @@ public interface BrokerRepository extends JpaRepository<Broker,Long> {
   Optional<Broker> findByBrokeredOrganizationId(String organizationId);
 
   Optional<Broker> findByStationId(String stationId);
+  Optional<Broker> findBrokerByExternalId(String externalId);
+
 }
