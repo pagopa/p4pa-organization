@@ -47,6 +47,9 @@ public class OrganizationMapper {
     organization.setFlagPaymentsReporting(Optional.ofNullable(createDTO.getFlagPaymentsReporting()).orElse(Boolean.TRUE));
     organization.setFlagClassification(Optional.ofNullable(createDTO.getFlagClassification()).orElse(Boolean.TRUE));
     organization.setPdndEnabled(createDTO.getPdndEnabled());
+    organization.setAddress(createDTO.getAddress());
+    organization.setZipCode(createDTO.getZipCode());
+    organization.setCity(createDTO.getCity());
 
     return organization;
   }
@@ -84,6 +87,9 @@ public class OrganizationMapper {
     dto.setFlagPaymentsReporting(org.isFlagPaymentsReporting());
     dto.setFlagClassification(org.isFlagClassification());
     dto.setBrokerId(org.getBrokerId());
+    dto.setAddress(org.getAddress());
+    dto.setZipCode(org.getZipCode());
+    dto.setCity(org.getCity());
 
     return dto;
   }

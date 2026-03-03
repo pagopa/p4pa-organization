@@ -71,6 +71,9 @@ class OrganizationMapperTest {
       .flagPaymentNotification(false)
       .flagTreasury(true)
       .pdndEnabled(true)
+      .address("address")
+      .zipCode("zipCode")
+      .city("city")
       .build();
 
     byte[] expectedEncryptedPassword = "encryptedPassword".getBytes(StandardCharsets.UTF_8);
@@ -114,6 +117,9 @@ class OrganizationMapperTest {
     assertSame(dto.getFlagPaymentNotification(), result.isFlagPaymentNotification());
     assertSame(dto.getPdndEnabled(), result.isPdndEnabled());
     assertSame(dto.getFlagTreasury(), result.isFlagTreasury());
+    assertSame(dto.getAddress(), result.getAddress());
+    assertSame(dto.getZipCode(), result.getZipCode());
+    assertSame(dto.getCity(), result.getCity());
   }
 
   @Test
@@ -145,6 +151,9 @@ class OrganizationMapperTest {
     org.setPdndEnabled(true);
     org.setFlagTreasury(false);
     org.setBrokerId(10L);
+    org.setAddress("address");
+    org.setZipCode("zipCode");
+    org.setCity("city");
 
     byte[] encryptedPassword = "encryptedPassword".getBytes(StandardCharsets.UTF_8);
     byte[] encryptedIoApiKey = "encryptedIoApiKey".getBytes(StandardCharsets.UTF_8);
@@ -188,6 +197,9 @@ class OrganizationMapperTest {
     assertTrue(dto.getPdndEnabled());
     assertFalse(dto.getFlagTreasury());
     assertEquals(org.getBrokerId(), dto.getBrokerId());
+    assertEquals(org.getAddress(), dto.getAddress());
+    assertEquals(org.getZipCode(), dto.getZipCode());
+    assertEquals(org.getCity(), dto.getCity());
   }
 
   @Test

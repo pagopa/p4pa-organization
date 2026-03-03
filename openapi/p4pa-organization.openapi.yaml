@@ -435,6 +435,12 @@ components:
           type: boolean
         flagClassification:
           type: boolean
+        address:
+          type: string
+        zipCode:
+          type: string
+        city:
+          type: string
     OrganizationApiKeyType:
       type: string
       enum:
