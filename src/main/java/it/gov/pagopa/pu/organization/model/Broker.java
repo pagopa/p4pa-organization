@@ -47,7 +47,5 @@ public class Broker extends BaseEntity implements Serializable {
   private boolean flagPaymentsReporting;
   @JdbcTypeCode(SqlTypes.JSON)
   private String arpuConfig;
-  private String arpuPrivacyPolicyMd;
-  private String arpuTosMd;
   private String externalId;
 }
