@@ -64,4 +64,7 @@ public class Organization extends BaseEntity implements Serializable, BaseOrgani
   private boolean flagPaymentsReporting;
   @NotNull
   private boolean flagClassification;
+  private String address;
+  private String zipCode;
+  private String city;
 }

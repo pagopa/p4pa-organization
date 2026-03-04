@@ -19,6 +19,7 @@ import uk.co.jemos.podam.api.PodamFactory;
 import java.nio.charset.StandardCharsets;
 import java.time.LocalDate;
 
+import static org.assertj.core.api.Assertions.assertThat;
 import static org.junit.jupiter.api.Assertions.*;
 import static org.mockito.Mockito.when;
 
@@ -71,6 +72,9 @@ class OrganizationMapperTest {
       .flagPaymentNotification(false)
       .flagTreasury(true)
       .pdndEnabled(true)
+      .address("address")
+      .zipCode("zipCode")
+      .city("city")
       .build();
 
     byte[] expectedEncryptedPassword = "encryptedPassword".getBytes(StandardCharsets.UTF_8);
@@ -90,30 +94,27 @@ class OrganizationMapperTest {
     assertNotNull(result);
     TestUtils.checkNotNullFields(result, "organizationId", "creationDate", "updateDate", "updateOperatorExternalId", "updateTraceId");
 
-    assertSame(dto.getExternalOrganizationId(), result.getExternalOrganizationId());
-    assertSame(dto.getIpaCode(), result.getIpaCode());
-    assertSame(dto.getOrgFiscalCode(), result.getOrgFiscalCode());
-    assertSame(dto.getOrgName(), result.getOrgName());
-    assertSame(dto.getOrgTypeCode(), result.getOrgTypeCode());
-    assertSame(dto.getOrgEmail(), result.getOrgEmail());
-    assertSame(dto.getPostalIban(), result.getPostalIban());
-    assertSame(dto.getIban(), result.getIban());
-    assertSame(expectedEncryptedPassword, result.getPassword());
-    assertSame(dto.getSegregationCode(), result.getSegregationCode());
-    assertSame(dto.getCbillInterBankCode(), result.getCbillInterBankCode());
-    assertSame(dto.getOrgLogo(), result.getOrgLogo());
-    assertSame(dto.getStatus(), result.getStatus());
-    assertSame(dto.getAdditionalLanguage(), result.getAdditionalLanguage());
-    assertSame(dto.getStartDate(), result.getStartDate());
-    assertSame(dto.getBrokerId(), result.getBrokerId());
-    assertSame(expectedEncryptedIoApiKey, result.getIoApiKey());
-    assertSame(expectedEncryptedSendApiKey, result.getSendApiKey());
-    assertSame(expectedEncryptedGenerateNoticeApiKey, result.getGenerateNoticeApiKey());
-    assertSame(dto.getFlagNotifyIo(), result.isFlagNotifyIo());
-    assertSame(dto.getFlagNotifyOutcomePush(), result.isFlagNotifyOutcomePush());
-    assertSame(dto.getFlagPaymentNotification(), result.isFlagPaymentNotification());
-    assertSame(dto.getPdndEnabled(), result.isPdndEnabled());
-    assertSame(dto.getFlagTreasury(), result.isFlagTreasury());
+    assertThat(result)
+      .usingRecursiveComparison()
+      .ignoringFields(
+        "organizationId",
+        "creationDate",
+        "updateDate",
+        "updateOperatorExternalId",
+        "updateTraceId",
+        "password",
+        "ioApiKey",
+        "sendApiKey",
+        "generateNoticeApiKey",
+        "flagClassification",
+        "flagPaymentsReporting"
+      )
+      .isEqualTo(dto);
+
+    assertThat(result.getPassword()).isEqualTo(expectedEncryptedPassword);
+    assertThat(result.getIoApiKey()).isEqualTo(expectedEncryptedIoApiKey);
+    assertThat(result.getSendApiKey()).isEqualTo(expectedEncryptedSendApiKey);
+    assertThat(result.getGenerateNoticeApiKey()).isEqualTo(expectedEncryptedGenerateNoticeApiKey);
   }
 
   @Test
@@ -145,6 +146,9 @@ class OrganizationMapperTest {
     org.setPdndEnabled(true);
     org.setFlagTreasury(false);
     org.setBrokerId(10L);
+    org.setAddress("address");
+    org.setZipCode("zipCode");
+    org.setCity("city");
 
     byte[] encryptedPassword = "encryptedPassword".getBytes(StandardCharsets.UTF_8);
     byte[] encryptedIoApiKey = "encryptedIoApiKey".getBytes(StandardCharsets.UTF_8);
@@ -164,30 +168,20 @@ class OrganizationMapperTest {
     OrganizationDetailDTO dto = organizationMapper.mapToDTO(org);
 
     assertNotNull(dto);
-    assertEquals(org.getOrganizationId(), dto.getOrganizationId());
-    assertEquals(org.getExternalOrganizationId(), dto.getExternalOrganizationId());
-    assertEquals(org.getIpaCode(), dto.getIpaCode());
-    assertEquals(org.getOrgFiscalCode(), dto.getOrgFiscalCode());
-    assertEquals(org.getOrgName(), dto.getOrgName());
-    assertEquals(org.getOrgTypeCode(), dto.getOrgTypeCode());
-    assertEquals(org.getOrgEmail(), dto.getOrgEmail());
-    assertEquals(org.getPostalIban(), dto.getPostalIban());
-    assertEquals(org.getIban(), dto.getIban());
-    assertEquals("plainPassword", dto.getPassword());
-    assertEquals("plainIoApiKey", dto.getIoApiKey());
-    assertEquals("plainSendApiKey", dto.getSendApiKey());
-    assertEquals("plainGenerateNoticeApiKey", dto.getGenerateNoticeApiKey());
-    assertEquals(org.getSegregationCode(), dto.getSegregationCode());
-    assertEquals(org.getCbillInterBankCode(), dto.getCbillInterBankCode());
-    assertEquals(org.getOrgLogo(), dto.getOrgLogo());
-    assertEquals(org.getStatus(), dto.getStatus());
-    assertEquals(org.getAdditionalLanguage(), dto.getAdditionalLanguage());
-    assertEquals(org.getStartDate(), dto.getStartDate());
-    assertFalse(dto.getFlagNotifyOutcomePush());
-    assertTrue(dto.getFlagPaymentNotification());
-    assertTrue(dto.getPdndEnabled());
-    assertFalse(dto.getFlagTreasury());
-    assertEquals(org.getBrokerId(), dto.getBrokerId());
+    assertThat(dto)
+      .usingRecursiveComparison()
+      .ignoringFields(
+        "password",
+        "ioApiKey",
+        "sendApiKey",
+        "generateNoticeApiKey"
+      )
+      .isEqualTo(org);
+
+    assertThat(dto.getPassword()).isEqualTo("plainPassword");
+    assertThat(dto.getIoApiKey()).isEqualTo("plainIoApiKey");
+    assertThat(dto.getSendApiKey()).isEqualTo("plainSendApiKey");
+    assertThat(dto.getGenerateNoticeApiKey()).isEqualTo("plainGenerateNoticeApiKey");
   }
 
   @Test
