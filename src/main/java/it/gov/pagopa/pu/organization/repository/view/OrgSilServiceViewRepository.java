@@ -10,6 +10,7 @@ import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.Repository;
 import org.springframework.data.repository.query.Param;
 import org.springframework.data.rest.core.annotation.RepositoryRestResource;
+import org.springframework.web.bind.annotation.RequestParam;
 
 @RepositoryRestResource(path = "org-sil-services-view")
 public interface OrgSilServiceViewRepository extends Repository<OrgSilServiceView, Long> {
@@ -24,8 +25,8 @@ public interface OrgSilServiceViewRepository extends Repository<OrgSilServiceVie
     """)
   Page<OrgSilServiceView> findOrgSilServicesByFilters(
     @Parameter(required = true, schema = @Schema(type = "integer", format = "int64")) @Param("organizationId") Long organizationId,
-    @Param("applicationName") String applicationName,
-    @Param("serviceType") OrgSilServiceType serviceType,
-    @Param("flagLegacy") Boolean flagLegacy,
+    @RequestParam(required = false) @Param("applicationName") String applicationName,
+    @RequestParam(required = false) @Param("serviceType") OrgSilServiceType serviceType,
+    @RequestParam(required = false) @Param("flagLegacy") Boolean flagLegacy,
     Pageable pageable);
 }

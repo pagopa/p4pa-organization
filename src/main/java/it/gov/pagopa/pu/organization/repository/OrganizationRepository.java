@@ -14,6 +14,7 @@ import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.query.Param;
 import org.springframework.data.rest.core.annotation.RepositoryRestResource;
 import org.springframework.data.rest.core.annotation.RestResource;
+import org.springframework.web.bind.annotation.RequestParam;
 
 import java.util.List;
 import java.util.Optional;
@@ -53,16 +54,18 @@ public interface OrganizationRepository extends
    """)
   Page<Organization> findByBrokerIdAndFilters(
     @Parameter(required = true, schema = @Schema(type = "integer", format = "int64")) @Param("brokerId") Long brokerId,
-    @Param("orgName") String orgName,
-    @Param("ipaCode") String ipaCode,
-    @Param("orgFiscalCode") String orgFiscalCode,
-    @Param("allowedOrganizationIds") Set<Long> allowedOrganizationIds,
+    @RequestParam(required = false) @Param("orgName") String orgName,
+    @RequestParam(required = false) @Param("ipaCode") String ipaCode,
+    @RequestParam(required = false) @Param("orgFiscalCode") String orgFiscalCode,
+    @RequestParam(required = false) @Param("allowedOrganizationIds") Set<Long> allowedOrganizationIds,
     Pageable pageable);
 
   @Query("SELECT o FROM Organization o WHERE o.brokerId = :brokerId AND " +
     "(:orgName is null OR o.orgName ILIKE CONCAT('%', cast(:orgName as text), '%'))")
-  Page<Organization> findByBrokerIdAndOrgName(@Parameter(required = true) @Param("brokerId") Long brokerId,
-    @Param("orgName") String orgName, Pageable pageable);
+  Page<Organization> findByBrokerIdAndOrgName(
+    @Parameter(required = true) @Param("brokerId") Long brokerId,
+    @RequestParam(required = false) @Param("orgName") String orgName,
+    Pageable pageable);
 
   @Query("""
     SELECT o
@@ -74,8 +77,8 @@ public interface OrganizationRepository extends
   """)
   Page<Organization> findByBrokerIdAndOrgNameAndOrgFiscalCode(
     @Parameter(required = true) @Param("brokerId") Long brokerId,
-    @Param("orgName") String orgName,
-    @Param("orgFiscalCode") String orgFiscalCode,
+    @RequestParam(required = false) @Param("orgName") String orgName,
+    @RequestParam(required = false) @Param("orgFiscalCode") String orgFiscalCode,
     Pageable pageable);
 
   @Modifying
