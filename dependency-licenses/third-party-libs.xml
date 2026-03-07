@@ -436,8 +436,8 @@
 <td><a href='https://www.apache.org/licenses/LICENSE-2.0'>Apache-2.0</a></td>
 </tr>
 <tr>
-<td><a href='https://hibernate.org/orm/releases/7.2'>org.hibernate.orm:hibernate-core</a></td>
-<td>7.2.4.Final</td>
+<td><a href='https://hibernate.org/orm/releases/7.1'>org.hibernate.orm:hibernate-core</a></td>
+<td>7.1.18.Final</td>
 <td><a href='https://www.apache.org/licenses/LICENSE-2.0'>Apache-2.0</a></td>
 </tr>
 <tr>
