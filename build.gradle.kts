@@ -61,6 +61,9 @@ val httpCoreVersion = "5.4.1"
 val podamVersion = "8.0.2.RELEASE"
 val commonsLang3Version = "3.20.0"
 
+// Downgrading in order to handle List of enums in SpringDataRest exposed queries
+val hibernateCoreVersion = "7.1.18.Final"
+
 // fix cve
 val jackson2CoreVersion = "2.21.1"
 val jackson3CoreVersion = "3.1.0"
@@ -73,6 +76,7 @@ dependencies {
   implementation("org.springframework.boot:spring-boot-starter-security-oauth2-resource-server")
   implementation("org.springframework.boot:spring-boot-starter-hateoas")
   implementation("org.springframework.boot:spring-boot-starter-data-rest")
+  implementation("org.hibernate.orm:hibernate-core:${hibernateCoreVersion}")
   implementation("org.springframework.boot:spring-boot-starter-data-jpa")
   implementation("org.springframework.boot:spring-boot-starter-actuator")
   implementation("io.micrometer:micrometer-tracing-bridge-otel:$micrometerVersion")
