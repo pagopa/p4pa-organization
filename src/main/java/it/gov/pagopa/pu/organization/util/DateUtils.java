@@ -7,11 +7,11 @@ public class DateUtils {
 
   private DateUtils(){}
 
-  public static boolean haveDatesChanged(OffsetDateTime firstDate, OffsetDateTime secondDate){
+  public static boolean equals(OffsetDateTime firstDate, OffsetDateTime secondDate){
     if(firstDate == null && secondDate == null){
-      return false;
+      return true;
     }
-    return (firstDate==null || secondDate==null)
-      || !firstDate.isEqual(secondDate);
+    return firstDate!=null && secondDate!=null
+      && firstDate.isEqual(secondDate);
   }
 }

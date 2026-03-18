@@ -80,8 +80,8 @@ public class TaxonomySynchronizationService {
       !existingTax.getServiceTypeCode().equals(mappedTax.getServiceTypeCode()) ||
       !existingTax.getServiceType().equals(mappedTax.getServiceType()) ||
       !existingTax.getServiceTypeDescription().equals(mappedTax.getServiceTypeDescription()) ||
-      DateUtils.haveDatesChanged(existingTax.getStartDateValidity(), mappedTax.getStartDateValidity()) ||
-      DateUtils.haveDatesChanged(existingTax.getEndDateOfValidity(), mappedTax.getEndDateOfValidity()) ||
+      !DateUtils.equals(existingTax.getStartDateValidity(), mappedTax.getStartDateValidity()) ||
+      !DateUtils.equals(existingTax.getEndDateOfValidity(), mappedTax.getEndDateOfValidity()) ||
       !existingTax.getTaxonomyCode().equals(mappedTax.getTaxonomyCode()) ||
       !existingTax.getCollectionReason().equals(mappedTax.getCollectionReason());
   }
