@@ -40,9 +40,7 @@ public class Taxonomy extends BaseEntity implements Serializable {
   private String serviceTypeDescription;
   @NotNull
   private String collectionReason;
-  @NotNull
   private OffsetDateTime startDateValidity;
-  @NotNull
   private OffsetDateTime endDateOfValidity;
   @NotNull
   private String taxonomyCode;
