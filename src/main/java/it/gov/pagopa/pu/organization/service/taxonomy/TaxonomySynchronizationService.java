@@ -4,6 +4,7 @@ import it.gov.pagopa.pu.organization.connector.pagopapayments.TaxonomyServiceImp
 import it.gov.pagopa.pu.organization.mapper.TaxonomyMapper;
 import it.gov.pagopa.pu.organization.model.Taxonomy;
 import it.gov.pagopa.pu.organization.repository.TaxonomyRepository;
+import it.gov.pagopa.pu.organization.util.DateUtils;
 import it.gov.pagopa.pu.pagopapayments.dto.generated.TaxonomyDTO;
 import jakarta.transaction.Transactional;
 import lombok.extern.slf4j.Slf4j;
@@ -79,8 +80,8 @@ public class TaxonomySynchronizationService {
       !existingTax.getServiceTypeCode().equals(mappedTax.getServiceTypeCode()) ||
       !existingTax.getServiceType().equals(mappedTax.getServiceType()) ||
       !existingTax.getServiceTypeDescription().equals(mappedTax.getServiceTypeDescription()) ||
-      !(existingTax.getStartDateValidity().toInstant()).equals((mappedTax.getStartDateValidity()).toInstant()) ||
-      !(existingTax.getEndDateOfValidity().toInstant()).equals((mappedTax.getEndDateOfValidity()).toInstant()) ||
+      !DateUtils.equals(existingTax.getStartDateValidity(), mappedTax.getStartDateValidity()) ||
+      !DateUtils.equals(existingTax.getEndDateOfValidity(), mappedTax.getEndDateOfValidity()) ||
       !existingTax.getTaxonomyCode().equals(mappedTax.getTaxonomyCode()) ||
       !existingTax.getCollectionReason().equals(mappedTax.getCollectionReason());
   }
