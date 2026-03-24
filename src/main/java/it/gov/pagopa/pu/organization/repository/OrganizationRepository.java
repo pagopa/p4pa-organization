@@ -106,4 +106,6 @@ public interface OrganizationRepository extends
     WHERE b.brokerId = :brokerId
     """)
   Organization getBrokerOrganization(Long brokerId);
+
+  Optional<Organization> findByOrgFiscalCodeAndSegregationCode(String orgFiscalCode, String segregationCode);
 }
