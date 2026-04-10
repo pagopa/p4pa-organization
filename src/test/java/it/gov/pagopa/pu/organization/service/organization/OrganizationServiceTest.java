@@ -1,6 +1,7 @@
 package it.gov.pagopa.pu.organization.service.organization;
 
 import it.gov.pagopa.pu.organization.connector.debtposition.client.DebtPositionTypeOrgClient;
+import it.gov.pagopa.pu.organization.connector.workflow.service.WorkflowDebtPositionService;
 import it.gov.pagopa.pu.organization.dto.OrganizationDetailDTO;
 import it.gov.pagopa.pu.organization.dto.generated.BrokerApiKeyType;
 import it.gov.pagopa.pu.organization.dto.generated.OrganizationApiKeyType;
@@ -55,6 +56,8 @@ class OrganizationServiceTest {
   private OrganizationMapper organizationMapperMock;
   @Mock
   private DebtPositionTypeOrgClient debtPositionTypeOrgClientMock;
+  @Mock
+  private WorkflowDebtPositionService workflowDebtPositionServiceMock;
 
   private OrganizationService service;
 
@@ -63,7 +66,7 @@ class OrganizationServiceTest {
     service = new OrganizationService(organizationEncryptionServiceMock,
       brokerEncryptionServiceMock, organizationMapperMock,
       organizationRepositoryMock, brokerRepositoryMock,
-      debtPositionTypeOrgClientMock, true);
+      debtPositionTypeOrgClientMock, workflowDebtPositionServiceMock, true);
   }
 
   @AfterEach
