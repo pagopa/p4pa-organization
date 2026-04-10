@@ -17,7 +17,6 @@ import it.gov.pagopa.pu.organization.model.Organization;
 import it.gov.pagopa.pu.organization.repository.BrokerRepository;
 import it.gov.pagopa.pu.organization.repository.OrganizationRepository;
 import it.gov.pagopa.pu.organization.service.broker.BrokerEncryptionService;
-import it.gov.pagopa.pu.organization.util.SecurityUtils;
 import it.gov.pagopa.pu.workflowhub.dto.generated.MassiveDebtPositionIbanUpdateRequestDTO;
 import jakarta.transaction.Transactional;
 import jakarta.validation.ValidationException;
