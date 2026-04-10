@@ -338,7 +338,8 @@ class OrganizationServiceTest {
   }
 
   @Test
-  void givenValidOrganizationDTOWhenUpdateOrganizationThenOk(){
+  void givenValidOrganizationDTOWhenUpdateOrganizationThenOk() {
+    String accessToken = "accessToken";
     OrganizationDetailDTO organizationDetailDTO = podamFactory.manufacturePojo(OrganizationDetailDTO.class);
     organizationDetailDTO.setOrgFiscalCode("12345678903");
     organizationDetailDTO.setIban("IT60X0542811101000000123456");
@@ -356,11 +357,12 @@ class OrganizationServiceTest {
     when(organizationMapperMock.toModel(organizationDetailDTO)).thenReturn(organization);
     when(organizationRepositoryMock.save(organization)).thenReturn(organization);
 
-    service.updateOrganization(organizationDetailDTO);
+    service.updateOrganization(organizationDetailDTO, accessToken);
   }
 
   @Test
-  void givenStatusActiveAndNoMandatoryFieldWhenUpdateOrganizationThenValidationException(){
+  void givenStatusActiveAndNoMandatoryFieldWhenUpdateOrganizationThenValidationException() {
+    String accessToken = "accessToken";
     OrganizationDetailDTO organizationDetailDTO = podamFactory.manufacturePojo(OrganizationDetailDTO.class);
     organizationDetailDTO.setOrgFiscalCode("12345678903");
     organizationDetailDTO.setIban("IT60X0542811101000000123456");
@@ -376,11 +378,12 @@ class OrganizationServiceTest {
     organization.setOrgTypeCode(organizationDetailDTO.getOrgTypeCode());
     when(organizationRepositoryMock.findById(organizationDetailDTO.getOrganizationId())).thenReturn(Optional.of(organization));
 
-    assertThrows(ValidationException.class,()->service.updateOrganization(organizationDetailDTO));
+    assertThrows(ValidationException.class, () -> service.updateOrganization(organizationDetailDTO, accessToken));
   }
 
   @Test
-  void givenUpdatedImmutableFieldWhenUpdateOrganizationThenValidationException(){
+  void givenUpdatedImmutableFieldWhenUpdateOrganizationThenValidationException() {
+    String accessToken = "accessToken";
     OrganizationDetailDTO organizationDetailDTO = podamFactory.manufacturePojo(OrganizationDetailDTO.class);
     organizationDetailDTO.setOrgFiscalCode("12345678903");
     organizationDetailDTO.setIban("IT60X0542811101000000123456");
@@ -396,15 +399,16 @@ class OrganizationServiceTest {
     organization.setOrgTypeCode(organizationDetailDTO.getOrgTypeCode()+"old");
     when(organizationRepositoryMock.findById(organizationDetailDTO.getOrganizationId())).thenReturn(Optional.of(organization));
 
-    assertThrows(ValidationException.class,()->service.updateOrganization(organizationDetailDTO));
+    assertThrows(ValidationException.class, () -> service.updateOrganization(organizationDetailDTO, accessToken));
   }
 
   @Test
-  void givenNonExistingOrganizationWhenUpdateOrganizationThenResourceNotFoundException(){
+  void givenNonExistingOrganizationWhenUpdateOrganizationThenResourceNotFoundException() {
+    String accessToken = "accessToken";
     OrganizationDetailDTO organizationDetailDTO = podamFactory.manufacturePojo(OrganizationDetailDTO.class);
     when(organizationRepositoryMock.findById(organizationDetailDTO.getOrganizationId())).thenReturn(Optional.empty());
 
-    assertThrows(ResourceNotFoundException.class,()->service.updateOrganization(organizationDetailDTO));
+    assertThrows(ResourceNotFoundException.class,() -> service.updateOrganization(organizationDetailDTO, accessToken));
   }
 
   @Test
@@ -418,7 +422,7 @@ class OrganizationServiceTest {
   }
 
   @Test
-  void givenStatusActiveAndNoMandatoryFieldWhenUpdateOrganizationStatusThenValidationException(){
+  void givenStatusActiveAndNoMandatoryFieldWhenUpdateOrganizationStatusThenValidationException() {
     Long organizationId = 1L;
     OrganizationStatus newStatus = OrganizationStatus.ACTIVE;
 

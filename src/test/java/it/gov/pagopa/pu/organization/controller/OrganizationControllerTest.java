@@ -148,6 +148,7 @@ class OrganizationControllerTest {
 
   @Test
   void whenUpdateOrganizationThenOk() throws Exception {
+    String accessToken = "accessToken";
     TestUtils.setFakeAccessTokenInContext();
 
     OrganizationDetailDTO organizationDetailDTO = podamFactory.manufacturePojo(OrganizationDetailDTO.class);
@@ -159,7 +160,7 @@ class OrganizationControllerTest {
             .andExpect(status().isOk())
             .andReturn();
 
-    verify(organizationServiceMock).updateOrganization(organizationDetailDTO);
+    verify(organizationServiceMock).updateOrganization(organizationDetailDTO, accessToken);
   }
 
   @Test
