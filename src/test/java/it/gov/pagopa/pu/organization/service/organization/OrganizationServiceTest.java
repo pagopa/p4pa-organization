@@ -18,6 +18,7 @@ import it.gov.pagopa.pu.organization.repository.OrganizationRepository;
 import it.gov.pagopa.pu.organization.service.broker.BrokerEncryptionService;
 import it.gov.pagopa.pu.organization.util.TestUtils;
 import it.gov.pagopa.pu.organization.util.faker.OrganizationFaker;
+import it.gov.pagopa.pu.workflowhub.dto.generated.MassiveDebtPositionIbanUpdateRequestDTO;
 import jakarta.validation.ValidationException;
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.Assertions;
@@ -445,5 +446,98 @@ class OrganizationServiceTest {
 
     Mockito.verify(organizationRepositoryMock).save(Mockito.same(organization));
     Assertions.assertEquals(newStatus, organization.getStatus());
+  }
+
+  @Test
+  void givenIbanChangedWhenUpdateOrganizationThenTriggerMassiveUpdate() {
+    String accessToken = TestUtils.getFakeAccessToken();
+    OrganizationDetailDTO organizationDetailDTO = podamFactory.manufacturePojo(OrganizationDetailDTO.class);
+    organizationDetailDTO.setOrgFiscalCode("12345678903");
+    organizationDetailDTO.setIban("IT0000000000000000000000000");
+    organizationDetailDTO.setPostalIban("IT0000000000000000000000000");
+    organizationDetailDTO.setSegregationCode("02");
+
+    Organization existingOrganization = OrganizationFaker.buildOrganization();
+    existingOrganization.setIban("IT0000000000000000000000001");
+    existingOrganization.setPostalIban("IT0000000000000000000000000");
+
+    existingOrganization.setBrokerId(organizationDetailDTO.getBrokerId());
+    existingOrganization.setExternalOrganizationId(organizationDetailDTO.getExternalOrganizationId());
+    existingOrganization.setIpaCode(organizationDetailDTO.getIpaCode());
+    existingOrganization.setOrgFiscalCode(organizationDetailDTO.getOrgFiscalCode());
+    existingOrganization.setOrgName(organizationDetailDTO.getOrgName());
+    existingOrganization.setOrgTypeCode(organizationDetailDTO.getOrgTypeCode());
+
+    when(organizationRepositoryMock.findById(organizationDetailDTO.getOrganizationId())).thenReturn(Optional.of(existingOrganization));
+    when(organizationMapperMock.toModel(organizationDetailDTO)).thenReturn(existingOrganization);
+    when(organizationRepositoryMock.save(existingOrganization)).thenReturn(existingOrganization);
+
+    service.updateOrganization(organizationDetailDTO, accessToken);
+
+    Mockito.verify(workflowDebtPositionServiceMock).massiveDpIbanUpdate(
+      Mockito.eq(existingOrganization.getOrganizationId()),
+      Mockito.any(MassiveDebtPositionIbanUpdateRequestDTO.class),
+      Mockito.eq(accessToken)
+    );
+  }
+
+  @Test
+  void givenPostalIbanChangedWhenUpdateOrganizationThenTriggerMassiveUpdate() {
+    String accessToken = TestUtils.getFakeAccessToken();
+    OrganizationDetailDTO organizationDetailDTO = podamFactory.manufacturePojo(OrganizationDetailDTO.class);
+    organizationDetailDTO.setOrgFiscalCode("12345678903");
+    organizationDetailDTO.setIban("IT0000000000000000000000000");
+    organizationDetailDTO.setPostalIban("IT0000000000000000000000000");
+    organizationDetailDTO.setSegregationCode("02");
+
+    Organization existingOrganization = OrganizationFaker.buildOrganization();
+    existingOrganization.setIban("IT0000000000000000000000000");
+    existingOrganization.setPostalIban("IT0000000000000000000000001");
+
+    existingOrganization.setBrokerId(organizationDetailDTO.getBrokerId());
+    existingOrganization.setExternalOrganizationId(organizationDetailDTO.getExternalOrganizationId());
+    existingOrganization.setIpaCode(organizationDetailDTO.getIpaCode());
+    existingOrganization.setOrgFiscalCode(organizationDetailDTO.getOrgFiscalCode());
+    existingOrganization.setOrgName(organizationDetailDTO.getOrgName());
+    existingOrganization.setOrgTypeCode(organizationDetailDTO.getOrgTypeCode());
+
+    when(organizationRepositoryMock.findById(organizationDetailDTO.getOrganizationId())).thenReturn(Optional.of(existingOrganization));
+    when(organizationMapperMock.toModel(organizationDetailDTO)).thenReturn(existingOrganization);
+    when(organizationRepositoryMock.save(existingOrganization)).thenReturn(existingOrganization);
+
+    service.updateOrganization(organizationDetailDTO, accessToken);
+
+    Mockito.verify(workflowDebtPositionServiceMock).massiveDpIbanUpdate(
+      Mockito.eq(existingOrganization.getOrganizationId()),
+      Mockito.any(MassiveDebtPositionIbanUpdateRequestDTO.class),
+      Mockito.eq(accessToken)
+    );
+  }
+
+  @Test
+  void givenNullOldIbanWhenUpdateOrganizationThenDoNotTriggerMassiveUpdate() {
+    String accessToken = TestUtils.getFakeAccessToken();
+    OrganizationDetailDTO organizationDetailDTO = podamFactory.manufacturePojo(OrganizationDetailDTO.class);
+    organizationDetailDTO.setOrgFiscalCode("12345678903");
+    organizationDetailDTO.setIban("IT0000000000000000000000000");
+    organizationDetailDTO.setSegregationCode("02");
+
+    Organization existingOrganization = OrganizationFaker.buildOrganization();
+    existingOrganization.setIban(null);
+
+    existingOrganization.setBrokerId(organizationDetailDTO.getBrokerId());
+    existingOrganization.setExternalOrganizationId(organizationDetailDTO.getExternalOrganizationId());
+    existingOrganization.setIpaCode(organizationDetailDTO.getIpaCode());
+    existingOrganization.setOrgFiscalCode(organizationDetailDTO.getOrgFiscalCode());
+    existingOrganization.setOrgName(organizationDetailDTO.getOrgName());
+    existingOrganization.setOrgTypeCode(organizationDetailDTO.getOrgTypeCode());
+
+    when(organizationRepositoryMock.findById(organizationDetailDTO.getOrganizationId())).thenReturn(Optional.of(existingOrganization));
+    when(organizationMapperMock.toModel(organizationDetailDTO)).thenReturn(existingOrganization);
+    when(organizationRepositoryMock.save(existingOrganization)).thenReturn(existingOrganization);
+
+    service.updateOrganization(organizationDetailDTO, accessToken);
+
+    Mockito.verifyNoInteractions(workflowDebtPositionServiceMock);
   }
 }
