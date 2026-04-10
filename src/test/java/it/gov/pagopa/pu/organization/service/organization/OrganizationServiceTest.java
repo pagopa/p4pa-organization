@@ -520,6 +520,7 @@ class OrganizationServiceTest {
     OrganizationDetailDTO organizationDetailDTO = podamFactory.manufacturePojo(OrganizationDetailDTO.class);
     organizationDetailDTO.setOrgFiscalCode("12345678903");
     organizationDetailDTO.setIban("IT0000000000000000000000000");
+    organizationDetailDTO.setPostalIban("IT0000000000000000000000000");
     organizationDetailDTO.setSegregationCode("02");
 
     Organization existingOrganization = OrganizationFaker.buildOrganization();
