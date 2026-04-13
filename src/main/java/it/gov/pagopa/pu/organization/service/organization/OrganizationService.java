@@ -126,10 +126,8 @@ public class OrganizationService {
   }
 
   private void validateIban(OrganizationCreateDTO dto) {
-    if (StringUtils.isNotBlank(dto.getIban())) {
-      if (!isValidIban(dto.getIban())) {
-        throw new InvalidValueException("[INVALID_IBAN] Iban is not valid");
-      }
+    if (StringUtils.isNotBlank(dto.getIban()) && !isValidIban(dto.getIban())) {
+      throw new InvalidValueException("[INVALID_IBAN] Iban is not valid");
     }
   }
 
