@@ -5,7 +5,6 @@ import it.gov.pagopa.pu.organization.dto.generated.OrganizationCreateDTO;
 import it.gov.pagopa.pu.organization.model.Organization;
 import it.gov.pagopa.pu.organization.service.organization.OrganizationEncryptionService;
 import lombok.RequiredArgsConstructor;
-import org.apache.commons.lang3.StringUtils;
 import org.springframework.stereotype.Component;
 
 import java.util.Optional;
@@ -28,7 +27,7 @@ public class OrganizationMapper {
     organization.setOrgName(createDTO.getOrgName());
     organization.setOrgTypeCode(createDTO.getOrgTypeCode());
     organization.setOrgEmail(createDTO.getOrgEmail());
-    organization.setPostalIban(StringUtils.isBlank(createDTO.getPostalIban()) ? null : createDTO.getPostalIban());
+    organization.setPostalIban(createDTO.getPostalIban());
     organization.setIban(createDTO.getIban());
     organization.setPassword(createDTO.getPassword() != null ? encryptionService.encrypt(createDTO.getPassword()) : null);
     organization.setSegregationCode(createDTO.getSegregationCode());
