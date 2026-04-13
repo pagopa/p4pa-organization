@@ -87,7 +87,9 @@ class OrganizationServiceTest {
     "12345678903,iban,IT60X0542811101000000123456,12,false",
     "12345678903,IT60X0542811101000000123456,iban,12,false",
     "null,IT60X0542811101000000123456,IT60X0542811101000000123456,12,false",
-    "12345678903,IT60X0542811101000000123456,IT60X0542811101000000123456,abc,false"
+    "12345678903,IT60X0542811101000000123456,IT60X0542811101000000123456,abc,false",
+    "12345678903,IT60X0542811101000000123456,null,12,true",
+    "12345678903,IT60X0542811101000000123456,'',12,false"
   }, nullValues = {"null"})
   void testCreateOrganizationParameterized(String orgFiscalCode, String iban, String postalIban, String segregationCode, boolean expectedSuccess) {
     String accessToken = TestUtils.getFakeAccessToken();
