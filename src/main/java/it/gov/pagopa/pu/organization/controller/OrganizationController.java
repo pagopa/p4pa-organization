@@ -57,7 +57,7 @@ public class OrganizationController implements OrganizationApi {
   @Override
   public ResponseEntity<Void> updateOrganization(OrganizationDetailDTO organizationDetailDTO) {
     log.info("Updating organization {}", organizationDetailDTO.getOrganizationId());
-    service.updateOrganization(organizationDetailDTO);
+    service.updateOrganization(organizationDetailDTO, SecurityUtils.getAccessToken());
     return ResponseEntity.ok().build();
   }
 

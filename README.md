@@ -108,13 +108,16 @@ See [application.yml](src/main/resources/application.yml) for each configurable 
 | DEFAULT_REST_TIMEOUT_READ_MILLIS                  | Default read timeout (milliseconds)       | 120000  |
 
 ##### 🧩 Microservices
-| ENV                                  | DESCRIPTION                                                                       | DEFAULT |
-|--------------------------------------|-----------------------------------------------------------------------------------|---------|
-| PAGOPA_PAYMENTS_BASE_URL                | Organization microservice URL                                                     |         |
-| PAGOPA_PAYMENTS_MAX_ATTEMPTS            | Organization API max attempts                                                     | 3       |
-| PAGOPA_PAYMENTS_WAIT_TIME_MILLIS        | Organization retry waiting time (milliseconds)                                    | 500     |
-| PAGOPA_PAYMENTS_PRINT_BODY_WHEN_ERROR   | To print body when an error occurs                                                | true    |
-
+| ENV                                    | DESCRIPTION                                                                       | DEFAULT |
+|----------------------------------------|-----------------------------------------------------------------------------------|---------|
+| PAGOPA_PAYMENTS_BASE_URL               | Organization microservice URL                                                     |         |
+| PAGOPA_PAYMENTS_MAX_ATTEMPTS           | Organization API max attempts                                                     | 3       |
+| PAGOPA_PAYMENTS_WAIT_TIME_MILLIS       | Organization retry waiting time (milliseconds)                                    | 500     |
+| PAGOPA_PAYMENTS_PRINT_BODY_WHEN_ERROR  | To print body when an error occurs                                                | true    |
+| WORKFLOW_HUB_BASE_URL                  | WorkflowHub microservice URL                                                      |         |
+| WORKFLOW_HUB_MAX_ATTEMPTS              | WorkflowHub API max attempts                                                      | 3       |
+| WORKFLOW_HUB_WAIT_TIME_MILLIS          | WorkflowHub retry waiting time (milliseconds)                                     | 500     |
+| WORKFLOW_HUB_PRINT_BODY_WHEN_ERROR     | To print body when an error occurs                                                | true    |
 #### 🔑 keys
 | ENV                            | DESCRIPTION                                                        | DEFAULT |
 |--------------------------------|--------------------------------------------------------------------|---------|

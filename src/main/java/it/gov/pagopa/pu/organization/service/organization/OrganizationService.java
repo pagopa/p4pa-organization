@@ -1,6 +1,7 @@
 package it.gov.pagopa.pu.organization.service.organization;
 
 import it.gov.pagopa.pu.organization.connector.debtposition.client.DebtPositionTypeOrgClient;
+import it.gov.pagopa.pu.organization.connector.workflow.service.WorkflowDebtPositionService;
 import it.gov.pagopa.pu.organization.dto.BaseOrganization;
 import it.gov.pagopa.pu.organization.dto.OrganizationDetailDTO;
 import it.gov.pagopa.pu.organization.dto.generated.BrokerApiKeyType;
@@ -16,6 +17,7 @@ import it.gov.pagopa.pu.organization.model.Organization;
 import it.gov.pagopa.pu.organization.repository.BrokerRepository;
 import it.gov.pagopa.pu.organization.repository.OrganizationRepository;
 import it.gov.pagopa.pu.organization.service.broker.BrokerEncryptionService;
+import it.gov.pagopa.pu.workflowhub.dto.generated.MassiveDebtPositionIbanUpdateRequestDTO;
 import jakarta.transaction.Transactional;
 import jakarta.validation.ValidationException;
 import org.apache.commons.lang3.StringUtils;
@@ -26,6 +28,7 @@ import org.springframework.util.CollectionUtils;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Objects;
 
 import static it.gov.pagopa.pu.organization.util.Utilities.*;
 
@@ -38,6 +41,7 @@ public class OrganizationService {
   private final OrganizationRepository organizationRepository;
   private final BrokerRepository brokerRepository;
   private final DebtPositionTypeOrgClient debtPositionTypeOrgClient;
+  private final WorkflowDebtPositionService workflowDebtPositionService;
 
   private final boolean isOrgPIvaCheckEnabled;
 
@@ -50,6 +54,7 @@ public class OrganizationService {
     OrganizationRepository organizationRepository,
     BrokerRepository brokerRepository,
     DebtPositionTypeOrgClient debtPositionTypeOrgClient,
+    WorkflowDebtPositionService workflowDebtPositionService,
     @Value("${features.organization.piva-check}") boolean isOrgPIvaCheckEnabled) {
     this.organizationEncryptionService = organizationEncryptionService;
     this.brokerEncryptionService = brokerEncryptionService;
@@ -58,6 +63,7 @@ public class OrganizationService {
     this.brokerRepository = brokerRepository;
     this.debtPositionTypeOrgClient = debtPositionTypeOrgClient;
     this.isOrgPIvaCheckEnabled = isOrgPIvaCheckEnabled;
+    this.workflowDebtPositionService = workflowDebtPositionService;
   }
 
   @Transactional
@@ -137,12 +143,35 @@ public class OrganizationService {
   }
 
   @Transactional
-  public void updateOrganization(OrganizationDetailDTO organization) {
+  public void updateOrganization(OrganizationDetailDTO organization, String accessToken) {
     Long organizationId = organization.getOrganizationId();
     Organization existingOrganization = organizationRepository.findById(organizationId)
-            .orElseThrow(()->new ResourceNotFoundException(ORGANIZATION_NOT_FOUND_MSG.formatted(organizationId)));
+            .orElseThrow(() -> new ResourceNotFoundException(ORGANIZATION_NOT_FOUND_MSG.formatted(organizationId)));
     validateOrganizationDTO(organization, existingOrganization);
-    organizationRepository.save(organizationMapper.toModel( organization));
+    triggerMassiveIbanUpdateIfNeeded(existingOrganization, organization, accessToken);
+    organizationRepository.save(organizationMapper.toModel(organization));
+  }
+
+  private void triggerMassiveIbanUpdateIfNeeded(Organization existingOrganization, OrganizationDetailDTO organization, String accessToken) {
+    String oldIban = existingOrganization.getIban();
+    String newIban = organization.getIban();
+    String oldPostalIban = existingOrganization.getPostalIban();
+    String newPostalIban = organization.getPostalIban();
+
+    if (oldIban == null || newIban == null) {
+      return;
+    }
+
+    if (!Objects.equals(oldIban, newIban) || !Objects.equals(oldPostalIban, newPostalIban)) {
+      MassiveDebtPositionIbanUpdateRequestDTO requestDTO = MassiveDebtPositionIbanUpdateRequestDTO.builder()
+        .oldIban(oldIban)
+        .newIban(newIban)
+        .oldPostalIban(oldPostalIban)
+        .newPostalIban(newPostalIban)
+        .build();
+
+      workflowDebtPositionService.massiveDpIbanUpdate(existingOrganization.getOrganizationId(), requestDTO, accessToken);
+    }
   }
 
   private void validateOrganizationDTO(OrganizationDetailDTO organization, Organization existingOrganization) {
