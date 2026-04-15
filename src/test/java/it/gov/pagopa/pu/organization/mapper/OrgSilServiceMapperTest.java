@@ -6,13 +6,13 @@ import it.gov.pagopa.pu.organization.dto.orgsilservice.SilServiceLegacyBasicAuth
 import it.gov.pagopa.pu.organization.dto.orgsilservice.SilServiceLegacyJwtAuthConfigDTO;
 import it.gov.pagopa.pu.organization.enums.JwtAlgorithm;
 import it.gov.pagopa.pu.organization.enums.OrgSilServiceType;
+import it.gov.pagopa.pu.organization.exception.custom.InvalidValueException;
 import it.gov.pagopa.pu.organization.model.orgsilservice.OrgSilService;
 import it.gov.pagopa.pu.organization.model.orgsilservice.SilServiceAuthConfig;
 import it.gov.pagopa.pu.organization.model.orgsilservice.SilServiceLegacyBasicAuthConfig;
 import it.gov.pagopa.pu.organization.model.orgsilservice.SilServiceLegacyJwtAuthConfig;
 import it.gov.pagopa.pu.organization.service.organization.OrganizationEncryptionService;
 import it.gov.pagopa.pu.organization.util.TestUtils;
-import jakarta.validation.ValidationException;
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.BeforeEach;
@@ -262,10 +262,11 @@ class OrgSilServiceMapperTest {
     jwtAuthConfigDTO.setSigningKey("X");
 
     // When
-    ValidationException result = assertThrows(ValidationException.class, () -> mapper.fromDTO(testDTO));
+    InvalidValueException result = assertThrows(InvalidValueException.class, () -> mapper.fromDTO(testDTO));
 
     // Then
-    Assertions.assertEquals("[ORG_SIL_SERVICE_MAPPING_ERROR] Invalid legacyJwt signingKey! It should be Base64 encoded!", result.getMessage());
+    Assertions.assertEquals("ORG_SIL_SERVICE_MAPPING_ERROR",result.getCode());
+    Assertions.assertEquals("Invalid legacyJwt signingKey! It should be Base64 encoded!", result.getMessage());
   }
 
   @Test
