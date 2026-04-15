@@ -6,7 +6,7 @@ See [PU Microservice Architecture](https://pagopa.atlassian.net/wiki/spaces/SPAC
 
 ## 🧱 Role
 
-* To handle brokers and api keys;
+* To handle brokers, broker configurations and api keys;
 * To handle organizations and api keys;
 * To handle taxonomies.
 
@@ -55,6 +55,7 @@ See [log configured pattern](/src/main/resources/logback-spring.xml).
 * `organization`
 * `org_sil_service`
 * `taxonomy`
+* `broker-configuration`
 
 ## 🔧 Configuration
 
