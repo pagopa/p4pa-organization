@@ -10,6 +10,7 @@ import it.gov.pagopa.pu.organization.model.orgsilservice.SilServiceAuthConfig;
 import it.gov.pagopa.pu.organization.model.orgsilservice.SilServiceLegacyBasicAuthConfig;
 import it.gov.pagopa.pu.organization.model.orgsilservice.SilServiceLegacyJwtAuthConfig;
 import it.gov.pagopa.pu.organization.service.organization.OrganizationEncryptionService;
+import it.gov.pagopa.pu.organization.util.ErrorCodeConstants;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Component;
 
@@ -88,7 +89,7 @@ public class OrgSilServiceMapper {
     try{
       Base64.getDecoder().decode(dto.getSigningKey());
     } catch (IllegalArgumentException e){
-      throw new InvalidValueException("ORG_SIL_SERVICE_MAPPING_ERROR", "Invalid legacyJwt signingKey! It should be Base64 encoded!");
+      throw new InvalidValueException(ErrorCodeConstants.ERROR_CODE_ORG_SIL_SERVICE_MAPPING_ERROR, "Invalid legacyJwt signingKey! It should be Base64 encoded!");
     }
 
     SilServiceLegacyJwtAuthConfig legacyJwtAuthConfig = new SilServiceLegacyJwtAuthConfig();

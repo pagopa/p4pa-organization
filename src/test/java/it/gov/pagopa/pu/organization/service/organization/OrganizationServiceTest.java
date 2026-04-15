@@ -339,7 +339,7 @@ class OrganizationServiceTest {
 
     when(organizationRepositoryMock.findById(organizationId)).thenReturn(Optional.empty());
 
-    assertThrows(ResourceNotFoundException.class, () -> service.getOrganization(organizationId));
+    assertThrows(OrganizationNotFoundException.class, () -> service.getOrganization(organizationId));
 
     verify(organizationRepositoryMock).findById(organizationId);
   }
@@ -415,7 +415,7 @@ class OrganizationServiceTest {
     OrganizationDetailDTO organizationDetailDTO = podamFactory.manufacturePojo(OrganizationDetailDTO.class);
     when(organizationRepositoryMock.findById(organizationDetailDTO.getOrganizationId())).thenReturn(Optional.empty());
 
-    assertThrows(ResourceNotFoundException.class,() -> service.updateOrganization(organizationDetailDTO, accessToken));
+    assertThrows(OrganizationNotFoundException.class,() -> service.updateOrganization(organizationDetailDTO, accessToken));
   }
 
   @Test
@@ -425,7 +425,7 @@ class OrganizationServiceTest {
 
     when(organizationRepositoryMock.findById(organizationId)).thenReturn(Optional.empty());
 
-    assertThrows(ResourceNotFoundException.class,()->service.updateOrganizationStatus(organizationId, newStatus));
+    assertThrows(OrganizationNotFoundException.class,()->service.updateOrganizationStatus(organizationId, newStatus));
   }
 
   @Test

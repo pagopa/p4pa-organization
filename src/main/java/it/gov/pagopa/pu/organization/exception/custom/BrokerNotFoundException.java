@@ -1,8 +1,10 @@
 package it.gov.pagopa.pu.organization.exception.custom;
 
+import it.gov.pagopa.pu.organization.util.ErrorCodeConstants;
+
 public class BrokerNotFoundException extends BaseBusinessException {
 
-    public BrokerNotFoundException(String message) {
-            super("BROKER_NOT_FOUND", message);
-        }
+  public BrokerNotFoundException(String message) {
+    super(ErrorCodeConstants.ERROR_CODE_BROKER_NOT_FOUND, message);
+  }
 }
