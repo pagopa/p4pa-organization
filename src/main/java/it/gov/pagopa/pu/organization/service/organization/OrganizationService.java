@@ -135,14 +135,8 @@ public class OrganizationService {
     String postalIban = dto.getPostalIban();
 
     // Postal IBAN is optional, but if provided, it must not be blank
-    if (postalIban != null) {
-      if (StringUtils.isBlank(postalIban)) {
-        throw new InvalidValueException("[MISSING_POSTAL_IBAN] Postal IBAN is optional, but if provided, it must not be blank");
-      }
-
-      if (!isValidIban(postalIban)) {
-        throw new InvalidValueException("[INVALID_POSTAL_IBAN] Postal iban is not valid");
-      }
+    if (postalIban != null && !isValidIban(postalIban)) {
+      throw new InvalidValueException("[INVALID_POSTAL_IBAN] Postal iban is not valid");
     }
   }
 
