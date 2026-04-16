@@ -2,7 +2,9 @@ package it.gov.pagopa.pu.organization.exception;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
 import it.gov.pagopa.pu.organization.config.json.JsonConfig;
+import it.gov.pagopa.pu.organization.exception.custom.BrokerNotFoundException;
 import it.gov.pagopa.pu.organization.exception.custom.InvalidValueException;
+import it.gov.pagopa.pu.organization.exception.custom.NotFoundException;
 import it.gov.pagopa.pu.organization.util.TestUtils;
 import it.gov.pagopa.pu.organization.util.UtilitiesTest;
 import jakarta.persistence.RollbackException;
@@ -330,6 +332,19 @@ class OrganizationExceptionHandlerTest {
   }
 
   @Test
+  void handleNotFoundException() throws Exception {
+    doThrow(new NotFoundException("ERRORCODE", "Error")).when(testControllerSpy).testEndpoint(DATA, BODY);
+
+    performRequest(DATA, MediaType.APPLICATION_JSON)
+      .andExpect(MockMvcResultMatchers.status().isNotFound())
+      .andExpect(MockMvcResultMatchers.jsonPath("$.category").value("ORGANIZATION_NOT_FOUND"))
+      .andExpect(MockMvcResultMatchers.jsonPath("$.code").value("ERRORCODE"))
+      .andExpect(MockMvcResultMatchers.jsonPath("$.message").value("[ERRORCODE] Error"))
+      .andExpect(MockMvcResultMatchers.jsonPath("$.traceId").value(traceId));
+
+  }
+
+  @Test
   void handleTransactionException_invalidData() throws Exception {
     doThrow(new TransactionSystemException("TransactionError", new RollbackException("rollbackException", constraintViolationException)))
       .when(testControllerSpy).testEndpoint(DATA, BODY);
@@ -366,6 +381,19 @@ class OrganizationExceptionHandlerTest {
       .andExpect(MockMvcResultMatchers.jsonPath("$.code").value("BROKER_NOT_FOUND"))
       .andExpect(MockMvcResultMatchers.jsonPath("$.message").value("[BROKER_NOT_FOUND] EntityRepresentationModel not found"))
       .andExpect(MockMvcResultMatchers.jsonPath("$.traceId").value(traceId));
+  }
+
+  @Test
+  void handleBrokerNotFoundException() throws Exception {
+    doThrow(new BrokerNotFoundException("Error")).when(testControllerSpy).testEndpoint(DATA, BODY);
+
+    performRequest(DATA, MediaType.APPLICATION_JSON)
+      .andExpect(MockMvcResultMatchers.status().isNotFound())
+      .andExpect(MockMvcResultMatchers.jsonPath("$.category").value("ORGANIZATION_NOT_FOUND"))
+      .andExpect(MockMvcResultMatchers.jsonPath("$.code").value("BROKER_NOT_FOUND"))
+      .andExpect(MockMvcResultMatchers.jsonPath("$.message").value("[BROKER_NOT_FOUND] Error"))
+      .andExpect(MockMvcResultMatchers.jsonPath("$.traceId").value(traceId));
+
   }
 
 }

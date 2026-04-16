@@ -3,8 +3,7 @@ package it.gov.pagopa.pu.organization.exception;
 import it.gov.pagopa.pu.organization.dto.generated.OrganizationErrorDTO;
 import it.gov.pagopa.pu.organization.exception.custom.BaseBusinessException;
 import it.gov.pagopa.pu.organization.exception.custom.InvalidValueException;
-import it.gov.pagopa.pu.organization.exception.custom.OrgSilServiceNotFoundException;
-import it.gov.pagopa.pu.organization.exception.custom.OrganizationNotFoundException;
+import it.gov.pagopa.pu.organization.exception.custom.NotFoundException;
 import it.gov.pagopa.pu.organization.util.Utilities;
 import jakarta.persistence.RollbackException;
 import jakarta.servlet.ServletException;
@@ -51,7 +50,7 @@ public class OrganizationExceptionHandler {
     return handleException(ex, request, HttpStatus.BAD_REQUEST, OrganizationErrorDTO.CategoryEnum.ORGANIZATION_BAD_REQUEST);
   }
 
-  @ExceptionHandler({ResourceNotFoundException.class, OrganizationNotFoundException.class, OrgSilServiceNotFoundException.class})
+  @ExceptionHandler({ResourceNotFoundException.class, NotFoundException.class})
   public ResponseEntity<OrganizationErrorDTO> handleResourceNotFoundException(Exception ex, HttpServletRequest request) {
     return handleException(ex, request, HttpStatus.NOT_FOUND, OrganizationErrorDTO.CategoryEnum.ORGANIZATION_NOT_FOUND);
   }
