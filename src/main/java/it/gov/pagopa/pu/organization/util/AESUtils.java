@@ -1,5 +1,7 @@
 package it.gov.pagopa.pu.organization.util;
 
+import it.gov.pagopa.pu.organization.exception.custom.IllegalStateBusinessException;
+
 import javax.crypto.*;
 import javax.crypto.spec.GCMParameterSpec;
 import javax.crypto.spec.PBEKeySpec;
@@ -47,7 +49,7 @@ public class AESUtils {
             SecretKeyFactory factory = SecretKeyFactory.getInstance(FACTORY_INSTANCE);
             return new SecretKeySpec(factory.generateSecret(spec).getEncoded(), ALGORITHM_TYPE);
         } catch (NoSuchAlgorithmException | InvalidKeySpecException e) {
-            throw new IllegalStateException("[CIPHERING_ERROR] Cannot initialize cryptographic data", e);
+            throw new IllegalStateBusinessException("CIPHERING_ERROR", "Cannot initialize cryptographic data", e);
         }
     }
 
@@ -94,7 +96,7 @@ public class AESUtils {
             InputStream cipherStream = encrypt(password, fis)){
             Files.copy(cipherStream, cipherFile.toPath(), StandardCopyOption.REPLACE_EXISTING);
         } catch (IOException e) {
-            throw new IllegalStateException("[CIPHERING_ERROR] Something went wrong when ciphering input file " + plainFile.getAbsolutePath(), e);
+            throw new IllegalStateBusinessException("CIPHERING_ERROR", "Something went wrong when ciphering input file " + plainFile.getAbsolutePath(), e);
         }
         return cipherFile;
     }
@@ -128,7 +130,7 @@ public class AESUtils {
 
             return new CipherInputStream(new BufferedInputStream(cipherStream), cipher);
         } catch (IOException e) {
-            throw new IllegalStateException("[DECIPHERING_ERROR] Cannot read AES prefix data", e);
+            throw new IllegalStateBusinessException("DECIPHERING_ERROR", "Cannot read AES prefix data", e);
         }
     }
 
@@ -137,7 +139,7 @@ public class AESUtils {
             InputStream plainStream = decrypt(password, fis)){
             Files.copy(plainStream, outputPlainFile.toPath(), StandardCopyOption.REPLACE_EXISTING);
         } catch (IOException e) {
-            throw new IllegalStateException("[DECIPHERING_ERROR] Something went wrong when deciphering input file " + cipherFile.getAbsolutePath(), e);
+            throw new IllegalStateBusinessException("DECIPHERING_ERROR", "Something went wrong when deciphering input file " + cipherFile.getAbsolutePath(), e);
         }
     }
 
@@ -145,7 +147,7 @@ public class AESUtils {
         try {
             return cipher.doFinal(encryptedByte);
         } catch (IllegalBlockSizeException | BadPaddingException e) {
-            throw new IllegalStateException("[CIPHERING_ERROR] Cannot execute cipher op", e);
+            throw new IllegalStateBusinessException("CIPHERING_ERROR", "Cannot execute cipher op", e);
         }
     }
 
@@ -156,7 +158,7 @@ public class AESUtils {
             return cipher;
         } catch (NoSuchPaddingException | NoSuchAlgorithmException | InvalidKeyException
                  | InvalidAlgorithmParameterException e) {
-            throw new IllegalStateException("[CIPHERING_ERROR] Cannot initialize cipher data", e);
+            throw new IllegalStateBusinessException("CIPHERING_ERROR", "Cannot initialize cipher data", e);
         }
     }
 

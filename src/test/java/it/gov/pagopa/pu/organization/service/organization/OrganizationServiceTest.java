@@ -8,6 +8,7 @@ import it.gov.pagopa.pu.organization.dto.generated.OrganizationApiKeyType;
 import it.gov.pagopa.pu.organization.dto.generated.OrganizationApiKeys;
 import it.gov.pagopa.pu.organization.dto.generated.OrganizationCreateDTO;
 import it.gov.pagopa.pu.organization.enums.OrganizationStatus;
+import it.gov.pagopa.pu.organization.exception.custom.BrokerNotFoundException;
 import it.gov.pagopa.pu.organization.exception.custom.InvalidValueException;
 import it.gov.pagopa.pu.organization.exception.custom.OrganizationNotFoundException;
 import it.gov.pagopa.pu.organization.mapper.OrganizationMapper;
@@ -19,7 +20,6 @@ import it.gov.pagopa.pu.organization.service.broker.BrokerEncryptionService;
 import it.gov.pagopa.pu.organization.util.TestUtils;
 import it.gov.pagopa.pu.organization.util.faker.OrganizationFaker;
 import it.gov.pagopa.pu.workflowhub.dto.generated.MassiveDebtPositionIbanUpdateRequestDTO;
-import jakarta.validation.ValidationException;
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.BeforeEach;
@@ -169,7 +169,8 @@ class OrganizationServiceTest {
     OrganizationNotFoundException exception = assertThrows(OrganizationNotFoundException.class, () ->
       service.encryptAndSaveApiKey(1L, organizationApiKeys));
 
-    assertEquals("[ORGANIZATION_NOT_FOUND] Organization with id 1 not found", exception.getMessage());
+    assertEquals("ORGANIZATION_NOT_FOUND",exception.getCode());
+    assertEquals("Organization with id 1 not found", exception.getMessage());
   }
 
   @Test
@@ -227,10 +228,11 @@ class OrganizationServiceTest {
 
     Mockito.when(organizationRepositoryMock.findById(organizationId)).thenReturn(Optional.empty());
 
-    ResourceNotFoundException result = assertThrows(ResourceNotFoundException.class,
+    OrganizationNotFoundException result = assertThrows(OrganizationNotFoundException.class,
       () -> service.getApiKey(organizationId, keyType));
 
-    assertEquals("[ORGANIZATION_NOT_FOUND] Organization with id 1 not found", result.getMessage());
+    assertEquals("ORGANIZATION_NOT_FOUND",result.getCode());
+    assertEquals("Organization with id 1 not found", result.getMessage());
   }
 
   @Test
@@ -303,10 +305,12 @@ class OrganizationServiceTest {
     Mockito.when(brokerRepositoryMock.findByBrokeredOrganizationId(String.valueOf(organizationId)))
       .thenReturn(Optional.empty());
 
-    ResourceNotFoundException result = assertThrows(ResourceNotFoundException.class,
+    BrokerNotFoundException result = assertThrows(BrokerNotFoundException.class,
       () -> service.getApiKey(organizationId, keyType));
 
-    assertEquals("[BROKER_NOT_FOUND] Broker for org with id 1 not found", result.getMessage());
+    assertEquals("BROKER_NOT_FOUND",result.getCode());
+    assertEquals("BROKER_NOT_FOUND",result.getCode());
+    assertEquals("Broker for org with id 1 not found", result.getMessage());
   }
 
   @Test
@@ -335,7 +339,7 @@ class OrganizationServiceTest {
 
     when(organizationRepositoryMock.findById(organizationId)).thenReturn(Optional.empty());
 
-    assertThrows(ResourceNotFoundException.class, () -> service.getOrganization(organizationId));
+    assertThrows(OrganizationNotFoundException.class, () -> service.getOrganization(organizationId));
 
     verify(organizationRepositoryMock).findById(organizationId);
   }
@@ -381,7 +385,7 @@ class OrganizationServiceTest {
     organization.setOrgTypeCode(organizationDetailDTO.getOrgTypeCode());
     when(organizationRepositoryMock.findById(organizationDetailDTO.getOrganizationId())).thenReturn(Optional.of(organization));
 
-    assertThrows(ValidationException.class, () -> service.updateOrganization(organizationDetailDTO, accessToken));
+    assertThrows(InvalidValueException.class, () -> service.updateOrganization(organizationDetailDTO, accessToken));
   }
 
   @Test
@@ -402,7 +406,7 @@ class OrganizationServiceTest {
     organization.setOrgTypeCode(organizationDetailDTO.getOrgTypeCode()+"old");
     when(organizationRepositoryMock.findById(organizationDetailDTO.getOrganizationId())).thenReturn(Optional.of(organization));
 
-    assertThrows(ValidationException.class, () -> service.updateOrganization(organizationDetailDTO, accessToken));
+    assertThrows(InvalidValueException.class, () -> service.updateOrganization(organizationDetailDTO, accessToken));
   }
 
   @Test
@@ -411,7 +415,7 @@ class OrganizationServiceTest {
     OrganizationDetailDTO organizationDetailDTO = podamFactory.manufacturePojo(OrganizationDetailDTO.class);
     when(organizationRepositoryMock.findById(organizationDetailDTO.getOrganizationId())).thenReturn(Optional.empty());
 
-    assertThrows(ResourceNotFoundException.class,() -> service.updateOrganization(organizationDetailDTO, accessToken));
+    assertThrows(OrganizationNotFoundException.class,() -> service.updateOrganization(organizationDetailDTO, accessToken));
   }
 
   @Test
@@ -421,7 +425,7 @@ class OrganizationServiceTest {
 
     when(organizationRepositoryMock.findById(organizationId)).thenReturn(Optional.empty());
 
-    assertThrows(ResourceNotFoundException.class,()->service.updateOrganizationStatus(organizationId, newStatus));
+    assertThrows(OrganizationNotFoundException.class,()->service.updateOrganizationStatus(organizationId, newStatus));
   }
 
   @Test
@@ -432,7 +436,7 @@ class OrganizationServiceTest {
     Organization organization = new Organization();
     when(organizationRepositoryMock.findById(organizationId)).thenReturn(Optional.of(organization));
 
-    assertThrows(ValidationException.class,()->service.updateOrganizationStatus(organizationId, newStatus));
+    assertThrows(InvalidValueException.class,()->service.updateOrganizationStatus(organizationId, newStatus));
   }
 
   @Test

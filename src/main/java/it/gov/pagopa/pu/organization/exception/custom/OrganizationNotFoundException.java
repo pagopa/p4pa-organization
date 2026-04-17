@@ -1,8 +1,10 @@
 package it.gov.pagopa.pu.organization.exception.custom;
 
-public class OrganizationNotFoundException extends RuntimeException {
+import it.gov.pagopa.pu.organization.util.ErrorCodeConstants;
 
-    public OrganizationNotFoundException(String message) {
-            super(message);
+public class OrganizationNotFoundException extends NotFoundException {
+
+  public OrganizationNotFoundException(String message) {
+            super(ErrorCodeConstants.ERROR_CODE_ORGANIZATION_NOT_FOUND, message);
         }
 }
