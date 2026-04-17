@@ -9,7 +9,8 @@ import org.hibernate.type.SqlTypes;
 
 import java.io.Serializable;
 
-@Entity(name = "broker_configuration")
+@Entity
+@Table(name = "broker_configuration")
 @AllArgsConstructor
 @NoArgsConstructor
 @Builder
@@ -20,13 +21,11 @@ public class BrokerConfiguration extends BaseEntity implements Serializable {
   @Id
   private Long brokerId;
   @JdbcTypeCode(SqlTypes.JSON)
-  @NotNull
   private PersonalisationFe personalisationFe;
   @JdbcTypeCode(SqlTypes.JSON)
   private String arpuConfig;
   @NotNull
   private String mailSenderAddress;
-  @NotNull
   private String receiptFooter;
 
 }
