@@ -6,7 +6,8 @@ See [PU Microservice Architecture](https://pagopa.atlassian.net/wiki/spaces/SPAC
 
 ## 🧱 Role
 
-* To handle brokers, broker configurations and api keys;
+* To handle brokers and api keys;
+* To handle broker configurations
 * To handle organizations and api keys;
 * To handle taxonomies.
 
