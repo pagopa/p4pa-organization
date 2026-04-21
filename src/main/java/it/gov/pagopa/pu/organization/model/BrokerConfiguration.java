@@ -1,7 +1,9 @@
 package it.gov.pagopa.pu.organization.model;
 
 import it.gov.pagopa.pu.organization.dto.PersonalisationFe;
-import jakarta.persistence.*;
+import jakarta.persistence.Entity;
+import jakarta.persistence.Id;
+import jakarta.persistence.Table;
 import jakarta.validation.constraints.NotNull;
 import lombok.*;
 import org.hibernate.annotations.JdbcTypeCode;
@@ -27,5 +29,6 @@ public class BrokerConfiguration extends BaseEntity implements Serializable {
   @NotNull
   private String mailSenderAddress;
   private String receiptFooter;
-
+  private Long legalFactsExpirationDays;
+  private Long sendFilesExpirationDays;
 }
