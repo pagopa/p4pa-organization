@@ -159,7 +159,7 @@ class OrganizationControllerTest {
             .andExpect(status().isOk())
             .andReturn();
 
-    verify(organizationServiceMock).updateOrganization(organizationDetailDTO);
+    verify(organizationServiceMock).updateOrganization(organizationDetailDTO, TestUtils.getFakeAccessToken());
   }
 
   @Test

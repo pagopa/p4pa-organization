@@ -3,10 +3,11 @@ package it.gov.pagopa.pu.organization.service.broker;
 import it.gov.pagopa.pu.organization.dto.generated.BrokerApiKey;
 import it.gov.pagopa.pu.organization.dto.generated.BrokerApiKeyType;
 import it.gov.pagopa.pu.organization.dto.generated.BrokerApiKeys;
+import it.gov.pagopa.pu.organization.exception.custom.BrokerNotFoundException;
 import it.gov.pagopa.pu.organization.model.Broker;
 import it.gov.pagopa.pu.organization.repository.BrokerRepository;
 import lombok.extern.slf4j.Slf4j;
-import org.springframework.data.rest.webmvc.ResourceNotFoundException;
+import org.jspecify.annotations.NonNull;
 import org.springframework.stereotype.Service;
 
 @Service
@@ -15,7 +16,6 @@ public class BrokerService {
 
   private final BrokerRepository brokerRepository;
   private final BrokerEncryptionService brokerEncryptionService;
-  private static final String BROKER = "broker [%s]";
 
   public BrokerService(
     BrokerRepository brokerRepository,
@@ -25,12 +25,12 @@ public class BrokerService {
   }
 
   public BrokerApiKeys getBrokerApiKeys(Long brokerId) {
-    Broker broker = brokerRepository.findById(brokerId).orElseThrow(() -> new ResourceNotFoundException(BROKER.formatted(brokerId)));
+    Broker broker = getBrokerById(brokerId);
     return brokerEncryptionService.getBrokerDecryptedApiKeys(broker);
   }
 
   public void encryptAndSaveApiKey(Long brokerId, BrokerApiKey brokerApiKey) {
-    Broker broker = brokerRepository.findById(brokerId).orElseThrow(() -> new ResourceNotFoundException(BROKER.formatted(brokerId)));
+    Broker broker = getBrokerById(brokerId);
     byte[] encryptedKey = brokerEncryptionService.encryptKey(brokerApiKey.getApiKey());
     switch (brokerApiKey.getKeyType()) {
       case SYNC_PAYMENTS_REPORTING -> broker.setSyncPaymentsReportingKey(encryptedKey);
@@ -43,7 +43,11 @@ public class BrokerService {
   }
 
   public String getBrokerApiKey(Long brokerId, BrokerApiKeyType keyType) {
-    Broker broker = brokerRepository.findById(brokerId).orElseThrow(() -> new ResourceNotFoundException(BROKER.formatted(brokerId)));
+    Broker broker = getBrokerById(brokerId);
     return brokerEncryptionService.getBrokerDecryptedApiKey(broker, keyType);
+  }
+
+  private @NonNull Broker getBrokerById(Long brokerId) {
+    return brokerRepository.findById(brokerId).orElseThrow(() -> new BrokerNotFoundException("broker [%s]".formatted(brokerId)));
   }
 }
