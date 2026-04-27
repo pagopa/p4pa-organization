@@ -1,12 +1,9 @@
 package it.gov.pagopa.pu.organization.model;
 
-import it.gov.pagopa.pu.organization.dto.PersonalisationFe;
 import it.gov.pagopa.pu.organization.enums.PagoPaInteractionModel;
 import jakarta.persistence.*;
 import jakarta.validation.constraints.NotNull;
 import lombok.*;
-import org.hibernate.annotations.JdbcTypeCode;
-import org.hibernate.type.SqlTypes;
 
 import java.io.Serializable;
 
@@ -38,15 +35,10 @@ public class Broker extends BaseEntity implements Serializable {
   private byte[] gpdKey;
   private byte[] generateNoticeKey;
   private byte[] acaKey;
-  @JdbcTypeCode(SqlTypes.JSON)
-  @NotNull
-  private PersonalisationFe personalisationFe;
   @NotNull
   private boolean flagDelegate;
   @NotNull
   private boolean flagPaymentsReporting;
-  @JdbcTypeCode(SqlTypes.JSON)
-  private String arpuConfig;
   @NotNull
   private String externalId;
 }
