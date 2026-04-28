@@ -90,6 +90,7 @@ app:
   organizationEncryptPassword: "\${ORGANIZATION_ENCRYPT_PASSWORD:ENCR_PSW}"
 
 springdoc:
+  api-docs.version: openapi_3_0
   writer-with-default-pretty-printer: true
 
 rest:

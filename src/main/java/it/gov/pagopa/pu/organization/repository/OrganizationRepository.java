@@ -1,7 +1,6 @@
 package it.gov.pagopa.pu.organization.repository;
 
 import io.swagger.v3.oas.annotations.Parameter;
-import io.swagger.v3.oas.annotations.media.Schema;
 import it.gov.pagopa.pu.organization.enums.OrganizationStatus;
 import it.gov.pagopa.pu.organization.model.Organization;
 import jakarta.annotation.Nonnull;
@@ -37,7 +36,7 @@ public interface OrganizationRepository extends
     OrganizationStatus status);
 
   Page<Organization> findPagedOrganizationsByBrokerIdAndStatus(
-    @Parameter(required = true, schema = @Schema(type = "integer", format = "int64")) @Param("brokerId") Long brokerId,
+    @Parameter(required = true) @Param("brokerId") Long brokerId,
     @Param("status")OrganizationStatus status,
     Pageable pageable);
 
@@ -53,7 +52,7 @@ public interface OrganizationRepository extends
     AND (:allowedOrganizationIds is null OR o.organizationId IN :allowedOrganizationIds)
    """)
   Page<Organization> findByBrokerIdAndFilters(
-    @Parameter(required = true, schema = @Schema(type = "integer", format = "int64")) @Param("brokerId") Long brokerId,
+    @Parameter(required = true) @Param("brokerId") Long brokerId,
     @RequestParam(required = false) @Param("orgName") String orgName,
     @RequestParam(required = false) @Param("ipaCode") String ipaCode,
     @RequestParam(required = false) @Param("orgFiscalCode") String orgFiscalCode,
