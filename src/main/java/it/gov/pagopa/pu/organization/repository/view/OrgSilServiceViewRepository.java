@@ -1,7 +1,6 @@
 package it.gov.pagopa.pu.organization.repository.view;
 
 import io.swagger.v3.oas.annotations.Parameter;
-import io.swagger.v3.oas.annotations.media.Schema;
 import it.gov.pagopa.pu.organization.enums.OrgSilServiceType;
 import it.gov.pagopa.pu.organization.model.view.OrgSilServiceView;
 import org.springframework.data.domain.Page;
@@ -24,7 +23,7 @@ public interface OrgSilServiceViewRepository extends Repository<OrgSilServiceVie
     AND (:flagLegacy IS NULL OR o.flagLegacy = :flagLegacy)
     """)
   Page<OrgSilServiceView> findOrgSilServicesByFilters(
-    @Parameter(required = true, schema = @Schema(type = "integer", format = "int64")) @Param("organizationId") Long organizationId,
+    @Parameter(required = true) @Param("organizationId") Long organizationId,
     @RequestParam(required = false) @Param("applicationName") String applicationName,
     @RequestParam(required = false) @Param("serviceType") OrgSilServiceType serviceType,
     @RequestParam(required = false) @Param("flagLegacy") Boolean flagLegacy,
