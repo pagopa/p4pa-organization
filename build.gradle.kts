@@ -1,8 +1,8 @@
-import java.util.*
-import com.github.jk1.license.render.*
-import com.github.jk1.license.filter.*
+import com.github.jk1.license.filter.SpdxLicenseBundleNormalizer
+import com.github.jk1.license.render.XmlReportRenderer
 import org.gradle.api.tasks.testing.logging.TestExceptionFormat
 import org.gradle.api.tasks.testing.logging.TestLogEvent
+import java.util.*
 
 plugins {
   java
@@ -194,7 +194,8 @@ tasks.register<org.openapitools.generator.gradle.plugin.tasks.GenerateTask>("ope
       "SilServiceAuthConfigDTO" to "it.gov.pagopa.pu.organization.dto.orgsilservice.SilServiceAuthConfigDTO",
       "OrganizationDetailDTO" to "it.gov.pagopa.pu.organization.dto.OrganizationDetailDTO",
       "Organization" to "it.gov.pagopa.pu.organization.model.Organization",
-      "OrganizationAdditionalLanguage" to "it.gov.pagopa.pu.organization.enums.OrganizationAdditionalLanguage"
+      "OrganizationAdditionalLanguage" to "it.gov.pagopa.pu.organization.enums.OrganizationAdditionalLanguage",
+      "EmailServerConfig" to "it.gov.pagopa.pu.organization.dto.EmailServerConfig"
     )
   )
   configOptions.set(
