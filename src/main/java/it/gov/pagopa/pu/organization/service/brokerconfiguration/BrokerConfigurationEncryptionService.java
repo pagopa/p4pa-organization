@@ -5,7 +5,7 @@ import it.gov.pagopa.pu.organization.util.AESUtils;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
-import tools.jackson.databind.ObjectMapper;
+import tools.jackson.databind.json.JsonMapper;
 
 import java.util.Map;
 import java.util.concurrent.ConcurrentHashMap;
@@ -15,12 +15,12 @@ import java.util.concurrent.ConcurrentHashMap;
 public class BrokerConfigurationEncryptionService {
 
   private final String brokerEncryptPassword;
-  private final ObjectMapper objectMapper;
+  private final JsonMapper jsonMapper;
 
   public BrokerConfigurationEncryptionService(
-    @Value("${app.brokerEncryptPassword}") String brokerEncryptPassword, ObjectMapper objectMapper) {
+    @Value("${app.brokerEncryptPassword}") String brokerEncryptPassword, JsonMapper jsonMapper) {
     this.brokerEncryptPassword = brokerEncryptPassword;
-    this.objectMapper = objectMapper;
+    this.jsonMapper = jsonMapper;
   }
 
   private final Map<byte[], EmailServerConfig> emailServerConfigDecryptMap = new ConcurrentHashMap<>();
@@ -32,7 +32,7 @@ public class BrokerConfigurationEncryptionService {
     }
     return emailServerConfigDecryptMap.computeIfAbsent(encryptedEmailServerConfig, c -> {
       log.debug("invoking AESUtils to decrypt email server config for broker[{}]", brokerId);
-      return objectMapper.readValue(AESUtils.decrypt(brokerEncryptPassword, c),EmailServerConfig.class);
+      return jsonMapper.readValue(AESUtils.decrypt(brokerEncryptPassword, c),EmailServerConfig.class);
     });
   }
 
@@ -40,7 +40,7 @@ public class BrokerConfigurationEncryptionService {
     if (emailServerConfig == null) {
       return null;
     }
-    byte[] encryptedKey = AESUtils.encrypt(brokerEncryptPassword, objectMapper.writeValueAsString(emailServerConfig));
+    byte[] encryptedKey = AESUtils.encrypt(brokerEncryptPassword, jsonMapper.writeValueAsString(emailServerConfig));
     emailServerConfigDecryptMap.put(encryptedKey, emailServerConfig);
     return encryptedKey;
   }

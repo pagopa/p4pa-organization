@@ -12,7 +12,7 @@ import org.mockito.Mock;
 import org.mockito.MockedStatic;
 import org.mockito.Mockito;
 import org.mockito.junit.jupiter.MockitoExtension;
-import tools.jackson.databind.ObjectMapper;
+import tools.jackson.databind.json.JsonMapper;
 import uk.co.jemos.podam.api.PodamFactory;
 
 import java.nio.charset.StandardCharsets;
@@ -22,17 +22,17 @@ class BrokerConfigurationEncryptionServiceTest {
   private final PodamFactory podamFactory = TestUtils.getPodamFactory();
   private final String brokerEncryptPassword = "brokerEncryptPassword";
   @Mock
-  private ObjectMapper objectMapperMock;
+  private JsonMapper jsonMapperMock;
   private BrokerConfigurationEncryptionService brokerConfigurationEncryptionService;
 
   @BeforeEach
   void setUp() {
-    brokerConfigurationEncryptionService = new BrokerConfigurationEncryptionService(brokerEncryptPassword,objectMapperMock);
+    brokerConfigurationEncryptionService = new BrokerConfigurationEncryptionService(brokerEncryptPassword, jsonMapperMock);
   }
 
   @AfterEach
   void verifyNoMoreInteractions() {
-    Mockito.verifyNoMoreInteractions(objectMapperMock);
+    Mockito.verifyNoMoreInteractions(jsonMapperMock);
   }
 
   @Test
@@ -46,7 +46,7 @@ class BrokerConfigurationEncryptionServiceTest {
       EmailServerConfig emailServerConfig = podamFactory.manufacturePojo(EmailServerConfig.class);
       String strEmailServerConfig = "emailServerConfig";
       byte[] expectedEmailServerConfig = strEmailServerConfig.getBytes(StandardCharsets.UTF_8);
-      Mockito.when(objectMapperMock.writeValueAsString(emailServerConfig)).thenReturn(strEmailServerConfig);
+      Mockito.when(jsonMapperMock.writeValueAsString(emailServerConfig)).thenReturn(strEmailServerConfig);
       aesUtilsMock.when(() -> AESUtils.encrypt(brokerEncryptPassword, strEmailServerConfig))
         .thenReturn(expectedEmailServerConfig);
 
@@ -64,7 +64,7 @@ class BrokerConfigurationEncryptionServiceTest {
       String strEmailServerConfig = "emailServerConfig";
       byte[] encryptedEmailServerConfig = strEmailServerConfig.getBytes(StandardCharsets.UTF_8);
       aesUtilsMock.when(() -> AESUtils.decrypt(brokerEncryptPassword, encryptedEmailServerConfig)).thenReturn(strEmailServerConfig);
-      Mockito.when(objectMapperMock.readValue(strEmailServerConfig, EmailServerConfig.class)).thenReturn(expectedResult);
+      Mockito.when(jsonMapperMock.readValue(strEmailServerConfig, EmailServerConfig.class)).thenReturn(expectedResult);
 
       EmailServerConfig result = brokerConfigurationEncryptionService.decryptEmailServerConfig(encryptedEmailServerConfig, 1L);
 
