@@ -12,6 +12,7 @@ import it.gov.pagopa.pu.organization.exception.custom.BrokerNotFoundException;
 import it.gov.pagopa.pu.organization.exception.custom.InvalidValueException;
 import it.gov.pagopa.pu.organization.exception.custom.OrganizationNotFoundException;
 import it.gov.pagopa.pu.organization.mapper.OrganizationMapper;
+import it.gov.pagopa.pu.organization.mapper.OrganizationStationMapper;
 import it.gov.pagopa.pu.organization.model.Broker;
 import it.gov.pagopa.pu.organization.model.Organization;
 import it.gov.pagopa.pu.organization.repository.BrokerRepository;
@@ -59,6 +60,8 @@ class OrganizationServiceTest {
   private DebtPositionTypeOrgClient debtPositionTypeOrgClientMock;
   @Mock
   private WorkflowDebtPositionService workflowDebtPositionServiceMock;
+  @Mock
+  private OrganizationStationMapper organizationStationMapperMock;
 
   private OrganizationService service;
 
@@ -67,7 +70,7 @@ class OrganizationServiceTest {
     service = new OrganizationService(organizationEncryptionServiceMock,
       brokerEncryptionServiceMock, organizationMapperMock,
       organizationRepositoryMock, brokerRepositoryMock,
-      debtPositionTypeOrgClientMock, workflowDebtPositionServiceMock, true);
+      debtPositionTypeOrgClientMock, workflowDebtPositionServiceMock, organizationStationMapperMock,true);
   }
 
   @AfterEach

@@ -195,7 +195,8 @@ tasks.register<org.openapitools.generator.gradle.plugin.tasks.GenerateTask>("ope
       "OrganizationDetailDTO" to "it.gov.pagopa.pu.organization.dto.OrganizationDetailDTO",
       "Organization" to "it.gov.pagopa.pu.organization.model.Organization",
       "OrganizationAdditionalLanguage" to "it.gov.pagopa.pu.organization.enums.OrganizationAdditionalLanguage",
-      "EmailServerConfig" to "it.gov.pagopa.pu.organization.dto.EmailServerConfig"
+      "EmailServerConfig" to "it.gov.pagopa.pu.organization.dto.EmailServerConfig",
+      "OrganizationStationDTO" to "it.gov.pagopa.pu.organization.dto.OrganizationStationDTO"
     )
   )
   configOptions.set(
