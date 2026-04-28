@@ -32,4 +32,5 @@ public class BrokerConfiguration extends BaseEntity implements Serializable {
   private Long legalFactsExpirationDays;
   private Long sendFilesExpirationDays;
   private byte[] emailServerConfig;
+  private String favicon;
 }
