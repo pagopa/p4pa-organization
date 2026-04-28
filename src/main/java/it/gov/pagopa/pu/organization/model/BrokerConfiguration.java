@@ -1,8 +1,6 @@
 package it.gov.pagopa.pu.organization.model;
 
 import it.gov.pagopa.pu.organization.dto.PersonalisationFe;
-
-
 import jakarta.persistence.Entity;
 import jakarta.persistence.Id;
 import jakarta.persistence.Table;
