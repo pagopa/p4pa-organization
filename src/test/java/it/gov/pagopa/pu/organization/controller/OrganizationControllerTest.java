@@ -1,6 +1,7 @@
 package it.gov.pagopa.pu.organization.controller;
 
 import it.gov.pagopa.pu.organization.dto.OrganizationDetailDTO;
+import it.gov.pagopa.pu.organization.dto.OrganizationStationDTO;
 import it.gov.pagopa.pu.organization.dto.generated.OrganizationApiKeyType;
 import it.gov.pagopa.pu.organization.dto.generated.OrganizationApiKeys;
 import it.gov.pagopa.pu.organization.dto.generated.OrganizationCreateDTO;
@@ -178,6 +179,31 @@ class OrganizationControllerTest {
       .andReturn();
 
     verify(organizationServiceMock).updateOrganizationStatus(organizationId, newStatus);
+  }
+
+  @Test
+  void whenGetOrganizationStationThenOk() throws Exception {
+    OrganizationStationDTO dto = new OrganizationStationDTO();
+    dto.setOrganizationId(1L);
+    dto.setOrgName("My Org");
+    dto.setIpaCode("IPA123");
+
+    Mockito.when(organizationServiceMock.getOrganizationStation(1L, null)).thenReturn(dto);
+
+    MvcResult result = mockMvc.perform(
+        get("/organization/1/organization-station")
+          .contentType(MediaType.APPLICATION_JSON_VALUE))
+      .andExpect(status().isOk())
+      .andReturn();
+
+    String responseBody = result.getResponse().getContentAsString();
+    OrganizationStationDTO responseDto = jsonMapper.readValue(responseBody, OrganizationStationDTO.class);
+
+    assertEquals(dto.getOrganizationId(), responseDto.getOrganizationId());
+    assertEquals(dto.getOrgName(), responseDto.getOrgName());
+    assertEquals(dto.getIpaCode(), responseDto.getIpaCode());
+
+    verify(organizationServiceMock).getOrganizationStation(1L, null);
   }
 
 }
