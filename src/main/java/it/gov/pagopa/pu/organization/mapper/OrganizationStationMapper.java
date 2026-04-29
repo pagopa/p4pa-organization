@@ -60,9 +60,9 @@ public class OrganizationStationMapper {
     orgStationDto.setCity(org.getCity());
 
     if(Objects.isNull(stationId)) {
-      organizationStation = organizationStationRepository.findById(1L) // TODO change ID with org.getDefaultOrganizationStationId()
+      organizationStation = organizationStationRepository.findById(1L) // TODO P4ADEV-4645 change ID with org.getDefaultOrganizationStationId()
         .orElseThrow(() -> new NotFoundException(ErrorCodeConstants.ERROR_CODE_ORGANIZATION_STATION_NOT_FOUND,
-          String.format("Relation Organization-Station not found for organizationStationId %s", 1L)));;
+          String.format("Relation Organization-Station not found for organizationStationId %s", 1L))); // TODO P4ADEV-4645 change ID with org.getDefaultOrganizationStationId()
       station = stationRepository.findById(organizationStation.getStationId())
         .orElseThrow(() -> new NotFoundException(ErrorCodeConstants.ERROR_CODE_STATION_NOT_FOUND,
           "Station having id "+organizationStation.getStationId()+" not found"));
