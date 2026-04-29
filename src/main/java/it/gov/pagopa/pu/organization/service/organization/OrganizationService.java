@@ -4,6 +4,7 @@ import it.gov.pagopa.pu.organization.connector.debtposition.client.DebtPositionT
 import it.gov.pagopa.pu.organization.connector.workflow.service.WorkflowDebtPositionService;
 import it.gov.pagopa.pu.organization.dto.BaseOrganization;
 import it.gov.pagopa.pu.organization.dto.OrganizationDetailDTO;
+import it.gov.pagopa.pu.organization.dto.OrganizationStationDTO;
 import it.gov.pagopa.pu.organization.dto.generated.BrokerApiKeyType;
 import it.gov.pagopa.pu.organization.dto.generated.OrganizationApiKeyType;
 import it.gov.pagopa.pu.organization.dto.generated.OrganizationApiKeys;
@@ -13,6 +14,7 @@ import it.gov.pagopa.pu.organization.exception.custom.BrokerNotFoundException;
 import it.gov.pagopa.pu.organization.exception.custom.InvalidValueException;
 import it.gov.pagopa.pu.organization.exception.custom.OrganizationNotFoundException;
 import it.gov.pagopa.pu.organization.mapper.OrganizationMapper;
+import it.gov.pagopa.pu.organization.mapper.OrganizationStationMapper;
 import it.gov.pagopa.pu.organization.model.Broker;
 import it.gov.pagopa.pu.organization.model.Organization;
 import it.gov.pagopa.pu.organization.repository.BrokerRepository;
@@ -42,6 +44,7 @@ public class OrganizationService {
   private final BrokerRepository brokerRepository;
   private final DebtPositionTypeOrgClient debtPositionTypeOrgClient;
   private final WorkflowDebtPositionService workflowDebtPositionService;
+  private final OrganizationStationMapper organizationStationMapper;
 
   private final boolean isOrgPIvaCheckEnabled;
 
@@ -54,7 +57,7 @@ public class OrganizationService {
     OrganizationRepository organizationRepository,
     BrokerRepository brokerRepository,
     DebtPositionTypeOrgClient debtPositionTypeOrgClient,
-    WorkflowDebtPositionService workflowDebtPositionService,
+    WorkflowDebtPositionService workflowDebtPositionService, OrganizationStationMapper organizationStationMapper,
     @Value("${features.organization.piva-check}") boolean isOrgPIvaCheckEnabled) {
     this.organizationEncryptionService = organizationEncryptionService;
     this.brokerEncryptionService = brokerEncryptionService;
@@ -62,6 +65,7 @@ public class OrganizationService {
     this.organizationRepository = organizationRepository;
     this.brokerRepository = brokerRepository;
     this.debtPositionTypeOrgClient = debtPositionTypeOrgClient;
+    this.organizationStationMapper = organizationStationMapper;
     this.isOrgPIvaCheckEnabled = isOrgPIvaCheckEnabled;
     this.workflowDebtPositionService = workflowDebtPositionService;
   }
@@ -145,6 +149,13 @@ public class OrganizationService {
       .orElseThrow(() -> new OrganizationNotFoundException(ORGANIZATION_NOT_FOUND_MSG.formatted(organizationId)));
 
     return organizationMapper.mapToDTO(org);
+  }
+
+  public OrganizationStationDTO getOrganizationStation(Long organizationId, String stationId){
+    Organization org = organizationRepository.findById(organizationId)
+      .orElseThrow(() -> new OrganizationNotFoundException(ORGANIZATION_NOT_FOUND_MSG.formatted(organizationId)));
+
+    return organizationStationMapper.mapToDTO(org, stationId);
   }
 
   @Transactional

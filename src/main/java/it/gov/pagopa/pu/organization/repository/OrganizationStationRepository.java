@@ -1,7 +1,13 @@
 package it.gov.pagopa.pu.organization.repository;
 
-import org.springframework.data.rest.core.annotation.RepositoryRestResource;
+import it.gov.pagopa.pu.organization.model.OrganizationStation;
+import org.springframework.data.jpa.repository.JpaRepository;
+import org.springframework.stereotype.Repository;
 
-@RepositoryRestResource(path = "organization-stations")
-public interface OrganizationStationRepository {
+import java.util.Optional;
+
+@Repository
+public interface OrganizationStationRepository extends JpaRepository<OrganizationStation, Long> {
+
+  Optional<OrganizationStation> findByOrganizationIdAndStationId(Long organizationId, String stationId);
 }
