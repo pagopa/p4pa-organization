@@ -3,6 +3,7 @@ package it.gov.pagopa.pu.organization.service.organization;
 import it.gov.pagopa.pu.organization.connector.debtposition.client.DebtPositionTypeOrgClient;
 import it.gov.pagopa.pu.organization.connector.workflow.service.WorkflowDebtPositionService;
 import it.gov.pagopa.pu.organization.dto.OrganizationDetailDTO;
+import it.gov.pagopa.pu.organization.dto.OrganizationStationDTO;
 import it.gov.pagopa.pu.organization.dto.generated.BrokerApiKeyType;
 import it.gov.pagopa.pu.organization.dto.generated.OrganizationApiKeyType;
 import it.gov.pagopa.pu.organization.dto.generated.OrganizationApiKeys;
@@ -343,6 +344,37 @@ class OrganizationServiceTest {
     when(organizationRepositoryMock.findById(organizationId)).thenReturn(Optional.empty());
 
     assertThrows(OrganizationNotFoundException.class, () -> service.getOrganization(organizationId));
+
+    verify(organizationRepositoryMock).findById(organizationId);
+  }
+
+  @Test
+  void givenExistingOrganizationStationWhenGetOrganizationStationThenReturnDTO() {
+    Long organizationId = 1L;
+    Organization org = new Organization();
+    org.setOrganizationId(organizationId);
+
+    OrganizationStationDTO expectedDto = new OrganizationStationDTO();
+    expectedDto.setOrganizationId(organizationId);
+
+    when(organizationRepositoryMock.findById(organizationId)).thenReturn(Optional.of(org));
+    when(organizationStationMapperMock.mapToDTO(org, null)).thenReturn(expectedDto);
+
+    OrganizationStationDTO result = service.getOrganizationStation(organizationId, null);
+
+    assertNotNull(result);
+    assertEquals(expectedDto.getOrganizationId(), result.getOrganizationId());
+    verify(organizationRepositoryMock).findById(organizationId);
+    verify(organizationStationMapperMock).mapToDTO(org, null);
+  }
+
+  @Test
+  void givenNonExistingOrganizationStationWhenGetOrganizationStationThenThrowException() {
+    Long organizationId = 99L;
+
+    when(organizationRepositoryMock.findById(organizationId)).thenReturn(Optional.empty());
+
+    assertThrows(OrganizationNotFoundException.class, () -> service.getOrganizationStation(organizationId, null));
 
     verify(organizationRepositoryMock).findById(organizationId);
   }
