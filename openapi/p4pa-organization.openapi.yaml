@@ -150,7 +150,7 @@ paths:
               schema:
                 type: 'OrganizationStationDTO'
         '404':
-          description: Organization Not Found
+          description: Organization Station Not Found
         '500':
           description: Internal Server Error
   /organization/{organizationId}/apiKey/{keyType}:
