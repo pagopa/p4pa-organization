@@ -19,7 +19,6 @@ public interface BrokerRepository extends JpaRepository<Broker,Long> {
     "where o.organizationId = :organizationId")
   Optional<Broker> findByBrokeredOrganizationId(String organizationId);
 
-  Optional<Broker> findByStationId(String stationId);
   Optional<Broker> findBrokerByExternalId(String externalId);
   Optional<Broker> findByBrokerFiscalCode(String brokerFiscalCode);
 

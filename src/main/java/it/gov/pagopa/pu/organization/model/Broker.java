@@ -41,4 +41,5 @@ public class Broker extends BaseEntity implements Serializable {
   private boolean flagPaymentsReporting;
   @NotNull
   private String externalId;
+  private String defaultStationId;
 }
