@@ -37,6 +37,7 @@ public class Organization extends BaseEntity implements Serializable, BaseOrgani
   private String postalIban;
   private String iban;
   private byte[] password;
+  private Long defaultOrganizationStationId;
   private String segregationCode;
   private String cbillInterBankCode;
   private String orgLogo;

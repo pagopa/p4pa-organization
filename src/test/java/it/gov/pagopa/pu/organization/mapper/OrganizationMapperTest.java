@@ -92,7 +92,7 @@ class OrganizationMapperTest {
     Organization result = organizationMapper.toModel(dto);
 
     assertNotNull(result);
-    TestUtils.checkNotNullFields(result, "organizationId", "creationDate", "updateDate", "updateOperatorExternalId", "updateTraceId");
+    TestUtils.checkNotNullFields(result, "organizationId", "creationDate", "updateDate", "updateOperatorExternalId", "updateTraceId", "defaultOrganizationStationId");
 
     assertThat(result)
       .usingRecursiveComparison()
@@ -208,7 +208,7 @@ class OrganizationMapperTest {
     Organization result = organizationMapper.toModel(dto);
 
     assertNotNull(result);
-    TestUtils.checkNotNullFields(result, "creationDate", "updateDate", "updateOperatorExternalId", "updateTraceId");
+    TestUtils.checkNotNullFields(result, "creationDate", "updateDate", "updateOperatorExternalId", "updateTraceId", "defaultOrganizationStationId");
     TestUtils.reflectionEqualsByName(dto,result,"password","ioApiKey","sendApiKey","generateNoticeApiKey");
     assertEquals(expectedEncryptedPassword, result.getPassword());
     assertEquals(expectedEncryptedIoApiKey, result.getIoApiKey());
