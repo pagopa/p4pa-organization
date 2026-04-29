@@ -8,6 +8,7 @@ import it.gov.pagopa.pu.organization.model.Station;
 import it.gov.pagopa.pu.organization.repository.OrganizationStationRepository;
 import it.gov.pagopa.pu.organization.repository.StationRepository;
 import it.gov.pagopa.pu.organization.service.organization.OrganizationEncryptionService;
+import it.gov.pagopa.pu.organization.util.ErrorCodeConstants;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Component;
 
@@ -59,16 +60,18 @@ public class OrganizationStationMapper {
     orgStationDto.setCity(org.getCity());
 
     if(Objects.isNull(stationId)) {
-      organizationStation = organizationStationRepository.findById(org.getDefaultOrganizationStationId())
-        .orElseThrow(() -> new NotFoundException("[ORGANIZATION_STATION_NOT_FOUND]","Relation Organization-Station not found for organizationStationId "));;
+      organizationStation = organizationStationRepository.findById(1L) // TODO change ID with org.getDefaultOrganizationStationId()
+        .orElseThrow(() -> new NotFoundException(ErrorCodeConstants.ERROR_CODE_ORGANIZATION_STATION_NOT_FOUND,
+          String.format("Relation Organization-Station not found for organizationStationId %s", 1L)));;
       station = stationRepository.findById(organizationStation.getStationId())
-        .orElseThrow(() -> new NotFoundException("[STATION_NOT_FOUND]","Station having id "+organizationStation.getStationId()+" not found"));
+        .orElseThrow(() -> new NotFoundException(ErrorCodeConstants.ERROR_CODE_STATION_NOT_FOUND,
+          "Station having id "+organizationStation.getStationId()+" not found"));
     }
     else {
       station = stationRepository.findById(stationId)
-        .orElseThrow(() -> new NotFoundException("[STATION_NOT_FOUND]","Station having id "+stationId+" not found"));
+        .orElseThrow(() -> new NotFoundException(ErrorCodeConstants.ERROR_CODE_STATION_NOT_FOUND,"Station having id "+stationId+" not found"));
       organizationStation = organizationStationRepository.findByOrganizationIdAndStationId(org.getOrganizationId(), station.getStationId())
-        .orElseThrow(() -> new NotFoundException("[ORGANIZATION_STATION_NOT_FOUND]",
+        .orElseThrow(() -> new NotFoundException(ErrorCodeConstants.ERROR_CODE_ORGANIZATION_STATION_NOT_FOUND,
           String.format("Relation Organization-Station not found having orgid %s and stationId %s",org.getOrganizationId(), stationId)));
     }
 
