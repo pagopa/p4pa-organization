@@ -3,6 +3,7 @@ package it.gov.pagopa.pu.organization.service.organization;
 import it.gov.pagopa.pu.organization.connector.debtposition.client.DebtPositionTypeOrgClient;
 import it.gov.pagopa.pu.organization.connector.workflow.service.WorkflowDebtPositionService;
 import it.gov.pagopa.pu.organization.dto.OrganizationDetailDTO;
+import it.gov.pagopa.pu.organization.dto.OrganizationStationDTO;
 import it.gov.pagopa.pu.organization.dto.generated.BrokerApiKeyType;
 import it.gov.pagopa.pu.organization.dto.generated.OrganizationApiKeyType;
 import it.gov.pagopa.pu.organization.dto.generated.OrganizationApiKeys;
@@ -12,6 +13,7 @@ import it.gov.pagopa.pu.organization.exception.custom.BrokerNotFoundException;
 import it.gov.pagopa.pu.organization.exception.custom.InvalidValueException;
 import it.gov.pagopa.pu.organization.exception.custom.OrganizationNotFoundException;
 import it.gov.pagopa.pu.organization.mapper.OrganizationMapper;
+import it.gov.pagopa.pu.organization.mapper.OrganizationStationMapper;
 import it.gov.pagopa.pu.organization.model.Broker;
 import it.gov.pagopa.pu.organization.model.Organization;
 import it.gov.pagopa.pu.organization.repository.BrokerRepository;
@@ -30,7 +32,6 @@ import org.junit.jupiter.params.provider.CsvSource;
 import org.mockito.Mock;
 import org.mockito.Mockito;
 import org.mockito.junit.jupiter.MockitoExtension;
-import org.springframework.data.rest.webmvc.ResourceNotFoundException;
 import uk.co.jemos.podam.api.PodamFactory;
 
 import java.util.Optional;
@@ -59,6 +60,8 @@ class OrganizationServiceTest {
   private DebtPositionTypeOrgClient debtPositionTypeOrgClientMock;
   @Mock
   private WorkflowDebtPositionService workflowDebtPositionServiceMock;
+  @Mock
+  private OrganizationStationMapper organizationStationMapperMock;
 
   private OrganizationService service;
 
@@ -67,7 +70,7 @@ class OrganizationServiceTest {
     service = new OrganizationService(organizationEncryptionServiceMock,
       brokerEncryptionServiceMock, organizationMapperMock,
       organizationRepositoryMock, brokerRepositoryMock,
-      debtPositionTypeOrgClientMock, workflowDebtPositionServiceMock, true);
+      debtPositionTypeOrgClientMock, workflowDebtPositionServiceMock, organizationStationMapperMock,true);
   }
 
   @AfterEach
@@ -340,6 +343,37 @@ class OrganizationServiceTest {
     when(organizationRepositoryMock.findById(organizationId)).thenReturn(Optional.empty());
 
     assertThrows(OrganizationNotFoundException.class, () -> service.getOrganization(organizationId));
+
+    verify(organizationRepositoryMock).findById(organizationId);
+  }
+
+  @Test
+  void givenExistingOrganizationStationWhenGetOrganizationStationThenReturnDTO() {
+    Long organizationId = 1L;
+    Organization org = new Organization();
+    org.setOrganizationId(organizationId);
+
+    OrganizationStationDTO expectedDto = new OrganizationStationDTO();
+    expectedDto.setOrganizationId(organizationId);
+
+    when(organizationRepositoryMock.findById(organizationId)).thenReturn(Optional.of(org));
+    when(organizationStationMapperMock.mapToDTO(org, null)).thenReturn(expectedDto);
+
+    OrganizationStationDTO result = service.getOrganizationStation(organizationId, null);
+
+    assertNotNull(result);
+    assertEquals(expectedDto.getOrganizationId(), result.getOrganizationId());
+    verify(organizationRepositoryMock).findById(organizationId);
+    verify(organizationStationMapperMock).mapToDTO(org, null);
+  }
+
+  @Test
+  void givenNonExistingOrganizationStationWhenGetOrganizationStationThenThrowException() {
+    Long organizationId = 99L;
+
+    when(organizationRepositoryMock.findById(organizationId)).thenReturn(Optional.empty());
+
+    assertThrows(OrganizationNotFoundException.class, () -> service.getOrganizationStation(organizationId, null));
 
     verify(organizationRepositoryMock).findById(organizationId);
   }

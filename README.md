@@ -2,7 +2,9 @@
 
 This application belong to the **entity** tier of the **Piattaforma Unitaria** product.
 
-See [PU Microservice Architecture](https://pagopa.atlassian.net/wiki/spaces/SPAC/pages/1405845916/Architettura+microservizi) for more details.
+See [PU Microservice Architecture](https://raw.githubusercontent.com/pagopa/p4pa-doc/refs/heads/main/reference/technical-docs/Architettura_microservizi.pdf) for more details.
+
+See [p4pa-doc](https://github.com/pagopa/p4pa-doc) for further documentation.
 
 ## 🧱 Role
 
@@ -49,14 +51,20 @@ See [log configured pattern](/src/main/resources/logback-spring.xml).
 
 ### 🧩 Microservices
 * [p4pa-pagopa-payments](https://github.com/pagopa/p4pa-pagopa-payments):
-  * To retrieve taxonomies.
+  * To retrieve taxonomies;
+* [p4pa-debt-positions](https://github.com/pagopa/p4pa-debt-positions):
+  * To create technical position types for new organizations;
+* [p4pa-workflow-hub](https://github.com/pagopa/p4pa-workflow-hub):
+  * To start massive iban update to already created unpaid DP if changed.
 
 ## 🗃️ Entities handled
 * `broker`
+* `broker_configuration`
+* `station`
 * `organization`
+* `organization_station`
 * `org_sil_service`
 * `taxonomy`
-* `broker-configuration`
 
 ## 🔧 Configuration
 
@@ -110,22 +118,27 @@ See [application.yml](src/main/resources/application.yml) for each configurable 
 | DEFAULT_REST_TIMEOUT_READ_MILLIS                  | Default read timeout (milliseconds)       | 120000  |
 
 ##### 🧩 Microservices
-| ENV                                    | DESCRIPTION                                                                       | DEFAULT |
-|----------------------------------------|-----------------------------------------------------------------------------------|---------|
-| PAGOPA_PAYMENTS_BASE_URL               | Organization microservice URL                                                     |         |
-| PAGOPA_PAYMENTS_MAX_ATTEMPTS           | Organization API max attempts                                                     | 3       |
-| PAGOPA_PAYMENTS_WAIT_TIME_MILLIS       | Organization retry waiting time (milliseconds)                                    | 500     |
-| PAGOPA_PAYMENTS_PRINT_BODY_WHEN_ERROR  | To print body when an error occurs                                                | true    |
-| WORKFLOW_HUB_BASE_URL                  | WorkflowHub microservice URL                                                      |         |
-| WORKFLOW_HUB_MAX_ATTEMPTS              | WorkflowHub API max attempts                                                      | 3       |
-| WORKFLOW_HUB_WAIT_TIME_MILLIS          | WorkflowHub retry waiting time (milliseconds)                                     | 500     |
-| WORKFLOW_HUB_PRINT_BODY_WHEN_ERROR     | To print body when an error occurs                                                | true    |
+| ENV                                   | DESCRIPTION                                     | DEFAULT |
+|---------------------------------------|-------------------------------------------------|---------|
+| PAGOPA_PAYMENTS_BASE_URL              | Organization microservice URL                   |         |
+| PAGOPA_PAYMENTS_MAX_ATTEMPTS          | Organization API max attempts                   | 3       |
+| PAGOPA_PAYMENTS_WAIT_TIME_MILLIS      | Organization retry waiting time (milliseconds)  | 500     |
+| PAGOPA_PAYMENTS_PRINT_BODY_WHEN_ERROR | To print body when an error occurs              | true    |
+| DEBT_POSITION_BASE_URL                | DebtPositions microservice URL                  |         |
+| DEBT_POSITION_MAX_ATTEMPTS            | DebtPositions API max attempts                  | 3       |
+| DEBT_POSITION_WAIT_TIME_MILLIS        | DebtPositions retry waiting time (milliseconds) | 500     |
+| DEBT_POSITION_PRINT_BODY_WHEN_ERROR   | To print body when an error occurs              | true    |
+| WORKFLOW_HUB_BASE_URL                 | WorkflowHub microservice URL                    |         |
+| WORKFLOW_HUB_MAX_ATTEMPTS             | WorkflowHub API max attempts                    | 3       |
+| WORKFLOW_HUB_WAIT_TIME_MILLIS         | WorkflowHub retry waiting time (milliseconds)   | 500     |
+| WORKFLOW_HUB_PRINT_BODY_WHEN_ERROR    | To print body when an error occurs              | true    |
+
 #### 🔑 keys
-| ENV                            | DESCRIPTION                                                        | DEFAULT |
-|--------------------------------|--------------------------------------------------------------------|---------|
-| JWT_TOKEN_PUBLIC_KEY           | p4pa-auth JWT public key                                           |         |
-| BROKER_ENCRYPT_PASSWORD        | Base64 encoded key (256 bit) used to encrypt broker api keys       |         |
-|  ORGANIZATION_ENCRYPT_PASSWORD | Base64 encoded key (256 bit) used to encrypt organization api keys |         |
+| ENV                           | DESCRIPTION                                                        | DEFAULT |
+|-------------------------------|--------------------------------------------------------------------|---------|
+| JWT_TOKEN_PUBLIC_KEY          | p4pa-auth JWT public key                                           |         |
+| BROKER_ENCRYPT_PASSWORD       | Base64 encoded key (256 bit) used to encrypt broker api keys       |         |
+| ORGANIZATION_ENCRYPT_PASSWORD | Base64 encoded key (256 bit) used to encrypt organization api keys |         |
 
 ## 🛠️ Getting Started
 
