@@ -67,4 +67,5 @@ public class Organization extends BaseEntity implements Serializable, BaseOrgani
   private String address;
   private String zipCode;
   private String city;
+  private Long defaultOrganizationStationId;
 }
