@@ -3,6 +3,8 @@ package it.gov.pagopa.pu.organization.controller;
 import it.gov.pagopa.pu.organization.dto.generated.BrokerApiKey;
 import it.gov.pagopa.pu.organization.dto.generated.BrokerApiKeyType;
 import it.gov.pagopa.pu.organization.dto.generated.BrokerApiKeys;
+import it.gov.pagopa.pu.organization.dto.generated.BrokerRequestDTO;
+import it.gov.pagopa.pu.organization.model.Broker;
 import it.gov.pagopa.pu.organization.service.broker.BrokerService;
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.Assertions;
@@ -84,5 +86,23 @@ class BrokerControllerTest {
     Assertions.assertNotNull(response);
     Assertions.assertNull(response.getBody());
     Assertions.assertEquals(HttpStatus.NO_CONTENT, response.getStatusCode());
+  }
+
+  @Test
+  void givenCreateBrokerRequestWhenCreateBrokerThenOk() {
+    //given
+    BrokerRequestDTO requestDTO = new BrokerRequestDTO();
+    requestDTO.setOrganizationId(1L);
+
+    Broker broker = new Broker();
+    broker.setOrganizationId(1L);
+
+    Mockito.when(brokerServiceMock.createBroker(requestDTO)).thenReturn(broker);
+    //when
+    ResponseEntity<Broker> response = brokerController.createBroker(requestDTO);
+    //verify
+    Assertions.assertNotNull(response);
+    Assertions.assertNotNull(response.getBody());
+    Assertions.assertEquals(broker.getOrganizationId(), response.getBody().getOrganizationId());
   }
 }
