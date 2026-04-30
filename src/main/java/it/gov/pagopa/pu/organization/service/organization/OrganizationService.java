@@ -148,7 +148,9 @@ public class OrganizationService {
     Organization org = organizationRepository.findById(organizationId)
       .orElseThrow(() -> new OrganizationNotFoundException(ORGANIZATION_NOT_FOUND_MSG.formatted(organizationId)));
 
-    return organizationMapper.mapToDTO(org);
+    OrganizationStationDTO organizationStationDTO = getOrganizationStation(org.getOrganizationId(), null);
+
+    return organizationMapper.mapToDTO(org, organizationStationDTO.getSegregationCode());
   }
 
   public OrganizationStationDTO getOrganizationStation(Long organizationId, String stationId){

@@ -325,15 +325,20 @@ class OrganizationServiceTest {
     OrganizationDetailDTO expectedDto = new OrganizationDetailDTO();
     expectedDto.setOrganizationId(organizationId);
 
+    OrganizationStationDTO organizationStationDTO = new OrganizationStationDTO();
+    organizationStationDTO.setSegregationCode("segregationCode");
+
     when(organizationRepositoryMock.findById(organizationId)).thenReturn(Optional.of(org));
-    when(organizationMapperMock.mapToDTO(org)).thenReturn(expectedDto);
+    when(organizationStationMapperMock.mapToDTO(org, null)).thenReturn(organizationStationDTO);
+    when(organizationMapperMock.mapToDTO(org, "segregationCode")).thenReturn(expectedDto);
 
     OrganizationDetailDTO result = service.getOrganization(organizationId);
 
     assertNotNull(result);
     assertEquals(expectedDto.getOrganizationId(), result.getOrganizationId());
-    verify(organizationRepositoryMock).findById(organizationId);
-    verify(organizationMapperMock).mapToDTO(org);
+    verify(organizationRepositoryMock, Mockito.times(2)).findById(organizationId);
+    verify(organizationStationMapperMock).mapToDTO(org, null);
+    verify(organizationMapperMock).mapToDTO(org, "segregationCode");
   }
 
   @Test

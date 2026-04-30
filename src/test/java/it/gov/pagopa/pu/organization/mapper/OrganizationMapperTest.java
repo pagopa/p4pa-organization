@@ -124,7 +124,7 @@ class OrganizationMapperTest {
 
   @Test
   void givenNullOrganizationWhenMapToDTOThenReturnNull() {
-    assertNull(organizationMapper.mapToDTO(null));
+    assertNull(organizationMapper.mapToDTO(null, null));
   }
 
   @Test
@@ -169,11 +169,7 @@ class OrganizationMapperTest {
     when(encryptionServiceMock.decryptKey(encryptedSendApiKey)).thenReturn("plainSendApiKey");
     when(encryptionServiceMock.decryptKey(encryptedGenerateNoticeApiKey)).thenReturn("plainGenerateNoticeApiKey");
 
-    OrganizationStationDTO organizationStationDTO = new OrganizationStationDTO();
-    organizationStationDTO.setSegregationCode("segregationCode");
-    when(organizationServiceMock.getOrganizationStation(1L, null)).thenReturn(organizationStationDTO);
-
-    OrganizationDetailDTO dto = organizationMapper.mapToDTO(org);
+    OrganizationDetailDTO dto = organizationMapper.mapToDTO(org, "segregationCode");
 
     assertNotNull(dto);
     assertThat(dto)
