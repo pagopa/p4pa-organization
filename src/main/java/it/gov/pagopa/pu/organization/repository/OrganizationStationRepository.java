@@ -11,5 +11,4 @@ import java.util.Optional;
 public interface OrganizationStationRepository extends JpaRepository<OrganizationStation, Long> {
 
   Optional<OrganizationStation> findByOrganizationIdAndStationId(Long organizationId, String stationId);
-  List<OrganizationStation> findByOrganizationId(Long organizationId);
 }

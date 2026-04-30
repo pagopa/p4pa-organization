@@ -1,22 +1,21 @@
 package it.gov.pagopa.pu.organization.mapper;
 
 import it.gov.pagopa.pu.organization.dto.OrganizationDetailDTO;
+import it.gov.pagopa.pu.organization.dto.OrganizationStationDTO;
 import it.gov.pagopa.pu.organization.dto.generated.OrganizationCreateDTO;
 import it.gov.pagopa.pu.organization.model.Organization;
-import it.gov.pagopa.pu.organization.model.OrganizationStation;
-import it.gov.pagopa.pu.organization.repository.OrganizationStationRepository;
 import it.gov.pagopa.pu.organization.service.organization.OrganizationEncryptionService;
+import it.gov.pagopa.pu.organization.service.organization.OrganizationService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Component;
 
-import java.util.List;
 import java.util.Optional;
 
 @Component
 @RequiredArgsConstructor
 public class OrganizationMapper {
   private final OrganizationEncryptionService encryptionService;
-  private final OrganizationStationRepository organizationStationRepository;
+  private final OrganizationService organizationService;
 
   public Organization toModel(OrganizationCreateDTO createDTO) {
     if (createDTO == null) {
@@ -63,8 +62,7 @@ public class OrganizationMapper {
       return null;
     }
 
-    List<OrganizationStation> organizationStations = organizationStationRepository.findByOrganizationId(org.getOrganizationId());
-    String segregationCode = organizationStations.isEmpty() ? null : organizationStations.getFirst().getSegregationCode();
+    OrganizationStationDTO organizationStationDTO = organizationService.getOrganizationStation(org.getOrganizationId(), null);
 
     OrganizationDetailDTO dto = new OrganizationDetailDTO();
     dto.setPassword(encryptionService.decryptKey(org.getPassword()));
@@ -80,7 +78,7 @@ public class OrganizationMapper {
     dto.setOrgEmail(org.getOrgEmail());
     dto.setPostalIban(org.getPostalIban());
     dto.setIban(org.getIban());
-    dto.setSegregationCode(segregationCode);
+    dto.setSegregationCode(organizationStationDTO.getSegregationCode());
     dto.setCbillInterBankCode(org.getCbillInterBankCode());
     dto.setOrgLogo(org.getOrgLogo());
     dto.setStatus(org.getStatus());

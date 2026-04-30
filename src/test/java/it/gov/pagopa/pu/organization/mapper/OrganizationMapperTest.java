@@ -1,13 +1,14 @@
 package it.gov.pagopa.pu.organization.mapper;
 
 import it.gov.pagopa.pu.organization.dto.OrganizationDetailDTO;
+import it.gov.pagopa.pu.organization.dto.OrganizationStationDTO;
 import it.gov.pagopa.pu.organization.dto.generated.OrganizationCreateDTO;
 import it.gov.pagopa.pu.organization.enums.OrganizationAdditionalLanguage;
 import it.gov.pagopa.pu.organization.enums.OrganizationStatus;
 import it.gov.pagopa.pu.organization.model.Organization;
-import it.gov.pagopa.pu.organization.model.OrganizationStation;
 import it.gov.pagopa.pu.organization.repository.OrganizationStationRepository;
 import it.gov.pagopa.pu.organization.service.organization.OrganizationEncryptionService;
+import it.gov.pagopa.pu.organization.service.organization.OrganizationService;
 import it.gov.pagopa.pu.organization.util.TestUtils;
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.Test;
@@ -36,13 +37,13 @@ class OrganizationMapperTest {
   @Mock
   private OrganizationEncryptionService encryptionServiceMock;
   @Mock
-  private OrganizationStationRepository organizationStationRepositoryMock;
+  private OrganizationService organizationServiceMock;
 
   @AfterEach
   void verifyNoMoreInteractions() {
     Mockito.verifyNoMoreInteractions(
       encryptionServiceMock,
-      organizationStationRepositoryMock
+      organizationServiceMock
     );
   }
 
@@ -170,9 +171,9 @@ class OrganizationMapperTest {
     when(encryptionServiceMock.decryptKey(encryptedSendApiKey)).thenReturn("plainSendApiKey");
     when(encryptionServiceMock.decryptKey(encryptedGenerateNoticeApiKey)).thenReturn("plainGenerateNoticeApiKey");
 
-    OrganizationStation station = new OrganizationStation();
-    station.setSegregationCode("segregationCode");
-    when(organizationStationRepositoryMock.findByOrganizationId(1L)).thenReturn(List.of(station));
+    OrganizationStationDTO organizationStationDTO = new OrganizationStationDTO();
+    organizationStationDTO.setSegregationCode("segregationCode");
+    when(organizationServiceMock.getOrganizationStation(1L, null)).thenReturn(organizationStationDTO);
 
     OrganizationDetailDTO dto = organizationMapper.mapToDTO(org);
 
@@ -193,72 +194,6 @@ class OrganizationMapperTest {
     assertThat(dto.getSendApiKey()).isEqualTo("plainSendApiKey");
     assertThat(dto.getGenerateNoticeApiKey()).isEqualTo("plainGenerateNoticeApiKey");
     assertThat(dto.getSegregationCode()).isEqualTo("segregationCode");
-  }
-
-  @Test
-  void givenOrganizationWithNoOrganizationStationsWhenMapToDTOThenReturnDTOWithNullSegregationCode() {
-    Organization org = new Organization();
-    org.setOrganizationId(1L);
-    org.setExternalOrganizationId("externalOrganizationId");
-    org.setIpaCode("ipaCode");
-    org.setOrgFiscalCode("orgFiscalCode");
-    org.setOrgName("orgName");
-    org.setOrgTypeCode("orgTypeCode");
-    org.setOrgEmail("orgEmail");
-    org.setPostalIban("postalIban");
-    org.setIban("iban");
-    org.setCbillInterBankCode("cbillInterBankCode");
-    org.setOrgLogo("orgLogo");
-    org.setStatus(OrganizationStatus.DRAFT);
-    org.setAdditionalLanguage(OrganizationAdditionalLanguage.EN);
-    org.setStartDate(LocalDate.now());
-    org.setFlagNotifyIo(true);
-    org.setFlagNotifyOutcomePush(false);
-    org.setFlagPaymentNotification(true);
-    org.setPdndEnabled(true);
-    org.setFlagTreasury(false);
-    org.setBrokerId(10L);
-    org.setAddress("address");
-    org.setZipCode("zipCode");
-    org.setCity("city");
-
-    byte[] encryptedPassword = "encryptedPassword".getBytes(StandardCharsets.UTF_8);
-    byte[] encryptedIoApiKey = "encryptedIoApiKey".getBytes(StandardCharsets.UTF_8);
-    byte[] encryptedSendApiKey = "encryptedSendApiKey".getBytes(StandardCharsets.UTF_8);
-    byte[] encryptedGenerateNoticeApiKey = "encryptedGenerateNoticeApiKey".getBytes(StandardCharsets.UTF_8);
-
-    org.setPassword(encryptedPassword);
-    org.setIoApiKey(encryptedIoApiKey);
-    org.setSendApiKey(encryptedSendApiKey);
-    org.setGenerateNoticeApiKey(encryptedGenerateNoticeApiKey);
-
-    when(encryptionServiceMock.decryptKey(encryptedPassword)).thenReturn("plainPassword");
-    when(encryptionServiceMock.decryptKey(encryptedIoApiKey)).thenReturn("plainIoApiKey");
-    when(encryptionServiceMock.decryptKey(encryptedSendApiKey)).thenReturn("plainSendApiKey");
-    when(encryptionServiceMock.decryptKey(encryptedGenerateNoticeApiKey)).thenReturn("plainGenerateNoticeApiKey");
-
-    when(organizationStationRepositoryMock.findByOrganizationId(1L)).thenReturn(List.of());
-
-    OrganizationDetailDTO dto = organizationMapper.mapToDTO(org);
-
-    assertNotNull(dto);
-    assertNull(dto.getSegregationCode());
-
-    assertThat(dto)
-      .usingRecursiveComparison()
-      .ignoringFields(
-        "password",
-        "ioApiKey",
-        "sendApiKey",
-        "generateNoticeApiKey",
-        "segregationCode"
-      )
-      .isEqualTo(org);
-
-    assertThat(dto.getPassword()).isEqualTo("plainPassword");
-    assertThat(dto.getIoApiKey()).isEqualTo("plainIoApiKey");
-    assertThat(dto.getSendApiKey()).isEqualTo("plainSendApiKey");
-    assertThat(dto.getGenerateNoticeApiKey()).isEqualTo("plainGenerateNoticeApiKey");
   }
 
   @Test
