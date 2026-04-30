@@ -1,7 +1,7 @@
 package it.gov.pagopa.pu.organization.service.station;
 
+import it.gov.pagopa.pu.organization.dto.generated.BrokerRequestDTO;
 import it.gov.pagopa.pu.organization.mapper.StationMapper;
-import it.gov.pagopa.pu.organization.model.Broker;
 import it.gov.pagopa.pu.organization.model.Station;
 import it.gov.pagopa.pu.organization.repository.StationRepository;
 import org.junit.jupiter.api.AfterEach;
@@ -31,16 +31,18 @@ class StationServiceTest {
 
   @Test
   void givenBrokerWhenUpsertStationThenOk() {
-    Broker broker = new Broker();
-    broker.setStationId("STATION");
+    BrokerRequestDTO requestDTO = new BrokerRequestDTO();
+    requestDTO.setBrokerId(1L);
+    requestDTO.setStationId("STATION");
 
     Station expectedStation = new Station();
     expectedStation.setStationId("STATION");
+    expectedStation.setBrokerId(1L);
 
-    Mockito.when(stationMapperMock.toModel(broker)).thenReturn(expectedStation);
+    Mockito.when(stationMapperMock.toModel(requestDTO)).thenReturn(expectedStation);
     Mockito.when(stationRepositoryMock.save(expectedStation)).thenReturn(expectedStation);
 
-    Station result = service.upsertStation(broker);
+    Station result = service.upsertStation(requestDTO);
 
     Assertions.assertNotNull(result);
     Assertions.assertEquals(expectedStation, result);

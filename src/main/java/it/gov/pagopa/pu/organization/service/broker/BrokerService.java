@@ -58,9 +58,10 @@ public class BrokerService {
     broker.setDefaultStationId(null);
     broker = brokerRepository.save(broker);
 
-    broker.setDefaultStationId(brokerRequestDTO.getDefaultStationId());
-    stationService.upsertStation(broker);
+    brokerRequestDTO.setBrokerId(broker.getBrokerId());
+    stationService.upsertStation(brokerRequestDTO);
 
+    broker.setDefaultStationId(brokerRequestDTO.getDefaultStationId());
     return brokerRepository.save(broker);
   }
 

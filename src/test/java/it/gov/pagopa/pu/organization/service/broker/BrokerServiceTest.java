@@ -215,7 +215,7 @@ class BrokerServiceTest {
     Mockito.when(brokerMapperMock.toModel(brokerRequestDTO)).thenReturn(broker);
     Mockito.when(brokerRepositoryMock.save(broker))
       .thenReturn(broker);
-    Mockito.when(stationServiceMock.upsertStation(broker)).thenReturn(station);
+    Mockito.when(stationServiceMock.upsertStation(brokerRequestDTO)).thenReturn(station);
     // When
     Broker result = brokerService.createBroker(brokerRequestDTO);
 
