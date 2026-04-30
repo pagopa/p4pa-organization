@@ -49,7 +49,6 @@ public class OrganizationMapper {
     organization.setAddress(createDTO.getAddress());
     organization.setZipCode(createDTO.getZipCode());
     organization.setCity(createDTO.getCity());
-    organization.setDefaultOrganizationStationId(createDTO.getDefaultOrganizationStationId());
 
     return organization;
   }

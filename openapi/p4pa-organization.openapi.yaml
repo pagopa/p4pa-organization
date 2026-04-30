@@ -517,9 +517,6 @@ components:
           type: string
         city:
           type: string
-        defaultOrganizationStationId:
-          type: integer
-          format: int64
     OrganizationApiKeyType:
       type: string
       enum:

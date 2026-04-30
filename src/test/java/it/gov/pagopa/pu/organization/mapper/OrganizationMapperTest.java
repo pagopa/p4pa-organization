@@ -111,7 +111,8 @@ class OrganizationMapperTest {
         "sendApiKey",
         "generateNoticeApiKey",
         "flagClassification",
-        "flagPaymentsReporting"
+        "flagPaymentsReporting",
+        "defaultOrganizationStationId"
       )
       .isEqualTo(dto);
 
