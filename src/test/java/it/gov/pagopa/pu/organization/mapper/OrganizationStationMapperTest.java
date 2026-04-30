@@ -75,41 +75,47 @@ class OrganizationStationMapperTest {
   @Test
   void givenOrgIdAndStationIdNullWhenMapToDTOThenUseDefaultOrganizationStation() {
     stubEncryption();
-    when(organizationStationRepositoryMock.findById(1L)).thenReturn(Optional.of(organizationStation));
+    Long defaultOrganizationStationId = org.getDefaultOrganizationStationId();
+
+    when(organizationStationRepositoryMock.findById(defaultOrganizationStationId)).thenReturn(Optional.of(organizationStation));
     when(stationRepositoryMock.findById(organizationStation.getStationId())).thenReturn(Optional.of(station));
 
     OrganizationStationDTO result = mapper.mapToDTO(org, null);
 
     assertNotNull(result);
-    TestUtils.checkNotNullFields(result, "brokerId", "segregationCode");
+    TestUtils.checkNotNullFields(result, "brokerId", "segregationCode", "defaultOrganizationStationId");
     assertOrganizationFields(result);
     assertStationFields(result, station);
     assertThat(result.getSegregationCode()).isEqualTo(organizationStation.getSegregationCode());
 
-    verify(organizationStationRepositoryMock).findById(1L);
+    verify(organizationStationRepositoryMock).findById(defaultOrganizationStationId);
     verify(stationRepositoryMock).findById(organizationStation.getStationId());
   }
 
   @Test
   void givenStationIdAndDefaultOrgStationNotFoundNullWhenMapToDTOThenThrowNotFoundException() {
     stubEncryption();
-    when(organizationStationRepositoryMock.findById(1L)).thenReturn(Optional.empty());
+    Long defaultOrganizationStationId = org.getDefaultOrganizationStationId();
+
+    when(organizationStationRepositoryMock.findById(defaultOrganizationStationId)).thenReturn(Optional.empty());
 
     // When
     NotFoundException result = assertThrows(NotFoundException.class, () -> mapper.mapToDTO(org, null));
 
     // Then
     Assertions.assertEquals(ErrorCodeConstants.ERROR_CODE_ORGANIZATION_STATION_NOT_FOUND, result.getCode());
-    Assertions.assertEquals("Relation Organization-Station not found for organizationStationId 1", result.getMessage());
+    Assertions.assertEquals("Relation Organization-Station not found for organizationStationId %s".formatted(defaultOrganizationStationId), result.getMessage());
 
-    verify(organizationStationRepositoryMock).findById(1L);
+    verify(organizationStationRepositoryMock).findById(defaultOrganizationStationId);
     verifyNoInteractions(stationRepositoryMock);
   }
 
   @Test
   void givenStationIdAndStationNotFoundNullWhenMapToDTOThenThrowNotFoundException() {
     stubEncryption();
-    when(organizationStationRepositoryMock.findById(1L)).thenReturn(Optional.of(organizationStation));
+    Long defaultOrganizationStationId = org.getDefaultOrganizationStationId();
+
+    when(organizationStationRepositoryMock.findById(defaultOrganizationStationId)).thenReturn(Optional.of(organizationStation));
     when(stationRepositoryMock.findById(organizationStation.getStationId())).thenReturn(Optional.empty());
 
     // When
@@ -119,7 +125,7 @@ class OrganizationStationMapperTest {
     Assertions.assertEquals(ErrorCodeConstants.ERROR_CODE_STATION_NOT_FOUND, result.getCode());
     Assertions.assertEquals("Station having id "+organizationStation.getStationId()+" not found", result.getMessage());
 
-    verify(organizationStationRepositoryMock).findById(1L);
+    verify(organizationStationRepositoryMock).findById(defaultOrganizationStationId);
   }
 
   @Test
@@ -133,7 +139,7 @@ class OrganizationStationMapperTest {
     OrganizationStationDTO result = mapper.mapToDTO(org, stationId);
 
     assertNotNull(result);
-    TestUtils.checkNotNullFields(result, "brokerId", "segregationCode");
+    TestUtils.checkNotNullFields(result, "brokerId", "segregationCode", "defaultOrganizationStationId");
     assertOrganizationFields(result);
     assertStationFields(result, station);
     assertThat(result.getSegregationCode()).isEqualTo(organizationStation.getSegregationCode());

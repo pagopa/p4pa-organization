@@ -12,7 +12,6 @@ import java.util.Optional;
 @Component
 @RequiredArgsConstructor
 public class OrganizationMapper {
-
   private final OrganizationEncryptionService encryptionService;
 
   public Organization toModel(OrganizationCreateDTO createDTO) {
@@ -54,7 +53,7 @@ public class OrganizationMapper {
     return organization;
   }
 
-  public OrganizationDetailDTO mapToDTO(Organization org) {
+  public OrganizationDetailDTO mapToDTO(Organization org, String segregationCode) {
     if (org == null) {
       return null;
     }
@@ -73,7 +72,7 @@ public class OrganizationMapper {
     dto.setOrgEmail(org.getOrgEmail());
     dto.setPostalIban(org.getPostalIban());
     dto.setIban(org.getIban());
-    dto.setSegregationCode(org.getSegregationCode());
+    dto.setSegregationCode(segregationCode);
     dto.setCbillInterBankCode(org.getCbillInterBankCode());
     dto.setOrgLogo(org.getOrgLogo());
     dto.setStatus(org.getStatus());

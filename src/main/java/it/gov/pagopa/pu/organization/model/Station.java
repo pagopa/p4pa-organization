@@ -2,6 +2,8 @@ package it.gov.pagopa.pu.organization.model;
 
 import it.gov.pagopa.pu.organization.enums.PagoPaInteractionModel;
 import jakarta.persistence.Entity;
+import jakarta.persistence.EnumType;
+import jakarta.persistence.Enumerated;
 import jakarta.persistence.Id;
 import jakarta.validation.constraints.NotNull;
 import lombok.*;
@@ -19,6 +21,7 @@ public class Station extends BaseEntity implements Serializable {
   private String stationId;
   @NotNull
   private Long brokerId;
+  @Enumerated(EnumType.STRING)
   @NotNull
   private PagoPaInteractionModel pagoPaInteractionModel;
   private String broadcastStationId;
