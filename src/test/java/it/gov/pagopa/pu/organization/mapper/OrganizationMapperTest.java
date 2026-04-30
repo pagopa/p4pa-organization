@@ -5,6 +5,8 @@ import it.gov.pagopa.pu.organization.dto.generated.OrganizationCreateDTO;
 import it.gov.pagopa.pu.organization.enums.OrganizationAdditionalLanguage;
 import it.gov.pagopa.pu.organization.enums.OrganizationStatus;
 import it.gov.pagopa.pu.organization.model.Organization;
+import it.gov.pagopa.pu.organization.model.OrganizationStation;
+import it.gov.pagopa.pu.organization.repository.OrganizationStationRepository;
 import it.gov.pagopa.pu.organization.service.organization.OrganizationEncryptionService;
 import it.gov.pagopa.pu.organization.util.TestUtils;
 import org.junit.jupiter.api.AfterEach;
@@ -18,6 +20,7 @@ import uk.co.jemos.podam.api.PodamFactory;
 
 import java.nio.charset.StandardCharsets;
 import java.time.LocalDate;
+import java.util.List;
 
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.junit.jupiter.api.Assertions.*;
@@ -32,6 +35,8 @@ class OrganizationMapperTest {
 
   @Mock
   private OrganizationEncryptionService encryptionServiceMock;
+  @Mock
+  private OrganizationStationRepository organizationStationRepositoryMock;
 
   @AfterEach
   void verifyNoMoreInteractions() {
@@ -125,7 +130,7 @@ class OrganizationMapperTest {
   @Test
   void givenValidOrganizationWhenMapToDTOThenReturnValidDTO() {
     Organization org = new Organization();
-    org.setOrganizationId(100L);
+    org.setOrganizationId(1L);
     org.setExternalOrganizationId("externalOrganizationId");
     org.setIpaCode("ipaCode");
     org.setOrgFiscalCode("orgFiscalCode");
@@ -134,7 +139,6 @@ class OrganizationMapperTest {
     org.setOrgEmail("orgEmail");
     org.setPostalIban("postalIban");
     org.setIban("iban");
-    org.setSegregationCode("segregationCode");
     org.setCbillInterBankCode("cbillInterBankCode");
     org.setOrgLogo("orgLogo");
     org.setStatus(OrganizationStatus.DRAFT);
@@ -165,6 +169,10 @@ class OrganizationMapperTest {
     when(encryptionServiceMock.decryptKey(encryptedSendApiKey)).thenReturn("plainSendApiKey");
     when(encryptionServiceMock.decryptKey(encryptedGenerateNoticeApiKey)).thenReturn("plainGenerateNoticeApiKey");
 
+    OrganizationStation station = new OrganizationStation();
+    station.setSegregationCode("segregationCode");
+    when(organizationStationRepositoryMock.findByOrganizationId(1L)).thenReturn(List.of(station));
+
     OrganizationDetailDTO dto = organizationMapper.mapToDTO(org);
 
     assertNotNull(dto);
@@ -174,7 +182,8 @@ class OrganizationMapperTest {
         "password",
         "ioApiKey",
         "sendApiKey",
-        "generateNoticeApiKey"
+        "generateNoticeApiKey",
+        "segregationCode"
       )
       .isEqualTo(org);
 
