@@ -41,7 +41,8 @@ class OrganizationMapperTest {
   @AfterEach
   void verifyNoMoreInteractions() {
     Mockito.verifyNoMoreInteractions(
-      encryptionServiceMock
+      encryptionServiceMock,
+      organizationStationRepositoryMock
     );
   }
 
@@ -176,6 +177,73 @@ class OrganizationMapperTest {
     OrganizationDetailDTO dto = organizationMapper.mapToDTO(org);
 
     assertNotNull(dto);
+    assertThat(dto)
+      .usingRecursiveComparison()
+      .ignoringFields(
+        "password",
+        "ioApiKey",
+        "sendApiKey",
+        "generateNoticeApiKey",
+        "segregationCode"
+      )
+      .isEqualTo(org);
+
+    assertThat(dto.getPassword()).isEqualTo("plainPassword");
+    assertThat(dto.getIoApiKey()).isEqualTo("plainIoApiKey");
+    assertThat(dto.getSendApiKey()).isEqualTo("plainSendApiKey");
+    assertThat(dto.getGenerateNoticeApiKey()).isEqualTo("plainGenerateNoticeApiKey");
+    assertThat(dto.getSegregationCode()).isEqualTo("segregationCode");
+  }
+
+  @Test
+  void givenOrganizationWithNoOrganizationStationsWhenMapToDTOThenReturnDTOWithNullSegregationCode() {
+    Organization org = new Organization();
+    org.setOrganizationId(1L);
+    org.setExternalOrganizationId("externalOrganizationId");
+    org.setIpaCode("ipaCode");
+    org.setOrgFiscalCode("orgFiscalCode");
+    org.setOrgName("orgName");
+    org.setOrgTypeCode("orgTypeCode");
+    org.setOrgEmail("orgEmail");
+    org.setPostalIban("postalIban");
+    org.setIban("iban");
+    org.setCbillInterBankCode("cbillInterBankCode");
+    org.setOrgLogo("orgLogo");
+    org.setStatus(OrganizationStatus.DRAFT);
+    org.setAdditionalLanguage(OrganizationAdditionalLanguage.EN);
+    org.setStartDate(LocalDate.now());
+    org.setFlagNotifyIo(true);
+    org.setFlagNotifyOutcomePush(false);
+    org.setFlagPaymentNotification(true);
+    org.setPdndEnabled(true);
+    org.setFlagTreasury(false);
+    org.setBrokerId(10L);
+    org.setAddress("address");
+    org.setZipCode("zipCode");
+    org.setCity("city");
+
+    byte[] encryptedPassword = "encryptedPassword".getBytes(StandardCharsets.UTF_8);
+    byte[] encryptedIoApiKey = "encryptedIoApiKey".getBytes(StandardCharsets.UTF_8);
+    byte[] encryptedSendApiKey = "encryptedSendApiKey".getBytes(StandardCharsets.UTF_8);
+    byte[] encryptedGenerateNoticeApiKey = "encryptedGenerateNoticeApiKey".getBytes(StandardCharsets.UTF_8);
+
+    org.setPassword(encryptedPassword);
+    org.setIoApiKey(encryptedIoApiKey);
+    org.setSendApiKey(encryptedSendApiKey);
+    org.setGenerateNoticeApiKey(encryptedGenerateNoticeApiKey);
+
+    when(encryptionServiceMock.decryptKey(encryptedPassword)).thenReturn("plainPassword");
+    when(encryptionServiceMock.decryptKey(encryptedIoApiKey)).thenReturn("plainIoApiKey");
+    when(encryptionServiceMock.decryptKey(encryptedSendApiKey)).thenReturn("plainSendApiKey");
+    when(encryptionServiceMock.decryptKey(encryptedGenerateNoticeApiKey)).thenReturn("plainGenerateNoticeApiKey");
+
+    when(organizationStationRepositoryMock.findByOrganizationId(1L)).thenReturn(List.of());
+
+    OrganizationDetailDTO dto = organizationMapper.mapToDTO(org);
+
+    assertNotNull(dto);
+    assertNull(dto.getSegregationCode());
+
     assertThat(dto)
       .usingRecursiveComparison()
       .ignoringFields(
