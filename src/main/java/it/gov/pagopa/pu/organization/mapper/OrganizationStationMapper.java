@@ -41,7 +41,6 @@ public class OrganizationStationMapper {
     orgStationDto.setOrgEmail(org.getOrgEmail());
     orgStationDto.setPostalIban(org.getPostalIban());
     orgStationDto.setIban(org.getIban());
-    orgStationDto.setSegregationCode(org.getSegregationCode());
     orgStationDto.setCbillInterBankCode(org.getCbillInterBankCode());
     orgStationDto.setOrgLogo(org.getOrgLogo());
     orgStationDto.setStatus(org.getStatus());
