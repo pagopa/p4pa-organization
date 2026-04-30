@@ -3,8 +3,10 @@ package it.gov.pagopa.pu.organization.service.broker;
 import it.gov.pagopa.pu.organization.dto.generated.BrokerApiKey;
 import it.gov.pagopa.pu.organization.dto.generated.BrokerApiKeyType;
 import it.gov.pagopa.pu.organization.dto.generated.BrokerApiKeys;
+import it.gov.pagopa.pu.organization.mapper.BrokerMapper;
 import it.gov.pagopa.pu.organization.model.Broker;
 import it.gov.pagopa.pu.organization.repository.BrokerRepository;
+import it.gov.pagopa.pu.organization.service.station.StationService;
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.BeforeEach;
@@ -48,16 +50,22 @@ class BrokerServiceTest {
   @Mock
   private BrokerEncryptionService brokerEncryptionServiceMock;
 
+  @Mock
+  private BrokerMapper brokerMapperMock;
+
+  @Mock
+  private StationService stationServiceMock;
+
   private BrokerService brokerService;
 
   @BeforeEach
   void setUp() {
-    brokerService = new BrokerService(brokerRepositoryMock, brokerEncryptionServiceMock);
+    brokerService = new BrokerService(brokerRepositoryMock, brokerEncryptionServiceMock, brokerMapperMock, stationServiceMock);
   }
 
   @AfterEach
   void verifyNoMoreInteractions(){
-    Mockito.verifyNoMoreInteractions(brokerRepositoryMock, brokerEncryptionServiceMock);
+    Mockito.verifyNoMoreInteractions(brokerRepositoryMock, brokerEncryptionServiceMock, brokerMapperMock, stationServiceMock);
   }
 
   @Test

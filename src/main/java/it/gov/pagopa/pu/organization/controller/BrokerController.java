@@ -1,9 +1,8 @@
 package it.gov.pagopa.pu.organization.controller;
 
 import it.gov.pagopa.pu.organization.controller.generated.BrokerApi;
-import it.gov.pagopa.pu.organization.dto.generated.BrokerApiKey;
-import it.gov.pagopa.pu.organization.dto.generated.BrokerApiKeyType;
-import it.gov.pagopa.pu.organization.dto.generated.BrokerApiKeys;
+import it.gov.pagopa.pu.organization.dto.generated.*;
+import it.gov.pagopa.pu.organization.model.Broker;
 import it.gov.pagopa.pu.organization.service.broker.BrokerService;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.HttpStatus;
@@ -40,5 +39,11 @@ public class BrokerController implements BrokerApi {
     return apiKey != null
       ? ResponseEntity.ok(apiKey)
       : ResponseEntity.noContent().build();
+  }
+
+  @Override
+  public ResponseEntity<Broker> createBroker(BrokerRequestDTO brokerRequestDTO) {
+    log.info("Requested broker creation with CF {} and organizationId {}", brokerRequestDTO.getBrokerFiscalCode(), brokerRequestDTO.getOrganizationId());
+    return ResponseEntity.ok(brokerService.createBroker(brokerRequestDTO));
   }
 }

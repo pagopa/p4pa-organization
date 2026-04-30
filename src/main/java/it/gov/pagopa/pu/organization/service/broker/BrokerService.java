@@ -1,14 +1,15 @@
 package it.gov.pagopa.pu.organization.service.broker;
 
-import it.gov.pagopa.pu.organization.dto.generated.BrokerApiKey;
-import it.gov.pagopa.pu.organization.dto.generated.BrokerApiKeyType;
-import it.gov.pagopa.pu.organization.dto.generated.BrokerApiKeys;
+import it.gov.pagopa.pu.organization.dto.generated.*;
 import it.gov.pagopa.pu.organization.exception.custom.BrokerNotFoundException;
+import it.gov.pagopa.pu.organization.mapper.BrokerMapper;
 import it.gov.pagopa.pu.organization.model.Broker;
 import it.gov.pagopa.pu.organization.repository.BrokerRepository;
+import it.gov.pagopa.pu.organization.service.station.StationService;
 import lombok.extern.slf4j.Slf4j;
 import org.jspecify.annotations.NonNull;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 @Service
 @Slf4j
@@ -16,12 +17,16 @@ public class BrokerService {
 
   private final BrokerRepository brokerRepository;
   private final BrokerEncryptionService brokerEncryptionService;
+  private final BrokerMapper brokerMapper;
+  private final StationService stationService;
 
   public BrokerService(
     BrokerRepository brokerRepository,
-    BrokerEncryptionService brokerEncryptionService) {
+    BrokerEncryptionService brokerEncryptionService, BrokerMapper brokerMapper, StationService stationService) {
     this.brokerEncryptionService = brokerEncryptionService;
     this.brokerRepository = brokerRepository;
+    this.brokerMapper = brokerMapper;
+    this.stationService = stationService;
   }
 
   public BrokerApiKeys getBrokerApiKeys(Long brokerId) {
@@ -45,6 +50,18 @@ public class BrokerService {
   public String getBrokerApiKey(Long brokerId, BrokerApiKeyType keyType) {
     Broker broker = getBrokerById(brokerId);
     return brokerEncryptionService.getBrokerDecryptedApiKey(broker, keyType);
+  }
+
+  @Transactional
+  public Broker createBroker(BrokerRequestDTO brokerRequestDTO) {
+    Broker broker = brokerMapper.toModel(brokerRequestDTO);
+    broker.setDefaultStationId(null);
+    broker = brokerRepository.save(broker);
+
+    broker.setDefaultStationId(brokerRequestDTO.getDefaultStationId());
+    stationService.upsertStation(broker);
+
+    return brokerRepository.save(broker);
   }
 
   private @NonNull Broker getBrokerById(Long brokerId) {
