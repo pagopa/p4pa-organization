@@ -18,4 +18,5 @@ public class OrganizationDetailDTO extends OrganizationCreateDTO implements Base
   private Long organizationId;
   @NotNull
   private Boolean flagTreasury;
+  private Long defaultOrganizationStationId;
 }

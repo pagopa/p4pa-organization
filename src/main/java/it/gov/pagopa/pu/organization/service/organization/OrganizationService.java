@@ -163,8 +163,11 @@ public class OrganizationService {
   @Transactional
   public void updateOrganization(OrganizationDetailDTO organization, String accessToken) {
     Long organizationId = organization.getOrganizationId();
+
     Organization existingOrganization = organizationRepository.findById(organizationId)
             .orElseThrow(() -> new OrganizationNotFoundException(ORGANIZATION_NOT_FOUND_MSG.formatted(organizationId)));
+    organization.setDefaultOrganizationStationId(existingOrganization.getDefaultOrganizationStationId());
+
     validateOrganizationDTO(organization, existingOrganization);
     triggerMassiveIbanUpdateIfNeeded(existingOrganization, organization, accessToken);
     organizationRepository.save(organizationMapper.toModel(organization));

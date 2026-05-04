@@ -100,6 +100,7 @@ public class OrganizationMapper {
     Organization organization = toModel((OrganizationCreateDTO) organizationDetailDTO);
     organization.setOrganizationId(organizationDetailDTO.getOrganizationId());
     organization.setFlagTreasury(organizationDetailDTO.getFlagTreasury());
+    organization.setDefaultOrganizationStationId(organizationDetailDTO.getDefaultOrganizationStationId());
     return organization;
   }
 }
