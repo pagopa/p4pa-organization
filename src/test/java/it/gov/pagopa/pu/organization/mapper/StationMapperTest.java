@@ -38,7 +38,7 @@ class StationMapperTest {
   }
 
   @Test
-  void testToModelMapsAllFields() {
+  void givenValidBrokerRequestDTOWhenMapToModelThenReturnStation() {
     Station result = mapper.toModel(brokerRequestDTO);
 
     assertNotNull(result);

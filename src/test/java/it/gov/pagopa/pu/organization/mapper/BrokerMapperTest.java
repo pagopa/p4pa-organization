@@ -6,6 +6,7 @@ import it.gov.pagopa.pu.organization.model.Broker;
 import it.gov.pagopa.pu.organization.service.broker.BrokerEncryptionService;
 import it.gov.pagopa.pu.organization.util.TestUtils;
 import org.junit.jupiter.api.AfterEach;
+import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.InjectMocks;
@@ -17,6 +18,7 @@ import java.nio.charset.StandardCharsets;
 
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.junit.jupiter.api.Assertions.*;
+import static org.mockito.Mockito.verifyNoInteractions;
 import static org.mockito.Mockito.when;
 
 @ExtendWith(MockitoExtension.class)
@@ -28,6 +30,8 @@ class BrokerMapperTest {
   @InjectMocks
   private BrokerMapper brokerMapper;
 
+  private BrokerRequestDTO dto;
+
   @AfterEach
   void verifyNoMoreInteractions() {
     Mockito.verifyNoMoreInteractions(
@@ -35,14 +39,9 @@ class BrokerMapperTest {
     );
   }
 
-  @Test
-  void givenNullBrokerRequestDTOWhenMapToModelThenReturnNull() {
-    assertNull(brokerMapper.toModel(null));
-  }
-
-  @Test
-  void givenValidBrokerRequestDTOWhenMapToModelThenReturnModel() {
-    BrokerRequestDTO dto = BrokerRequestDTO.builder()
+  @BeforeEach
+  void setUp() {
+    dto = BrokerRequestDTO.builder()
       .brokerId(1L)
       .organizationId(23L)
       .brokerFiscalCode("99999000099")
@@ -60,7 +59,15 @@ class BrokerMapperTest {
       .flagPaymentsReporting(true)
       .externalId("testcreate")
       .build();
+  }
 
+  @Test
+  void givenNullBrokerRequestDTOWhenMapToModelThenReturnNull() {
+    assertNull(brokerMapper.toModel(null));
+  }
+
+  @Test
+  void givenValidBrokerRequestDTOWhenMapToModelThenReturnModel() {
     byte[] expectedEncryptedSyncPaymentsReportingKey = "encryptedSyncPaymentsReportingKey".getBytes(StandardCharsets.UTF_8);
     when(encryptionServiceMock.encryptKey(dto.getSyncPaymentsReportingKey())).thenReturn(expectedEncryptedSyncPaymentsReportingKey);
 
@@ -99,6 +106,19 @@ class BrokerMapperTest {
     assertThat(result.getGpdKey()).isEqualTo(expectedEncryptedGpdKey);
     assertThat(result.getGenerateNoticeKey()).isEqualTo(expectedEncryptedGenerateNoticeKey);
     assertThat(result.getAcaKey()).isEqualTo(expectedEncryptedAcaKey);
+  }
+
+  @Test
+  void testEncryptKeyNotCalledWhenAllKeysNull() {
+    dto.setSyncPaymentsReportingKey(null);
+    dto.setSyncKey(null);
+    dto.setGpdKey(null);
+    dto.setGenerateNoticeKey(null);
+    dto.setAcaKey(null);
+
+    brokerMapper.toModel(dto);
+
+    verifyNoInteractions(encryptionServiceMock);
   }
 
 }
