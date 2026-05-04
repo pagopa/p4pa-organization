@@ -11,6 +11,10 @@ import org.springframework.stereotype.Component;
 public class StationMapper {
 
   public Station toModel(BrokerRequestDTO broker) {
+    if (broker == null || broker.getBrokerId()==null) {
+      return null;
+    }
+
     Station station = new Station();
     station.setBrokerId(broker.getBrokerId());
     station.setStationId(broker.getStationId());
