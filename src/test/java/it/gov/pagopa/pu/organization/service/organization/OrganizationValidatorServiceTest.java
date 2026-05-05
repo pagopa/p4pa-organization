@@ -4,6 +4,7 @@ import it.gov.pagopa.pu.organization.dto.OrganizationDetailDTO;
 import it.gov.pagopa.pu.organization.dto.generated.OrganizationCreateDTO;
 import it.gov.pagopa.pu.organization.enums.OrganizationStatus;
 import it.gov.pagopa.pu.organization.exception.custom.InvalidValueException;
+import it.gov.pagopa.pu.organization.exception.custom.NotFoundException;
 import it.gov.pagopa.pu.organization.model.Organization;
 import it.gov.pagopa.pu.organization.model.OrganizationStation;
 import it.gov.pagopa.pu.organization.repository.OrganizationStationRepository;
@@ -160,6 +161,77 @@ class OrganizationValidatorServiceTest {
       organizationValidatorService.validateOrganizationDTO(organizationDetailDTO, existingOrganization));
 
     assertEquals(ErrorCodeConstants.ERROR_CODE_IMMUTABLE_FIELD, exception.getCode());
+  }
+
+  @Test
+  void givenStatusActiveAndMissingLogoAndIbanWhenValidateStatusUpdateThenValidationException() {
+    OrganizationDetailDTO organization = new OrganizationDetailDTO();
+    organization.setStatus(OrganizationStatus.ACTIVE);
+    organization.setOrgLogo(null);
+    organization.setIban(null);
+    organization.setDefaultOrganizationStationId(1L);
+
+    OrganizationStation station = new OrganizationStation();
+    station.setSegregationCode("01");
+    when(organizationStationRepositoryMock.findById(1L)).thenReturn(Optional.of(station));
+
+    InvalidValueException exception = assertThrows(InvalidValueException.class, () ->
+      organizationValidatorService.validateStatusUpdate(organization));
+
+    assertEquals(ErrorCodeConstants.ERROR_CODE_MISSING_ORGANIZATION_FIELDS, exception.getCode());
+    assertTrue(exception.getMessage().contains("orgLogo"));
+    assertTrue(exception.getMessage().contains("iban"));
+  }
+
+  @Test
+  void givenStatusActiveAndMissingStationIdWhenValidateStatusUpdateThenValidationException() {
+    OrganizationDetailDTO organization = new OrganizationDetailDTO();
+    organization.setStatus(OrganizationStatus.ACTIVE);
+    organization.setOrgLogo("orgLogo");
+    organization.setIban("IT60X0542811101000000123456");
+    organization.setDefaultOrganizationStationId(null);
+
+    InvalidValueException exception = assertThrows(InvalidValueException.class, () ->
+      organizationValidatorService.validateStatusUpdate(organization));
+
+    assertEquals(ErrorCodeConstants.ERROR_CODE_MISSING_ORGANIZATION_FIELDS, exception.getCode());
+    assertTrue(exception.getMessage().contains("defaultOrganizationStationId"));
+  }
+
+  @Test
+  void givenStatusActiveAndOrganizationStationNotFoundWhenValidateStatusUpdateThenNotFoundException() {
+    OrganizationDetailDTO organization = new OrganizationDetailDTO();
+    organization.setStatus(OrganizationStatus.ACTIVE);
+    organization.setOrgLogo("logo_url");
+    organization.setIban("IT60X0542811101000000123456");
+    organization.setDefaultOrganizationStationId(1L);
+
+    when(organizationStationRepositoryMock.findById(1L)).thenReturn(Optional.empty());
+
+    NotFoundException exception = assertThrows(NotFoundException.class, () ->
+      organizationValidatorService.validateStatusUpdate(organization));
+
+    assertEquals(ErrorCodeConstants.ERROR_CODE_ORGANIZATION_STATION_NOT_FOUND, exception.getCode());
+  }
+
+  @Test
+  void givenStatusActiveAndStationWithMissingSegregationCodeWhenValidateStatusUpdateThenValidationException() {
+    OrganizationDetailDTO organization = new OrganizationDetailDTO();
+    organization.setStatus(OrganizationStatus.ACTIVE);
+    organization.setOrgLogo("orgLogo");
+    organization.setIban("IT60X0542811101000000123456");
+    organization.setDefaultOrganizationStationId(1L);
+
+    OrganizationStation station = new OrganizationStation();
+    station.setSegregationCode(null);
+
+    when(organizationStationRepositoryMock.findById(1L)).thenReturn(Optional.of(station));
+
+    InvalidValueException exception = assertThrows(InvalidValueException.class, () ->
+      organizationValidatorService.validateStatusUpdate(organization));
+
+    assertEquals(ErrorCodeConstants.ERROR_CODE_MISSING_ORGANIZATION_FIELDS, exception.getCode());
+    assertTrue(exception.getMessage().contains("segregationCode"));
   }
 
   @Test
