@@ -10,4 +10,5 @@ public interface BaseOrganization {
   String getOrgLogo();
   String getIban();
   String getSegregationCode();
+  Long getDefaultOrganizationStationId();
 }
