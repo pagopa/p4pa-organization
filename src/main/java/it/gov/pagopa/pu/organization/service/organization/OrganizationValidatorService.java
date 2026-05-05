@@ -65,8 +65,11 @@ public class OrganizationValidatorService {
         }
       }
 
-      if(!CollectionUtils.isEmpty(emptyOrNullFields)){
-        throw new InvalidValueException(ErrorCodeConstants.ERROR_CODE_MISSING_ORGANIZATION_FIELDS, "The following Organization fields are required in order to change the organization’s status to ACTIVE. "+emptyOrNullFields);
+      if (!CollectionUtils.isEmpty(emptyOrNullFields)) {
+        throw new InvalidValueException(
+          ErrorCodeConstants.ERROR_CODE_MISSING_ORGANIZATION_FIELDS,
+          "The following Organization fields are required for organizations with status ACTIVE. " + emptyOrNullFields
+        );
       }
     }
   }
