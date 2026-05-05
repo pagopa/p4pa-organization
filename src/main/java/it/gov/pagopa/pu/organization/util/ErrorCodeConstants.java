@@ -13,6 +13,7 @@ public class ErrorCodeConstants {
 
   public static final String ERROR_CODE_IMMUTABLE_FIELD = "IMMUTABLE_FIELD";
   public static final String ERROR_CODE_MISSING_ORGANIZATION_FIELDS = "MISSING_ORGANIZATION_FIELDS";
+  public static final String ERROR_CODE_MISSING_BROKER_ID = "MISSING_BROKER_ID";
 
   public static final String ERROR_CODE_INVALID_VAT_CODE = "INVALID_VAT_CODE";
   public static final String ERROR_CODE_INVALID_IBAN = "INVALID_IBAN";

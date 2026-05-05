@@ -96,7 +96,7 @@ class OrganizationMapperTest {
     Organization result = organizationMapper.toModel(dto);
 
     assertNotNull(result);
-    TestUtils.checkNotNullFields(result, "organizationId", "creationDate", "updateDate", "updateOperatorExternalId", "updateTraceId", "defaultOrganizationStationId");
+    TestUtils.checkNotNullFields(result, "organizationId", "creationDate", "updateDate", "updateOperatorExternalId", "updateTraceId", "defaultOrganizationStationId", "segregationCode");
 
     assertThat(result)
       .usingRecursiveComparison()
@@ -112,7 +112,8 @@ class OrganizationMapperTest {
         "generateNoticeApiKey",
         "flagClassification",
         "flagPaymentsReporting",
-        "defaultOrganizationStationId"
+        "defaultOrganizationStationId",
+        "segregationCode"
       )
       .isEqualTo(dto);
 
@@ -214,8 +215,8 @@ class OrganizationMapperTest {
     Organization result = organizationMapper.toModel(dto);
 
     assertNotNull(result);
-    TestUtils.checkNotNullFields(result, "creationDate", "updateDate", "updateOperatorExternalId", "updateTraceId", "defaultOrganizationStationId");
-    TestUtils.reflectionEqualsByName(dto,result,"password","ioApiKey","sendApiKey","generateNoticeApiKey");
+    TestUtils.checkNotNullFields(result, "creationDate", "updateDate", "updateOperatorExternalId", "updateTraceId", "defaultOrganizationStationId", "segregationCode");
+    TestUtils.reflectionEqualsByName(dto,result,"password","ioApiKey","sendApiKey","generateNoticeApiKey", "segregationCode");
     assertEquals(expectedEncryptedPassword, result.getPassword());
     assertEquals(expectedEncryptedIoApiKey, result.getIoApiKey());
     assertEquals(expectedEncryptedSendApiKey, result.getSendApiKey());

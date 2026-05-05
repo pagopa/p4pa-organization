@@ -12,7 +12,7 @@ import lombok.experimental.SuperBuilder;
 @NoArgsConstructor
 @AllArgsConstructor
 @SuperBuilder(toBuilder = true)
-public class OrganizationStationDTO extends OrganizationCreateDTO implements BaseOrganization {
+public class OrganizationStationDTO extends OrganizationCreateDTO {
   // Organization
   @NotNull
   private Long organizationId;

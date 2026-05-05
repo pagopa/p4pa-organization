@@ -16,9 +16,11 @@ import it.gov.pagopa.pu.organization.mapper.OrganizationMapper;
 import it.gov.pagopa.pu.organization.mapper.OrganizationStationMapper;
 import it.gov.pagopa.pu.organization.model.Broker;
 import it.gov.pagopa.pu.organization.model.Organization;
+import it.gov.pagopa.pu.organization.model.OrganizationStation;
 import it.gov.pagopa.pu.organization.repository.BrokerRepository;
 import it.gov.pagopa.pu.organization.repository.OrganizationRepository;
 import it.gov.pagopa.pu.organization.service.broker.BrokerEncryptionService;
+import it.gov.pagopa.pu.organization.service.organizationstation.DefaultOrganizationStationService;
 import it.gov.pagopa.pu.organization.util.TestUtils;
 import it.gov.pagopa.pu.organization.util.faker.OrganizationFaker;
 import it.gov.pagopa.pu.workflowhub.dto.generated.MassiveDebtPositionIbanUpdateRequestDTO;
@@ -27,8 +29,6 @@ import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
-import org.junit.jupiter.params.ParameterizedTest;
-import org.junit.jupiter.params.provider.CsvSource;
 import org.mockito.Mock;
 import org.mockito.Mockito;
 import org.mockito.junit.jupiter.MockitoExtension;
@@ -43,7 +43,6 @@ import static org.mockito.Mockito.when;
 
 @ExtendWith(MockitoExtension.class)
 class OrganizationServiceTest {
-
   public static final PodamFactory podamFactory = TestUtils.getPodamFactory();
 
   @Mock
@@ -62,15 +61,21 @@ class OrganizationServiceTest {
   private WorkflowDebtPositionService workflowDebtPositionServiceMock;
   @Mock
   private OrganizationStationMapper organizationStationMapperMock;
+  @Mock
+  private DefaultOrganizationStationService defaultOrganizationStationServiceMock;
+  @Mock
+  private OrganizationValidatorService organizationValidatorServiceMock;
 
   private OrganizationService service;
 
   @BeforeEach
   void setUp() {
-    service = new OrganizationService(organizationEncryptionServiceMock,
-      brokerEncryptionServiceMock, organizationMapperMock,
-      organizationRepositoryMock, brokerRepositoryMock,
-      debtPositionTypeOrgClientMock, workflowDebtPositionServiceMock, organizationStationMapperMock,true);
+    service = new OrganizationService(
+      organizationEncryptionServiceMock, brokerEncryptionServiceMock,
+      organizationMapperMock, organizationRepositoryMock,
+      brokerRepositoryMock, debtPositionTypeOrgClientMock,
+      workflowDebtPositionServiceMock, organizationStationMapperMock,
+      defaultOrganizationStationServiceMock, organizationValidatorServiceMock);
   }
 
   @AfterEach
@@ -81,38 +86,67 @@ class OrganizationServiceTest {
       brokerRepositoryMock,
       brokerEncryptionServiceMock,
       organizationMapperMock,
-      debtPositionTypeOrgClientMock);
+      debtPositionTypeOrgClientMock,
+      organizationStationMapperMock,
+      defaultOrganizationStationServiceMock,
+      organizationValidatorServiceMock
+    );
   }
 
-  @ParameterizedTest
-  @CsvSource(value = {
-    "12345678903,IT60X0542811101000000123456,IT60X0542811101000000123456,12,true",
-    "12345678903,iban,IT60X0542811101000000123456,12,false",
-    "12345678903,IT60X0542811101000000123456,iban,12,false",
-    "null,IT60X0542811101000000123456,IT60X0542811101000000123456,12,false",
-    "12345678903,IT60X0542811101000000123456,IT60X0542811101000000123456,abc,false",
-    "12345678903,IT60X0542811101000000123456,null,12,true",
-    "12345678903,IT60X0542811101000000123456,'',12,false"
-  }, nullValues = {"null"})
-  void testCreateOrganizationParameterized(String orgFiscalCode, String iban, String postalIban, String segregationCode, boolean expectedSuccess) {
+  @Test
+  void givenValidDTOWithSegregationCodeWhenCreateOrganizationThenSuccess() {
     String accessToken = TestUtils.getFakeAccessToken();
     OrganizationCreateDTO dto = new OrganizationCreateDTO();
-    dto.setOrgFiscalCode(orgFiscalCode);
-    dto.setIban(iban);
-    dto.setPostalIban(postalIban);
-    dto.setSegregationCode(segregationCode);
-    dto.setSegregationCode(segregationCode);
+    dto.setSegregationCode("12");
+    dto.setBrokerId(1L);
 
-    if (expectedSuccess) {
-      Organization organization = OrganizationFaker.buildOrganization();
-      when(organizationMapperMock.toModel(dto)).thenReturn(organization);
-      when(organizationRepositoryMock.save(organization)).thenReturn(organization);
-      Organization result = service.createOrganization(dto, accessToken);
-      Assertions.assertSame(organization, result);
-      verify(debtPositionTypeOrgClientMock).createTechnicalDebtPositionTypeOrg(organization.getOrganizationId(), accessToken);
-    } else {
-      Assertions.assertThrows(InvalidValueException.class, () -> service.createOrganization(dto, accessToken));
-    }
+    Organization organization = OrganizationFaker.buildOrganization();
+    OrganizationStation station = new OrganizationStation();
+    station.setOrganizationStationId(1L);
+
+    when(organizationMapperMock.toModel(dto)).thenReturn(organization);
+    when(organizationRepositoryMock.save(organization)).thenReturn(organization);
+    when(defaultOrganizationStationServiceMock.createDefaultOrganizationStation(organization.getOrganizationId(), 1L, "12")).thenReturn(station);
+
+    Organization result = service.createOrganization(dto, accessToken);
+
+    Assertions.assertSame(organization, result);
+    verify(organizationValidatorServiceMock).validateOrganizationCreateDTO(dto);
+    verify(organizationRepositoryMock, Mockito.times(2)).save(organization);
+    verify(debtPositionTypeOrgClientMock).createTechnicalDebtPositionTypeOrg(organization.getOrganizationId(), accessToken);
+  }
+
+  @Test
+  void givenValidDTOWithoutSegregationCodeWhenCreateOrganizationThenSuccess() {
+    String accessToken = TestUtils.getFakeAccessToken();
+    OrganizationCreateDTO dto = new OrganizationCreateDTO();
+    dto.setSegregationCode(null);
+
+    Organization organization = OrganizationFaker.buildOrganization();
+
+    when(organizationMapperMock.toModel(dto)).thenReturn(organization);
+    when(organizationRepositoryMock.save(organization)).thenReturn(organization);
+
+    Organization result = service.createOrganization(dto, accessToken);
+
+    Assertions.assertSame(organization, result);
+    verify(organizationValidatorServiceMock).validateOrganizationCreateDTO(dto);
+    verify(debtPositionTypeOrgClientMock).createTechnicalDebtPositionTypeOrg(organization.getOrganizationId(), accessToken);
+  }
+
+  @Test
+  void givenSegregationCodeWithoutBrokerIdWhenCreateOrganizationThenThrowException() {
+    String accessToken = TestUtils.getFakeAccessToken();
+    OrganizationCreateDTO dto = new OrganizationCreateDTO();
+    dto.setSegregationCode("12");
+    dto.setBrokerId(null);
+
+    Organization organization = OrganizationFaker.buildOrganization();
+    when(organizationMapperMock.toModel(dto)).thenReturn(organization);
+    when(organizationRepositoryMock.save(organization)).thenReturn(organization);
+
+    assertThrows(InvalidValueException.class, () -> service.createOrganization(dto, accessToken));
+    verify(organizationValidatorServiceMock).validateOrganizationCreateDTO(dto);
   }
 
   @Test
@@ -384,37 +418,14 @@ class OrganizationServiceTest {
   }
 
   @Test
-  void givenValidOrganizationDTOWhenUpdateOrganizationThenOk() {
-    String accessToken = "accessToken";
-    OrganizationDetailDTO organizationDetailDTO = podamFactory.manufacturePojo(OrganizationDetailDTO.class);
-    organizationDetailDTO.setOrgFiscalCode("12345678903");
-    organizationDetailDTO.setIban("IT60X0542811101000000123456");
-    organizationDetailDTO.setPostalIban("IT60X0542811101000000123456");
-    organizationDetailDTO.setSegregationCode("02");
-    Organization organization = OrganizationFaker.buildOrganization();
-    organization.setBrokerId(organizationDetailDTO.getBrokerId());
-    organization.setExternalOrganizationId(organizationDetailDTO.getExternalOrganizationId());
-    organization.setIpaCode(organizationDetailDTO.getIpaCode());
-    organization.setOrgFiscalCode(organizationDetailDTO.getOrgFiscalCode());
-    organization.setOrgName(organizationDetailDTO.getOrgName());
-    organization.setOrgTypeCode(organizationDetailDTO.getOrgTypeCode());
-    organization.setSegregationCode(organizationDetailDTO.getSegregationCode());
-    when(organizationRepositoryMock.findById(organizationDetailDTO.getOrganizationId())).thenReturn(Optional.of(organization));
-    when(organizationMapperMock.toModel(organizationDetailDTO)).thenReturn(organization);
-    when(organizationRepositoryMock.save(organization)).thenReturn(organization);
-
-    service.updateOrganization(organizationDetailDTO, accessToken);
-  }
-
-  @Test
-  void givenStatusActiveAndNoMandatoryFieldWhenUpdateOrganizationThenValidationException() {
+  void givenOrganizationDTOWithoutSegregationCodeWhenUpdateOrganizationThenOk() {
     String accessToken = "accessToken";
     OrganizationDetailDTO organizationDetailDTO = podamFactory.manufacturePojo(OrganizationDetailDTO.class);
     organizationDetailDTO.setOrgFiscalCode("12345678903");
     organizationDetailDTO.setIban("IT60X0542811101000000123456");
     organizationDetailDTO.setPostalIban("IT60X0542811101000000123456");
     organizationDetailDTO.setSegregationCode(null);
-    organizationDetailDTO.setStatus(OrganizationStatus.ACTIVE);
+
     Organization organization = OrganizationFaker.buildOrganization();
     organization.setBrokerId(organizationDetailDTO.getBrokerId());
     organization.setExternalOrganizationId(organizationDetailDTO.getExternalOrganizationId());
@@ -422,30 +433,15 @@ class OrganizationServiceTest {
     organization.setOrgFiscalCode(organizationDetailDTO.getOrgFiscalCode());
     organization.setOrgName(organizationDetailDTO.getOrgName());
     organization.setOrgTypeCode(organizationDetailDTO.getOrgTypeCode());
-    when(organizationRepositoryMock.findById(organizationDetailDTO.getOrganizationId())).thenReturn(Optional.of(organization));
-
-    assertThrows(InvalidValueException.class, () -> service.updateOrganization(organizationDetailDTO, accessToken));
-  }
-
-  @Test
-  void givenUpdatedImmutableFieldWhenUpdateOrganizationThenValidationException() {
-    String accessToken = "accessToken";
-    OrganizationDetailDTO organizationDetailDTO = podamFactory.manufacturePojo(OrganizationDetailDTO.class);
-    organizationDetailDTO.setOrgFiscalCode("12345678903");
-    organizationDetailDTO.setIban("IT60X0542811101000000123456");
-    organizationDetailDTO.setPostalIban("IT60X0542811101000000123456");
-    organizationDetailDTO.setSegregationCode("01");
-    Organization organization = OrganizationFaker.buildOrganization();
-    organization.setBrokerId(organizationDetailDTO.getBrokerId());
-    organization.setExternalOrganizationId(organizationDetailDTO.getExternalOrganizationId());
-    organization.setIpaCode(organizationDetailDTO.getIpaCode());
-    organization.setOrgFiscalCode(organizationDetailDTO.getOrgFiscalCode());
-    organization.setOrgName(organizationDetailDTO.getOrgName());
     organization.setSegregationCode(organizationDetailDTO.getSegregationCode());
-    organization.setOrgTypeCode(organizationDetailDTO.getOrgTypeCode()+"old");
-    when(organizationRepositoryMock.findById(organizationDetailDTO.getOrganizationId())).thenReturn(Optional.of(organization));
 
-    assertThrows(InvalidValueException.class, () -> service.updateOrganization(organizationDetailDTO, accessToken));
+    when(organizationRepositoryMock.findById(organizationDetailDTO.getOrganizationId())).thenReturn(Optional.of(organization));
+    when(organizationMapperMock.toModel(organizationDetailDTO)).thenReturn(organization);
+    when(organizationRepositoryMock.save(organization)).thenReturn(organization);
+
+    service.updateOrganization(organizationDetailDTO, accessToken);
+
+    verify(organizationValidatorServiceMock).validateOrganizationDTO(organizationDetailDTO, organization);
   }
 
   @Test
@@ -468,17 +464,6 @@ class OrganizationServiceTest {
   }
 
   @Test
-  void givenStatusActiveAndNoMandatoryFieldWhenUpdateOrganizationStatusThenValidationException() {
-    Long organizationId = 1L;
-    OrganizationStatus newStatus = OrganizationStatus.ACTIVE;
-
-    Organization organization = new Organization();
-    when(organizationRepositoryMock.findById(organizationId)).thenReturn(Optional.of(organization));
-
-    assertThrows(InvalidValueException.class,()->service.updateOrganizationStatus(organizationId, newStatus));
-  }
-
-  @Test
   void givenValidRequestWhenUpdateOrganizationStatusThenOk(){
     Long organizationId = 1L;
     OrganizationStatus newStatus = OrganizationStatus.ACTIVE;
@@ -489,6 +474,7 @@ class OrganizationServiceTest {
 
     service.updateOrganizationStatus(organizationId, newStatus);
 
+    verify(organizationValidatorServiceMock).validateStatusUpdate(organization);
     Mockito.verify(organizationRepositoryMock).save(Mockito.same(organization));
     Assertions.assertEquals(newStatus, organization.getStatus());
   }
@@ -500,12 +486,12 @@ class OrganizationServiceTest {
     organizationDetailDTO.setOrgFiscalCode("12345678903");
     organizationDetailDTO.setIban("IT0000000000000000000000000");
     organizationDetailDTO.setPostalIban("IT0000000000000000000000000");
-    organizationDetailDTO.setSegregationCode("02");
+    organizationDetailDTO.setSegregationCode(null);
 
     Organization existingOrganization = OrganizationFaker.buildOrganization();
     existingOrganization.setIban("IT0000000000000000000000001");
     existingOrganization.setPostalIban("IT0000000000000000000000000");
-
+    existingOrganization.setSegregationCode(null);
     existingOrganization.setBrokerId(organizationDetailDTO.getBrokerId());
     existingOrganization.setExternalOrganizationId(organizationDetailDTO.getExternalOrganizationId());
     existingOrganization.setIpaCode(organizationDetailDTO.getIpaCode());
@@ -519,6 +505,7 @@ class OrganizationServiceTest {
 
     service.updateOrganization(organizationDetailDTO, accessToken);
 
+    verify(organizationValidatorServiceMock).validateOrganizationDTO(organizationDetailDTO, existingOrganization);
     Mockito.verify(workflowDebtPositionServiceMock).massiveDpIbanUpdate(
       Mockito.eq(existingOrganization.getOrganizationId()),
       Mockito.any(MassiveDebtPositionIbanUpdateRequestDTO.class),
@@ -533,12 +520,12 @@ class OrganizationServiceTest {
     organizationDetailDTO.setOrgFiscalCode("12345678903");
     organizationDetailDTO.setIban("IT0000000000000000000000000");
     organizationDetailDTO.setPostalIban("IT0000000000000000000000000");
-    organizationDetailDTO.setSegregationCode("02");
+    organizationDetailDTO.setSegregationCode(null);
 
     Organization existingOrganization = OrganizationFaker.buildOrganization();
     existingOrganization.setIban("IT0000000000000000000000000");
     existingOrganization.setPostalIban("IT0000000000000000000000001");
-
+    existingOrganization.setSegregationCode(null);
     existingOrganization.setBrokerId(organizationDetailDTO.getBrokerId());
     existingOrganization.setExternalOrganizationId(organizationDetailDTO.getExternalOrganizationId());
     existingOrganization.setIpaCode(organizationDetailDTO.getIpaCode());
@@ -552,6 +539,7 @@ class OrganizationServiceTest {
 
     service.updateOrganization(organizationDetailDTO, accessToken);
 
+    verify(organizationValidatorServiceMock).validateOrganizationDTO(organizationDetailDTO, existingOrganization);
     Mockito.verify(workflowDebtPositionServiceMock).massiveDpIbanUpdate(
       Mockito.eq(existingOrganization.getOrganizationId()),
       Mockito.any(MassiveDebtPositionIbanUpdateRequestDTO.class),
@@ -566,10 +554,11 @@ class OrganizationServiceTest {
     organizationDetailDTO.setOrgFiscalCode("12345678903");
     organizationDetailDTO.setIban("IT0000000000000000000000000");
     organizationDetailDTO.setPostalIban("IT0000000000000000000000000");
-    organizationDetailDTO.setSegregationCode("02");
+    organizationDetailDTO.setSegregationCode(null);
 
     Organization existingOrganization = OrganizationFaker.buildOrganization();
     existingOrganization.setIban(null);
+    existingOrganization.setSegregationCode(null);
 
     existingOrganization.setBrokerId(organizationDetailDTO.getBrokerId());
     existingOrganization.setExternalOrganizationId(organizationDetailDTO.getExternalOrganizationId());
@@ -584,6 +573,7 @@ class OrganizationServiceTest {
 
     service.updateOrganization(organizationDetailDTO, accessToken);
 
+    verify(organizationValidatorServiceMock).validateOrganizationDTO(organizationDetailDTO, existingOrganization);
     Mockito.verifyNoInteractions(workflowDebtPositionServiceMock);
   }
 }
