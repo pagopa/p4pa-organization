@@ -61,7 +61,7 @@ public class OrganizationValidatorService {
           ));
 
         if (StringUtils.isBlank(organizationStation.getSegregationCode())) {
-          emptyOrNullFields.add("segregationCode");
+          emptyOrNullFields.add("segregationCode on defaultOrganizationStation");
         }
       }
 
