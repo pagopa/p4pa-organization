@@ -1,7 +1,6 @@
 package it.gov.pagopa.pu.organization.dto;
 
 import it.gov.pagopa.pu.organization.dto.generated.OrganizationCreateDTO;
-import it.gov.pagopa.pu.organization.enums.OrganizationStatus;
 import it.gov.pagopa.pu.organization.enums.PagoPaInteractionModel;
 import jakarta.validation.constraints.NotNull;
 import lombok.*;
