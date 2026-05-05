@@ -22,7 +22,4 @@ public class OrganizationStationDTO extends OrganizationCreateDTO {
   private PagoPaInteractionModel pagoPaInteractionModel;
   private String broadcastStationId;
   private Boolean enabled;
-
-  // OrganizationStation
-  private String segregationCode;
 }

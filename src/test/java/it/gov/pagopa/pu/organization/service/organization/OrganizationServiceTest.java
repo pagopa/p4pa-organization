@@ -79,7 +79,7 @@ class OrganizationServiceTest {
   }
 
   @AfterEach
-  void verifyNoMoreInteractions(){
+  void verifyNoMoreInteractions() {
     Mockito.verifyNoMoreInteractions(
       organizationEncryptionServiceMock,
       organizationRepositoryMock,
@@ -491,7 +491,6 @@ class OrganizationServiceTest {
     Organization existingOrganization = OrganizationFaker.buildOrganization();
     existingOrganization.setIban("IT0000000000000000000000001");
     existingOrganization.setPostalIban("IT0000000000000000000000000");
-    existingOrganization.setSegregationCode(null);
     existingOrganization.setBrokerId(organizationDetailDTO.getBrokerId());
     existingOrganization.setExternalOrganizationId(organizationDetailDTO.getExternalOrganizationId());
     existingOrganization.setIpaCode(organizationDetailDTO.getIpaCode());
@@ -525,7 +524,6 @@ class OrganizationServiceTest {
     Organization existingOrganization = OrganizationFaker.buildOrganization();
     existingOrganization.setIban("IT0000000000000000000000000");
     existingOrganization.setPostalIban("IT0000000000000000000000001");
-    existingOrganization.setSegregationCode(null);
     existingOrganization.setBrokerId(organizationDetailDTO.getBrokerId());
     existingOrganization.setExternalOrganizationId(organizationDetailDTO.getExternalOrganizationId());
     existingOrganization.setIpaCode(organizationDetailDTO.getIpaCode());
@@ -558,7 +556,6 @@ class OrganizationServiceTest {
 
     Organization existingOrganization = OrganizationFaker.buildOrganization();
     existingOrganization.setIban(null);
-    existingOrganization.setSegregationCode(null);
 
     existingOrganization.setBrokerId(organizationDetailDTO.getBrokerId());
     existingOrganization.setExternalOrganizationId(organizationDetailDTO.getExternalOrganizationId());
