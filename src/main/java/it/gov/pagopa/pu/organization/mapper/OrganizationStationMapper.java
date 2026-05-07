@@ -41,7 +41,6 @@ public class OrganizationStationMapper {
     orgStationDto.setOrgEmail(org.getOrgEmail());
     orgStationDto.setPostalIban(org.getPostalIban());
     orgStationDto.setIban(org.getIban());
-    orgStationDto.setSegregationCode(org.getSegregationCode());
     orgStationDto.setCbillInterBankCode(org.getCbillInterBankCode());
     orgStationDto.setOrgLogo(org.getOrgLogo());
     orgStationDto.setStatus(org.getStatus());
@@ -60,9 +59,9 @@ public class OrganizationStationMapper {
     orgStationDto.setCity(org.getCity());
 
     if(Objects.isNull(stationId)) {
-      organizationStation = organizationStationRepository.findById(1L) // TODO P4ADEV-4645 change ID with org.getDefaultOrganizationStationId()
+      organizationStation = organizationStationRepository.findById(org.getDefaultOrganizationStationId())
         .orElseThrow(() -> new NotFoundException(ErrorCodeConstants.ERROR_CODE_ORGANIZATION_STATION_NOT_FOUND,
-          String.format("Relation Organization-Station not found for organizationStationId %s", 1L))); // TODO P4ADEV-4645 change ID with org.getDefaultOrganizationStationId()
+          String.format("Relation Organization-Station not found for organizationStationId %s", org.getDefaultOrganizationStationId())));
       station = stationRepository.findById(organizationStation.getStationId())
         .orElseThrow(() -> new NotFoundException(ErrorCodeConstants.ERROR_CODE_STATION_NOT_FOUND,
           "Station having id "+organizationStation.getStationId()+" not found"));

@@ -2,7 +2,6 @@ package it.gov.pagopa.pu.organization.service.organization;
 
 import it.gov.pagopa.pu.organization.connector.debtposition.client.DebtPositionTypeOrgClient;
 import it.gov.pagopa.pu.organization.connector.workflow.service.WorkflowDebtPositionService;
-import it.gov.pagopa.pu.organization.dto.BaseOrganization;
 import it.gov.pagopa.pu.organization.dto.OrganizationDetailDTO;
 import it.gov.pagopa.pu.organization.dto.OrganizationStationDTO;
 import it.gov.pagopa.pu.organization.dto.generated.BrokerApiKeyType;
@@ -17,22 +16,17 @@ import it.gov.pagopa.pu.organization.mapper.OrganizationMapper;
 import it.gov.pagopa.pu.organization.mapper.OrganizationStationMapper;
 import it.gov.pagopa.pu.organization.model.Broker;
 import it.gov.pagopa.pu.organization.model.Organization;
+import it.gov.pagopa.pu.organization.model.OrganizationStation;
 import it.gov.pagopa.pu.organization.repository.BrokerRepository;
 import it.gov.pagopa.pu.organization.repository.OrganizationRepository;
 import it.gov.pagopa.pu.organization.service.broker.BrokerEncryptionService;
+import it.gov.pagopa.pu.organization.service.organizationstation.DefaultOrganizationStationService;
 import it.gov.pagopa.pu.organization.util.ErrorCodeConstants;
 import it.gov.pagopa.pu.workflowhub.dto.generated.MassiveDebtPositionIbanUpdateRequestDTO;
 import jakarta.transaction.Transactional;
-import org.apache.commons.lang3.StringUtils;
-import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
-import org.springframework.util.CollectionUtils;
 
-import java.util.ArrayList;
-import java.util.List;
 import java.util.Objects;
-
-import static it.gov.pagopa.pu.organization.util.Utilities.*;
 
 @Service
 public class OrganizationService {
@@ -45,8 +39,8 @@ public class OrganizationService {
   private final DebtPositionTypeOrgClient debtPositionTypeOrgClient;
   private final WorkflowDebtPositionService workflowDebtPositionService;
   private final OrganizationStationMapper organizationStationMapper;
-
-  private final boolean isOrgPIvaCheckEnabled;
+  private final DefaultOrganizationStationService defaultOrganizationStationService;
+  private final OrganizationValidatorService organizationValidatorService;
 
   private static final String ORGANIZATION_NOT_FOUND_MSG = "Organization with id %s not found";
 
@@ -57,8 +51,11 @@ public class OrganizationService {
     OrganizationRepository organizationRepository,
     BrokerRepository brokerRepository,
     DebtPositionTypeOrgClient debtPositionTypeOrgClient,
-    WorkflowDebtPositionService workflowDebtPositionService, OrganizationStationMapper organizationStationMapper,
-    @Value("${features.organization.piva-check}") boolean isOrgPIvaCheckEnabled) {
+    WorkflowDebtPositionService workflowDebtPositionService,
+    OrganizationStationMapper organizationStationMapper,
+    DefaultOrganizationStationService defaultOrganizationStationService,
+    OrganizationValidatorService organizationValidatorService
+  ) {
     this.organizationEncryptionService = organizationEncryptionService;
     this.brokerEncryptionService = brokerEncryptionService;
     this.organizationMapper = organizationMapper;
@@ -66,8 +63,9 @@ public class OrganizationService {
     this.brokerRepository = brokerRepository;
     this.debtPositionTypeOrgClient = debtPositionTypeOrgClient;
     this.organizationStationMapper = organizationStationMapper;
-    this.isOrgPIvaCheckEnabled = isOrgPIvaCheckEnabled;
     this.workflowDebtPositionService = workflowDebtPositionService;
+    this.defaultOrganizationStationService = defaultOrganizationStationService;
+    this.organizationValidatorService = organizationValidatorService;
   }
 
   @Transactional
@@ -87,9 +85,24 @@ public class OrganizationService {
 
   @Transactional
   public Organization createOrganization(OrganizationCreateDTO organizationCreateDTO, String accessToken) {
-    validateOrganizationCreateDTO(organizationCreateDTO);
+    organizationValidatorService.validateOrganizationCreateDTO(organizationCreateDTO);
 
     Organization organization = organizationRepository.save(organizationMapper.toModel(organizationCreateDTO));
+
+    Long organizationId = organization.getOrganizationId();
+
+    String segregationCode = organizationCreateDTO.getSegregationCode();
+    if (segregationCode != null) {
+      Long brokerId = organizationCreateDTO.getBrokerId();
+      if (brokerId == null) {
+        throw new InvalidValueException(ErrorCodeConstants.ERROR_CODE_MISSING_BROKER_ID, "Broker id is required when segregation code is provided");
+      }
+
+      OrganizationStation saved = defaultOrganizationStationService.createDefaultOrganizationStation(organizationId, brokerId, segregationCode);
+
+      organization.setDefaultOrganizationStationId(saved.getOrganizationStationId());
+      organization = organizationRepository.save(organization);
+    }
 
     debtPositionTypeOrgClient.createTechnicalDebtPositionTypeOrg(organization.getOrganizationId(), accessToken);
 
@@ -115,40 +128,13 @@ public class OrganizationService {
     };
   }
 
-  private void validateOrganizationCreateDTO(OrganizationCreateDTO organizationCreateDTO) {
-    validateSegregationCode(organizationCreateDTO);
-    validateOrgFiscalCode(organizationCreateDTO);
-    validateIban(organizationCreateDTO);
-    validatePostalIban(organizationCreateDTO);
-  }
-
-  private void validateOrgFiscalCode(OrganizationCreateDTO organizationCreateDTO) {
-    if (StringUtils.isBlank(organizationCreateDTO.getOrgFiscalCode()) ||
-      !isValidPIVA(organizationCreateDTO.getOrgFiscalCode(), isOrgPIvaCheckEnabled)) {
-      throw new InvalidValueException(ErrorCodeConstants.ERROR_CODE_INVALID_VAT_CODE, "Fiscal code is not valid");
-    }
-  }
-
-  private void validateIban(OrganizationCreateDTO dto) {
-    if (StringUtils.isNotBlank(dto.getIban()) && !isValidIban(dto.getIban())) {
-      throw new InvalidValueException(ErrorCodeConstants.ERROR_CODE_INVALID_IBAN, "Iban is not valid");
-    }
-  }
-
-  private void validatePostalIban(OrganizationCreateDTO dto) {
-    String postalIban = dto.getPostalIban();
-
-    // Postal IBAN is optional, but if provided, it must not be blank
-    if (postalIban != null && !isValidIban(postalIban)) {
-      throw new InvalidValueException(ErrorCodeConstants.ERROR_CODE_INVALID_POSTAL_IBAN, "Postal iban is not valid");
-    }
-  }
-
   public OrganizationDetailDTO getOrganization(Long organizationId) {
     Organization org = organizationRepository.findById(organizationId)
       .orElseThrow(() -> new OrganizationNotFoundException(ORGANIZATION_NOT_FOUND_MSG.formatted(organizationId)));
 
-    return organizationMapper.mapToDTO(org);
+    OrganizationStationDTO organizationStationDTO = getOrganizationStation(org.getOrganizationId(), null);
+
+    return organizationMapper.mapToDTO(org, organizationStationDTO.getSegregationCode());
   }
 
   public OrganizationStationDTO getOrganizationStation(Long organizationId, String stationId){
@@ -161,9 +147,33 @@ public class OrganizationService {
   @Transactional
   public void updateOrganization(OrganizationDetailDTO organization, String accessToken) {
     Long organizationId = organization.getOrganizationId();
+
     Organization existingOrganization = organizationRepository.findById(organizationId)
             .orElseThrow(() -> new OrganizationNotFoundException(ORGANIZATION_NOT_FOUND_MSG.formatted(organizationId)));
-    validateOrganizationDTO(organization, existingOrganization);
+    Long existingDefaultOrganizationStationId = existingOrganization.getDefaultOrganizationStationId();
+    organization.setDefaultOrganizationStationId(existingDefaultOrganizationStationId);
+
+    String segregationCode = organization.getSegregationCode();
+    Long brokerId = organization.getBrokerId();
+
+    if (segregationCode != null) {
+      if (brokerId == null) {
+        throw new InvalidValueException(ErrorCodeConstants.ERROR_CODE_MISSING_BROKER_ID, "Broker id is required when segregation code is provided");
+      }
+
+      if (existingDefaultOrganizationStationId == null) {
+        OrganizationStation saved = defaultOrganizationStationService.createDefaultOrganizationStation(organizationId, brokerId, segregationCode);
+        organization.setDefaultOrganizationStationId(saved.getOrganizationStationId());
+      } else {
+        defaultOrganizationStationService.updateDefaultOrganizationStationSegregationCode(existingDefaultOrganizationStationId, segregationCode);
+      }
+    } else {
+      if (existingDefaultOrganizationStationId != null) {
+        defaultOrganizationStationService.updateDefaultOrganizationStationSegregationCode(existingDefaultOrganizationStationId, null);
+      }
+    }
+
+    organizationValidatorService.validateOrganizationDTO(organization, existingOrganization);
     triggerMassiveIbanUpdateIfNeeded(existingOrganization, organization, accessToken);
     organizationRepository.save(organizationMapper.toModel(organization));
   }
@@ -190,49 +200,11 @@ public class OrganizationService {
     }
   }
 
-  private void validateOrganizationDTO(OrganizationDetailDTO organization, Organization existingOrganization) {
-    validateOrganizationCreateDTO(organization);
-    checkReadOnlyFields(existingOrganization,organization);
-    validateStatusUpdate(organization);
-  }
-
-  private static void validateStatusUpdate(BaseOrganization organization) {
-    if(OrganizationStatus.ACTIVE.equals(organization.getStatus())){
-      List<String> emptyOrNullFields = new ArrayList<>();
-      checkBlankOrNullField("orgLogo", organization.getOrgLogo(),emptyOrNullFields);
-      checkBlankOrNullField("iban", organization.getIban(),emptyOrNullFields);
-      checkBlankOrNullField("segregationCode", organization.getSegregationCode(),emptyOrNullFields);
-      if(!CollectionUtils.isEmpty(emptyOrNullFields)){
-        throw new InvalidValueException(ErrorCodeConstants.ERROR_CODE_MISSING_ORGANIZATION_FIELDS, "The following Organization fields are required in order to change the organization’s status to ACTIVE. "+emptyOrNullFields);
-      }
-    }
-  }
-
-  private void checkReadOnlyFields(Organization existingOrganization, OrganizationDetailDTO organization) {
-    List<String> modifiedFields = new ArrayList<>();
-    checkImmutableField("brokerId", existingOrganization.getBrokerId(), organization.getBrokerId(), modifiedFields);
-    checkImmutableField("externalOrganizationId", existingOrganization.getExternalOrganizationId(), organization.getExternalOrganizationId(), modifiedFields);
-    checkImmutableField("ipaCode", existingOrganization.getIpaCode(), organization.getIpaCode(), modifiedFields);
-    checkImmutableField("orgFiscalCode", existingOrganization.getOrgFiscalCode(), organization.getOrgFiscalCode(), modifiedFields);
-    checkImmutableField("orgName", existingOrganization.getOrgName(), organization.getOrgName(), modifiedFields);
-    checkImmutableField("orgTypeCode", existingOrganization.getOrgTypeCode(), organization.getOrgTypeCode(), modifiedFields);
-    if(!CollectionUtils.isEmpty(modifiedFields)){
-      throw new InvalidValueException(ErrorCodeConstants.ERROR_CODE_IMMUTABLE_FIELD, "The following Organization fields are readOnly. "+modifiedFields);
-    }
-  }
-
   public void updateOrganizationStatus(Long organizationId, OrganizationStatus newStatus) {
     Organization organization = organizationRepository.findById(organizationId)
       .orElseThrow(()->new OrganizationNotFoundException(ORGANIZATION_NOT_FOUND_MSG.formatted(organizationId)));
     organization.setStatus(newStatus);
-    validateStatusUpdate(organization);
+    organizationValidatorService.validateStatusUpdate(organization);
     organizationRepository.save(organization);
-  }
-
-  private void validateSegregationCode(OrganizationCreateDTO organizationCreateDTO) {
-    if (StringUtils.isNotBlank(organizationCreateDTO.getSegregationCode()) &&
-          !isValidSegregationCode(organizationCreateDTO.getSegregationCode())) {
-        throw new InvalidValueException(ErrorCodeConstants.ERROR_CODE_INVALID_SEGREGATION_CODE, "Segregation code is not valid");
-    }
   }
 }

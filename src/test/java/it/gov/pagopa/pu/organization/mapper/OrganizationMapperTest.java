@@ -6,6 +6,7 @@ import it.gov.pagopa.pu.organization.enums.OrganizationAdditionalLanguage;
 import it.gov.pagopa.pu.organization.enums.OrganizationStatus;
 import it.gov.pagopa.pu.organization.model.Organization;
 import it.gov.pagopa.pu.organization.service.organization.OrganizationEncryptionService;
+import it.gov.pagopa.pu.organization.service.organization.OrganizationService;
 import it.gov.pagopa.pu.organization.util.TestUtils;
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.Test;
@@ -32,11 +33,14 @@ class OrganizationMapperTest {
 
   @Mock
   private OrganizationEncryptionService encryptionServiceMock;
+  @Mock
+  private OrganizationService organizationServiceMock;
 
   @AfterEach
   void verifyNoMoreInteractions() {
     Mockito.verifyNoMoreInteractions(
-      encryptionServiceMock
+      encryptionServiceMock,
+      organizationServiceMock
     );
   }
 
@@ -92,7 +96,7 @@ class OrganizationMapperTest {
     Organization result = organizationMapper.toModel(dto);
 
     assertNotNull(result);
-    TestUtils.checkNotNullFields(result, "organizationId", "creationDate", "updateDate", "updateOperatorExternalId", "updateTraceId");
+    TestUtils.checkNotNullFields(result, "organizationId", "creationDate", "updateDate", "updateOperatorExternalId", "updateTraceId", "defaultOrganizationStationId", "segregationCode");
 
     assertThat(result)
       .usingRecursiveComparison()
@@ -107,7 +111,9 @@ class OrganizationMapperTest {
         "sendApiKey",
         "generateNoticeApiKey",
         "flagClassification",
-        "flagPaymentsReporting"
+        "flagPaymentsReporting",
+        "defaultOrganizationStationId",
+        "segregationCode"
       )
       .isEqualTo(dto);
 
@@ -119,13 +125,13 @@ class OrganizationMapperTest {
 
   @Test
   void givenNullOrganizationWhenMapToDTOThenReturnNull() {
-    assertNull(organizationMapper.mapToDTO(null));
+    assertNull(organizationMapper.mapToDTO(null, null));
   }
 
   @Test
   void givenValidOrganizationWhenMapToDTOThenReturnValidDTO() {
     Organization org = new Organization();
-    org.setOrganizationId(100L);
+    org.setOrganizationId(1L);
     org.setExternalOrganizationId("externalOrganizationId");
     org.setIpaCode("ipaCode");
     org.setOrgFiscalCode("orgFiscalCode");
@@ -134,7 +140,6 @@ class OrganizationMapperTest {
     org.setOrgEmail("orgEmail");
     org.setPostalIban("postalIban");
     org.setIban("iban");
-    org.setSegregationCode("segregationCode");
     org.setCbillInterBankCode("cbillInterBankCode");
     org.setOrgLogo("orgLogo");
     org.setStatus(OrganizationStatus.DRAFT);
@@ -165,7 +170,7 @@ class OrganizationMapperTest {
     when(encryptionServiceMock.decryptKey(encryptedSendApiKey)).thenReturn("plainSendApiKey");
     when(encryptionServiceMock.decryptKey(encryptedGenerateNoticeApiKey)).thenReturn("plainGenerateNoticeApiKey");
 
-    OrganizationDetailDTO dto = organizationMapper.mapToDTO(org);
+    OrganizationDetailDTO dto = organizationMapper.mapToDTO(org, "segregationCode");
 
     assertNotNull(dto);
     assertThat(dto)
@@ -174,7 +179,8 @@ class OrganizationMapperTest {
         "password",
         "ioApiKey",
         "sendApiKey",
-        "generateNoticeApiKey"
+        "generateNoticeApiKey",
+        "segregationCode"
       )
       .isEqualTo(org);
 
@@ -182,6 +188,7 @@ class OrganizationMapperTest {
     assertThat(dto.getIoApiKey()).isEqualTo("plainIoApiKey");
     assertThat(dto.getSendApiKey()).isEqualTo("plainSendApiKey");
     assertThat(dto.getGenerateNoticeApiKey()).isEqualTo("plainGenerateNoticeApiKey");
+    assertThat(dto.getSegregationCode()).isEqualTo("segregationCode");
   }
 
   @Test
@@ -208,8 +215,8 @@ class OrganizationMapperTest {
     Organization result = organizationMapper.toModel(dto);
 
     assertNotNull(result);
-    TestUtils.checkNotNullFields(result, "creationDate", "updateDate", "updateOperatorExternalId", "updateTraceId");
-    TestUtils.reflectionEqualsByName(dto,result,"password","ioApiKey","sendApiKey","generateNoticeApiKey");
+    TestUtils.checkNotNullFields(result, "creationDate", "updateDate", "updateOperatorExternalId", "updateTraceId", "defaultOrganizationStationId", "segregationCode");
+    TestUtils.reflectionEqualsByName(dto,result,"password","ioApiKey","sendApiKey","generateNoticeApiKey", "segregationCode");
     assertEquals(expectedEncryptedPassword, result.getPassword());
     assertEquals(expectedEncryptedIoApiKey, result.getIoApiKey());
     assertEquals(expectedEncryptedSendApiKey, result.getSendApiKey());

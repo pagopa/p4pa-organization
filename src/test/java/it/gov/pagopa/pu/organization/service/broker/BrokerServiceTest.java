@@ -3,8 +3,13 @@ package it.gov.pagopa.pu.organization.service.broker;
 import it.gov.pagopa.pu.organization.dto.generated.BrokerApiKey;
 import it.gov.pagopa.pu.organization.dto.generated.BrokerApiKeyType;
 import it.gov.pagopa.pu.organization.dto.generated.BrokerApiKeys;
+import it.gov.pagopa.pu.organization.dto.generated.BrokerRequestDTO;
+import it.gov.pagopa.pu.organization.enums.PagoPaInteractionModel;
+import it.gov.pagopa.pu.organization.mapper.BrokerMapper;
 import it.gov.pagopa.pu.organization.model.Broker;
+import it.gov.pagopa.pu.organization.model.Station;
 import it.gov.pagopa.pu.organization.repository.BrokerRepository;
+import it.gov.pagopa.pu.organization.service.station.StationService;
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.BeforeEach;
@@ -48,16 +53,22 @@ class BrokerServiceTest {
   @Mock
   private BrokerEncryptionService brokerEncryptionServiceMock;
 
+  @Mock
+  private BrokerMapper brokerMapperMock;
+
+  @Mock
+  private StationService stationServiceMock;
+
   private BrokerService brokerService;
 
   @BeforeEach
   void setUp() {
-    brokerService = new BrokerService(brokerRepositoryMock, brokerEncryptionServiceMock);
+    brokerService = new BrokerService(brokerRepositoryMock, brokerEncryptionServiceMock, brokerMapperMock, stationServiceMock);
   }
 
   @AfterEach
   void verifyNoMoreInteractions(){
-    Mockito.verifyNoMoreInteractions(brokerRepositoryMock, brokerEncryptionServiceMock);
+    Mockito.verifyNoMoreInteractions(brokerRepositoryMock, brokerEncryptionServiceMock, brokerMapperMock, stationServiceMock);
   }
 
   @Test
@@ -170,5 +181,48 @@ class BrokerServiceTest {
 
     //verify
     Assertions.assertEquals(errorMessage, exception.getMessage());
+  }
+
+  @Test
+  void givenValidBrokerRequestDTOWhenCreateBrokerThenOk(){
+    // Given
+    BrokerRequestDTO brokerRequestDTO = BrokerRequestDTO.builder()
+      .organizationId(23L)
+      .brokerFiscalCode("99999000099")
+      .brokerName("Broker Test")
+      .pagoPaInteractionModel("ASYNC_GPD")
+      .broadcastStationId("99999000015_04")
+      .flagDelegate(true)
+      .flagPaymentsReporting(true)
+      .externalId("testcreate")
+      .defaultStationId("12345000000_01")
+      .build();
+
+     Broker broker = Broker.builder()
+      .brokerId(1L)
+      .organizationId(23L)
+      .brokerFiscalCode("99999000099")
+      .brokerName("Broker Test")
+      .pagoPaInteractionModel(PagoPaInteractionModel.ASYNC_GPD)
+      .broadcastStationId("99999000015_04")
+      .defaultStationId("12345000000_01")
+      .build();
+
+    Station station = new Station();
+    station.setBrokerId(1L);
+    station.setStationId("12345000000_01");
+
+    Mockito.when(brokerMapperMock.toModel(brokerRequestDTO)).thenReturn(broker);
+    Mockito.when(brokerRepositoryMock.save(broker))
+      .thenReturn(broker);
+    Mockito.when(stationServiceMock.upsertStation(brokerRequestDTO)).thenReturn(station);
+    // When
+    Broker result = brokerService.createBroker(brokerRequestDTO);
+
+    // Then
+    Assertions.assertNotNull(result);
+    Assertions.assertEquals(broker.getBrokerId(), result.getBrokerId());
+    Assertions.assertEquals(station.getStationId(), brokerRequestDTO.getDefaultStationId());
+
   }
 }
