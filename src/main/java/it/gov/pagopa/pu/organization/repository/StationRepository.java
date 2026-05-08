@@ -10,4 +10,6 @@ import java.util.Optional;
 public interface StationRepository extends JpaRepository<Station, String> {
 
   Optional<Station> findByBrokerIdAndStationId(Long brokerId, String stationId);
+
+  Optional<Station> findByBrokerIdAndBroadcastStationId(Long brokerId, String broadcastStationId);
 }
