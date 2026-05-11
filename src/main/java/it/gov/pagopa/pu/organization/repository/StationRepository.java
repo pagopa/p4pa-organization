@@ -4,6 +4,7 @@ import it.gov.pagopa.pu.organization.model.Station;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.rest.core.annotation.RepositoryRestResource;
 
+import java.util.List;
 import java.util.Optional;
 
 @RepositoryRestResource(path = "stations")
@@ -11,5 +12,5 @@ public interface StationRepository extends JpaRepository<Station, String> {
 
   Optional<Station> findByBrokerIdAndStationId(Long brokerId, String stationId);
 
-  Optional<Station> findByBrokerIdAndBroadcastStationId(Long brokerId, String broadcastStationId);
+  List<Station> findByBrokerIdAndBroadcastStationId(Long brokerId, String broadcastStationId);
 }
