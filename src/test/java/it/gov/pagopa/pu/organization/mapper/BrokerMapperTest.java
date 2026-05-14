@@ -1,7 +1,6 @@
 package it.gov.pagopa.pu.organization.mapper;
 
 import it.gov.pagopa.pu.organization.dto.generated.BrokerRequestDTO;
-import it.gov.pagopa.pu.organization.enums.PagoPaInteractionModel;
 import it.gov.pagopa.pu.organization.model.Broker;
 import it.gov.pagopa.pu.organization.service.broker.BrokerEncryptionService;
 import it.gov.pagopa.pu.organization.util.TestUtils;
