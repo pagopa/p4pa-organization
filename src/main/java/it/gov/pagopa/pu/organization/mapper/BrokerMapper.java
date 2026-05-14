@@ -1,7 +1,6 @@
 package it.gov.pagopa.pu.organization.mapper;
 
 import it.gov.pagopa.pu.organization.dto.generated.BrokerRequestDTO;
-import it.gov.pagopa.pu.organization.enums.PagoPaInteractionModel;
 import it.gov.pagopa.pu.organization.model.Broker;
 import it.gov.pagopa.pu.organization.service.broker.BrokerEncryptionService;
 import lombok.RequiredArgsConstructor;
@@ -23,10 +22,7 @@ public class BrokerMapper {
     broker.setOrganizationId(requestDTO.getOrganizationId());
     broker.setBrokerFiscalCode(requestDTO.getBrokerFiscalCode());
     broker.setBrokerName(requestDTO.getBrokerName());
-    broker.setPagoPaInteractionModel(PagoPaInteractionModel.valueOf(requestDTO.getPagoPaInteractionModel()));
-    broker.setStationId(requestDTO.getStationId());
     broker.setDefaultStationId(requestDTO.getDefaultStationId());
-    broker.setBroadcastStationId(requestDTO.getBroadcastStationId());
     broker.setSyncPaymentsReportingKey(requestDTO.getSyncPaymentsReportingKey()!=null ? brokerEncryptionService.encryptKey(requestDTO.getSyncPaymentsReportingKey()) : null);
     broker.setSyncKey(requestDTO.getSyncKey()!=null ? brokerEncryptionService.encryptKey(requestDTO.getSyncKey()) : null);
     broker.setGpdKey(requestDTO.getGpdKey()!=null ? brokerEncryptionService.encryptKey(requestDTO.getGpdKey()) : null);

@@ -1,7 +1,6 @@
 package it.gov.pagopa.pu.organization.mapper;
 
 import it.gov.pagopa.pu.organization.dto.generated.BrokerRequestDTO;
-import it.gov.pagopa.pu.organization.enums.PagoPaInteractionModel;
 import it.gov.pagopa.pu.organization.model.Broker;
 import it.gov.pagopa.pu.organization.service.broker.BrokerEncryptionService;
 import it.gov.pagopa.pu.organization.util.TestUtils;
@@ -93,10 +92,7 @@ class BrokerMapperTest {
     assertThat(result.getOrganizationId()).isEqualTo(23L);
     assertThat(result.getBrokerFiscalCode()).isEqualTo("99999000099");
     assertThat(result.getBrokerName()).isEqualTo("Broker Test");
-    assertThat(result.getPagoPaInteractionModel()).isEqualTo(PagoPaInteractionModel.SYNC_ACA);
-    assertThat(result.getStationId()).isEqualTo("12345000000_01");
     assertThat(result.getDefaultStationId()).isEqualTo("12345000000_01");
-    assertThat(result.getBroadcastStationId()).isEqualTo("99999000015_04");
     assertThat(result.isFlagDelegate()).isTrue();
     assertThat(result.isFlagPaymentsReporting()).isTrue();
     assertThat(result.getExternalId()).isEqualTo("testcreate");

@@ -106,5 +106,11 @@ public interface OrganizationRepository extends
     """)
   Organization getBrokerOrganization(Long brokerId);
 
+  @Query("""
+    SELECT o
+    FROM Organization o
+    JOIN organization_station os on os.organizationId = o.organizationId
+    WHERE o.orgFiscalCode = :orgFiscalCode and os.segregationCode = :segregationCode
+    """)
   Optional<Organization> findByOrgFiscalCodeAndSegregationCode(String orgFiscalCode, String segregationCode);
 }
