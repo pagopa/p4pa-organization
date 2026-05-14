@@ -29,7 +29,6 @@ public class OrganizationMapper {
     organization.setPostalIban(createDTO.getPostalIban());
     organization.setIban(createDTO.getIban());
     organization.setPassword(createDTO.getPassword() != null ? encryptionService.encrypt(createDTO.getPassword()) : null);
-    organization.setSegregationCode(createDTO.getSegregationCode());
     organization.setCbillInterBankCode(createDTO.getCbillInterBankCode());
     organization.setOrgLogo(createDTO.getOrgLogo());
     organization.setStatus(createDTO.getStatus());

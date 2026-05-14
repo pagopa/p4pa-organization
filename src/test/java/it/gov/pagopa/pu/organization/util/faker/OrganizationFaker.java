@@ -18,7 +18,6 @@ public class OrganizationFaker {
     organization.setPostalIban("postalIban");
     organization.setIban("iban");
     organization.setPassword(new byte[]{});
-    organization.setSegregationCode("01");
     organization.setCbillInterBankCode("XX");
     organization.setOrgLogo("orgLogo");
     organization.setStatus(OrganizationStatus.ACTIVE);
