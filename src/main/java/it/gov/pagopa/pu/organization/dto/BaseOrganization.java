@@ -9,6 +9,5 @@ public interface BaseOrganization {
   OrganizationStatus getStatus();
   String getOrgLogo();
   String getIban();
-  String getSegregationCode();
   Long getDefaultOrganizationStationId();
 }

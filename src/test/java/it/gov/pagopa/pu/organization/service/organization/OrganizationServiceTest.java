@@ -433,7 +433,6 @@ class OrganizationServiceTest {
     organization.setOrgFiscalCode(organizationDetailDTO.getOrgFiscalCode());
     organization.setOrgName(organizationDetailDTO.getOrgName());
     organization.setOrgTypeCode(organizationDetailDTO.getOrgTypeCode());
-    organization.setSegregationCode(organizationDetailDTO.getSegregationCode());
 
     when(organizationRepositoryMock.findById(organizationDetailDTO.getOrganizationId())).thenReturn(Optional.of(organization));
     when(organizationMapperMock.toModel(organizationDetailDTO)).thenReturn(organization);

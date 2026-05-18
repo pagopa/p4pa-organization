@@ -25,11 +25,6 @@ public class Broker extends BaseEntity implements Serializable {
   private String brokerFiscalCode;
   @NotNull
   private String brokerName;
-  @Enumerated(EnumType.STRING)
-  @NotNull
-  private PagoPaInteractionModel pagoPaInteractionModel;
-  private String stationId;
-  private String broadcastStationId;
   private byte[] syncPaymentsReportingKey;
   private byte[] syncKey;
   private byte[] gpdKey;
