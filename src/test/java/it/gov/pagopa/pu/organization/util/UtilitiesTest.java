@@ -27,8 +27,7 @@ public class UtilitiesTest {
 
   @Test
   void givenNullIbanWhenIsValidIbanThenReturnFalse() {
-    boolean result = Utilities.isValidIban(null);
-    assertFalse(result);
+    assertFalse(Utilities.isValidIban(null));
   }
 
   @Test
@@ -36,6 +35,11 @@ public class UtilitiesTest {
     String iban = "IT0000000000000000000000000";
     boolean result = Utilities.isValidIban(iban);
     assertTrue(result);
+  }
+
+  @Test
+  void givenNullPostalIbanWhenIsValidIbanThenReturnFalse() {
+    assertFalse(Utilities.isValidPostalIban(null));
   }
 
   @ParameterizedTest
