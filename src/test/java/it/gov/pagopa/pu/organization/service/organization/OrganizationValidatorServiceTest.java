@@ -49,7 +49,7 @@ class OrganizationValidatorServiceTest {
     OrganizationCreateDTO dto = new OrganizationCreateDTO();
     dto.setOrgFiscalCode("12345678903");
     dto.setIban("IT60X0542811101000000123456");
-    dto.setPostalIban("IT60X0542811101000000123456");
+    dto.setPostalIban("IT00X0760100000000000000000");
     dto.setSegregationCode("12");
 
     assertDoesNotThrow(() -> organizationValidatorService.validateOrganizationCreateDTO(dto));
@@ -71,7 +71,7 @@ class OrganizationValidatorServiceTest {
     OrganizationCreateDTO dto = new OrganizationCreateDTO();
     dto.setOrgFiscalCode("12345678903");
     dto.setIban("invalidIban");
-    dto.setPostalIban("IT60X0542811101000000123456");
+    dto.setPostalIban("IT00X0760100000000000000000");
     dto.setSegregationCode("12");
 
     assertThrows(InvalidValueException.class, () -> organizationValidatorService.validateOrganizationCreateDTO(dto));
@@ -82,7 +82,18 @@ class OrganizationValidatorServiceTest {
     OrganizationCreateDTO dto = new OrganizationCreateDTO();
     dto.setOrgFiscalCode("12345678903");
     dto.setIban("IT60X0542811101000000123456");
-    dto.setPostalIban("invalidPostalIban");
+    dto.setPostalIban("IT00X076010000000000000");
+    dto.setSegregationCode("12");
+
+    assertThrows(InvalidValueException.class, () -> organizationValidatorService.validateOrganizationCreateDTO(dto));
+  }
+
+  @Test
+  void givenInvalidAbiCodeForPostalIbanWhenValidateOrganizationCreateDTOThenThrowException() {
+    OrganizationCreateDTO dto = new OrganizationCreateDTO();
+    dto.setOrgFiscalCode("12345678903");
+    dto.setIban("IT60X0542811101000000123456");
+    dto.setPostalIban("IT60X0542811101000000123456");
     dto.setSegregationCode("12");
 
     assertThrows(InvalidValueException.class, () -> organizationValidatorService.validateOrganizationCreateDTO(dto));
@@ -104,7 +115,7 @@ class OrganizationValidatorServiceTest {
     OrganizationCreateDTO dto = new OrganizationCreateDTO();
     dto.setOrgFiscalCode(null);
     dto.setIban("IT60X0542811101000000123456");
-    dto.setPostalIban("IT60X0542811101000000123456");
+    dto.setPostalIban("IT00X0760100000000000000000");
     dto.setSegregationCode("12");
 
     assertThrows(InvalidValueException.class, () -> organizationValidatorService.validateOrganizationCreateDTO(dto));
@@ -115,7 +126,7 @@ class OrganizationValidatorServiceTest {
     OrganizationCreateDTO dto = new OrganizationCreateDTO();
     dto.setOrgFiscalCode("12345678903");
     dto.setIban("IT60X0542811101000000123456");
-    dto.setPostalIban("IT60X0542811101000000123456");
+    dto.setPostalIban("IT00X0760100000000000000000");
     dto.setSegregationCode("abc");
 
     assertThrows(InvalidValueException.class, () -> organizationValidatorService.validateOrganizationCreateDTO(dto));
@@ -126,7 +137,7 @@ class OrganizationValidatorServiceTest {
     OrganizationDetailDTO organizationDetailDTO = podamFactory.manufacturePojo(OrganizationDetailDTO.class);
     organizationDetailDTO.setOrgFiscalCode("12345678903");
     organizationDetailDTO.setIban("IT60X0542811101000000123456");
-    organizationDetailDTO.setPostalIban("IT60X0542811101000000123456");
+    organizationDetailDTO.setPostalIban("IT00X0760100000000000000000");
     organizationDetailDTO.setSegregationCode("02");
     organizationDetailDTO.setStatus(OrganizationStatus.DRAFT);
 
@@ -146,7 +157,7 @@ class OrganizationValidatorServiceTest {
     OrganizationDetailDTO organizationDetailDTO = podamFactory.manufacturePojo(OrganizationDetailDTO.class);
     organizationDetailDTO.setOrgFiscalCode("12345678903");
     organizationDetailDTO.setIban("IT60X0542811101000000123456");
-    organizationDetailDTO.setPostalIban("IT60X0542811101000000123456");
+    organizationDetailDTO.setPostalIban("IT00X0760100000000000000000");
     organizationDetailDTO.setSegregationCode("01");
 
     Organization existingOrganization = OrganizationFaker.buildOrganization();
