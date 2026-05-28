@@ -31,6 +31,7 @@ import org.springframework.web.ErrorResponseException;
 import org.springframework.web.bind.MethodArgumentNotValidException;
 import org.springframework.web.bind.annotation.ExceptionHandler;
 import org.springframework.web.bind.annotation.RestControllerAdvice;
+import org.springframework.web.client.HttpClientErrorException;
 import org.springframework.web.method.annotation.MethodArgumentTypeMismatchException;
 import tools.jackson.core.JacksonException;
 import tools.jackson.databind.DatabindException;
@@ -63,6 +64,11 @@ public class OrganizationExceptionHandler {
   @ExceptionHandler({ValidationException.class, HttpMessageNotReadableException.class, MethodArgumentNotValidException.class, MethodArgumentTypeMismatchException.class, ConversionFailedException.class})
   public ResponseEntity<OrganizationErrorDTO> handleViolationException(Exception ex, HttpServletRequest request) {
     return handleException(ex, request, HttpStatus.BAD_REQUEST, OrganizationErrorDTO.CategoryEnum.ORGANIZATION_BAD_REQUEST);
+  }
+
+  @ExceptionHandler(HttpClientErrorException.TooManyRequests.class)
+  public ResponseEntity<OrganizationErrorDTO> handleInvokedHttpClientTooManyRequestsError(Exception ex, HttpServletRequest request) {
+    return handleException(ex, request, HttpStatus.TOO_MANY_REQUESTS, OrganizationErrorDTO.CategoryEnum.ORGANIZATION_TOO_MANY_REQUESTS);
   }
 
   @ExceptionHandler({ServletException.class, ErrorResponseException.class})
@@ -169,6 +175,9 @@ public class OrganizationExceptionHandler {
         }
         return Pair.of(OrganizationErrorDTO.CategoryEnum.ORGANIZATION_CONFLICT.name(),
           errorMsg) ;
+      }
+      case HttpClientErrorException.TooManyRequests tooManyRequestsException -> {
+        return Pair.of(OrganizationErrorDTO.CategoryEnum.ORGANIZATION_TOO_MANY_REQUESTS.name(), tooManyRequestsException.getMessage());
       }
       case BaseBusinessException businessException -> {
         return Pair.of(businessException.getCode(), businessException.getMessage());
