@@ -57,6 +57,7 @@ class BrokerMapperTest {
       .flagDelegate(true)
       .flagPaymentsReporting(true)
       .externalId("testcreate")
+      .informationSystemId("01")
       .build();
   }
 

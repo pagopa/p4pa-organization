@@ -1,8 +1,8 @@
 package it.gov.pagopa.pu.organization.model;
 
-import it.gov.pagopa.pu.organization.enums.PagoPaInteractionModel;
 import jakarta.persistence.*;
 import jakarta.validation.constraints.NotNull;
+import jakarta.validation.constraints.Pattern;
 import lombok.*;
 
 import java.io.Serializable;
@@ -37,4 +37,6 @@ public class Broker extends BaseEntity implements Serializable {
   @NotNull
   private String externalId;
   private String defaultStationId;
+  @Pattern(regexp = "^\\d{2}$", message = "The informationSystemId must be 2 digits long")
+  private String informationSystemId;
 }

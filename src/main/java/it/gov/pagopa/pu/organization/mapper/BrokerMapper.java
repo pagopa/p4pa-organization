@@ -31,6 +31,7 @@ public class BrokerMapper {
     broker.setFlagDelegate(requestDTO.getFlagDelegate());
     broker.setFlagPaymentsReporting(requestDTO.getFlagPaymentsReporting());
     broker.setExternalId(requestDTO.getExternalId());
+    broker.setInformationSystemId(requestDTO.getInformationSystemId());
 
     return broker;
   }

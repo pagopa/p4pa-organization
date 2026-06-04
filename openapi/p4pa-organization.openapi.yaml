@@ -670,3 +670,5 @@ components:
           type: string
         defaultStationId:
           type: string
+        informationSystemId:
+          type: string
