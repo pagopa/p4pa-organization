@@ -14,6 +14,7 @@ public class Utilities {
   private Utilities(){}
 
   public static final Pattern IBAN_PATTERN = Pattern.compile("^[A-Z]{2}\\d{2}[A-Z0-9]{23,30}$");
+  public static final String POSTAL_IBAN_ABI_CODE = "07601";
   public static final String SEGREGATION_CODE_REGEX = "^\\d{2}$";
 
   public static String getTraceId(){
@@ -49,6 +50,14 @@ public class Utilities {
 
   public static boolean isValidIban(String iban) {
     return iban != null && IBAN_PATTERN.matcher(iban).matches();
+  }
+
+  public static boolean isValidPostalIban(String iban){
+    if(iban == null || iban.length() < 10) {
+      return false;
+    }
+    String abiCode = iban.substring(5, 10);
+    return POSTAL_IBAN_ABI_CODE.equals(abiCode) && isValidIban(iban);
   }
 
   public static <T> void checkImmutableField(String fieldName, T original, T updated, List<String> modifiedFields){
