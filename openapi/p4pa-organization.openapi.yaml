@@ -670,6 +670,6 @@ components:
           type: string
         defaultStationId:
           type: string
-        informationSystemId:
+        iuvSystemId:
           type: string
           pattern: '^\d{2}$'
