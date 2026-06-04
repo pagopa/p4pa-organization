@@ -37,6 +37,6 @@ public class Broker extends BaseEntity implements Serializable {
   @NotNull
   private String externalId;
   private String defaultStationId;
-  @Pattern(regexp = "^\\d{2}$", message = "The informationSystemId must be 2 digits long")
+  @Pattern(regexp = "^\\d{2}$", message = "The iuvSystemId must be 2 digits long")
   private String iuvSystemId;
 }
