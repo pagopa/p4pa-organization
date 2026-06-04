@@ -672,3 +672,4 @@ components:
           type: string
         informationSystemId:
           type: string
+          pattern: '^\d{2}$'
