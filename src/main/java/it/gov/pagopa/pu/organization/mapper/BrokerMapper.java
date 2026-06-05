@@ -5,6 +5,7 @@ import it.gov.pagopa.pu.organization.model.Broker;
 import it.gov.pagopa.pu.organization.service.broker.BrokerEncryptionService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Component;
+import it.gov.pagopa.pu.organization.util.Constants;
 
 @Component
 @RequiredArgsConstructor
@@ -31,6 +32,7 @@ public class BrokerMapper {
     broker.setFlagDelegate(requestDTO.getFlagDelegate());
     broker.setFlagPaymentsReporting(requestDTO.getFlagPaymentsReporting());
     broker.setExternalId(requestDTO.getExternalId());
+    broker.setIuvSystemId(requestDTO.getIuvSystemId()!=null ? requestDTO.getIuvSystemId() : Constants.DEFAULT_IUV_SYSTEM_ID);
 
     return broker;
   }
