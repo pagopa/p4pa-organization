@@ -45,6 +45,14 @@ class RepositoryRestCustomConvertersTest {
   }
 
   @Test
+  void givenExceptionWhileParsingIdWhenOrgSubUnitIdConverterThenInvalidValueException() {
+    InvalidValueException resultException = Assertions.assertThrows(InvalidValueException.class, () -> orgSubUnitIdConverter.convert("X-AOO"));
+
+    Assertions.assertEquals(ErrorCodeConstants.ERROR_CODE_ORG_SUB_UNIT_INVALID_ID, resultException.getCode());
+  }
+
+
+  @Test
   void whenOrgSubUnitIdConverterThenOk() {
     String idString = "1-TEST";
     OrgSubUnit.OrgSubUnitId result = orgSubUnitIdConverter.convert(idString);
