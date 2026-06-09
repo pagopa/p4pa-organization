@@ -20,7 +20,7 @@ public class RepositoryRestCustomConverters {
 
   // This should be aligned with it.gov.pagopa.pu.organization.model.OrgSubUnit.OrgSubUnitId#toString
   @Bean
-  public Converter<String, OrgSubUnit.OrgSubUnitId> OrgSubUnitIdConverter() {
+  public Converter<String, OrgSubUnit.OrgSubUnitId> orgSubUnitIdConverter() {
     @SuppressWarnings({"Convert2Lambda", "squid:S1604"}) // Suppressing lambda conversion warning, Spring is not able to retrieve the generic types otherwise
     Converter<String, OrgSubUnit.OrgSubUnitId> converter = new Converter<>() {
       @Override
