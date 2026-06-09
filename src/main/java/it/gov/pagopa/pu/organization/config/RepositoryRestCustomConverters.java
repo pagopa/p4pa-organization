@@ -3,6 +3,7 @@ package it.gov.pagopa.pu.organization.config;
 import it.gov.pagopa.pu.organization.exception.custom.InvalidValueException;
 import it.gov.pagopa.pu.organization.model.OrgSubUnit;
 import it.gov.pagopa.pu.organization.util.ErrorCodeConstants;
+import lombok.extern.slf4j.Slf4j;
 import org.jspecify.annotations.NonNull;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
@@ -10,6 +11,7 @@ import org.springframework.core.convert.converter.Converter;
 import org.springframework.format.support.DefaultFormattingConversionService;
 
 @Configuration
+@Slf4j
 public class RepositoryRestCustomConverters {
 
   private final DefaultFormattingConversionService conversionService;
@@ -37,6 +39,7 @@ public class RepositoryRestCustomConverters {
             subUnitCode
           );
         } catch (Exception e) {
+          log.info("Exception has been thrown by orgSubUnitIdConverter: {}", e.getMessage());
           throw buildInvalidOrgSubUnitIdException();
         }
       }
