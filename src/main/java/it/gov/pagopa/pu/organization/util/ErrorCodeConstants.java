@@ -19,4 +19,6 @@ public class ErrorCodeConstants {
   public static final String ERROR_CODE_INVALID_IBAN = "INVALID_IBAN";
   public static final String ERROR_CODE_INVALID_POSTAL_IBAN = "INVALID_POSTAL_IBAN";
   public static final String ERROR_CODE_INVALID_SEGREGATION_CODE = "INVALID_SEGREGATION_CODE";
+
+  public static final String ERROR_CODE_ORG_SUB_UNIT_INVALID_ID = "ORG_SUB_UNIT_INVALID_ID";
 }
