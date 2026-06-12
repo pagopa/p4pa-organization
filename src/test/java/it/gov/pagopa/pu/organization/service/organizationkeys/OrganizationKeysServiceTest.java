@@ -51,8 +51,6 @@ class OrganizationKeysServiceTest {
     expectedOrganizationKeys.setOrganizationId(organizationId);
     expectedOrganizationKeys.setKeyType(organizationApiKeys.getKeyType());
 
-    OrganizationKeys result = new OrganizationKeys();
-
     Mockito.when(organizationEncryptionServiceMock.encrypt(plainText))
       .thenReturn(encryptedKey);
 
