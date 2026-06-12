@@ -89,13 +89,14 @@ class OrganizationControllerTest {
     OrganizationApiKeys organizationApiKeys = new OrganizationApiKeys(OrganizationApiKeys.KeyTypeEnum.IO, "apikey");
 
     mockMvc.perform(
-        put("/organization/1/apiKey")
+        post("/organization/1/apiKey")
+          .param("subUnitCode","CODE")
           .contentType(MediaType.APPLICATION_JSON_VALUE)
           .content(jsonMapper.writeValueAsString(organizationApiKeys)))
       .andExpect(status().isOk())
       .andReturn();
 
-    verify(organizationServiceMock).encryptAndSaveApiKey(1L, organizationApiKeys);
+    verify(organizationServiceMock).encryptAndSaveApiKey(1L, organizationApiKeys, "CODE");
   }
 
   @Test

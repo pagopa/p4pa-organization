@@ -20,6 +20,7 @@ import it.gov.pagopa.pu.organization.model.OrganizationStation;
 import it.gov.pagopa.pu.organization.repository.BrokerRepository;
 import it.gov.pagopa.pu.organization.repository.OrganizationRepository;
 import it.gov.pagopa.pu.organization.service.broker.BrokerEncryptionService;
+import it.gov.pagopa.pu.organization.service.organizationkeys.OrganizationKeysService;
 import it.gov.pagopa.pu.organization.service.organizationstation.DefaultOrganizationStationService;
 import it.gov.pagopa.pu.organization.util.ErrorCodeConstants;
 import it.gov.pagopa.pu.workflowhub.dto.generated.MassiveDebtPositionIbanUpdateRequestDTO;
@@ -41,6 +42,7 @@ public class OrganizationService {
   private final OrganizationStationMapper organizationStationMapper;
   private final DefaultOrganizationStationService defaultOrganizationStationService;
   private final OrganizationValidatorService organizationValidatorService;
+  private final OrganizationKeysService organizationKeysService;
 
   private static final String ORGANIZATION_NOT_FOUND_MSG = "Organization with id %s not found";
 
@@ -54,7 +56,7 @@ public class OrganizationService {
     WorkflowDebtPositionService workflowDebtPositionService,
     OrganizationStationMapper organizationStationMapper,
     DefaultOrganizationStationService defaultOrganizationStationService,
-    OrganizationValidatorService organizationValidatorService
+    OrganizationValidatorService organizationValidatorService, OrganizationKeysService organizationKeysService
   ) {
     this.organizationEncryptionService = organizationEncryptionService;
     this.brokerEncryptionService = brokerEncryptionService;
@@ -66,21 +68,11 @@ public class OrganizationService {
     this.workflowDebtPositionService = workflowDebtPositionService;
     this.defaultOrganizationStationService = defaultOrganizationStationService;
     this.organizationValidatorService = organizationValidatorService;
+    this.organizationKeysService = organizationKeysService;
   }
 
-  @Transactional
-  public void encryptAndSaveApiKey(Long organizationId, OrganizationApiKeys organizationApiKeys) {
-    byte[] encryptedApiKey = organizationEncryptionService.encrypt(organizationApiKeys.getApiKey());
-
-    int updatedRows = switch (organizationApiKeys.getKeyType()) {
-      case IO -> organizationRepository.updateIoApiKey(organizationId, encryptedApiKey);
-      case SEND -> organizationRepository.updateSendApiKey(organizationId, encryptedApiKey);
-      case GENERATE_NOTICE -> organizationRepository.updateGenerateNoticeApiKey(organizationId, encryptedApiKey);
-    };
-
-    if (updatedRows == 0) {
-      throw new OrganizationNotFoundException(ORGANIZATION_NOT_FOUND_MSG.formatted(organizationId));
-    }
+  public void encryptAndSaveApiKey(Long organizationId, OrganizationApiKeys organizationApiKeys, String subUnitCode) {
+    organizationKeysService.encryptAndSave(organizationId, organizationApiKeys, subUnitCode);
   }
 
   @Transactional
