@@ -2,7 +2,7 @@ package it.gov.pagopa.pu.organization.mapper;
 
 import it.gov.pagopa.pu.organization.dto.generated.PdndClientDTO;
 import it.gov.pagopa.pu.organization.model.PdndClient;
-import it.gov.pagopa.pu.organization.service.organization.OrganizationEncryptionService;
+import it.gov.pagopa.pu.organization.service.pdnd.PdndClientEncryptionService;
 import it.gov.pagopa.pu.organization.util.TestUtils;
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.Test;
@@ -28,7 +28,7 @@ class PdndClientMapperTest {
   private PdndClientMapper pdndClientMapper;
 
   @Mock
-  private OrganizationEncryptionService encryptionServiceMock;
+  private PdndClientEncryptionService encryptionServiceMock;
 
   @AfterEach
   void verifyNoMoreInteractions() {

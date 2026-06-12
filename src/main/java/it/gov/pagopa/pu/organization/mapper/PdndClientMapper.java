@@ -2,14 +2,14 @@ package it.gov.pagopa.pu.organization.mapper;
 
 import it.gov.pagopa.pu.organization.dto.generated.PdndClientDTO;
 import it.gov.pagopa.pu.organization.model.PdndClient;
-import it.gov.pagopa.pu.organization.service.organization.OrganizationEncryptionService;
+import it.gov.pagopa.pu.organization.service.pdnd.PdndClientEncryptionService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Component;
 
 @Component
 @RequiredArgsConstructor
 public class PdndClientMapper {
-  private final OrganizationEncryptionService encryptionService;
+  private final PdndClientEncryptionService encryptionService;
 
   public PdndClient toModel(PdndClientDTO pdndClientDTO) {
     if (pdndClientDTO == null) {
