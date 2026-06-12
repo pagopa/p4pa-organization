@@ -30,13 +30,13 @@ class PdndClientControllerTest {
   }
 
   @Test
-  void whenCreatePdndClientThenOk(){
+  void whenSavePdndClientThenOk(){
     PdndClientDTO pdndClientDTO = podamFactory.manufacturePojo(PdndClientDTO.class);
     PdndClient expectedResponse = podamFactory.manufacturePojo(PdndClient.class);
 
-    Mockito.when(pdndClientServiceMock.createPdndClient(pdndClientDTO)).thenReturn(expectedResponse);
+    Mockito.when(pdndClientServiceMock.savePdndClient(pdndClientDTO)).thenReturn(expectedResponse);
 
-    ResponseEntity<PdndClient> response = pdndClientController.createPdndClient(pdndClientDTO);
+    ResponseEntity<PdndClient> response = pdndClientController.savePdndClient(pdndClientDTO);
 
     Assertions.assertNotNull(response);
     Assertions.assertEquals(expectedResponse, response.getBody());

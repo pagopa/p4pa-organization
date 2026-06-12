@@ -424,8 +424,8 @@ paths:
     post:
       tags:
         - PdndClient
-      summary: Create a PdndClient
-      operationId: createPdndClient
+      summary: Save a PdndClient
+      operationId: savePdndClient
       requestBody:
         required: true
         content:

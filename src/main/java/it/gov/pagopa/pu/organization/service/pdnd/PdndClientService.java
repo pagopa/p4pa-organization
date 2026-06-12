@@ -29,7 +29,7 @@ public class PdndClientService {
   }
 
   @Transactional
-  public PdndClient createPdndClient(PdndClientDTO pdndClientDTO) {
+  public PdndClient savePdndClient(PdndClientDTO pdndClientDTO) {
     validatePdndClient(pdndClientDTO);
     return pdndClientRepository.save(pdndClientMapper.toModel(pdndClientDTO));
   }
