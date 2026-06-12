@@ -71,7 +71,6 @@ public class OrganizationService {
     this.organizationKeysService = organizationKeysService;
   }
 
-  @Transactional
   public void encryptAndSaveApiKey(Long organizationId, OrganizationApiKeys organizationApiKeys, String subUnitCode) {
     organizationKeysService.encryptAndSave(organizationId, organizationApiKeys, subUnitCode);
   }
