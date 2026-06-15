@@ -1971,7 +1971,7 @@
         }
       }
     },
-    "/crud/pdnd-client" : {
+    "/crud/pdnd-clients" : {
       "get" : {
         "tags" : [ "pdnd-client-entity-controller" ],
         "description" : "get-pdndclient",
@@ -2032,7 +2032,7 @@
         }
       }
     },
-    "/crud/pdnd-client/{id}" : {
+    "/crud/pdnd-clients/{id}" : {
       "get" : {
         "tags" : [ "pdnd-client-entity-controller" ],
         "description" : "get-pdndclient",
@@ -2083,7 +2083,7 @@
         }
       }
     },
-    "/crud/pdnd-service" : {
+    "/crud/pdnd-services" : {
       "get" : {
         "tags" : [ "pdnd-service-entity-controller" ],
         "description" : "get-pdndservice",
@@ -2171,7 +2171,7 @@
         }
       }
     },
-    "/crud/pdnd-service/{id}" : {
+    "/crud/pdnd-services/{id}" : {
       "get" : {
         "tags" : [ "pdnd-service-entity-controller" ],
         "description" : "get-pdndservice",
@@ -2494,10 +2494,10 @@
         }
       }
     },
-    "/crud/profile/pdnd-client" : {
+    "/crud/profile/pdnd-clients" : {
       "get" : {
         "tags" : [ "profile-controller" ],
-        "operationId" : "crud-profile-pdnd-client",
+        "operationId" : "crud-profile-pdnd-clients",
         "responses" : {
           "200" : {
             "description" : "OK",
@@ -2522,10 +2522,10 @@
         }
       }
     },
-    "/crud/profile/pdnd-service" : {
+    "/crud/profile/pdnd-services" : {
       "get" : {
         "tags" : [ "profile-controller" ],
-        "operationId" : "crud-profile-pdnd-service",
+        "operationId" : "crud-profile-pdnd-services",
         "responses" : {
           "200" : {
             "description" : "OK",
