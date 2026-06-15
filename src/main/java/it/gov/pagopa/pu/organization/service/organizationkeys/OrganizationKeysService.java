@@ -7,6 +7,9 @@ import it.gov.pagopa.pu.organization.repository.OrganizationKeysRepository;
 import it.gov.pagopa.pu.organization.service.organization.OrganizationEncryptionService;
 import org.springframework.stereotype.Service;
 
+import java.util.Objects;
+import java.util.Optional;
+
 @Service
 public class OrganizationKeysService {
   private final OrganizationEncryptionService organizationEncryptionService;
@@ -25,5 +28,16 @@ public class OrganizationKeysService {
     organizationKeys.setKeyType(OrganizationApiKeyType.fromValue(organizationApiKeys.getKeyType().getValue()));
     organizationKeys.setKeyCipher(encryptedApiKey);
     organizationKeysRepository.save(organizationKeys);
+  }
+
+  public String getApiKey(Long organizationId, OrganizationApiKeyType keyType, String subUnitCode) {
+    Optional<OrganizationKeys> organizationKeys = organizationKeysRepository.findById(OrganizationKeys.buildSemanticId(organizationId, subUnitCode, keyType))
+      .or(() -> {
+        if(!Objects.isNull(subUnitCode)) {
+          return organizationKeysRepository.findById(OrganizationKeys.buildSemanticId(organizationId, null, keyType));
+        }
+        return Optional.empty();
+      });
+    return organizationEncryptionService.decryptKey(organizationKeys.map(OrganizationKeys::getKeyCipher).orElse(null));
   }
 }
