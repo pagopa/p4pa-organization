@@ -40,7 +40,7 @@ public class OrganizationController implements OrganizationApi {
 
   @Override
   public ResponseEntity<String> getOrganizationApiKey(Long organizationId, OrganizationApiKeyType keyType, String subUnitCode) {
-    log.info("Retrieving organization {} api key {}", organizationId, keyType);
+    log.info("Retrieving organization {} api key {} and subUnitCode {}", organizationId, keyType, subUnitCode);
     String apiKey = service.getApiKey(organizationId, keyType, subUnitCode);
     return new ResponseEntity<>(
       apiKey,
