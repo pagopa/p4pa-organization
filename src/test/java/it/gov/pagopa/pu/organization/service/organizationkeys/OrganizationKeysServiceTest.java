@@ -1,5 +1,6 @@
 package it.gov.pagopa.pu.organization.service.organizationkeys;
 
+import it.gov.pagopa.pu.organization.dto.generated.OrganizationApiKeyType;
 import it.gov.pagopa.pu.organization.dto.generated.OrganizationApiKeys;
 import it.gov.pagopa.pu.organization.model.OrganizationKeys;
 import it.gov.pagopa.pu.organization.repository.OrganizationKeysRepository;
@@ -49,7 +50,7 @@ class OrganizationKeysServiceTest {
     expectedOrganizationKeys.setKeyCipher(encryptedKey);
     expectedOrganizationKeys.setSubUnitCode(subUnitCode);
     expectedOrganizationKeys.setOrganizationId(organizationId);
-    expectedOrganizationKeys.setKeyType(organizationApiKeys.getKeyType());
+    expectedOrganizationKeys.setKeyType(OrganizationApiKeyType.fromValue(organizationApiKeys.getKeyType().getValue()));
 
     Mockito.when(organizationEncryptionServiceMock.encrypt(plainText))
       .thenReturn(encryptedKey);
