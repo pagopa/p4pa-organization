@@ -1,7 +1,7 @@
 package it.gov.pagopa.pu.organization.model;
 
 import com.fasterxml.jackson.annotation.JsonCreator;
-import it.gov.pagopa.pu.organization.dto.generated.OrganizationApiKeys;
+import it.gov.pagopa.pu.organization.dto.generated.OrganizationApiKeyType;
 import jakarta.persistence.*;
 import jakarta.validation.constraints.NotNull;
 import lombok.AllArgsConstructor;
@@ -25,15 +25,23 @@ public class OrganizationKeys extends BaseEntity implements Serializable {
   private String subUnitCode;
   @NotNull
   @Enumerated(EnumType.STRING)
-  private OrganizationApiKeys.KeyTypeEnum keyType;
+  private OrganizationApiKeyType keyType;
   @NotNull
   private byte[] keyCipher;
 
   //region keep updated semanticId
   public static String buildSemanticId(OrganizationKeys organizationKeys) {
-    return organizationKeys.getOrganizationId() + "_" +
-      (organizationKeys.getSubUnitCode()!=null? organizationKeys.getSubUnitCode() + "_" : "_") +
-      organizationKeys.getKeyType();
+    return buildSemanticId(
+      organizationKeys.getOrganizationId(),
+      organizationKeys.getSubUnitCode(),
+      organizationKeys.getKeyType()
+    );
+  }
+
+  public static String buildSemanticId(Long organizationId, String subUnitCode, OrganizationApiKeyType keyType) {
+    return organizationId + "_" +
+      (subUnitCode != null ? subUnitCode + "_" : "_") +
+      keyType;
   }
 
   private void setSemanticId() {
@@ -50,7 +58,7 @@ public class OrganizationKeys extends BaseEntity implements Serializable {
     setSemanticId();
   }
 
-  public void setKeyType(OrganizationApiKeys.KeyTypeEnum keyType) {
+  public void setKeyType(OrganizationApiKeyType keyType) {
     this.keyType = keyType;
     setSemanticId();
   }
