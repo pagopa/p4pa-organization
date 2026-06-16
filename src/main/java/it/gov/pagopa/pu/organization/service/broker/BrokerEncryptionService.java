@@ -1,8 +1,6 @@
 package it.gov.pagopa.pu.organization.service.broker;
 
 import it.gov.pagopa.pu.organization.dto.generated.BrokerApiKeyType;
-import it.gov.pagopa.pu.organization.dto.generated.BrokerApiKeys;
-import it.gov.pagopa.pu.organization.model.Broker;
 import it.gov.pagopa.pu.organization.util.AESUtils;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.lang3.StringUtils;
@@ -24,30 +22,6 @@ public class BrokerEncryptionService {
   }
 
   private final Map<byte[], String> apiKeyDecryptMap = new ConcurrentHashMap<>();
-
-  public BrokerApiKeys getBrokerDecryptedApiKeys(Broker broker) {
-    return BrokerApiKeys.builder()
-      .syncPaymentsReportingKey(decryptKey(broker.getSyncPaymentsReportingKey(), BrokerApiKeyType.SYNC_PAYMENTS_REPORTING, broker.getBrokerId()))
-      .syncKey(decryptKey(broker.getSyncKey(), BrokerApiKeyType.SYNC, broker.getBrokerId()))
-      .acaKey(decryptKey(broker.getAcaKey(), BrokerApiKeyType.ACA, broker.getBrokerId()))
-      .gpdKey(decryptKey(broker.getGpdKey(), BrokerApiKeyType.GPD, broker.getBrokerId()))
-      .build();
-  }
-
-  public String getBrokerDecryptedApiKey(Broker broker, BrokerApiKeyType keyType) {
-    return switch (keyType) {
-      case SYNC_PAYMENTS_REPORTING ->
-        decryptKey(broker.getSyncPaymentsReportingKey(), BrokerApiKeyType.SYNC_PAYMENTS_REPORTING, broker.getBrokerId());
-      case SYNC ->
-        decryptKey(broker.getSyncKey(), BrokerApiKeyType.SYNC, broker.getBrokerId());
-      case ACA ->
-        decryptKey(broker.getAcaKey(), BrokerApiKeyType.ACA, broker.getBrokerId());
-      case GPD ->
-        decryptKey(broker.getGpdKey(), BrokerApiKeyType.GPD, broker.getBrokerId());
-      case GENERATE_NOTICE ->
-        decryptKey(broker.getGenerateNoticeKey(), BrokerApiKeyType.GENERATE_NOTICE, broker.getBrokerId());
-    };
-  }
 
   public String decryptKey(byte[] encryptedKey, BrokerApiKeyType type, Long brokerId) {
     if (encryptedKey == null || encryptedKey.length == 0) {

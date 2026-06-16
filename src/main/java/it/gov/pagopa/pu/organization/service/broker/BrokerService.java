@@ -5,6 +5,7 @@ import it.gov.pagopa.pu.organization.exception.custom.BrokerNotFoundException;
 import it.gov.pagopa.pu.organization.mapper.BrokerMapper;
 import it.gov.pagopa.pu.organization.model.Broker;
 import it.gov.pagopa.pu.organization.repository.BrokerRepository;
+import it.gov.pagopa.pu.organization.service.brokerkeys.BrokerKeysService;
 import it.gov.pagopa.pu.organization.service.station.StationService;
 import lombok.extern.slf4j.Slf4j;
 import org.jspecify.annotations.NonNull;
@@ -19,19 +20,20 @@ public class BrokerService {
   private final BrokerEncryptionService brokerEncryptionService;
   private final BrokerMapper brokerMapper;
   private final StationService stationService;
+  private final BrokerKeysService brokerKeysService;
 
   public BrokerService(
     BrokerRepository brokerRepository,
-    BrokerEncryptionService brokerEncryptionService, BrokerMapper brokerMapper, StationService stationService) {
+    BrokerEncryptionService brokerEncryptionService, BrokerMapper brokerMapper, StationService stationService, BrokerKeysService brokerKeysService) {
     this.brokerEncryptionService = brokerEncryptionService;
     this.brokerRepository = brokerRepository;
     this.brokerMapper = brokerMapper;
     this.stationService = stationService;
+    this.brokerKeysService = brokerKeysService;
   }
 
   public BrokerApiKeys getBrokerApiKeys(Long brokerId) {
-    Broker broker = getBrokerById(brokerId);
-    return brokerEncryptionService.getBrokerDecryptedApiKeys(broker);
+    return brokerKeysService.getBrokerDecryptedApiKeys(brokerId);
   }
 
   public void encryptAndSaveApiKey(Long brokerId, BrokerApiKey brokerApiKey) {
@@ -48,8 +50,7 @@ public class BrokerService {
   }
 
   public String getBrokerApiKey(Long brokerId, BrokerApiKeyType keyType) {
-    Broker broker = getBrokerById(brokerId);
-    return brokerEncryptionService.getBrokerDecryptedApiKey(broker, keyType);
+    return brokerKeysService.getBrokerDecryptedApiKey(brokerId, keyType);
   }
 
   @Transactional
