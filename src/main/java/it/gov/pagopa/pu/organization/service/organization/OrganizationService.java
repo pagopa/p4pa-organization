@@ -32,7 +32,6 @@ import java.util.Objects;
 @Service
 public class OrganizationService {
 
-  private final OrganizationEncryptionService organizationEncryptionService;
   private final BrokerEncryptionService brokerEncryptionService;
   private final OrganizationMapper organizationMapper;
   private final OrganizationRepository organizationRepository;
@@ -47,7 +46,6 @@ public class OrganizationService {
   private static final String ORGANIZATION_NOT_FOUND_MSG = "Organization with id %s not found";
 
   public OrganizationService(
-    OrganizationEncryptionService organizationEncryptionService,
     BrokerEncryptionService brokerEncryptionService,
     OrganizationMapper organizationMapper,
     OrganizationRepository organizationRepository,
@@ -58,7 +56,6 @@ public class OrganizationService {
     DefaultOrganizationStationService defaultOrganizationStationService,
     OrganizationValidatorService organizationValidatorService, OrganizationKeysService organizationKeysService
   ) {
-    this.organizationEncryptionService = organizationEncryptionService;
     this.brokerEncryptionService = brokerEncryptionService;
     this.organizationMapper = organizationMapper;
     this.organizationRepository = organizationRepository;
@@ -101,16 +98,23 @@ public class OrganizationService {
     return organization;
   }
 
-  public String getApiKey(Long organizationId, OrganizationApiKeyType keyType) {
+  public String getApiKey(Long organizationId, OrganizationApiKeyType keyType, String subUnitCode) {
     Organization organization = organizationRepository.findById(organizationId)
       .orElseThrow(() -> new OrganizationNotFoundException(ORGANIZATION_NOT_FOUND_MSG.formatted(organizationId)));
 
     return switch (keyType) {
-      case IO -> organization.isFlagNotifyIo() ? organizationEncryptionService.decryptKey(organization.getIoApiKey()) : null;
-      case SEND -> organizationEncryptionService.decryptKey(organization.getSendApiKey());
+      case IO -> organization.isFlagNotifyIo() ? organizationKeysService.getApiKey(organizationId, keyType, subUnitCode) : null;
+      case SEND -> {
+        String key = organizationKeysService.getApiKey(organizationId, keyType, subUnitCode);
+        if(Objects.isNull(key) && !Objects.isNull(subUnitCode)) {
+          key = organizationKeysService.getApiKey(organizationId, keyType, null);
+        }
+        yield key;
+      }
       case GENERATE_NOTICE -> {
-        if (organization.getGenerateNoticeApiKey() != null) {
-          yield organizationEncryptionService.decryptKey(organization.getGenerateNoticeApiKey());
+        String key = organizationKeysService.getApiKey(organizationId, keyType, subUnitCode);
+        if(key!=null) {
+          yield key;
         } else {
           Broker broker = brokerRepository.findByBrokeredOrganizationId(String.valueOf(organizationId))
             .orElseThrow(() -> new BrokerNotFoundException("Broker for org with id %s not found".formatted(organizationId)));
