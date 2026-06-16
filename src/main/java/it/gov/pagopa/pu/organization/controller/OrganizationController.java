@@ -32,16 +32,16 @@ public class OrganizationController implements OrganizationApi {
   }
 
   @Override
-  public ResponseEntity<Void> encryptAndSaveApiKey(Long organizationId, OrganizationApiKeys organizationApiKeys) {
+  public ResponseEntity<Void> encryptAndSaveApiKey(Long organizationId, OrganizationApiKeys organizationApiKeys, String subUnitCode) {
     log.info("Updating organization {} api key {}", organizationId, organizationApiKeys.getKeyType());
-    service.encryptAndSaveApiKey(organizationId, organizationApiKeys);
+    service.encryptAndSaveApiKey(organizationId, organizationApiKeys, subUnitCode);
     return new ResponseEntity<>(HttpStatus.OK);
   }
 
   @Override
-  public ResponseEntity<String> getOrganizationApiKey(Long organizationId, OrganizationApiKeyType keyType) {
-    log.info("Retrieving organization {} api key {}", organizationId, keyType);
-    String apiKey = service.getApiKey(organizationId, keyType);
+  public ResponseEntity<String> getOrganizationApiKey(Long organizationId, OrganizationApiKeyType keyType, String subUnitCode) {
+    log.info("Retrieving organization {} api key {} and subUnitCode {}", organizationId, keyType, subUnitCode);
+    String apiKey = service.getApiKey(organizationId, keyType, subUnitCode);
     return new ResponseEntity<>(
       apiKey,
       apiKey != null

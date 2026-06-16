@@ -411,4 +411,30 @@ class OrganizationExceptionHandlerTest {
 
   }
 
+  @Test
+  void handleCrudResourceBaseBusinessException() throws Exception {
+    Long id = -12L;
+    doThrow(new InvalidValueException("ERROR", "message")).when(testCrudControllerSpy).testCrudEndpoint(id);
+
+    mockMvc.perform(MockMvcRequestBuilders.get("/crud/brokers/-12"))
+      .andExpect(MockMvcResultMatchers.status().isBadRequest())
+      .andExpect(MockMvcResultMatchers.jsonPath("$.category").value("ORGANIZATION_BAD_REQUEST"))
+      .andExpect(MockMvcResultMatchers.jsonPath("$.code").value("ERROR"))
+      .andExpect(MockMvcResultMatchers.jsonPath("$.message").value("[ERROR] message"))
+      .andExpect(MockMvcResultMatchers.jsonPath("$.traceId").value(traceId));
+  }
+
+  @Test
+  void handleCrudResourceCauseBaseBusinessException() throws Exception {
+    Long id = -12L;
+    doThrow(new IllegalArgumentException(new InvalidValueException("ERROR", "message"))).when(testCrudControllerSpy).testCrudEndpoint(id);
+
+    mockMvc.perform(MockMvcRequestBuilders.get("/crud/brokers/-12"))
+      .andExpect(MockMvcResultMatchers.status().isInternalServerError())
+      .andExpect(MockMvcResultMatchers.jsonPath("$.category").value("ORGANIZATION_GENERIC_ERROR"))
+      .andExpect(MockMvcResultMatchers.jsonPath("$.code").value("ERROR"))
+      .andExpect(MockMvcResultMatchers.jsonPath("$.message").value("[ERROR] message"))
+      .andExpect(MockMvcResultMatchers.jsonPath("$.traceId").value(traceId));
+  }
+
 }

@@ -20,6 +20,7 @@ import it.gov.pagopa.pu.organization.model.OrganizationStation;
 import it.gov.pagopa.pu.organization.repository.BrokerRepository;
 import it.gov.pagopa.pu.organization.repository.OrganizationRepository;
 import it.gov.pagopa.pu.organization.service.broker.BrokerEncryptionService;
+import it.gov.pagopa.pu.organization.service.organizationkeys.OrganizationKeysService;
 import it.gov.pagopa.pu.organization.service.organizationstation.DefaultOrganizationStationService;
 import it.gov.pagopa.pu.organization.util.TestUtils;
 import it.gov.pagopa.pu.organization.util.faker.OrganizationFaker;
@@ -46,8 +47,6 @@ class OrganizationServiceTest {
   public static final PodamFactory podamFactory = TestUtils.getPodamFactory();
 
   @Mock
-  private OrganizationEncryptionService organizationEncryptionServiceMock;
-  @Mock
   private OrganizationRepository organizationRepositoryMock;
   @Mock
   private BrokerRepository brokerRepositoryMock;
@@ -65,23 +64,25 @@ class OrganizationServiceTest {
   private DefaultOrganizationStationService defaultOrganizationStationServiceMock;
   @Mock
   private OrganizationValidatorService organizationValidatorServiceMock;
+  @Mock
+  private OrganizationKeysService organizationKeysServiceMock;
 
   private OrganizationService service;
 
   @BeforeEach
   void setUp() {
     service = new OrganizationService(
-      organizationEncryptionServiceMock, brokerEncryptionServiceMock,
+      brokerEncryptionServiceMock,
       organizationMapperMock, organizationRepositoryMock,
       brokerRepositoryMock, debtPositionTypeOrgClientMock,
       workflowDebtPositionServiceMock, organizationStationMapperMock,
-      defaultOrganizationStationServiceMock, organizationValidatorServiceMock);
+      defaultOrganizationStationServiceMock, organizationValidatorServiceMock,
+      organizationKeysServiceMock);
   }
 
   @AfterEach
   void verifyNoMoreInteractions() {
     Mockito.verifyNoMoreInteractions(
-      organizationEncryptionServiceMock,
       organizationRepositoryMock,
       brokerRepositoryMock,
       brokerEncryptionServiceMock,
@@ -89,7 +90,8 @@ class OrganizationServiceTest {
       debtPositionTypeOrgClientMock,
       organizationStationMapperMock,
       defaultOrganizationStationServiceMock,
-      organizationValidatorServiceMock
+      organizationValidatorServiceMock,
+      organizationKeysServiceMock
     );
   }
 
@@ -150,79 +152,31 @@ class OrganizationServiceTest {
   }
 
   @Test
-  void givenEncryptAndSaveIOApiKeyThenSuccess() {
-    // Given
-    String plainText = "PLAINTEXT";
-    byte[] encryptedKey = new byte[64];
-    OrganizationApiKeys organizationApiKeys = new OrganizationApiKeys(OrganizationApiKeys.KeyTypeEnum.IO, plainText);
-
-    Mockito.when(organizationEncryptionServiceMock.encrypt(plainText))
-      .thenReturn(encryptedKey);
-
-    Mockito.when(organizationRepositoryMock.updateIoApiKey(1L, encryptedKey))
-      .thenReturn(1);
-
-    // When
-    service.encryptAndSaveApiKey(1L, organizationApiKeys);
-
-    // Then
-    verify(organizationRepositoryMock).updateIoApiKey(1L, encryptedKey);
-  }
-
-  @Test
   void givenEncryptAndSaveSendApiKeyThenSuccess() {
     // Given
     String plainText = "PLAINTEXT";
-    byte[] encryptedKey = new byte[64];
     OrganizationApiKeys organizationApiKeys = new OrganizationApiKeys(OrganizationApiKeys.KeyTypeEnum.SEND, plainText);
-
-    Mockito.when(organizationEncryptionServiceMock.encrypt(plainText))
-      .thenReturn(encryptedKey);
-
-    Mockito.when(organizationRepositoryMock.updateSendApiKey(1L, encryptedKey))
-      .thenReturn(1);
 
     // When
-    service.encryptAndSaveApiKey(1L, organizationApiKeys);
+    service.encryptAndSaveApiKey(1L, organizationApiKeys, null);
 
     // Then
-    verify(organizationRepositoryMock).updateSendApiKey(1L, encryptedKey);
-  }
-
-  @Test
-  void givenEncryptAndSaveApiKeyWhenOrganizationNotFoundThenThrowOrganizationNotFoundException() {
-    // Given
-    String plainText = "PLAINTEXT";
-    byte[] encryptedKey = new byte[64];
-    OrganizationApiKeys organizationApiKeys = new OrganizationApiKeys(OrganizationApiKeys.KeyTypeEnum.SEND, plainText);
-
-    Mockito.when(organizationEncryptionServiceMock.encrypt(plainText))
-      .thenReturn(encryptedKey);
-
-    Mockito.when(organizationRepositoryMock.updateSendApiKey(1L, encryptedKey))
-      .thenReturn(0);
-
-    // When & Then
-    OrganizationNotFoundException exception = assertThrows(OrganizationNotFoundException.class, () ->
-      service.encryptAndSaveApiKey(1L, organizationApiKeys));
-
-    assertEquals("ORGANIZATION_NOT_FOUND",exception.getCode());
-    assertEquals("Organization with id 1 not found", exception.getMessage());
+    verify(organizationKeysServiceMock).encryptAndSave(1L, organizationApiKeys, null);
   }
 
   @Test
   void givenGetApiKeyIOThenSuccess() {
     Long organizationId = 1L;
+    String subUnitCode = "CODE";
     Organization organization = buildOrganization();
     OrganizationApiKeyType keyType = OrganizationApiKeyType.IO;
 
     String expectedApiKey = "apiKey";
 
     Mockito.when(organizationRepositoryMock.findById(organizationId)).thenReturn(Optional.of(organization));
-    Mockito.when(organizationEncryptionServiceMock.decryptKey(organization.getIoApiKey()))
+    when(organizationKeysServiceMock.getApiKey(organizationId, keyType, subUnitCode))
       .thenReturn(expectedApiKey);
-
-    String result = service.getApiKey(organizationId, keyType);
+    String result = service.getApiKey(organizationId, keyType, subUnitCode);
 
     assertEquals(expectedApiKey, result);
   }
@@ -230,13 +184,14 @@ class OrganizationServiceTest {
   @Test
   void givenGetApiKeyIOWithOrgNotEnabledThenSuccess() {
     Long organizationId = 1L;
+    String subUnitCode = "CODE";
     Organization organization = buildOrganization();
     organization.setFlagNotifyIo(false);
     OrganizationApiKeyType keyType = OrganizationApiKeyType.IO;
 
     Mockito.when(organizationRepositoryMock.findById(organizationId)).thenReturn(Optional.of(organization));
 
-    String result = service.getApiKey(organizationId, keyType);
+    String result = service.getApiKey(organizationId, keyType, subUnitCode);
 
     assertNull(result);
   }
@@ -244,67 +199,96 @@ class OrganizationServiceTest {
   @Test
   void givenGetApiKeySENDThenSuccess() {
     Long organizationId = 1L;
+    String subUnitCode = "CODE";
     Organization organization = buildOrganization();
     OrganizationApiKeyType keyType = OrganizationApiKeyType.SEND;
 
     String expectedApiKey = "apiKey";
 
     Mockito.when(organizationRepositoryMock.findById(organizationId)).thenReturn(Optional.of(organization));
-    Mockito.when(organizationEncryptionServiceMock.decryptKey(organization.getSendApiKey()))
+    when(organizationKeysServiceMock.getApiKey(organizationId, keyType, subUnitCode))
       .thenReturn(expectedApiKey);
 
-    String result = service.getApiKey(organizationId, keyType);
+    String result = service.getApiKey(organizationId, keyType, subUnitCode);
 
     assertEquals(expectedApiKey, result);
   }
 
   @Test
+  void givenGetApiKeySENDWhenSubUnitKeyIsNullThenFallbackToOrganizationKeySuccess() {
+    // Given
+    Long organizationId = 1L;
+    String subUnitCode = "CODE";
+    Organization organization = buildOrganization();
+    OrganizationApiKeyType keyType = OrganizationApiKeyType.SEND;
+    String expectedApiKey = "fallbackApiKey";
+
+    Mockito.when(organizationRepositoryMock.findById(organizationId)).thenReturn(Optional.of(organization));
+
+    Mockito.when(organizationKeysServiceMock.getApiKey(organizationId, keyType, subUnitCode))
+      .thenReturn(null);
+    Mockito.when(organizationKeysServiceMock.getApiKey(organizationId, keyType, null))
+      .thenReturn(expectedApiKey);
+
+    // When
+    String result = service.getApiKey(organizationId, keyType, subUnitCode);
+
+    // Then
+    assertEquals(expectedApiKey, result);
+  }
+
+  @Test
+  void givenGetApiKeySENDWhenBothSpecificAndGeneralKeysAreNullThenReturnNull() {
+    // Given
+    Long organizationId = 1L;
+    String subUnitCode = "CODE";
+    Organization organization = buildOrganization();
+    OrganizationApiKeyType keyType = OrganizationApiKeyType.SEND;
+
+    Mockito.when(organizationRepositoryMock.findById(organizationId)).thenReturn(Optional.of(organization));
+
+    Mockito.when(organizationKeysServiceMock.getApiKey(organizationId, keyType, subUnitCode))
+      .thenReturn(null);
+    Mockito.when(organizationKeysServiceMock.getApiKey(organizationId, keyType, null))
+      .thenReturn(null);
+
+    // When
+    String result = service.getApiKey(organizationId, keyType, subUnitCode);
+
+    // Then
+    assertNull(result);
+  }
+
+
+  @Test
   void givenGetApiKeyWithOrgNotFoundThenThrowException() {
     Long organizationId = 1L;
+    String subUnitCode = "CODE";
     OrganizationApiKeyType keyType = OrganizationApiKeyType.SEND;
 
     Mockito.when(organizationRepositoryMock.findById(organizationId)).thenReturn(Optional.empty());
 
     OrganizationNotFoundException result = assertThrows(OrganizationNotFoundException.class,
-      () -> service.getApiKey(organizationId, keyType));
+      () -> service.getApiKey(organizationId, keyType, subUnitCode));
 
     assertEquals("ORGANIZATION_NOT_FOUND",result.getCode());
     assertEquals("Organization with id 1 not found", result.getMessage());
   }
 
   @Test
-  void givenEncryptAndSaveGenerateNoticeApiKeyThenSuccess(){
-    // Given
-    String plainText = "PLAINTEXT";
-    byte[] encryptedKey = new byte[64];
-    OrganizationApiKeys organizationApiKeys = new OrganizationApiKeys(OrganizationApiKeys.KeyTypeEnum.GENERATE_NOTICE, plainText);
-
-    Mockito.when(organizationEncryptionServiceMock.encrypt(plainText))
-      .thenReturn(encryptedKey);
-
-    Mockito.when(organizationRepositoryMock.updateGenerateNoticeApiKey(1L, encryptedKey))
-      .thenReturn(1);
-
-    // When
-    service.encryptAndSaveApiKey(1L, organizationApiKeys);
-
-    // Then
-    verify(organizationRepositoryMock).updateGenerateNoticeApiKey(1L, encryptedKey);
-  }
-
-  @Test
   void givenGetApiKeyGenerateNoticeThenSuccess() {
     Long organizationId = 1L;
+    String subUnitCode = "CODE";
     Organization organization = buildOrganization();
     OrganizationApiKeyType keyType = OrganizationApiKeyType.GENERATE_NOTICE;
 
     String expectedApiKey = "apiKey";
 
     Mockito.when(organizationRepositoryMock.findById(organizationId)).thenReturn(Optional.of(organization));
-    Mockito.when(organizationEncryptionServiceMock.decryptKey(organization.getGenerateNoticeApiKey()))
+    when(organizationKeysServiceMock.getApiKey(organizationId, keyType, subUnitCode))
       .thenReturn(expectedApiKey);
 
-    String result = service.getApiKey(organizationId, keyType);
+    String result = service.getApiKey(organizationId, keyType, subUnitCode);
 
     assertEquals(expectedApiKey, result);
   }
@@ -312,6 +296,7 @@ class OrganizationServiceTest {
   @Test
   void givenGetApiKeyGenerateNoticeNoOrganizationThenSuccess() {
     Long organizationId = 1L;
+    String subUnitCode = "CODE";
     Organization organization = buildOrganization();
     organization.setGenerateNoticeApiKey(null);
     Broker broker = new Broker();
@@ -325,8 +310,10 @@ class OrganizationServiceTest {
       .thenReturn(Optional.of(broker));
     Mockito.when(brokerEncryptionServiceMock.decryptKey(broker.getGenerateNoticeKey(), BrokerApiKeyType.GENERATE_NOTICE, broker.getBrokerId()))
       .thenReturn(expectedApiKey);
+    when(organizationKeysServiceMock.getApiKey(organizationId, keyType, subUnitCode))
+      .thenReturn(null);
 
-    String result = service.getApiKey(organizationId, keyType);
+    String result = service.getApiKey(organizationId, keyType, subUnitCode);
 
     assertEquals(expectedApiKey, result);
   }
@@ -334,6 +321,7 @@ class OrganizationServiceTest {
   @Test
   void givenGetApiKeyGenerateNoticeBrokerNotFoundThenThrowException() {
     Long organizationId = 1L;
+    String subUnitCode = "CODE";
     Organization organization = buildOrganization();
     organization.setGenerateNoticeApiKey(null);
     OrganizationApiKeyType keyType = OrganizationApiKeyType.GENERATE_NOTICE;
@@ -341,9 +329,11 @@ class OrganizationServiceTest {
     Mockito.when(organizationRepositoryMock.findById(organizationId)).thenReturn(Optional.of(organization));
     Mockito.when(brokerRepositoryMock.findByBrokeredOrganizationId(String.valueOf(organizationId)))
       .thenReturn(Optional.empty());
+    when(organizationKeysServiceMock.getApiKey(organizationId, keyType, subUnitCode))
+      .thenReturn(null);
 
     BrokerNotFoundException result = assertThrows(BrokerNotFoundException.class,
-      () -> service.getApiKey(organizationId, keyType));
+      () -> service.getApiKey(organizationId, keyType, subUnitCode));
 
     assertEquals("BROKER_NOT_FOUND",result.getCode());
     assertEquals("BROKER_NOT_FOUND",result.getCode());
