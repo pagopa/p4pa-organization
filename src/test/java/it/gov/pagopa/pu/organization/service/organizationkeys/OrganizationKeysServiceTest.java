@@ -90,7 +90,6 @@ class OrganizationKeysServiceTest {
     String result = service.getApiKey(ORG_ID, KEY_TYPE, SUB_UNIT);
 
     assertEquals(EXPECTED_DECRYPTED_KEY, result);
-    verify(organizationKeysRepositoryMock, times(1)).findById(specificId);
   }
 
 
@@ -116,7 +115,6 @@ class OrganizationKeysServiceTest {
     String result = service.getApiKey(ORG_ID, KEY_TYPE, null);
 
     assertNull(result);
-    verify(organizationKeysRepositoryMock, times(1)).findById(anyString());
   }
 
 

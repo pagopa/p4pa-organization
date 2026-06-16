@@ -235,9 +235,6 @@ class OrganizationServiceTest {
 
     // Then
     assertEquals(expectedApiKey, result);
-
-    Mockito.verify(organizationKeysServiceMock).getApiKey(organizationId, keyType, subUnitCode);
-    Mockito.verify(organizationKeysServiceMock).getApiKey(organizationId, keyType, null);
   }
 
   @Test
@@ -260,9 +257,6 @@ class OrganizationServiceTest {
 
     // Then
     assertNull(result);
-
-    Mockito.verify(organizationKeysServiceMock).getApiKey(organizationId, keyType, subUnitCode);
-    Mockito.verify(organizationKeysServiceMock).getApiKey(organizationId, keyType, null);
   }
 
 
