@@ -7,7 +7,6 @@ import it.gov.pagopa.pu.organization.repository.OrganizationKeysRepository;
 import it.gov.pagopa.pu.organization.service.organization.OrganizationEncryptionService;
 import org.springframework.stereotype.Service;
 
-import java.util.Objects;
 import java.util.Optional;
 
 @Service
@@ -31,13 +30,7 @@ public class OrganizationKeysService {
   }
 
   public String getApiKey(Long organizationId, OrganizationApiKeyType keyType, String subUnitCode) {
-    Optional<OrganizationKeys> organizationKeys = organizationKeysRepository.findById(OrganizationKeys.buildSemanticId(organizationId, subUnitCode, keyType))
-      .or(() -> {
-        if(!Objects.isNull(subUnitCode)) {
-          return organizationKeysRepository.findById(OrganizationKeys.buildSemanticId(organizationId, null, keyType));
-        }
-        return Optional.empty();
-      });
+    Optional<OrganizationKeys> organizationKeys = organizationKeysRepository.findById(OrganizationKeys.buildSemanticId(organizationId, subUnitCode, keyType));
     return organizationEncryptionService.decryptKey(organizationKeys.map(OrganizationKeys::getKeyCipher).orElse(null));
   }
 }

@@ -93,32 +93,12 @@ class OrganizationKeysServiceTest {
     verify(organizationKeysRepositoryMock, times(1)).findById(specificId);
   }
 
-  @Test
-  void givenSpecificKeyNotFoundButFallbackExistsThenReturnFallbackDecryptedKey() {
-    String specificId = OrganizationKeys.buildSemanticId(ORG_ID, SUB_UNIT, KEY_TYPE);
-    String fallbackId = OrganizationKeys.buildSemanticId(ORG_ID, null, KEY_TYPE);
-
-    OrganizationKeys fallbackKey = new OrganizationKeys();
-    fallbackKey.setKeyCipher(MOCK_CIPHER);
-
-    when(organizationKeysRepositoryMock.findById(specificId)).thenReturn(Optional.empty());
-    when(organizationKeysRepositoryMock.findById(fallbackId)).thenReturn(Optional.of(fallbackKey));
-    when(organizationEncryptionServiceMock.decryptKey(MOCK_CIPHER)).thenReturn(EXPECTED_DECRYPTED_KEY);
-
-    String result = service.getApiKey(ORG_ID, KEY_TYPE, SUB_UNIT);
-
-    assertEquals(EXPECTED_DECRYPTED_KEY, result);
-    verify(organizationKeysRepositoryMock).findById(specificId);
-    verify(organizationKeysRepositoryMock).findById(fallbackId);
-  }
 
   @Test
   void givenNoKeysExistThenReturnNull() {
     String specificId = OrganizationKeys.buildSemanticId(ORG_ID, SUB_UNIT, KEY_TYPE);
-    String fallbackId = OrganizationKeys.buildSemanticId(ORG_ID, null, KEY_TYPE);
 
     when(organizationKeysRepositoryMock.findById(specificId)).thenReturn(Optional.empty());
-    when(organizationKeysRepositoryMock.findById(fallbackId)).thenReturn(Optional.empty());
     when(organizationEncryptionServiceMock.decryptKey(null)).thenReturn(null);
 
     String result = service.getApiKey(ORG_ID, KEY_TYPE, SUB_UNIT);

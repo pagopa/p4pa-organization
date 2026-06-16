@@ -16,6 +16,7 @@ import it.gov.pagopa.pu.organization.mapper.OrganizationMapper;
 import it.gov.pagopa.pu.organization.mapper.OrganizationStationMapper;
 import it.gov.pagopa.pu.organization.model.Broker;
 import it.gov.pagopa.pu.organization.model.Organization;
+import it.gov.pagopa.pu.organization.model.OrganizationKeys;
 import it.gov.pagopa.pu.organization.model.OrganizationStation;
 import it.gov.pagopa.pu.organization.repository.BrokerRepository;
 import it.gov.pagopa.pu.organization.repository.OrganizationRepository;
@@ -28,6 +29,7 @@ import jakarta.transaction.Transactional;
 import org.springframework.stereotype.Service;
 
 import java.util.Objects;
+import java.util.Optional;
 
 @Service
 public class OrganizationService {
@@ -104,7 +106,13 @@ public class OrganizationService {
 
     return switch (keyType) {
       case IO -> organization.isFlagNotifyIo() ? organizationKeysService.getApiKey(organizationId, keyType, subUnitCode) : null;
-      case SEND -> organizationKeysService.getApiKey(organizationId, keyType, subUnitCode);
+      case SEND -> {
+        String key = organizationKeysService.getApiKey(organizationId, keyType, subUnitCode);
+        if(Objects.isNull(key) && !Objects.isNull(subUnitCode)) {
+          key = organizationKeysService.getApiKey(organizationId, keyType, null);
+        }
+        yield key;
+      }
       case GENERATE_NOTICE -> {
         String key = organizationKeysService.getApiKey(organizationId, keyType, subUnitCode);
         if(key!=null) {
