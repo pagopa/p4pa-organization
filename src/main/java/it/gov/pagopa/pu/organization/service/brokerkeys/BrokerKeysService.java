@@ -44,7 +44,7 @@ public class BrokerKeysService {
   }
 
   public String getBrokerDecryptedApiKey(Long brokerId, BrokerApiKeyType keyType) {
-    BrokerKeys brokerKey = brokerKeysRepository.findByBrokerIdAndKeyType(brokerId, keyType)
+    BrokerKeys brokerKey = brokerKeysRepository.findById(BrokerKeys.buildSemanticId(brokerId, keyType))
       .orElseThrow(() -> new BrokerNotFoundException(
         "Broker with id %s not found or Key of type %s not found".formatted(brokerId, keyType)));
 

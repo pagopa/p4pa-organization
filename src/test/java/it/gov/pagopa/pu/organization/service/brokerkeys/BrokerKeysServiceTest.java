@@ -143,7 +143,7 @@ class BrokerKeysServiceTest {
     BrokerKeys brokerKey = buildBrokerKey(keyType, "cipherValue");
     String expectedDecryptedKey = "plainValue";
 
-    Mockito.when(brokerKeysRepositoryMock.findByBrokerIdAndKeyType(BROKER_ID, keyType))
+    Mockito.when(brokerKeysRepositoryMock.findById(BrokerKeys.buildSemanticId(BROKER_ID, keyType)))
       .thenReturn(Optional.of(brokerKey));
     Mockito.when(brokerEncryptionServiceMock.decryptKey(brokerKey.getKeyCipher(), keyType, BROKER_ID))
       .thenReturn(expectedDecryptedKey);
@@ -159,7 +159,7 @@ class BrokerKeysServiceTest {
   @EnumSource(BrokerApiKeyType.class)
   void whenGetBrokerDecryptedApiKeyNotFoundThenThrowBrokerNotFoundException(BrokerApiKeyType keyType) {
     //given
-    Mockito.when(brokerKeysRepositoryMock.findByBrokerIdAndKeyType(BROKER_ID, keyType))
+    Mockito.when(brokerKeysRepositoryMock.findById(BrokerKeys.buildSemanticId(BROKER_ID, keyType)))
       .thenReturn(Optional.empty());
 
     //when
