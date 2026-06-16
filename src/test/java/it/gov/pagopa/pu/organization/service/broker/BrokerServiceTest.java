@@ -20,10 +20,10 @@ import org.junit.jupiter.params.provider.EnumSource;
 import org.mockito.Mock;
 import org.mockito.Mockito;
 import org.mockito.junit.jupiter.MockitoExtension;
-import org.springframework.data.rest.webmvc.ResourceNotFoundException;
 
 import java.util.List;
-import java.util.Optional;
+
+import static org.mockito.Mockito.verify;
 
 @ExtendWith(MockitoExtension.class)
 class BrokerServiceTest {
@@ -44,9 +44,6 @@ class BrokerServiceTest {
   private BrokerRepository brokerRepositoryMock;
 
   @Mock
-  private BrokerEncryptionService brokerEncryptionServiceMock;
-
-  @Mock
   private BrokerMapper brokerMapperMock;
 
   @Mock
@@ -59,12 +56,12 @@ class BrokerServiceTest {
 
   @BeforeEach
   void setUp() {
-    brokerService = new BrokerService(brokerRepositoryMock, brokerEncryptionServiceMock, brokerMapperMock, stationServiceMock, brokerKeysServiceMock);
+    brokerService = new BrokerService(brokerRepositoryMock, brokerMapperMock, stationServiceMock, brokerKeysServiceMock);
   }
 
   @AfterEach
   void verifyNoMoreInteractions(){
-    Mockito.verifyNoMoreInteractions(brokerRepositoryMock, brokerEncryptionServiceMock, brokerMapperMock, stationServiceMock, brokerKeysServiceMock);
+    Mockito.verifyNoMoreInteractions(brokerRepositoryMock, brokerMapperMock, stationServiceMock, brokerKeysServiceMock);
   }
 
   @Test
@@ -81,62 +78,18 @@ class BrokerServiceTest {
     Assertions.assertEquals(List.of(VALID_ENCRYPTED_GPD_PASSWORD).toString(),response.getGpdKey());
   }
 
-  @Test
-  void givenNotFoundBrokerIdWhenEncryptAndSaveApiKeyThenException(){
-    //given
-    BrokerApiKey brokerApiKey = new BrokerApiKey();
-    String errorMessage = "broker [%s]".formatted(VALID_BROKER_ID);
-    Mockito.when(brokerRepositoryMock.findById(VALID_BROKER_ID)).thenThrow(new ResourceNotFoundException(errorMessage));
-
-    //when
-    ResourceNotFoundException exception = Assertions.assertThrows(ResourceNotFoundException.class, () -> brokerService.encryptAndSaveApiKey(VALID_BROKER_ID, brokerApiKey));
-
-    //verify
-    Assertions.assertEquals(errorMessage, exception.getMessage());
-  }
-
   @ParameterizedTest
   @EnumSource(BrokerApiKeyType.class)
   void whenEncryptAndSaveApiKeyThenOk(BrokerApiKeyType keyType){
     //given
-    Broker broker = new Broker();
     String apiKey = "apiKey";
-    byte[] encryptedKey = new byte[0];
-
-    Mockito.when(brokerRepositoryMock.findById(VALID_BROKER_ID))
-      .thenReturn(Optional.of(broker));
-    Mockito.when(brokerEncryptionServiceMock.encryptKey(apiKey))
-      .thenReturn(encryptedKey);
-
-    Mockito.when(brokerRepositoryMock.save(Mockito.argThat(i -> {
-      Assertions.assertSame(i, broker);
-      byte[] storedKey = switch (keyType){
-        case SYNC_PAYMENTS_REPORTING -> broker.getSyncPaymentsReportingKey();
-        case SYNC -> broker.getSyncKey();
-        case ACA -> broker.getAcaKey();
-        case GPD -> broker.getGpdKey();
-        case GENERATE_NOTICE -> broker.getGenerateNoticeKey();
-      };
-      Assertions.assertSame(encryptedKey, storedKey);
-
-      if(!BrokerApiKeyType.SYNC.equals(keyType)){
-        Assertions.assertNull(broker.getSyncKey());
-      }
-      if(!BrokerApiKeyType.ACA.equals(keyType)){
-        Assertions.assertNull(broker.getAcaKey());
-      }
-        if(!BrokerApiKeyType.GPD.equals(keyType)){
-          Assertions.assertNull(broker.getGpdKey());
-        }
-        if(!BrokerApiKeyType.GENERATE_NOTICE.equals(keyType)){
-          Assertions.assertNull(broker.getGenerateNoticeKey());
-        }
-      return true;
-    })))
-      .thenReturn(broker);
+    BrokerApiKey brokerApiKey = new BrokerApiKey(keyType, apiKey);
 
     //when
-    brokerService.encryptAndSaveApiKey(VALID_BROKER_ID, new BrokerApiKey(keyType, apiKey));
+    brokerService.encryptAndSaveApiKey(VALID_BROKER_ID, brokerApiKey);
+
+    verify(brokerKeysServiceMock).encryptAndSaveApiKey(1L, brokerApiKey);
+
   }
 
   @Test
