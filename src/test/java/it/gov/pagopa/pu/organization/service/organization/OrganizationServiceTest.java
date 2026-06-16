@@ -215,6 +215,32 @@ class OrganizationServiceTest {
   }
 
   @Test
+  void givenGetApiKeySENDWhenSubUnitKeyIsNullThenFallbackToOrganizationKeySuccess() {
+    // Given
+    Long organizationId = 1L;
+    String subUnitCode = "CODE";
+    Organization organization = buildOrganization();
+    OrganizationApiKeyType keyType = OrganizationApiKeyType.SEND;
+    String expectedApiKey = "fallbackApiKey";
+
+    Mockito.when(organizationRepositoryMock.findById(organizationId)).thenReturn(Optional.of(organization));
+
+    Mockito.when(organizationKeysServiceMock.getApiKey(organizationId, keyType, subUnitCode))
+      .thenReturn(null);
+    Mockito.when(organizationKeysServiceMock.getApiKey(organizationId, keyType, null))
+      .thenReturn(expectedApiKey);
+
+    // When
+    String result = service.getApiKey(organizationId, keyType, subUnitCode);
+
+    // Then
+    assertEquals(expectedApiKey, result);
+
+    Mockito.verify(organizationKeysServiceMock).getApiKey(organizationId, keyType, subUnitCode);
+    Mockito.verify(organizationKeysServiceMock).getApiKey(organizationId, keyType, null);
+  }
+
+  @Test
   void givenGetApiKeyWithOrgNotFoundThenThrowException() {
     Long organizationId = 1L;
     String subUnitCode = "CODE";
