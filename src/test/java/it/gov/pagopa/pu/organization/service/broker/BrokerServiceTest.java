@@ -8,6 +8,7 @@ import it.gov.pagopa.pu.organization.mapper.BrokerMapper;
 import it.gov.pagopa.pu.organization.model.Broker;
 import it.gov.pagopa.pu.organization.model.Station;
 import it.gov.pagopa.pu.organization.repository.BrokerRepository;
+import it.gov.pagopa.pu.organization.service.brokerkeys.BrokerKeysService;
 import it.gov.pagopa.pu.organization.service.station.StationService;
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.Assertions;
@@ -32,13 +33,6 @@ class BrokerServiceTest {
   private static final byte[] VALID_ENCRYPTED_GPD_PASSWORD = new byte[]{7, 8, 9};
   private static final byte[] VALID_ENCRYPTED_GENERATE_NOTICE_PASSWORD = new byte[]{10, 11, 12};
   private static final Long VALID_BROKER_ID = 1L;
-  private static final Broker VALID_BROKER = Broker.builder()
-    .brokerId(VALID_BROKER_ID)
-    .syncKey(VALID_ENCRYPTED_SYNC_PASSWORD)
-    .acaKey(VALID_ENCRYPTED_ACA_PASSWORD)
-    .gpdKey(VALID_ENCRYPTED_GPD_PASSWORD)
-    .generateNoticeKey(VALID_ENCRYPTED_GENERATE_NOTICE_PASSWORD)
-    .build();
   private static final BrokerApiKeys VALID_BROKER_API_KEYS = BrokerApiKeys.builder()
     .syncKey(List.of(VALID_ENCRYPTED_SYNC_PASSWORD).toString())
     .acaKey(List.of(VALID_ENCRYPTED_ACA_PASSWORD).toString())
@@ -58,23 +52,25 @@ class BrokerServiceTest {
   @Mock
   private StationService stationServiceMock;
 
+  @Mock
+  private BrokerKeysService brokerKeysServiceMock;
+
   private BrokerService brokerService;
 
   @BeforeEach
   void setUp() {
-    brokerService = new BrokerService(brokerRepositoryMock, brokerEncryptionServiceMock, brokerMapperMock, stationServiceMock);
+    brokerService = new BrokerService(brokerRepositoryMock, brokerEncryptionServiceMock, brokerMapperMock, stationServiceMock, brokerKeysServiceMock);
   }
 
   @AfterEach
   void verifyNoMoreInteractions(){
-    Mockito.verifyNoMoreInteractions(brokerRepositoryMock, brokerEncryptionServiceMock, brokerMapperMock, stationServiceMock);
+    Mockito.verifyNoMoreInteractions(brokerRepositoryMock, brokerEncryptionServiceMock, brokerMapperMock, stationServiceMock, brokerKeysServiceMock);
   }
 
   @Test
   void givenValidBrokerIdWhenGetBrokerApiKeysThenOk(){
     //given
-    Mockito.when(brokerRepositoryMock.findById(VALID_BROKER_ID)).thenReturn(Optional.of(VALID_BROKER));
-    Mockito.when(brokerEncryptionServiceMock.getBrokerDecryptedApiKeys(VALID_BROKER)).thenReturn(VALID_BROKER_API_KEYS);
+    Mockito.when(brokerKeysServiceMock.getBrokerDecryptedApiKeys(VALID_BROKER_ID)).thenReturn(VALID_BROKER_API_KEYS);
 
     //when
     BrokerApiKeys response = brokerService.getBrokerApiKeys(VALID_BROKER_ID);
@@ -83,19 +79,6 @@ class BrokerServiceTest {
     Assertions.assertEquals(List.of(VALID_ENCRYPTED_SYNC_PASSWORD).toString(),response.getSyncKey());
     Assertions.assertEquals(List.of(VALID_ENCRYPTED_ACA_PASSWORD).toString(),response.getAcaKey());
     Assertions.assertEquals(List.of(VALID_ENCRYPTED_GPD_PASSWORD).toString(),response.getGpdKey());
-  }
-
-  @Test
-  void givenNotFoundBrokerIdWhenGetBrokerApiKeysThenException(){
-    //given
-    String errorMessage = "broker [%s]".formatted(VALID_BROKER_ID);
-    Mockito.when(brokerRepositoryMock.findById(VALID_BROKER_ID)).thenThrow(new ResourceNotFoundException(errorMessage));
-
-    //when
-    ResourceNotFoundException exception = Assertions.assertThrows(ResourceNotFoundException.class, () -> brokerService.getBrokerApiKeys(VALID_BROKER_ID));
-
-    //verify
-    Assertions.assertEquals(errorMessage, exception.getMessage());
   }
 
   @Test
@@ -159,27 +142,13 @@ class BrokerServiceTest {
   @Test
   void givenValidBrokerIdWhenGetBrokerApiKeyThenOk(){
     //given
-    Mockito.when(brokerRepositoryMock.findById(VALID_BROKER_ID)).thenReturn(Optional.of(VALID_BROKER));
-    Mockito.when(brokerEncryptionServiceMock.getBrokerDecryptedApiKey(VALID_BROKER, BrokerApiKeyType.GENERATE_NOTICE)).thenReturn("noticeKey");
+    Mockito.when(brokerKeysServiceMock.getBrokerDecryptedApiKey(VALID_BROKER_ID, BrokerApiKeyType.GENERATE_NOTICE)).thenReturn("noticeKey");
 
     //when
     String response = brokerService.getBrokerApiKey(VALID_BROKER_ID, BrokerApiKeyType.GENERATE_NOTICE);
 
     //verify
     Assertions.assertEquals("noticeKey", response);
-  }
-
-  @Test
-  void givenNotFoundBrokerIdWhenGetBrokerApiKeyThenException(){
-    //given
-    String errorMessage = "broker [%s]".formatted(VALID_BROKER_ID);
-    Mockito.when(brokerRepositoryMock.findById(VALID_BROKER_ID)).thenThrow(new ResourceNotFoundException(errorMessage));
-
-    //when
-    ResourceNotFoundException exception = Assertions.assertThrows(ResourceNotFoundException.class, () -> brokerService.getBrokerApiKey(VALID_BROKER_ID, BrokerApiKeyType.GENERATE_NOTICE));
-
-    //verify
-    Assertions.assertEquals(errorMessage, exception.getMessage());
   }
 
   @Test

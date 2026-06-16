@@ -4,6 +4,10 @@ import it.gov.pagopa.pu.organization.model.BrokerKeys;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.rest.core.annotation.RepositoryRestResource;
 
+import java.util.List;
+
 @RepositoryRestResource(path = "broker-keys", exported = false)
 public interface BrokerKeysRepository extends JpaRepository<BrokerKeys, String>  {
+
+  List<BrokerKeys> findByBrokerId(Long brokerId);
 }
