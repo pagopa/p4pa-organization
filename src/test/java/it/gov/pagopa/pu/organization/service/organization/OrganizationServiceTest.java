@@ -241,6 +241,32 @@ class OrganizationServiceTest {
   }
 
   @Test
+  void givenGetApiKeySENDWhenBothSpecificAndGeneralKeysAreNullThenReturnNull() {
+    // Given
+    Long organizationId = 1L;
+    String subUnitCode = "CODE";
+    Organization organization = buildOrganization();
+    OrganizationApiKeyType keyType = OrganizationApiKeyType.SEND;
+
+    Mockito.when(organizationRepositoryMock.findById(organizationId)).thenReturn(Optional.of(organization));
+
+    Mockito.when(organizationKeysServiceMock.getApiKey(organizationId, keyType, subUnitCode))
+      .thenReturn(null);
+    Mockito.when(organizationKeysServiceMock.getApiKey(organizationId, keyType, null))
+      .thenReturn(null);
+
+    // When
+    String result = service.getApiKey(organizationId, keyType, subUnitCode);
+
+    // Then
+    assertNull(result);
+
+    Mockito.verify(organizationKeysServiceMock).getApiKey(organizationId, keyType, subUnitCode);
+    Mockito.verify(organizationKeysServiceMock).getApiKey(organizationId, keyType, null);
+  }
+
+
+  @Test
   void givenGetApiKeyWithOrgNotFoundThenThrowException() {
     Long organizationId = 1L;
     String subUnitCode = "CODE";
