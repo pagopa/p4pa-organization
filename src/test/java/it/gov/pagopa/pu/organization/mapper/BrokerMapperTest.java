@@ -4,7 +4,6 @@ import it.gov.pagopa.pu.organization.dto.generated.BrokerApiKey;
 import it.gov.pagopa.pu.organization.dto.generated.BrokerApiKeyType;
 import it.gov.pagopa.pu.organization.dto.generated.BrokerRequestDTO;
 import it.gov.pagopa.pu.organization.model.Broker;
-import it.gov.pagopa.pu.organization.service.broker.BrokerEncryptionService;
 import it.gov.pagopa.pu.organization.service.brokerkeys.BrokerKeysService;
 import it.gov.pagopa.pu.organization.util.Constants;
 import it.gov.pagopa.pu.organization.util.TestUtils;
@@ -17,12 +16,10 @@ import org.mockito.Mock;
 import org.mockito.Mockito;
 import org.mockito.junit.jupiter.MockitoExtension;
 
-import java.nio.charset.StandardCharsets;
 
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.junit.jupiter.api.Assertions.*;
 import static org.mockito.Mockito.verifyNoInteractions;
-import static org.mockito.Mockito.when;
 
 @ExtendWith(MockitoExtension.class)
 class BrokerMapperTest {
