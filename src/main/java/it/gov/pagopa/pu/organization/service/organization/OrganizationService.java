@@ -4,7 +4,10 @@ import it.gov.pagopa.pu.organization.connector.debtposition.client.DebtPositionT
 import it.gov.pagopa.pu.organization.connector.workflow.service.WorkflowDebtPositionService;
 import it.gov.pagopa.pu.organization.dto.OrganizationDetailDTO;
 import it.gov.pagopa.pu.organization.dto.OrganizationStationDTO;
-import it.gov.pagopa.pu.organization.dto.generated.*;
+import it.gov.pagopa.pu.organization.dto.generated.BrokerApiKeyType;
+import it.gov.pagopa.pu.organization.dto.generated.OrganizationApiKeyType;
+import it.gov.pagopa.pu.organization.dto.generated.OrganizationApiKeys;
+import it.gov.pagopa.pu.organization.dto.generated.OrganizationCreateDTO;
 import it.gov.pagopa.pu.organization.enums.OrganizationStatus;
 import it.gov.pagopa.pu.organization.exception.custom.BrokerNotFoundException;
 import it.gov.pagopa.pu.organization.exception.custom.InvalidValueException;
@@ -16,7 +19,7 @@ import it.gov.pagopa.pu.organization.model.Organization;
 import it.gov.pagopa.pu.organization.model.OrganizationStation;
 import it.gov.pagopa.pu.organization.repository.BrokerRepository;
 import it.gov.pagopa.pu.organization.repository.OrganizationRepository;
-import it.gov.pagopa.pu.organization.service.broker.BrokerEncryptionService;
+import it.gov.pagopa.pu.organization.service.brokerkeys.BrokerKeysService;
 import it.gov.pagopa.pu.organization.service.organizationkeys.OrganizationKeysService;
 import it.gov.pagopa.pu.organization.service.organizationstation.DefaultOrganizationStationService;
 import it.gov.pagopa.pu.organization.util.ErrorCodeConstants;
@@ -29,7 +32,7 @@ import java.util.Objects;
 @Service
 public class OrganizationService {
 
-  private final BrokerEncryptionService brokerEncryptionService;
+  private final BrokerKeysService brokerKeysService;
   private final OrganizationMapper organizationMapper;
   private final OrganizationRepository organizationRepository;
   private final BrokerRepository brokerRepository;
@@ -43,7 +46,7 @@ public class OrganizationService {
   private static final String ORGANIZATION_NOT_FOUND_MSG = "Organization with id %s not found";
 
   public OrganizationService(
-    BrokerEncryptionService brokerEncryptionService,
+    BrokerKeysService brokerKeysService,
     OrganizationMapper organizationMapper,
     OrganizationRepository organizationRepository,
     BrokerRepository brokerRepository,
@@ -53,7 +56,7 @@ public class OrganizationService {
     DefaultOrganizationStationService defaultOrganizationStationService,
     OrganizationValidatorService organizationValidatorService, OrganizationKeysService organizationKeysService
   ) {
-    this.brokerEncryptionService = brokerEncryptionService;
+    this.brokerKeysService = brokerKeysService;
     this.organizationMapper = organizationMapper;
     this.organizationRepository = organizationRepository;
     this.brokerRepository = brokerRepository;
@@ -119,7 +122,7 @@ public class OrganizationService {
         } else {
           Broker broker = brokerRepository.findByBrokeredOrganizationId(String.valueOf(organizationId))
             .orElseThrow(() -> new BrokerNotFoundException("Broker for org with id %s not found".formatted(organizationId)));
-          yield brokerEncryptionService.decryptKey(broker.getGenerateNoticeKey(), BrokerApiKeyType.GENERATE_NOTICE, broker.getBrokerId());
+          yield brokerKeysService.getBrokerDecryptedApiKey(broker.getBrokerId(), BrokerApiKeyType.GENERATE_NOTICE);
         }
       }
     };
