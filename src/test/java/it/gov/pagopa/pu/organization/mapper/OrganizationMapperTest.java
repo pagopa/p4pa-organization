@@ -1,12 +1,13 @@
 package it.gov.pagopa.pu.organization.mapper;
 
 import it.gov.pagopa.pu.organization.dto.OrganizationDetailDTO;
+import it.gov.pagopa.pu.organization.dto.generated.OrganizationApiKeyType;
 import it.gov.pagopa.pu.organization.dto.generated.OrganizationCreateDTO;
 import it.gov.pagopa.pu.organization.enums.OrganizationAdditionalLanguage;
 import it.gov.pagopa.pu.organization.enums.OrganizationStatus;
 import it.gov.pagopa.pu.organization.model.Organization;
 import it.gov.pagopa.pu.organization.service.organization.OrganizationEncryptionService;
-import it.gov.pagopa.pu.organization.service.organization.OrganizationService;
+import it.gov.pagopa.pu.organization.service.organizationkeys.OrganizationKeysService;
 import it.gov.pagopa.pu.organization.util.TestUtils;
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.Test;
@@ -34,13 +35,13 @@ class OrganizationMapperTest {
   @Mock
   private OrganizationEncryptionService encryptionServiceMock;
   @Mock
-  private OrganizationService organizationServiceMock;
+  private OrganizationKeysService organizationKeysServiceMock;
 
   @AfterEach
   void verifyNoMoreInteractions() {
     Mockito.verifyNoMoreInteractions(
       encryptionServiceMock,
-      organizationServiceMock
+      organizationKeysServiceMock
     );
   }
 
@@ -152,9 +153,9 @@ class OrganizationMapperTest {
     org.setGenerateNoticeApiKey(encryptedGenerateNoticeApiKey);
 
     when(encryptionServiceMock.decryptKey(encryptedPassword)).thenReturn("plainPassword");
-    when(encryptionServiceMock.decryptKey(encryptedIoApiKey)).thenReturn("plainIoApiKey");
-    when(encryptionServiceMock.decryptKey(encryptedSendApiKey)).thenReturn("plainSendApiKey");
-    when(encryptionServiceMock.decryptKey(encryptedGenerateNoticeApiKey)).thenReturn("plainGenerateNoticeApiKey");
+    when(organizationKeysServiceMock.getApiKey(org.getOrganizationId(), OrganizationApiKeyType.IO, null)).thenReturn("plainIoApiKey");
+    when(organizationKeysServiceMock.getApiKey(org.getOrganizationId(), OrganizationApiKeyType.SEND, null)).thenReturn("plainSendApiKey");
+    when(organizationKeysServiceMock.getApiKey(org.getOrganizationId(), OrganizationApiKeyType.GENERATE_NOTICE, null)).thenReturn("plainGenerateNoticeApiKey");
 
     OrganizationDetailDTO dto = organizationMapper.mapToDTO(org, "segregationCode");
 
