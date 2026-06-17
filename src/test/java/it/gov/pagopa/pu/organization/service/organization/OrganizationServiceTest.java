@@ -4,7 +4,10 @@ import it.gov.pagopa.pu.organization.connector.debtposition.client.DebtPositionT
 import it.gov.pagopa.pu.organization.connector.workflow.service.WorkflowDebtPositionService;
 import it.gov.pagopa.pu.organization.dto.OrganizationDetailDTO;
 import it.gov.pagopa.pu.organization.dto.OrganizationStationDTO;
-import it.gov.pagopa.pu.organization.dto.generated.*;
+import it.gov.pagopa.pu.organization.dto.generated.BrokerApiKeyType;
+import it.gov.pagopa.pu.organization.dto.generated.OrganizationApiKeyType;
+import it.gov.pagopa.pu.organization.dto.generated.OrganizationApiKeys;
+import it.gov.pagopa.pu.organization.dto.generated.OrganizationCreateDTO;
 import it.gov.pagopa.pu.organization.enums.OrganizationStatus;
 import it.gov.pagopa.pu.organization.exception.custom.BrokerNotFoundException;
 import it.gov.pagopa.pu.organization.exception.custom.InvalidValueException;
@@ -16,7 +19,7 @@ import it.gov.pagopa.pu.organization.model.Organization;
 import it.gov.pagopa.pu.organization.model.OrganizationStation;
 import it.gov.pagopa.pu.organization.repository.BrokerRepository;
 import it.gov.pagopa.pu.organization.repository.OrganizationRepository;
-import it.gov.pagopa.pu.organization.service.broker.BrokerEncryptionService;
+import it.gov.pagopa.pu.organization.service.brokerkeys.BrokerKeysService;
 import it.gov.pagopa.pu.organization.service.organizationkeys.OrganizationKeysService;
 import it.gov.pagopa.pu.organization.service.organizationstation.DefaultOrganizationStationService;
 import it.gov.pagopa.pu.organization.util.TestUtils;
@@ -47,7 +50,7 @@ class OrganizationServiceTest {
   @Mock
   private BrokerRepository brokerRepositoryMock;
   @Mock
-  private BrokerEncryptionService brokerEncryptionServiceMock;
+  private BrokerKeysService brokerKeysServiceMock;
   @Mock
   private OrganizationMapper organizationMapperMock;
   @Mock
@@ -68,7 +71,7 @@ class OrganizationServiceTest {
   @BeforeEach
   void setUp() {
     service = new OrganizationService(
-      brokerEncryptionServiceMock,
+      brokerKeysServiceMock,
       organizationMapperMock, organizationRepositoryMock,
       brokerRepositoryMock, debtPositionTypeOrgClientMock,
       workflowDebtPositionServiceMock, organizationStationMapperMock,
@@ -81,7 +84,7 @@ class OrganizationServiceTest {
     Mockito.verifyNoMoreInteractions(
       organizationRepositoryMock,
       brokerRepositoryMock,
-      brokerEncryptionServiceMock,
+      brokerKeysServiceMock,
       organizationMapperMock,
       debtPositionTypeOrgClientMock,
       organizationStationMapperMock,
@@ -327,7 +330,6 @@ class OrganizationServiceTest {
     Organization organization = buildOrganization();
     organization.setGenerateNoticeApiKey(null);
     Broker broker = new Broker();
-    broker.setGenerateNoticeKey("apiKey".getBytes());
     OrganizationApiKeyType keyType = OrganizationApiKeyType.GENERATE_NOTICE;
 
     String expectedApiKey = "apiKey";
@@ -335,7 +337,7 @@ class OrganizationServiceTest {
     Mockito.when(organizationRepositoryMock.findById(organizationId)).thenReturn(Optional.of(organization));
     Mockito.when(brokerRepositoryMock.findByBrokeredOrganizationId(String.valueOf(organizationId)))
       .thenReturn(Optional.of(broker));
-    Mockito.when(brokerEncryptionServiceMock.decryptKey(broker.getGenerateNoticeKey(), BrokerApiKeyType.GENERATE_NOTICE, broker.getBrokerId()))
+    Mockito.when(brokerKeysServiceMock.getBrokerDecryptedApiKey(broker.getBrokerId(), BrokerApiKeyType.GENERATE_NOTICE))
       .thenReturn(expectedApiKey);
     when(organizationKeysServiceMock.getApiKey(organizationId, keyType, subUnitCode))
       .thenReturn(null);
