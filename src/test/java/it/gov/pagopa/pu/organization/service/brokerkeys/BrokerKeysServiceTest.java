@@ -1,11 +1,13 @@
 package it.gov.pagopa.pu.organization.service.brokerkeys;
 
+import it.gov.pagopa.pu.organization.dto.generated.BrokerApiKey;
 import it.gov.pagopa.pu.organization.dto.generated.BrokerApiKeyType;
 import it.gov.pagopa.pu.organization.dto.generated.BrokerApiKeys;
 import it.gov.pagopa.pu.organization.exception.custom.BrokerNotFoundException;
 import it.gov.pagopa.pu.organization.model.BrokerKeys;
 import it.gov.pagopa.pu.organization.repository.BrokerKeysRepository;
 import it.gov.pagopa.pu.organization.service.broker.BrokerEncryptionService;
+import it.gov.pagopa.pu.organization.util.TestUtils;
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.BeforeEach;
@@ -20,6 +22,8 @@ import org.mockito.junit.jupiter.MockitoExtension;
 import java.nio.charset.StandardCharsets;
 import java.util.List;
 import java.util.Optional;
+
+import static org.mockito.Mockito.verify;
 
 @ExtendWith(MockitoExtension.class)
 class BrokerKeysServiceTest {
@@ -168,6 +172,32 @@ class BrokerKeysServiceTest {
       () -> brokerKeysService.getBrokerDecryptedApiKey(BROKER_ID, keyType));
 
     Mockito.verifyNoInteractions(brokerEncryptionServiceMock);
+  }
+
+  @Test
+  void givenBrokerIdAndApiKeyWhenEncryptAndSaveApiKeyThenSuccess() {
+    // Given
+    Long brokerId = 123L;
+    BrokerApiKeyType keyType = BrokerApiKeyType.SYNC;
+    String plainText = "PLAINTEXT";
+    byte[] encryptedKey = new byte[64];
+    BrokerApiKey brokerApiKey = new BrokerApiKey(keyType, plainText);
+
+    BrokerKeys expectedResult = new BrokerKeys();
+    expectedResult.setBrokerId(brokerId);
+    expectedResult.setKeyCipher(encryptedKey);
+    expectedResult.setKeyType(keyType);
+
+    Mockito.when(brokerEncryptionServiceMock.encryptKey(plainText)).thenReturn(encryptedKey);
+
+    // When
+    brokerKeysService.encryptAndSaveApiKey(brokerId, brokerApiKey);
+
+    verify(brokerKeysRepositoryMock).save(Mockito.argThat(argument -> {
+      TestUtils.checkNotNullFields(argument, "creationDate", "updateDate", "updateOperatorExternalId", "updateTraceId");
+      TestUtils.reflectionEqualsByName(expectedResult, argument);
+      return true;
+    }));
   }
 
   private BrokerKeys buildBrokerKey(BrokerApiKeyType keyType, String cipherValue) {

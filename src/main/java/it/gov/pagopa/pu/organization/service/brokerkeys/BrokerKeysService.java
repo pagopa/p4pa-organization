@@ -1,5 +1,6 @@
 package it.gov.pagopa.pu.organization.service.brokerkeys;
 
+import it.gov.pagopa.pu.organization.dto.generated.BrokerApiKey;
 import it.gov.pagopa.pu.organization.dto.generated.BrokerApiKeyType;
 import it.gov.pagopa.pu.organization.dto.generated.BrokerApiKeys;
 import it.gov.pagopa.pu.organization.exception.custom.BrokerNotFoundException;
@@ -21,6 +22,16 @@ public class BrokerKeysService {
   public BrokerKeysService(BrokerEncryptionService brokerEncryptionService, BrokerKeysRepository brokerKeysRepository) {
     this.brokerEncryptionService = brokerEncryptionService;
     this.brokerKeysRepository = brokerKeysRepository;
+  }
+
+  public void encryptAndSaveApiKey(Long brokerId, BrokerApiKey brokerApiKey) {
+    byte[] encryptedKey = brokerEncryptionService.encryptKey(brokerApiKey.getApiKey());
+    BrokerKeys brokerKeys = new BrokerKeys();
+    brokerKeys.setBrokerId(brokerId);
+    brokerKeys.setKeyType(brokerApiKey.getKeyType());
+    brokerKeys.setKeyCipher(encryptedKey);
+
+    brokerKeysRepository.save(brokerKeys);
   }
 
   public BrokerApiKeys getBrokerDecryptedApiKeys(Long brokerId) {

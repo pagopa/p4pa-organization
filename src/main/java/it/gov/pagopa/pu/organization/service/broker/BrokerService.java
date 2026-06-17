@@ -1,14 +1,12 @@
 package it.gov.pagopa.pu.organization.service.broker;
 
 import it.gov.pagopa.pu.organization.dto.generated.*;
-import it.gov.pagopa.pu.organization.exception.custom.BrokerNotFoundException;
 import it.gov.pagopa.pu.organization.mapper.BrokerMapper;
 import it.gov.pagopa.pu.organization.model.Broker;
 import it.gov.pagopa.pu.organization.repository.BrokerRepository;
 import it.gov.pagopa.pu.organization.service.brokerkeys.BrokerKeysService;
 import it.gov.pagopa.pu.organization.service.station.StationService;
 import lombok.extern.slf4j.Slf4j;
-import org.jspecify.annotations.NonNull;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -17,15 +15,13 @@ import org.springframework.transaction.annotation.Transactional;
 public class BrokerService {
 
   private final BrokerRepository brokerRepository;
-  private final BrokerEncryptionService brokerEncryptionService;
   private final BrokerMapper brokerMapper;
   private final StationService stationService;
   private final BrokerKeysService brokerKeysService;
 
   public BrokerService(
-    BrokerRepository brokerRepository,
-    BrokerEncryptionService brokerEncryptionService, BrokerMapper brokerMapper, StationService stationService, BrokerKeysService brokerKeysService) {
-    this.brokerEncryptionService = brokerEncryptionService;
+    BrokerRepository brokerRepository, BrokerMapper brokerMapper,
+    StationService stationService, BrokerKeysService brokerKeysService) {
     this.brokerRepository = brokerRepository;
     this.brokerMapper = brokerMapper;
     this.stationService = stationService;
@@ -37,16 +33,7 @@ public class BrokerService {
   }
 
   public void encryptAndSaveApiKey(Long brokerId, BrokerApiKey brokerApiKey) {
-    Broker broker = getBrokerById(brokerId);
-    byte[] encryptedKey = brokerEncryptionService.encryptKey(brokerApiKey.getApiKey());
-    switch (brokerApiKey.getKeyType()) {
-      case SYNC_PAYMENTS_REPORTING -> broker.setSyncPaymentsReportingKey(encryptedKey);
-      case SYNC -> broker.setSyncKey(encryptedKey);
-      case ACA -> broker.setAcaKey(encryptedKey);
-      case GPD -> broker.setGpdKey(encryptedKey);
-      case GENERATE_NOTICE -> broker.setGenerateNoticeKey(encryptedKey);
-    }
-    brokerRepository.save(broker);
+    brokerKeysService.encryptAndSaveApiKey(brokerId, brokerApiKey);
   }
 
   public String getBrokerApiKey(Long brokerId, BrokerApiKeyType keyType) {
@@ -57,16 +44,26 @@ public class BrokerService {
   public Broker createBroker(BrokerRequestDTO brokerRequestDTO) {
     Broker broker = brokerMapper.toModel(brokerRequestDTO);
     broker.setDefaultStationId(null);
-    broker = brokerRepository.save(broker);
 
-    brokerRequestDTO.setBrokerId(broker.getBrokerId());
+    broker = brokerRepository.save(broker);
+    Long generatedBrokerId = broker.getBrokerId();
+
+    saveBrokerKeyIfPresent(generatedBrokerId, BrokerApiKeyType.SYNC, brokerRequestDTO.getSyncKey());
+    saveBrokerKeyIfPresent(generatedBrokerId, BrokerApiKeyType.ACA, brokerRequestDTO.getAcaKey());
+    saveBrokerKeyIfPresent(generatedBrokerId, BrokerApiKeyType.GPD, brokerRequestDTO.getGpdKey());
+    saveBrokerKeyIfPresent(generatedBrokerId, BrokerApiKeyType.GENERATE_NOTICE, brokerRequestDTO.getGenerateNoticeKey());
+    saveBrokerKeyIfPresent(generatedBrokerId, BrokerApiKeyType.SYNC_PAYMENTS_REPORTING, brokerRequestDTO.getSyncPaymentsReportingKey());
+
+    brokerRequestDTO.setBrokerId(generatedBrokerId);
     stationService.upsertStation(brokerRequestDTO);
 
     broker.setDefaultStationId(brokerRequestDTO.getDefaultStationId());
     return brokerRepository.save(broker);
   }
 
-  private @NonNull Broker getBrokerById(Long brokerId) {
-    return brokerRepository.findById(brokerId).orElseThrow(() -> new BrokerNotFoundException("broker [%s]".formatted(brokerId)));
+  private void saveBrokerKeyIfPresent(Long brokerId, BrokerApiKeyType type, String key) {
+    if (key != null) {
+      brokerKeysService.encryptAndSaveApiKey(brokerId, new BrokerApiKey(type, key));
+    }
   }
 }
