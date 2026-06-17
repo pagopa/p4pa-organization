@@ -328,7 +328,6 @@ class OrganizationServiceTest {
     Long organizationId = 1L;
     String subUnitCode = "CODE";
     Organization organization = buildOrganization();
-    organization.setGenerateNoticeApiKey(null);
     Broker broker = new Broker();
     OrganizationApiKeyType keyType = OrganizationApiKeyType.GENERATE_NOTICE;
 
@@ -352,7 +351,6 @@ class OrganizationServiceTest {
     Long organizationId = 1L;
     String subUnitCode = "CODE";
     Organization organization = buildOrganization();
-    organization.setGenerateNoticeApiKey(null);
     OrganizationApiKeyType keyType = OrganizationApiKeyType.GENERATE_NOTICE;
 
     Mockito.when(organizationRepositoryMock.findById(organizationId)).thenReturn(Optional.of(organization));
