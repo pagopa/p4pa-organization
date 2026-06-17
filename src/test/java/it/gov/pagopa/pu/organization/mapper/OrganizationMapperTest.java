@@ -143,14 +143,7 @@ class OrganizationMapperTest {
     org.setCity("city");
 
     byte[] encryptedPassword = "encryptedPassword".getBytes(StandardCharsets.UTF_8);
-    byte[] encryptedIoApiKey = "encryptedIoApiKey".getBytes(StandardCharsets.UTF_8);
-    byte[] encryptedSendApiKey = "encryptedSendApiKey".getBytes(StandardCharsets.UTF_8);
-    byte[] encryptedGenerateNoticeApiKey = "encryptedGenerateNoticeApiKey".getBytes(StandardCharsets.UTF_8);
-
     org.setPassword(encryptedPassword);
-    org.setIoApiKey(encryptedIoApiKey);
-    org.setSendApiKey(encryptedSendApiKey);
-    org.setGenerateNoticeApiKey(encryptedGenerateNoticeApiKey);
 
     when(encryptionServiceMock.decryptKey(encryptedPassword)).thenReturn("plainPassword");
     when(organizationKeysServiceMock.getApiKey(org.getOrganizationId(), OrganizationApiKeyType.IO, null)).thenReturn("plainIoApiKey");

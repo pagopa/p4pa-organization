@@ -46,9 +46,6 @@ public class Organization extends BaseEntity implements Serializable, BaseOrgani
   private OrganizationAdditionalLanguage additionalLanguage;
   private LocalDate startDate;
   private Long brokerId;
-  private byte[] ioApiKey;
-  private byte[] sendApiKey;
-  private byte[] generateNoticeApiKey;
   @NotNull
   private boolean flagNotifyIo;
   @NotNull
