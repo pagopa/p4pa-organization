@@ -1,6 +1,7 @@
 package it.gov.pagopa.pu.organization.service.pdnd;
 
 import it.gov.pagopa.pu.organization.dto.generated.PdndClientDTO;
+import it.gov.pagopa.pu.organization.enums.PdndServiceType;
 import it.gov.pagopa.pu.organization.exception.custom.NotFoundException;
 import it.gov.pagopa.pu.organization.exception.custom.OrganizationNotFoundException;
 import it.gov.pagopa.pu.organization.mapper.PdndClientMapper;
@@ -42,5 +43,12 @@ public class PdndClientService {
        .orElseThrow(() -> new NotFoundException(ErrorCodeConstants.ERROR_CODE_ORG_SUB_UNIT_NOT_FOUND,
          "OrgSubUnit having organizationId %d and subUnitCode %s not found".formatted(pdndClientDTO.getOrganizationId(), pdndClientDTO.getSubUnitCode())));
     }
+  }
+
+  public PdndClientDTO getPdndClientByOrganizationIdAndPdndServiceType(Long organizationId, PdndServiceType pdndServiceType, String subUnitCode) {
+    PdndClient pdndClient = pdndClientRepository.findByOrganizationIdAndServiceTypeAndSubUnitCode(organizationId, pdndServiceType, subUnitCode)
+      .orElseThrow(() -> new NotFoundException(ErrorCodeConstants.ERROR_CODE_PDND_CLIENT_NOT_FOUND,
+        "PdndClient having organizationId %d and pdndServiceType %s and subUnitCode %s not found".formatted(organizationId, pdndServiceType, subUnitCode)));
+    return pdndClientMapper.toDTO(pdndClient);
   }
 }

@@ -1,6 +1,7 @@
 package it.gov.pagopa.pu.organization.controller;
 
 import it.gov.pagopa.pu.organization.dto.generated.PdndClientDTO;
+import it.gov.pagopa.pu.organization.enums.PdndServiceType;
 import it.gov.pagopa.pu.organization.model.PdndClient;
 import it.gov.pagopa.pu.organization.service.pdnd.PdndClientService;
 import it.gov.pagopa.pu.organization.util.TestUtils;
@@ -37,6 +38,21 @@ class PdndClientControllerTest {
     Mockito.when(pdndClientServiceMock.savePdndClient(pdndClientDTO)).thenReturn(expectedResponse);
 
     ResponseEntity<PdndClient> response = pdndClientController.savePdndClient(pdndClientDTO);
+
+    Assertions.assertNotNull(response);
+    Assertions.assertEquals(expectedResponse, response.getBody());
+  }
+
+  @Test
+  void whenGetPdndClientByOrganizationIdAndPdndServiceTypeThenOk(){
+    Long organizationId = 1L;
+    PdndServiceType pdndServiceType = PdndServiceType.SEND;
+    String subUnitCode = "subUnitCode";
+    PdndClientDTO expectedResponse = podamFactory.manufacturePojo(PdndClientDTO.class);
+
+    Mockito.when(pdndClientServiceMock.getPdndClientByOrganizationIdAndPdndServiceType(organizationId,pdndServiceType,subUnitCode)).thenReturn(expectedResponse);
+
+    ResponseEntity<PdndClientDTO> response = pdndClientController.getPdndClientByOrganizationIdAndPdndServiceType(organizationId, pdndServiceType, subUnitCode);
 
     Assertions.assertNotNull(response);
     Assertions.assertEquals(expectedResponse, response.getBody());

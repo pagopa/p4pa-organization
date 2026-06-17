@@ -2,12 +2,14 @@ package it.gov.pagopa.pu.organization.model;
 
 import jakarta.persistence.Entity;
 import jakarta.persistence.Id;
+import jakarta.persistence.Table;
 import jakarta.validation.constraints.NotNull;
 import lombok.*;
 
 import java.io.Serializable;
 
-@Entity(name = "pdnd_clients")
+@Entity
+@Table(name = "pdnd_clients")
 @AllArgsConstructor
 @NoArgsConstructor
 @Builder

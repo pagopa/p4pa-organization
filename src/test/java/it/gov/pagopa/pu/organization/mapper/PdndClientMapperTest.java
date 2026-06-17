@@ -67,4 +67,32 @@ class PdndClientMapperTest {
 
     assertThat(result.getPrivateKeyCipher()).isEqualTo(expectedEncryptedPrivateKey);
   }
+
+  @Test
+  void givenNullPdndClientWhenToDtoThenReturnNull() {
+    assertNull(pdndClientMapper.toDTO(null));
+  }
+
+  @Test
+  void whenToDtoThenReturnPdndClientDTO() {
+    PdndClient pdndClient = podamFactory.manufacturePojo(PdndClient.class);
+    String privateKey = "privateKey";
+
+    when(encryptionServiceMock.decryptKey(pdndClient.getPrivateKeyCipher()))
+      .thenReturn(privateKey);
+
+    PdndClientDTO result = pdndClientMapper.toDTO(pdndClient);
+
+    assertNotNull(result);
+    TestUtils.checkNotNullFields(result);
+
+    assertThat(result)
+      .usingRecursiveComparison()
+      .ignoringFields(
+        "privateKey"
+      )
+      .isEqualTo(pdndClient);
+
+    assertThat(result.getPrivateKey()).isEqualTo(privateKey);
+  }
 }

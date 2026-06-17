@@ -192,7 +192,8 @@ tasks.register<org.openapitools.generator.gradle.plugin.tasks.GenerateTask>("ope
       "EmailServerConfig" to "it.gov.pagopa.pu.organization.dto.EmailServerConfig",
       "OrganizationStationDTO" to "it.gov.pagopa.pu.organization.dto.OrganizationStationDTO",
       "Broker" to "it.gov.pagopa.pu.organization.model.Broker",
-      "PdndClient" to "it.gov.pagopa.pu.organization.model.PdndClient"
+      "PdndClient" to "it.gov.pagopa.pu.organization.model.PdndClient",
+      "PdndServiceType" to "it.gov.pagopa.pu.organization.enums.PdndServiceType"
     )
   )
   configOptions.set(
