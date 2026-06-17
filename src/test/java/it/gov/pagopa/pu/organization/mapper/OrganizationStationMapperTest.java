@@ -1,6 +1,7 @@
 package it.gov.pagopa.pu.organization.mapper;
 
 import it.gov.pagopa.pu.organization.dto.OrganizationStationDTO;
+import it.gov.pagopa.pu.organization.dto.generated.OrganizationApiKeyType;
 import it.gov.pagopa.pu.organization.exception.custom.NotFoundException;
 import it.gov.pagopa.pu.organization.model.Organization;
 import it.gov.pagopa.pu.organization.model.OrganizationStation;
@@ -8,6 +9,7 @@ import it.gov.pagopa.pu.organization.model.Station;
 import it.gov.pagopa.pu.organization.repository.OrganizationStationRepository;
 import it.gov.pagopa.pu.organization.repository.StationRepository;
 import it.gov.pagopa.pu.organization.service.organization.OrganizationEncryptionService;
+import it.gov.pagopa.pu.organization.service.organizationkeys.OrganizationKeysService;
 import it.gov.pagopa.pu.organization.util.ErrorCodeConstants;
 import it.gov.pagopa.pu.organization.util.TestUtils;
 import org.junit.jupiter.api.AfterEach;
@@ -38,6 +40,8 @@ class OrganizationStationMapperTest {
   private OrganizationStationRepository organizationStationRepositoryMock;
   @Mock
   private StationRepository stationRepositoryMock;
+  @Mock
+  private OrganizationKeysService organizationKeysServiceMock;
 
   @InjectMocks
   private OrganizationStationMapper mapper;
@@ -51,7 +55,8 @@ class OrganizationStationMapperTest {
     Mockito.verifyNoMoreInteractions(
       encryptionServiceMock,
       organizationStationRepositoryMock,
-      stationRepositoryMock
+      stationRepositoryMock,
+      organizationKeysServiceMock
     );
   }
 
@@ -67,9 +72,9 @@ class OrganizationStationMapperTest {
 
   private void stubEncryption() {
     when(encryptionServiceMock.decryptKey(org.getPassword())).thenReturn("decryptedPassword");
-    when(encryptionServiceMock.decryptKey(org.getGenerateNoticeApiKey())).thenReturn("decryptedGenerateNoticeApiKey");
-    when(encryptionServiceMock.decryptKey(org.getIoApiKey())).thenReturn("decryptedIoApiKey");
-    when(encryptionServiceMock.decryptKey(org.getSendApiKey())).thenReturn("decryptedSendApiKey");
+    when(organizationKeysServiceMock.getApiKey(org.getOrganizationId(), OrganizationApiKeyType.GENERATE_NOTICE, null)).thenReturn("decryptedGenerateNoticeApiKey");
+    when(organizationKeysServiceMock.getApiKey(org.getOrganizationId(), OrganizationApiKeyType.IO, null)).thenReturn("decryptedIoApiKey");
+    when(organizationKeysServiceMock.getApiKey(org.getOrganizationId(), OrganizationApiKeyType.SEND, null)).thenReturn("decryptedSendApiKey");
   }
 
   @Test

@@ -1,6 +1,7 @@
 package it.gov.pagopa.pu.organization.mapper;
 
 import it.gov.pagopa.pu.organization.dto.OrganizationStationDTO;
+import it.gov.pagopa.pu.organization.dto.generated.OrganizationApiKeyType;
 import it.gov.pagopa.pu.organization.exception.custom.NotFoundException;
 import it.gov.pagopa.pu.organization.model.Organization;
 import it.gov.pagopa.pu.organization.model.OrganizationStation;
@@ -8,6 +9,7 @@ import it.gov.pagopa.pu.organization.model.Station;
 import it.gov.pagopa.pu.organization.repository.OrganizationStationRepository;
 import it.gov.pagopa.pu.organization.repository.StationRepository;
 import it.gov.pagopa.pu.organization.service.organization.OrganizationEncryptionService;
+import it.gov.pagopa.pu.organization.service.organizationkeys.OrganizationKeysService;
 import it.gov.pagopa.pu.organization.util.ErrorCodeConstants;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Component;
@@ -21,6 +23,7 @@ public class OrganizationStationMapper {
   private final OrganizationEncryptionService encryptionService;
   private final OrganizationStationRepository organizationStationRepository;
   private final StationRepository stationRepository;
+  private final OrganizationKeysService organizationKeysService;
 
   public OrganizationStationDTO mapToDTO(Organization org, String stationId) {
     OrganizationStationDTO orgStationDto = new OrganizationStationDTO();
@@ -29,9 +32,9 @@ public class OrganizationStationMapper {
 
     //organization
     orgStationDto.setPassword(encryptionService.decryptKey(org.getPassword()));
-    orgStationDto.setGenerateNoticeApiKey(encryptionService.decryptKey(org.getGenerateNoticeApiKey()));
-    orgStationDto.setIoApiKey(encryptionService.decryptKey(org.getIoApiKey()));
-    orgStationDto.setSendApiKey(encryptionService.decryptKey(org.getSendApiKey()));
+    orgStationDto.setGenerateNoticeApiKey(organizationKeysService.getApiKey(org.getOrganizationId(), OrganizationApiKeyType.GENERATE_NOTICE, null));
+    orgStationDto.setIoApiKey(organizationKeysService.getApiKey(org.getOrganizationId(), OrganizationApiKeyType.IO, null));
+    orgStationDto.setSendApiKey(organizationKeysService.getApiKey(org.getOrganizationId(), OrganizationApiKeyType.SEND, null));
     orgStationDto.setOrganizationId(org.getOrganizationId());
     orgStationDto.setExternalOrganizationId(org.getExternalOrganizationId());
     orgStationDto.setIpaCode(org.getIpaCode());
