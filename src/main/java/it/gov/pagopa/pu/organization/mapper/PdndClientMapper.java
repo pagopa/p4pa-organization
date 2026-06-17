@@ -26,4 +26,20 @@ public class PdndClientMapper {
     pdndClient.setPublicKey(pdndClientDTO.getPublicKey());
     return pdndClient;
   }
+
+  public PdndClientDTO toDTO(PdndClient pdndClient) {
+    if (pdndClient == null) {
+      return null;
+    }
+
+    PdndClientDTO pdndClientDTO = new PdndClientDTO();
+    pdndClientDTO.setClientId(pdndClient.getClientId());
+    pdndClientDTO.setOrganizationId(pdndClient.getOrganizationId());
+    pdndClientDTO.setSubUnitCode(pdndClient.getSubUnitCode());
+    pdndClientDTO.setClientName(pdndClient.getClientName());
+    pdndClientDTO.setKid(pdndClient.getKid());
+    pdndClientDTO.setPrivateKey(encryptionService.decryptKey(pdndClient.getPrivateKeyCipher()));
+    pdndClientDTO.setPublicKey(pdndClient.getPublicKey());
+    return pdndClientDTO;
+  }
 }

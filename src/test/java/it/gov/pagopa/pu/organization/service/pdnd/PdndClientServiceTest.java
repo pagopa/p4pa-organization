@@ -1,6 +1,7 @@
 package it.gov.pagopa.pu.organization.service.pdnd;
 
 import it.gov.pagopa.pu.organization.dto.generated.PdndClientDTO;
+import it.gov.pagopa.pu.organization.enums.PdndServiceType;
 import it.gov.pagopa.pu.organization.exception.custom.NotFoundException;
 import it.gov.pagopa.pu.organization.exception.custom.OrganizationNotFoundException;
 import it.gov.pagopa.pu.organization.mapper.PdndClientMapper;
@@ -120,5 +121,37 @@ class PdndClientServiceTest {
     OrganizationNotFoundException exception = Assertions.assertThrows(OrganizationNotFoundException.class, () -> service.savePdndClient(pdndClientDTO));
 
     Assertions.assertEquals(ErrorCodeConstants.ERROR_CODE_ORGANIZATION_NOT_FOUND, exception.getCode());
+  }
+
+  @Test
+  void whenGetPdndClientByOrganizationIdAndPdndServiceTypeThenOk() {
+    Long organizationId = 1L;
+    PdndServiceType pdndServiceType = PdndServiceType.SEND;
+    String subUnitCode = "subUnitCode";
+
+    PdndClient pdndClient = podamFactory.manufacturePojo(PdndClient.class);
+    PdndClientDTO expectedResult = podamFactory.manufacturePojo(PdndClientDTO.class);
+
+    when(pdndClientRepositoryMock.findByOrganizationIdAndServiceTypeAndSubUnitCode(organizationId,pdndServiceType,subUnitCode))
+      .thenReturn(Optional.of(pdndClient));
+    when(pdndClientMapperMock.toDTO(pdndClient)).thenReturn(expectedResult);
+
+    PdndClientDTO result = service.getPdndClientByOrganizationIdAndPdndServiceType(organizationId,pdndServiceType,subUnitCode);
+
+    Assertions.assertSame(expectedResult, result);
+  }
+
+  @Test
+  void givenNoPdndClientWhenGetPdndClientByOrganizationIdAndPdndServiceTypeThenNotFoundException() {
+    Long organizationId = 1L;
+    PdndServiceType pdndServiceType = PdndServiceType.SEND;
+    String subUnitCode = "subUnitCode";
+
+    when(pdndClientRepositoryMock.findByOrganizationIdAndServiceTypeAndSubUnitCode(organizationId,pdndServiceType,subUnitCode))
+      .thenReturn(Optional.empty());
+
+    NotFoundException notFoundException = Assertions.assertThrows(NotFoundException.class, () -> service.getPdndClientByOrganizationIdAndPdndServiceType(organizationId, pdndServiceType, subUnitCode));
+
+    Assertions.assertSame(ErrorCodeConstants.ERROR_CODE_PDND_CLIENT_NOT_FOUND, notFoundException.getCode());
   }
 }
