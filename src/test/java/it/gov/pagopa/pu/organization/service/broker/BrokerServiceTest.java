@@ -24,6 +24,7 @@ import org.mockito.junit.jupiter.MockitoExtension;
 import java.util.List;
 
 import static org.mockito.Mockito.verify;
+import static org.mockito.Mockito.verifyNoInteractions;
 
 @ExtendWith(MockitoExtension.class)
 class BrokerServiceTest {
@@ -107,29 +108,21 @@ class BrokerServiceTest {
   @Test
   void givenValidBrokerRequestDTOWhenCreateBrokerThenOk(){
     // Given
-    BrokerRequestDTO brokerRequestDTO = BrokerRequestDTO.builder()
-      .organizationId(23L)
-      .brokerFiscalCode("99999000099")
-      .brokerName("Broker Test")
-      .pagoPaInteractionModel("ASYNC_GPD")
-      .broadcastStationId("99999000015_04")
-      .flagDelegate(true)
-      .flagPaymentsReporting(true)
-      .externalId("testcreate")
-      .defaultStationId("12345000000_01")
-      .build();
+    Long expectedBrokerId = 1L;
 
-     Broker broker = Broker.builder()
-      .brokerId(1L)
-      .organizationId(23L)
-      .brokerFiscalCode("99999000099")
-      .brokerName("Broker Test")
-      .defaultStationId("12345000000_01")
-      .build();
+    BrokerRequestDTO brokerRequestDTO = buildBrokerRequestDTO();
+
+     Broker broker = buildBroker();
 
     Station station = new Station();
     station.setBrokerId(1L);
     station.setStationId("12345000000_01");
+
+    String syncKey = brokerRequestDTO.getSyncKey();
+    String acaKey = brokerRequestDTO.getAcaKey();
+    String gpdKey = brokerRequestDTO.getGpdKey();
+    String generateNoticeKey = brokerRequestDTO.getGenerateNoticeKey();
+    String syncPaymentsReportingKey = brokerRequestDTO.getSyncPaymentsReportingKey();
 
     Mockito.when(brokerMapperMock.toModel(brokerRequestDTO)).thenReturn(broker);
     Mockito.when(brokerRepositoryMock.save(broker))
@@ -143,5 +136,74 @@ class BrokerServiceTest {
     Assertions.assertEquals(broker.getBrokerId(), result.getBrokerId());
     Assertions.assertEquals(station.getStationId(), brokerRequestDTO.getDefaultStationId());
 
+    Mockito.verify(brokerKeysServiceMock).encryptAndSaveApiKey(
+      expectedBrokerId, new BrokerApiKey(BrokerApiKeyType.SYNC, syncKey)
+    );
+    Mockito.verify(brokerKeysServiceMock).encryptAndSaveApiKey(
+      expectedBrokerId, new BrokerApiKey(BrokerApiKeyType.ACA, acaKey)
+    );
+    Mockito.verify(brokerKeysServiceMock).encryptAndSaveApiKey(
+      expectedBrokerId, new BrokerApiKey(BrokerApiKeyType.GPD, gpdKey)
+    );
+    Mockito.verify(brokerKeysServiceMock).encryptAndSaveApiKey(
+      expectedBrokerId, new BrokerApiKey(BrokerApiKeyType.GENERATE_NOTICE, generateNoticeKey)
+    );
+    Mockito.verify(brokerKeysServiceMock).encryptAndSaveApiKey(
+      expectedBrokerId, new BrokerApiKey(BrokerApiKeyType.SYNC_PAYMENTS_REPORTING, syncPaymentsReportingKey)
+    );
+  }
+
+  @Test
+  void testEncryptKeyNotCalledWhenAllKeysNull() {
+    BrokerRequestDTO brokerRequestDTO = buildBrokerRequestDTO();
+    brokerRequestDTO.setAcaKey(null);
+    brokerRequestDTO.setGpdKey(null);
+    brokerRequestDTO.setSyncPaymentsReportingKey(null);
+    brokerRequestDTO.setSyncKey(null);
+    brokerRequestDTO.setGenerateNoticeKey(null);
+
+    Broker broker = buildBroker();
+
+    Station station = new Station();
+    station.setBrokerId(1L);
+    station.setStationId("12345000000_01");
+
+    Mockito.when(brokerMapperMock.toModel(brokerRequestDTO)).thenReturn(broker);
+    Mockito.when(brokerRepositoryMock.save(broker))
+      .thenReturn(broker);
+    Mockito.when(stationServiceMock.upsertStation(brokerRequestDTO)).thenReturn(station);
+
+    brokerService.createBroker(brokerRequestDTO);
+
+    verifyNoInteractions(brokerKeysServiceMock);
+  }
+
+  private BrokerRequestDTO buildBrokerRequestDTO(){
+    return BrokerRequestDTO.builder()
+      .organizationId(23L)
+      .brokerFiscalCode("99999000099")
+      .brokerName("Broker Test")
+      .pagoPaInteractionModel("ASYNC_GPD")
+      .broadcastStationId("99999000015_04")
+      .flagDelegate(true)
+      .flagPaymentsReporting(true)
+      .externalId("testcreate")
+      .defaultStationId("12345000000_01")
+      .syncPaymentsReportingKey("syncKey")
+      .syncKey("sync")
+      .gpdKey("gpd")
+      .generateNoticeKey("generate")
+      .acaKey("aca")
+      .build();
+  }
+
+  private Broker buildBroker() {
+    return Broker.builder()
+      .brokerId(1L)
+      .organizationId(23L)
+      .brokerFiscalCode("99999000099")
+      .brokerName("Broker Test")
+      .defaultStationId("12345000000_01")
+      .build();
   }
 }

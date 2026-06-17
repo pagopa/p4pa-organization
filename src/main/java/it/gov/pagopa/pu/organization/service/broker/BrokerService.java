@@ -44,12 +44,26 @@ public class BrokerService {
   public Broker createBroker(BrokerRequestDTO brokerRequestDTO) {
     Broker broker = brokerMapper.toModel(brokerRequestDTO);
     broker.setDefaultStationId(null);
-    broker = brokerRepository.save(broker);
 
-    brokerRequestDTO.setBrokerId(broker.getBrokerId());
+    broker = brokerRepository.save(broker);
+    Long generatedBrokerId = broker.getBrokerId();
+
+    saveBrokerKeyIfPresent(generatedBrokerId, BrokerApiKeyType.SYNC, brokerRequestDTO.getSyncKey());
+    saveBrokerKeyIfPresent(generatedBrokerId, BrokerApiKeyType.ACA, brokerRequestDTO.getAcaKey());
+    saveBrokerKeyIfPresent(generatedBrokerId, BrokerApiKeyType.GPD, brokerRequestDTO.getGpdKey());
+    saveBrokerKeyIfPresent(generatedBrokerId, BrokerApiKeyType.GENERATE_NOTICE, brokerRequestDTO.getGenerateNoticeKey());
+    saveBrokerKeyIfPresent(generatedBrokerId, BrokerApiKeyType.SYNC_PAYMENTS_REPORTING, brokerRequestDTO.getSyncPaymentsReportingKey());
+
+    brokerRequestDTO.setBrokerId(generatedBrokerId);
     stationService.upsertStation(brokerRequestDTO);
 
     broker.setDefaultStationId(brokerRequestDTO.getDefaultStationId());
     return brokerRepository.save(broker);
+  }
+
+  private void saveBrokerKeyIfPresent(Long brokerId, BrokerApiKeyType type, String key) {
+    if (key != null) {
+      brokerKeysService.encryptAndSaveApiKey(brokerId, new BrokerApiKey(type, key));
+    }
   }
 }

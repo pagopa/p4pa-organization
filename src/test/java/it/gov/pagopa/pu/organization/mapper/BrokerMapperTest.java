@@ -19,7 +19,6 @@ import org.mockito.junit.jupiter.MockitoExtension;
 
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.junit.jupiter.api.Assertions.*;
-import static org.mockito.Mockito.verifyNoInteractions;
 
 @ExtendWith(MockitoExtension.class)
 class BrokerMapperTest {
@@ -72,12 +71,6 @@ class BrokerMapperTest {
     // Given
     Long expectedBrokerId = 1L;
 
-    String syncKey = dto.getSyncKey();
-    String acaKey = dto.getAcaKey();
-    String gpdKey = dto.getGpdKey();
-    String generateNoticeKey = dto.getGenerateNoticeKey();
-    String syncPaymentsReportingKey = dto.getSyncPaymentsReportingKey();
-
     // When
     Broker result = brokerMapper.toModel(dto);
 
@@ -96,34 +89,6 @@ class BrokerMapperTest {
     assertThat(result.getExternalId()).isEqualTo("testcreate");
     assertThat(result.getIuvSystemId()).isEqualTo(dto.getIuvSystemId() != null ? dto.getIuvSystemId() : Constants.DEFAULT_IUV_SYSTEM_ID);
 
-    Mockito.verify(brokerKeysServiceMock).encryptAndSaveApiKey(
-      expectedBrokerId, new BrokerApiKey(BrokerApiKeyType.SYNC, syncKey)
-    );
-    Mockito.verify(brokerKeysServiceMock).encryptAndSaveApiKey(
-      expectedBrokerId, new BrokerApiKey(BrokerApiKeyType.ACA, acaKey)
-    );
-    Mockito.verify(brokerKeysServiceMock).encryptAndSaveApiKey(
-      expectedBrokerId, new BrokerApiKey(BrokerApiKeyType.GPD, gpdKey)
-    );
-    Mockito.verify(brokerKeysServiceMock).encryptAndSaveApiKey(
-      expectedBrokerId, new BrokerApiKey(BrokerApiKeyType.GENERATE_NOTICE, generateNoticeKey)
-    );
-    Mockito.verify(brokerKeysServiceMock).encryptAndSaveApiKey(
-      expectedBrokerId, new BrokerApiKey(BrokerApiKeyType.SYNC_PAYMENTS_REPORTING, syncPaymentsReportingKey)
-    );
-  }
-
-  @Test
-  void testEncryptKeyNotCalledWhenAllKeysNull() {
-    dto.setSyncPaymentsReportingKey(null);
-    dto.setSyncKey(null);
-    dto.setGpdKey(null);
-    dto.setGenerateNoticeKey(null);
-    dto.setAcaKey(null);
-
-    brokerMapper.toModel(dto);
-
-    verifyNoInteractions(brokerKeysServiceMock);
   }
 
 }
