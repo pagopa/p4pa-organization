@@ -1,7 +1,5 @@
 package it.gov.pagopa.pu.organization.mapper;
 
-import it.gov.pagopa.pu.organization.dto.generated.BrokerApiKey;
-import it.gov.pagopa.pu.organization.dto.generated.BrokerApiKeyType;
 import it.gov.pagopa.pu.organization.dto.generated.BrokerRequestDTO;
 import it.gov.pagopa.pu.organization.model.Broker;
 import it.gov.pagopa.pu.organization.service.brokerkeys.BrokerKeysService;
