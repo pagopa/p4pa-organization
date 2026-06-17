@@ -20,10 +20,11 @@ import org.junit.jupiter.params.provider.EnumSource;
 import org.mockito.Mock;
 import org.mockito.Mockito;
 import org.mockito.junit.jupiter.MockitoExtension;
-import org.springframework.data.rest.webmvc.ResourceNotFoundException;
 
 import java.util.List;
-import java.util.Optional;
+
+import static org.mockito.Mockito.verify;
+import static org.mockito.Mockito.verifyNoInteractions;
 
 @ExtendWith(MockitoExtension.class)
 class BrokerServiceTest {
@@ -44,9 +45,6 @@ class BrokerServiceTest {
   private BrokerRepository brokerRepositoryMock;
 
   @Mock
-  private BrokerEncryptionService brokerEncryptionServiceMock;
-
-  @Mock
   private BrokerMapper brokerMapperMock;
 
   @Mock
@@ -59,12 +57,12 @@ class BrokerServiceTest {
 
   @BeforeEach
   void setUp() {
-    brokerService = new BrokerService(brokerRepositoryMock, brokerEncryptionServiceMock, brokerMapperMock, stationServiceMock, brokerKeysServiceMock);
+    brokerService = new BrokerService(brokerRepositoryMock, brokerMapperMock, stationServiceMock, brokerKeysServiceMock);
   }
 
   @AfterEach
   void verifyNoMoreInteractions(){
-    Mockito.verifyNoMoreInteractions(brokerRepositoryMock, brokerEncryptionServiceMock, brokerMapperMock, stationServiceMock, brokerKeysServiceMock);
+    Mockito.verifyNoMoreInteractions(brokerRepositoryMock, brokerMapperMock, stationServiceMock, brokerKeysServiceMock);
   }
 
   @Test
@@ -81,62 +79,18 @@ class BrokerServiceTest {
     Assertions.assertEquals(List.of(VALID_ENCRYPTED_GPD_PASSWORD).toString(),response.getGpdKey());
   }
 
-  @Test
-  void givenNotFoundBrokerIdWhenEncryptAndSaveApiKeyThenException(){
-    //given
-    BrokerApiKey brokerApiKey = new BrokerApiKey();
-    String errorMessage = "broker [%s]".formatted(VALID_BROKER_ID);
-    Mockito.when(brokerRepositoryMock.findById(VALID_BROKER_ID)).thenThrow(new ResourceNotFoundException(errorMessage));
-
-    //when
-    ResourceNotFoundException exception = Assertions.assertThrows(ResourceNotFoundException.class, () -> brokerService.encryptAndSaveApiKey(VALID_BROKER_ID, brokerApiKey));
-
-    //verify
-    Assertions.assertEquals(errorMessage, exception.getMessage());
-  }
-
   @ParameterizedTest
   @EnumSource(BrokerApiKeyType.class)
   void whenEncryptAndSaveApiKeyThenOk(BrokerApiKeyType keyType){
     //given
-    Broker broker = new Broker();
     String apiKey = "apiKey";
-    byte[] encryptedKey = new byte[0];
-
-    Mockito.when(brokerRepositoryMock.findById(VALID_BROKER_ID))
-      .thenReturn(Optional.of(broker));
-    Mockito.when(brokerEncryptionServiceMock.encryptKey(apiKey))
-      .thenReturn(encryptedKey);
-
-    Mockito.when(brokerRepositoryMock.save(Mockito.argThat(i -> {
-      Assertions.assertSame(i, broker);
-      byte[] storedKey = switch (keyType){
-        case SYNC_PAYMENTS_REPORTING -> broker.getSyncPaymentsReportingKey();
-        case SYNC -> broker.getSyncKey();
-        case ACA -> broker.getAcaKey();
-        case GPD -> broker.getGpdKey();
-        case GENERATE_NOTICE -> broker.getGenerateNoticeKey();
-      };
-      Assertions.assertSame(encryptedKey, storedKey);
-
-      if(!BrokerApiKeyType.SYNC.equals(keyType)){
-        Assertions.assertNull(broker.getSyncKey());
-      }
-      if(!BrokerApiKeyType.ACA.equals(keyType)){
-        Assertions.assertNull(broker.getAcaKey());
-      }
-        if(!BrokerApiKeyType.GPD.equals(keyType)){
-          Assertions.assertNull(broker.getGpdKey());
-        }
-        if(!BrokerApiKeyType.GENERATE_NOTICE.equals(keyType)){
-          Assertions.assertNull(broker.getGenerateNoticeKey());
-        }
-      return true;
-    })))
-      .thenReturn(broker);
+    BrokerApiKey brokerApiKey = new BrokerApiKey(keyType, apiKey);
 
     //when
-    brokerService.encryptAndSaveApiKey(VALID_BROKER_ID, new BrokerApiKey(keyType, apiKey));
+    brokerService.encryptAndSaveApiKey(VALID_BROKER_ID, brokerApiKey);
+
+    verify(brokerKeysServiceMock).encryptAndSaveApiKey(1L, brokerApiKey);
+
   }
 
   @Test
@@ -154,29 +108,21 @@ class BrokerServiceTest {
   @Test
   void givenValidBrokerRequestDTOWhenCreateBrokerThenOk(){
     // Given
-    BrokerRequestDTO brokerRequestDTO = BrokerRequestDTO.builder()
-      .organizationId(23L)
-      .brokerFiscalCode("99999000099")
-      .brokerName("Broker Test")
-      .pagoPaInteractionModel("ASYNC_GPD")
-      .broadcastStationId("99999000015_04")
-      .flagDelegate(true)
-      .flagPaymentsReporting(true)
-      .externalId("testcreate")
-      .defaultStationId("12345000000_01")
-      .build();
+    Long expectedBrokerId = 1L;
 
-     Broker broker = Broker.builder()
-      .brokerId(1L)
-      .organizationId(23L)
-      .brokerFiscalCode("99999000099")
-      .brokerName("Broker Test")
-      .defaultStationId("12345000000_01")
-      .build();
+    BrokerRequestDTO brokerRequestDTO = buildBrokerRequestDTO();
+
+     Broker broker = buildBroker();
 
     Station station = new Station();
     station.setBrokerId(1L);
     station.setStationId("12345000000_01");
+
+    String syncKey = brokerRequestDTO.getSyncKey();
+    String acaKey = brokerRequestDTO.getAcaKey();
+    String gpdKey = brokerRequestDTO.getGpdKey();
+    String generateNoticeKey = brokerRequestDTO.getGenerateNoticeKey();
+    String syncPaymentsReportingKey = brokerRequestDTO.getSyncPaymentsReportingKey();
 
     Mockito.when(brokerMapperMock.toModel(brokerRequestDTO)).thenReturn(broker);
     Mockito.when(brokerRepositoryMock.save(broker))
@@ -190,5 +136,74 @@ class BrokerServiceTest {
     Assertions.assertEquals(broker.getBrokerId(), result.getBrokerId());
     Assertions.assertEquals(station.getStationId(), brokerRequestDTO.getDefaultStationId());
 
+    Mockito.verify(brokerKeysServiceMock).encryptAndSaveApiKey(
+      expectedBrokerId, new BrokerApiKey(BrokerApiKeyType.SYNC, syncKey)
+    );
+    Mockito.verify(brokerKeysServiceMock).encryptAndSaveApiKey(
+      expectedBrokerId, new BrokerApiKey(BrokerApiKeyType.ACA, acaKey)
+    );
+    Mockito.verify(brokerKeysServiceMock).encryptAndSaveApiKey(
+      expectedBrokerId, new BrokerApiKey(BrokerApiKeyType.GPD, gpdKey)
+    );
+    Mockito.verify(brokerKeysServiceMock).encryptAndSaveApiKey(
+      expectedBrokerId, new BrokerApiKey(BrokerApiKeyType.GENERATE_NOTICE, generateNoticeKey)
+    );
+    Mockito.verify(brokerKeysServiceMock).encryptAndSaveApiKey(
+      expectedBrokerId, new BrokerApiKey(BrokerApiKeyType.SYNC_PAYMENTS_REPORTING, syncPaymentsReportingKey)
+    );
+  }
+
+  @Test
+  void testEncryptKeyNotCalledWhenAllKeysNull() {
+    BrokerRequestDTO brokerRequestDTO = buildBrokerRequestDTO();
+    brokerRequestDTO.setAcaKey(null);
+    brokerRequestDTO.setGpdKey(null);
+    brokerRequestDTO.setSyncPaymentsReportingKey(null);
+    brokerRequestDTO.setSyncKey(null);
+    brokerRequestDTO.setGenerateNoticeKey(null);
+
+    Broker broker = buildBroker();
+
+    Station station = new Station();
+    station.setBrokerId(1L);
+    station.setStationId("12345000000_01");
+
+    Mockito.when(brokerMapperMock.toModel(brokerRequestDTO)).thenReturn(broker);
+    Mockito.when(brokerRepositoryMock.save(broker))
+      .thenReturn(broker);
+    Mockito.when(stationServiceMock.upsertStation(brokerRequestDTO)).thenReturn(station);
+
+    brokerService.createBroker(brokerRequestDTO);
+
+    verifyNoInteractions(brokerKeysServiceMock);
+  }
+
+  private BrokerRequestDTO buildBrokerRequestDTO(){
+    return BrokerRequestDTO.builder()
+      .organizationId(23L)
+      .brokerFiscalCode("99999000099")
+      .brokerName("Broker Test")
+      .pagoPaInteractionModel("ASYNC_GPD")
+      .broadcastStationId("99999000015_04")
+      .flagDelegate(true)
+      .flagPaymentsReporting(true)
+      .externalId("testcreate")
+      .defaultStationId("12345000000_01")
+      .syncPaymentsReportingKey("syncKey")
+      .syncKey("sync")
+      .gpdKey("gpd")
+      .generateNoticeKey("generate")
+      .acaKey("aca")
+      .build();
+  }
+
+  private Broker buildBroker() {
+    return Broker.builder()
+      .brokerId(1L)
+      .organizationId(23L)
+      .brokerFiscalCode("99999000099")
+      .brokerName("Broker Test")
+      .defaultStationId("12345000000_01")
+      .build();
   }
 }
