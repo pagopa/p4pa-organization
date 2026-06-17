@@ -89,12 +89,9 @@ public class OrganizationService {
       organization.setDefaultOrganizationStationId(saved.getOrganizationStationId());
       organization = organizationRepository.save(organization);
 
-      saveOrganizationKeyIfPresent(organizationId,
-        new OrganizationApiKeys(OrganizationApiKeys.KeyTypeEnum.SEND, organizationCreateDTO.getSendApiKey()), null);
-      saveOrganizationKeyIfPresent(organizationId,
-        new OrganizationApiKeys(OrganizationApiKeys.KeyTypeEnum.IO, organizationCreateDTO.getIoApiKey()), null);
-      saveOrganizationKeyIfPresent(organizationId,
-        new OrganizationApiKeys(OrganizationApiKeys.KeyTypeEnum.GENERATE_NOTICE, organizationCreateDTO.getGenerateNoticeApiKey()), null);
+      saveOrganizationKeyIfPresent(organizationId, OrganizationApiKeys.KeyTypeEnum.SEND, organizationCreateDTO.getSendApiKey());
+      saveOrganizationKeyIfPresent(organizationId, OrganizationApiKeys.KeyTypeEnum.IO, organizationCreateDTO.getIoApiKey());
+      saveOrganizationKeyIfPresent(organizationId, OrganizationApiKeys.KeyTypeEnum.GENERATE_NOTICE, organizationCreateDTO.getGenerateNoticeApiKey());
     }
 
     debtPositionTypeOrgClient.createTechnicalDebtPositionTypeOrg(organization.getOrganizationId(), accessToken);
@@ -208,9 +205,9 @@ public class OrganizationService {
     organizationRepository.save(organization);
   }
 
-  private void saveOrganizationKeyIfPresent(Long organizationId, OrganizationApiKeys organizationApiKeys, String subUnitCode) {
-    if (organizationApiKeys.getApiKey() != null) {
-      organizationKeysService.encryptAndSave(organizationId, organizationApiKeys, subUnitCode);
+  private void saveOrganizationKeyIfPresent(Long organizationId, OrganizationApiKeys.KeyTypeEnum keyType, String key) {
+    if (key != null) {
+      organizationKeysService.encryptAndSave(organizationId, new OrganizationApiKeys(keyType, key), null);
     }
   }
 }
