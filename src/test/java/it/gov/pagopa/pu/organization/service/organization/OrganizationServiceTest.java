@@ -4,10 +4,7 @@ import it.gov.pagopa.pu.organization.connector.debtposition.client.DebtPositionT
 import it.gov.pagopa.pu.organization.connector.workflow.service.WorkflowDebtPositionService;
 import it.gov.pagopa.pu.organization.dto.OrganizationDetailDTO;
 import it.gov.pagopa.pu.organization.dto.OrganizationStationDTO;
-import it.gov.pagopa.pu.organization.dto.generated.BrokerApiKeyType;
-import it.gov.pagopa.pu.organization.dto.generated.OrganizationApiKeyType;
-import it.gov.pagopa.pu.organization.dto.generated.OrganizationApiKeys;
-import it.gov.pagopa.pu.organization.dto.generated.OrganizationCreateDTO;
+import it.gov.pagopa.pu.organization.dto.generated.*;
 import it.gov.pagopa.pu.organization.enums.OrganizationStatus;
 import it.gov.pagopa.pu.organization.exception.custom.BrokerNotFoundException;
 import it.gov.pagopa.pu.organization.exception.custom.InvalidValueException;
@@ -39,8 +36,7 @@ import java.util.Optional;
 
 import static it.gov.pagopa.pu.organization.util.faker.OrganizationFaker.buildOrganization;
 import static org.junit.jupiter.api.Assertions.*;
-import static org.mockito.Mockito.verify;
-import static org.mockito.Mockito.when;
+import static org.mockito.Mockito.*;
 
 @ExtendWith(MockitoExtension.class)
 class OrganizationServiceTest {
@@ -100,6 +96,9 @@ class OrganizationServiceTest {
     String accessToken = TestUtils.getFakeAccessToken();
     OrganizationCreateDTO dto = new OrganizationCreateDTO();
     dto.setSegregationCode("12");
+    dto.setIoApiKey("ioApiKey");
+    dto.setSendApiKey("sendApiKey");
+    dto.setGenerateNoticeApiKey("generateNoticeApiKey");
     dto.setBrokerId(1L);
 
     Organization organization = OrganizationFaker.buildOrganization();
@@ -116,7 +115,35 @@ class OrganizationServiceTest {
     verify(organizationValidatorServiceMock).validateOrganizationCreateDTO(dto);
     verify(organizationRepositoryMock, Mockito.times(2)).save(organization);
     verify(debtPositionTypeOrgClientMock).createTechnicalDebtPositionTypeOrg(organization.getOrganizationId(), accessToken);
+
+    Mockito.verify(organizationKeysServiceMock).encryptAndSave(1L, new OrganizationApiKeys(OrganizationApiKeys.KeyTypeEnum.SEND, dto.getSendApiKey()), null);
+    Mockito.verify(organizationKeysServiceMock).encryptAndSave(1L, new OrganizationApiKeys(OrganizationApiKeys.KeyTypeEnum.IO, dto.getIoApiKey()), null);
+    Mockito.verify(organizationKeysServiceMock).encryptAndSave(1L, new OrganizationApiKeys(OrganizationApiKeys.KeyTypeEnum.GENERATE_NOTICE, dto.getGenerateNoticeApiKey()), null);
   }
+
+  @Test
+  void givenValidDTOWithSegregationCodeAndKeyNullWhenCreateOrganizationThenSuccess() {
+    String accessToken = TestUtils.getFakeAccessToken();
+    OrganizationCreateDTO dto = new OrganizationCreateDTO();
+    dto.setSegregationCode("12");
+    dto.setBrokerId(1L);
+
+    Organization organization = OrganizationFaker.buildOrganization();
+    OrganizationStation station = new OrganizationStation();
+    station.setOrganizationStationId(1L);
+
+    when(organizationMapperMock.toModel(dto)).thenReturn(organization);
+    when(organizationRepositoryMock.save(organization)).thenReturn(organization);
+    when(defaultOrganizationStationServiceMock.createDefaultOrganizationStation(organization.getOrganizationId(), 1L, "12")).thenReturn(station);
+
+    Organization result = service.createOrganization(dto, accessToken);
+
+    Assertions.assertSame(organization, result);
+    verify(organizationValidatorServiceMock).validateOrganizationCreateDTO(dto);
+    verify(organizationRepositoryMock, Mockito.times(2)).save(organization);
+    verify(debtPositionTypeOrgClientMock).createTechnicalDebtPositionTypeOrg(organization.getOrganizationId(), accessToken);
+    verifyNoInteractions(organizationKeysServiceMock);
+ }
 
   @Test
   void givenValidDTOWithoutSegregationCodeWhenCreateOrganizationThenSuccess() {
