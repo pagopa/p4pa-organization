@@ -6,4 +6,5 @@ import org.springframework.data.rest.core.annotation.RepositoryRestResource;
 
 @RepositoryRestResource(path = "pdnd-services")
 public interface PdndServiceRepository extends JpaRepository<PdndService, String> {
+  PdndService findByClientId(String clientId);
 }
