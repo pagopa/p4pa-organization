@@ -4,10 +4,7 @@ import it.gov.pagopa.pu.organization.connector.debtposition.client.DebtPositionT
 import it.gov.pagopa.pu.organization.connector.workflow.service.WorkflowDebtPositionService;
 import it.gov.pagopa.pu.organization.dto.OrganizationDetailDTO;
 import it.gov.pagopa.pu.organization.dto.OrganizationStationDTO;
-import it.gov.pagopa.pu.organization.dto.generated.BrokerApiKeyType;
-import it.gov.pagopa.pu.organization.dto.generated.OrganizationApiKeyType;
-import it.gov.pagopa.pu.organization.dto.generated.OrganizationApiKeys;
-import it.gov.pagopa.pu.organization.dto.generated.OrganizationCreateDTO;
+import it.gov.pagopa.pu.organization.dto.generated.*;
 import it.gov.pagopa.pu.organization.enums.OrganizationStatus;
 import it.gov.pagopa.pu.organization.exception.custom.BrokerNotFoundException;
 import it.gov.pagopa.pu.organization.exception.custom.InvalidValueException;
@@ -91,6 +88,10 @@ public class OrganizationService {
 
       organization.setDefaultOrganizationStationId(saved.getOrganizationStationId());
       organization = organizationRepository.save(organization);
+
+      saveOrganizationKeyIfPresent(organizationId, OrganizationApiKeys.KeyTypeEnum.SEND, organizationCreateDTO.getSendApiKey());
+      saveOrganizationKeyIfPresent(organizationId, OrganizationApiKeys.KeyTypeEnum.IO, organizationCreateDTO.getIoApiKey());
+      saveOrganizationKeyIfPresent(organizationId, OrganizationApiKeys.KeyTypeEnum.GENERATE_NOTICE, organizationCreateDTO.getGenerateNoticeApiKey());
     }
 
     debtPositionTypeOrgClient.createTechnicalDebtPositionTypeOrg(organization.getOrganizationId(), accessToken);
@@ -202,5 +203,11 @@ public class OrganizationService {
     organization.setStatus(newStatus);
     organizationValidatorService.validateStatusUpdate(organization);
     organizationRepository.save(organization);
+  }
+
+  private void saveOrganizationKeyIfPresent(Long organizationId, OrganizationApiKeys.KeyTypeEnum keyType, String key) {
+    if (key != null) {
+      organizationKeysService.encryptAndSave(organizationId, new OrganizationApiKeys(keyType, key), null);
+    }
   }
 }

@@ -68,9 +68,6 @@ class OrganizationMapperTest {
       .additionalLanguage(OrganizationAdditionalLanguage.EN)
       .startDate(LocalDate.now())
       .brokerId(1L)
-      .ioApiKey("ioApiKey")
-      .sendApiKey("sendApiKey")
-      .generateNoticeApiKey("generateNoticeApiKey")
       .flagNotifyIo(false)
       .flagNotifyOutcomePush(false)
       .flagPaymentNotification(false)
@@ -84,19 +81,11 @@ class OrganizationMapperTest {
     byte[] expectedEncryptedPassword = "encryptedPassword".getBytes(StandardCharsets.UTF_8);
     when(encryptionServiceMock.encrypt(dto.getPassword())).thenReturn(expectedEncryptedPassword);
 
-    byte[] expectedEncryptedIoApiKey = "encryptedIoApiKey".getBytes(StandardCharsets.UTF_8);
-    when(encryptionServiceMock.encrypt(dto.getIoApiKey())).thenReturn(expectedEncryptedIoApiKey);
-
-    byte[] expectedEncryptedSendApiKey = "encryptedSendApiKey".getBytes(StandardCharsets.UTF_8);
-    when(encryptionServiceMock.encrypt(dto.getSendApiKey())).thenReturn(expectedEncryptedSendApiKey);
-
-    byte[] expectedEncryptedGenerateNoticeApiKey = "encryptedGenerateNoticeApiKey".getBytes(StandardCharsets.UTF_8);
-    when(encryptionServiceMock.encrypt(dto.getGenerateNoticeApiKey())).thenReturn(expectedEncryptedGenerateNoticeApiKey);
-
     Organization result = organizationMapper.toModel(dto);
 
     assertNotNull(result);
-    TestUtils.checkNotNullFields(result, "organizationId", "creationDate", "updateDate", "updateOperatorExternalId", "updateTraceId", "defaultOrganizationStationId", "segregationCode");
+    TestUtils.checkNotNullFields(result, "organizationId", "creationDate", "updateDate", "updateOperatorExternalId",
+      "updateTraceId", "defaultOrganizationStationId", "segregationCode", "ioApiKey", "sendApiKey", "generateNoticeApiKey");
 
     assertThat(result)
       .usingRecursiveComparison()
@@ -118,9 +107,6 @@ class OrganizationMapperTest {
       .isEqualTo(dto);
 
     assertThat(result.getPassword()).isEqualTo(expectedEncryptedPassword);
-    assertThat(result.getIoApiKey()).isEqualTo(expectedEncryptedIoApiKey);
-    assertThat(result.getSendApiKey()).isEqualTo(expectedEncryptedSendApiKey);
-    assertThat(result.getGenerateNoticeApiKey()).isEqualTo(expectedEncryptedGenerateNoticeApiKey);
   }
 
   @Test
@@ -203,23 +189,12 @@ class OrganizationMapperTest {
     byte[] expectedEncryptedPassword = "encryptedPassword".getBytes(StandardCharsets.UTF_8);
     when(encryptionServiceMock.encrypt(dto.getPassword())).thenReturn(expectedEncryptedPassword);
 
-    byte[] expectedEncryptedIoApiKey = "encryptedIoApiKey".getBytes(StandardCharsets.UTF_8);
-    when(encryptionServiceMock.encrypt(dto.getIoApiKey())).thenReturn(expectedEncryptedIoApiKey);
-
-    byte[] expectedEncryptedSendApiKey = "encryptedSendApiKey".getBytes(StandardCharsets.UTF_8);
-    when(encryptionServiceMock.encrypt(dto.getSendApiKey())).thenReturn(expectedEncryptedSendApiKey);
-
-    byte[] expectedEncryptedGenerateNoticeApiKey = "encryptedGenerateNoticeApiKey".getBytes(StandardCharsets.UTF_8);
-    when(encryptionServiceMock.encrypt(dto.getGenerateNoticeApiKey())).thenReturn(expectedEncryptedGenerateNoticeApiKey);
 
     Organization result = organizationMapper.toModel(dto);
 
     assertNotNull(result);
-    TestUtils.checkNotNullFields(result, "creationDate", "updateDate", "updateOperatorExternalId", "updateTraceId", "defaultOrganizationStationId", "segregationCode");
+    TestUtils.checkNotNullFields(result, "creationDate", "updateDate", "updateOperatorExternalId", "updateTraceId", "defaultOrganizationStationId", "segregationCode",  "ioApiKey", "sendApiKey", "generateNoticeApiKey");
     TestUtils.reflectionEqualsByName(dto,result,"password","ioApiKey","sendApiKey","generateNoticeApiKey", "segregationCode");
     assertEquals(expectedEncryptedPassword, result.getPassword());
-    assertEquals(expectedEncryptedIoApiKey, result.getIoApiKey());
-    assertEquals(expectedEncryptedSendApiKey, result.getSendApiKey());
-    assertEquals(expectedEncryptedGenerateNoticeApiKey, result.getGenerateNoticeApiKey());
   }
 }

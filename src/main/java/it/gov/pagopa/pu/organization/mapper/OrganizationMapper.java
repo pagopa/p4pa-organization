@@ -35,9 +35,6 @@ public class OrganizationMapper {
     organization.setAdditionalLanguage(createDTO.getAdditionalLanguage());
     organization.setStartDate(createDTO.getStartDate());
     organization.setBrokerId(createDTO.getBrokerId());
-    organization.setIoApiKey(createDTO.getIoApiKey() != null ? encryptionService.encrypt(createDTO.getIoApiKey()) : null);
-    organization.setSendApiKey(createDTO.getSendApiKey() != null ? encryptionService.encrypt(createDTO.getSendApiKey()) : null);
-    organization.setGenerateNoticeApiKey(createDTO.getGenerateNoticeApiKey() != null ? encryptionService.encrypt(createDTO.getGenerateNoticeApiKey()) : null);
     organization.setFlagNotifyIo(createDTO.getFlagNotifyIo());
     organization.setFlagNotifyOutcomePush(createDTO.getFlagNotifyOutcomePush());
     organization.setFlagPaymentNotification(createDTO.getFlagPaymentNotification());
