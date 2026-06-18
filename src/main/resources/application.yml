@@ -88,6 +88,7 @@ logging:
 app:
   brokerEncryptPassword: "\${BROKER_ENCRYPT_PASSWORD:ENCR_PSW}"
   organizationEncryptPassword: "\${ORGANIZATION_ENCRYPT_PASSWORD:ENCR_PSW}"
+  pdndClientEncryptPassword: "\${PDND_CLIENT_ENCRYPT_PASSWORD:ENCR_PSW}"
 
 springdoc:
   api-docs.version: openapi_3_0

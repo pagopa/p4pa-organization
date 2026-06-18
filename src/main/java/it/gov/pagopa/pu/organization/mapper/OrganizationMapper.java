@@ -1,9 +1,11 @@
 package it.gov.pagopa.pu.organization.mapper;
 
 import it.gov.pagopa.pu.organization.dto.OrganizationDetailDTO;
+import it.gov.pagopa.pu.organization.dto.generated.OrganizationApiKeyType;
 import it.gov.pagopa.pu.organization.dto.generated.OrganizationCreateDTO;
 import it.gov.pagopa.pu.organization.model.Organization;
 import it.gov.pagopa.pu.organization.service.organization.OrganizationEncryptionService;
+import it.gov.pagopa.pu.organization.service.organizationkeys.OrganizationKeysService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Component;
 
@@ -13,6 +15,7 @@ import java.util.Optional;
 @RequiredArgsConstructor
 public class OrganizationMapper {
   private final OrganizationEncryptionService encryptionService;
+  private final OrganizationKeysService organizationKeysService;
 
   public Organization toModel(OrganizationCreateDTO createDTO) {
     if (createDTO == null) {
@@ -35,9 +38,6 @@ public class OrganizationMapper {
     organization.setAdditionalLanguage(createDTO.getAdditionalLanguage());
     organization.setStartDate(createDTO.getStartDate());
     organization.setBrokerId(createDTO.getBrokerId());
-    organization.setIoApiKey(createDTO.getIoApiKey() != null ? encryptionService.encrypt(createDTO.getIoApiKey()) : null);
-    organization.setSendApiKey(createDTO.getSendApiKey() != null ? encryptionService.encrypt(createDTO.getSendApiKey()) : null);
-    organization.setGenerateNoticeApiKey(createDTO.getGenerateNoticeApiKey() != null ? encryptionService.encrypt(createDTO.getGenerateNoticeApiKey()) : null);
     organization.setFlagNotifyIo(createDTO.getFlagNotifyIo());
     organization.setFlagNotifyOutcomePush(createDTO.getFlagNotifyOutcomePush());
     organization.setFlagPaymentNotification(createDTO.getFlagPaymentNotification());
@@ -59,9 +59,9 @@ public class OrganizationMapper {
 
     OrganizationDetailDTO dto = new OrganizationDetailDTO();
     dto.setPassword(encryptionService.decryptKey(org.getPassword()));
-    dto.setGenerateNoticeApiKey(encryptionService.decryptKey(org.getGenerateNoticeApiKey()));
-    dto.setIoApiKey(encryptionService.decryptKey(org.getIoApiKey()));
-    dto.setSendApiKey(encryptionService.decryptKey(org.getSendApiKey()));
+    dto.setGenerateNoticeApiKey(organizationKeysService.getApiKey(org.getOrganizationId(), OrganizationApiKeyType.GENERATE_NOTICE, null));
+    dto.setIoApiKey(organizationKeysService.getApiKey(org.getOrganizationId(), OrganizationApiKeyType.IO, null));
+    dto.setSendApiKey(organizationKeysService.getApiKey(org.getOrganizationId(), OrganizationApiKeyType.SEND, null));
     dto.setOrganizationId(org.getOrganizationId());
     dto.setExternalOrganizationId(org.getExternalOrganizationId());
     dto.setIpaCode(org.getIpaCode());

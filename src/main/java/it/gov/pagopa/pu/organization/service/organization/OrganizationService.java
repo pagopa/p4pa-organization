@@ -19,7 +19,8 @@ import it.gov.pagopa.pu.organization.model.Organization;
 import it.gov.pagopa.pu.organization.model.OrganizationStation;
 import it.gov.pagopa.pu.organization.repository.BrokerRepository;
 import it.gov.pagopa.pu.organization.repository.OrganizationRepository;
-import it.gov.pagopa.pu.organization.service.broker.BrokerEncryptionService;
+import it.gov.pagopa.pu.organization.service.brokerkeys.BrokerKeysService;
+import it.gov.pagopa.pu.organization.service.organizationkeys.OrganizationKeysService;
 import it.gov.pagopa.pu.organization.service.organizationstation.DefaultOrganizationStationService;
 import it.gov.pagopa.pu.organization.util.ErrorCodeConstants;
 import it.gov.pagopa.pu.workflowhub.dto.generated.MassiveDebtPositionIbanUpdateRequestDTO;
@@ -31,8 +32,7 @@ import java.util.Objects;
 @Service
 public class OrganizationService {
 
-  private final OrganizationEncryptionService organizationEncryptionService;
-  private final BrokerEncryptionService brokerEncryptionService;
+  private final BrokerKeysService brokerKeysService;
   private final OrganizationMapper organizationMapper;
   private final OrganizationRepository organizationRepository;
   private final BrokerRepository brokerRepository;
@@ -41,12 +41,12 @@ public class OrganizationService {
   private final OrganizationStationMapper organizationStationMapper;
   private final DefaultOrganizationStationService defaultOrganizationStationService;
   private final OrganizationValidatorService organizationValidatorService;
+  private final OrganizationKeysService organizationKeysService;
 
   private static final String ORGANIZATION_NOT_FOUND_MSG = "Organization with id %s not found";
 
   public OrganizationService(
-    OrganizationEncryptionService organizationEncryptionService,
-    BrokerEncryptionService brokerEncryptionService,
+    BrokerKeysService brokerKeysService,
     OrganizationMapper organizationMapper,
     OrganizationRepository organizationRepository,
     BrokerRepository brokerRepository,
@@ -54,10 +54,9 @@ public class OrganizationService {
     WorkflowDebtPositionService workflowDebtPositionService,
     OrganizationStationMapper organizationStationMapper,
     DefaultOrganizationStationService defaultOrganizationStationService,
-    OrganizationValidatorService organizationValidatorService
+    OrganizationValidatorService organizationValidatorService, OrganizationKeysService organizationKeysService
   ) {
-    this.organizationEncryptionService = organizationEncryptionService;
-    this.brokerEncryptionService = brokerEncryptionService;
+    this.brokerKeysService = brokerKeysService;
     this.organizationMapper = organizationMapper;
     this.organizationRepository = organizationRepository;
     this.brokerRepository = brokerRepository;
@@ -66,21 +65,11 @@ public class OrganizationService {
     this.workflowDebtPositionService = workflowDebtPositionService;
     this.defaultOrganizationStationService = defaultOrganizationStationService;
     this.organizationValidatorService = organizationValidatorService;
+    this.organizationKeysService = organizationKeysService;
   }
 
-  @Transactional
-  public void encryptAndSaveApiKey(Long organizationId, OrganizationApiKeys organizationApiKeys) {
-    byte[] encryptedApiKey = organizationEncryptionService.encrypt(organizationApiKeys.getApiKey());
-
-    int updatedRows = switch (organizationApiKeys.getKeyType()) {
-      case IO -> organizationRepository.updateIoApiKey(organizationId, encryptedApiKey);
-      case SEND -> organizationRepository.updateSendApiKey(organizationId, encryptedApiKey);
-      case GENERATE_NOTICE -> organizationRepository.updateGenerateNoticeApiKey(organizationId, encryptedApiKey);
-    };
-
-    if (updatedRows == 0) {
-      throw new OrganizationNotFoundException(ORGANIZATION_NOT_FOUND_MSG.formatted(organizationId));
-    }
+  public void encryptAndSaveApiKey(Long organizationId, OrganizationApiKeys organizationApiKeys, String subUnitCode) {
+    organizationKeysService.encryptAndSave(organizationId, organizationApiKeys, subUnitCode);
   }
 
   @Transactional
@@ -102,6 +91,10 @@ public class OrganizationService {
 
       organization.setDefaultOrganizationStationId(saved.getOrganizationStationId());
       organization = organizationRepository.save(organization);
+
+      saveOrganizationKeyIfPresent(organizationId, OrganizationApiKeys.KeyTypeEnum.SEND, organizationCreateDTO.getSendApiKey());
+      saveOrganizationKeyIfPresent(organizationId, OrganizationApiKeys.KeyTypeEnum.IO, organizationCreateDTO.getIoApiKey());
+      saveOrganizationKeyIfPresent(organizationId, OrganizationApiKeys.KeyTypeEnum.GENERATE_NOTICE, organizationCreateDTO.getGenerateNoticeApiKey());
     }
 
     debtPositionTypeOrgClient.createTechnicalDebtPositionTypeOrg(organization.getOrganizationId(), accessToken);
@@ -109,20 +102,27 @@ public class OrganizationService {
     return organization;
   }
 
-  public String getApiKey(Long organizationId, OrganizationApiKeyType keyType) {
+  public String getApiKey(Long organizationId, OrganizationApiKeyType keyType, String subUnitCode) {
     Organization organization = organizationRepository.findById(organizationId)
       .orElseThrow(() -> new OrganizationNotFoundException(ORGANIZATION_NOT_FOUND_MSG.formatted(organizationId)));
 
     return switch (keyType) {
-      case IO -> organization.isFlagNotifyIo() ? organizationEncryptionService.decryptKey(organization.getIoApiKey()) : null;
-      case SEND -> organizationEncryptionService.decryptKey(organization.getSendApiKey());
+      case IO -> organization.isFlagNotifyIo() ? organizationKeysService.getApiKey(organizationId, keyType, subUnitCode) : null;
+      case SEND -> {
+        String key = organizationKeysService.getApiKey(organizationId, keyType, subUnitCode);
+        if(Objects.isNull(key) && !Objects.isNull(subUnitCode)) {
+          key = organizationKeysService.getApiKey(organizationId, keyType, null);
+        }
+        yield key;
+      }
       case GENERATE_NOTICE -> {
-        if (organization.getGenerateNoticeApiKey() != null) {
-          yield organizationEncryptionService.decryptKey(organization.getGenerateNoticeApiKey());
+        String key = organizationKeysService.getApiKey(organizationId, keyType, subUnitCode);
+        if(key!=null) {
+          yield key;
         } else {
           Broker broker = brokerRepository.findByBrokeredOrganizationId(String.valueOf(organizationId))
             .orElseThrow(() -> new BrokerNotFoundException("Broker for org with id %s not found".formatted(organizationId)));
-          yield brokerEncryptionService.decryptKey(broker.getGenerateNoticeKey(), BrokerApiKeyType.GENERATE_NOTICE, broker.getBrokerId());
+          yield brokerKeysService.getBrokerDecryptedApiKey(broker.getBrokerId(), BrokerApiKeyType.GENERATE_NOTICE);
         }
       }
     };
@@ -206,5 +206,11 @@ public class OrganizationService {
     organization.setStatus(newStatus);
     organizationValidatorService.validateStatusUpdate(organization);
     organizationRepository.save(organization);
+  }
+
+  private void saveOrganizationKeyIfPresent(Long organizationId, OrganizationApiKeys.KeyTypeEnum keyType, String key) {
+    if (key != null) {
+      organizationKeysService.encryptAndSave(organizationId, new OrganizationApiKeys(keyType, key), null);
+    }
   }
 }

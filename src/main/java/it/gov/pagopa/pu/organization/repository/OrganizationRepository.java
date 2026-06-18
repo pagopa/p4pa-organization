@@ -4,11 +4,9 @@ import io.swagger.v3.oas.annotations.Parameter;
 import it.gov.pagopa.pu.organization.enums.OrganizationStatus;
 import it.gov.pagopa.pu.organization.model.Organization;
 import jakarta.annotation.Nonnull;
-import jakarta.transaction.Transactional;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.jpa.repository.JpaRepository;
-import org.springframework.data.jpa.repository.Modifying;
 import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.query.Param;
 import org.springframework.data.rest.core.annotation.RepositoryRestResource;
@@ -79,24 +77,6 @@ public interface OrganizationRepository extends
     @RequestParam(required = false) @Param("orgName") String orgName,
     @RequestParam(required = false) @Param("orgFiscalCode") String orgFiscalCode,
     Pageable pageable);
-
-  @Modifying
-  @Transactional
-  @RestResource(exported = false)
-  @Query("UPDATE Organization o SET o.ioApiKey = :apiKey WHERE o.id = :organizationId")
-  Integer updateIoApiKey(Long organizationId, byte[] apiKey);
-
-  @Modifying
-  @Transactional
-  @RestResource(exported = false)
-  @Query("UPDATE Organization o SET o.sendApiKey = :apiKey WHERE o.id = :organizationId")
-  Integer updateSendApiKey(Long organizationId, byte[] apiKey);
-
-  @Modifying
-  @Transactional
-  @RestResource(exported = false)
-  @Query("UPDATE Organization o SET o.generateNoticeApiKey = :apiKey WHERE o.id = :organizationId")
-  Integer updateGenerateNoticeApiKey(Long organizationId, byte[] apiKey);
 
   @Query("""
     SELECT o

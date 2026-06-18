@@ -89,22 +89,24 @@ class OrganizationControllerTest {
     OrganizationApiKeys organizationApiKeys = new OrganizationApiKeys(OrganizationApiKeys.KeyTypeEnum.IO, "apikey");
 
     mockMvc.perform(
-        put("/organization/1/apiKey")
+        post("/organization/1/apiKey")
+          .param("subUnitCode","CODE")
           .contentType(MediaType.APPLICATION_JSON_VALUE)
           .content(jsonMapper.writeValueAsString(organizationApiKeys)))
       .andExpect(status().isOk())
       .andReturn();
 
-    verify(organizationServiceMock).encryptAndSaveApiKey(1L, organizationApiKeys);
+    verify(organizationServiceMock).encryptAndSaveApiKey(1L, organizationApiKeys, "CODE");
   }
 
   @Test
   void whenGetApiKeyThenOk() throws Exception {
     String apiKey = "apikey";
-    Mockito.when(organizationServiceMock.getApiKey(1L, OrganizationApiKeyType.IO)).thenReturn(apiKey);
+    Mockito.when(organizationServiceMock.getApiKey(1L, OrganizationApiKeyType.IO, "CODE")).thenReturn(apiKey);
 
     MvcResult result = mockMvc.perform(
         get("/organization/1/apiKey/IO")
+          .param("subUnitCode","CODE")
           .contentType(MediaType.APPLICATION_JSON_VALUE))
       .andExpect(status().isOk())
       .andReturn();
@@ -114,7 +116,7 @@ class OrganizationControllerTest {
 
   @Test
   void givenNoKeyWhenGetApiKeyThenOk() throws Exception {
-    Mockito.when(organizationServiceMock.getApiKey(1L, OrganizationApiKeyType.IO)).thenReturn(null);
+    Mockito.when(organizationServiceMock.getApiKey(1L, OrganizationApiKeyType.IO, null)).thenReturn(null);
 
     mockMvc.perform(
         get("/organization/1/apiKey/IO")
