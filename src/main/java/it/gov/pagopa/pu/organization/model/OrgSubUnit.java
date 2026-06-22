@@ -1,6 +1,7 @@
 package it.gov.pagopa.pu.organization.model;
 
 import com.fasterxml.jackson.annotation.JsonUnwrapped;
+import it.gov.pagopa.pu.organization.enums.OrgSubUnitStatus;
 import it.gov.pagopa.pu.organization.enums.SubUnitType;
 import jakarta.persistence.*;
 import jakarta.validation.constraints.NotNull;
@@ -21,6 +22,9 @@ public class OrgSubUnit extends BaseEntity implements Serializable {
   OrgSubUnitId id;
   @Enumerated(EnumType.STRING)
   SubUnitType subUnitType;
+  @Enumerated(EnumType.STRING)
+  @NotNull
+  OrgSubUnitStatus status;
 
   @Data
   @NoArgsConstructor
