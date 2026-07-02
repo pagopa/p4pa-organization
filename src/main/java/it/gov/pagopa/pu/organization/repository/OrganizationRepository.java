@@ -1,6 +1,7 @@
 package it.gov.pagopa.pu.organization.repository;
 
 import io.swagger.v3.oas.annotations.Parameter;
+import it.gov.pagopa.pu.organization.dto.generated.OrganizationApiKeyType;
 import it.gov.pagopa.pu.organization.enums.OrganizationStatus;
 import it.gov.pagopa.pu.organization.model.Organization;
 import jakarta.annotation.Nonnull;
@@ -93,4 +94,14 @@ public interface OrganizationRepository extends
     WHERE o.orgFiscalCode = :orgFiscalCode and os.segregationCode = :segregationCode
     """)
   Optional<Organization> findByOrgFiscalCodeAndSegregationCode(String orgFiscalCode, String segregationCode);
+
+  @Query("""
+    SELECT o
+    FROM Organization o
+    JOIN OrganizationKeys ok on o.organizationId = ok.organizationId and ok.subUnitCode is null
+    where o.organizationId = :organizationId
+    and ok.keyType = :keyType
+    and o.status = :#{T(it.gov.pagopa.pu.organization.enums.OrganizationStatus).ACTIVE}
+    """)
+  Organization getActiveOrganizationWithKey(Long organizationId, OrganizationApiKeyType keyType);
 }
