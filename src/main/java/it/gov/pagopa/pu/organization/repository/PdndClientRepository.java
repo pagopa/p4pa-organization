@@ -26,9 +26,20 @@ public interface PdndClientRepository extends JpaRepository<PdndClient, String> 
     SELECT pc
     FROM PdndClient pc
     JOIN PdndService ps on pc.clientId = ps.clientId
+    JOIN Organization o ON pc.organizationId = o.organizationId
+    LEFT JOIN OrgSubUnit osu ON pc.organizationId = osu.id.organizationId AND pc.subUnitCode = osu.id.subUnitCode
     WHERE ps.serviceType = :serviceType
     AND pc.organizationId = :organizationId
-    AND ((:subUnitCode is null and pc.subUnitCode is null) OR pc.subUnitCode = :subUnitCode)
+    AND o.status = :#{T(it.gov.pagopa.pu.organization.enums.OrganizationStatus).ACTIVE}
+    AND (
+      (:subUnitCode IS NULL AND pc.subUnitCode IS NULL)
+      OR
+      (pc.subUnitCode = :subUnitCode AND osu.status = :#{T(it.gov.pagopa.pu.organization.enums.OrgSubUnitStatus).ACTIVE})
+    )
    """)
-  Optional<PdndClient> findByOrganizationIdAndServiceTypeAndSubUnitCode(@Parameter(required = true) Long organizationId, @Parameter(required = true) PdndServiceType serviceType, @RequestParam(required = false) @Param("subUnitCode") String subUnitCode);
+  Optional<PdndClient> findByOrganizationIdAndServiceTypeAndSubUnitCode(
+    @Parameter(required = true) Long organizationId,
+    @Parameter(required = true) PdndServiceType serviceType,
+    @RequestParam(required = false) @Param("subUnitCode") String subUnitCode
+  );
 }
