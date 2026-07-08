@@ -50,9 +50,9 @@ class PdndClientControllerTest {
     String subUnitCode = "subUnitCode";
     PdndClientDTO expectedResponse = podamFactory.manufacturePojo(PdndClientDTO.class);
 
-    Mockito.when(pdndClientServiceMock.getPdndClientByOrganizationIdAndPdndServiceType(organizationId,pdndServiceType,subUnitCode)).thenReturn(expectedResponse);
+    Mockito.when(pdndClientServiceMock.getUsablePdndClientByOrganizationIdAndPdndServiceType(organizationId,pdndServiceType,subUnitCode)).thenReturn(expectedResponse);
 
-    ResponseEntity<PdndClientDTO> response = pdndClientController.getPdndClientByOrganizationIdAndPdndServiceType(organizationId, pdndServiceType, subUnitCode);
+    ResponseEntity<PdndClientDTO> response = pdndClientController.getUsablePdndClientByOrganizationIdAndPdndServiceType(organizationId, pdndServiceType, subUnitCode);
 
     Assertions.assertNotNull(response);
     Assertions.assertEquals(expectedResponse, response.getBody());

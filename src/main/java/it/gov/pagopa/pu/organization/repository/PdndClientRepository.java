@@ -37,7 +37,7 @@ public interface PdndClientRepository extends JpaRepository<PdndClient, String> 
       (pc.subUnitCode = :subUnitCode AND osu.status = :#{T(it.gov.pagopa.pu.organization.enums.OrgSubUnitStatus).ACTIVE})
     )
    """)
-  Optional<PdndClient> findByOrganizationIdAndServiceTypeAndSubUnitCode(
+  Optional<PdndClient> findUsableByOrganizationIdAndServiceTypeAndSubUnitCode(
     @Parameter(required = true) Long organizationId,
     @Parameter(required = true) PdndServiceType serviceType,
     @RequestParam(required = false) @Param("subUnitCode") String subUnitCode
