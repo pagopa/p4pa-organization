@@ -11,7 +11,6 @@ import it.gov.pagopa.pu.organization.dto.generated.OrganizationCreateDTO;
 import it.gov.pagopa.pu.organization.enums.OrganizationStatus;
 import it.gov.pagopa.pu.organization.exception.custom.BrokerNotFoundException;
 import it.gov.pagopa.pu.organization.exception.custom.InvalidValueException;
-import it.gov.pagopa.pu.organization.exception.custom.NotFoundException;
 import it.gov.pagopa.pu.organization.exception.custom.OrganizationNotFoundException;
 import it.gov.pagopa.pu.organization.mapper.OrganizationMapper;
 import it.gov.pagopa.pu.organization.mapper.OrganizationStationMapper;
@@ -31,7 +30,6 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 
 import java.util.Objects;
-import java.util.Optional;
 
 @Service
 @RequiredArgsConstructor
@@ -69,7 +67,7 @@ public class OrganizationService {
         throw new InvalidValueException(ErrorCodeConstants.ERROR_CODE_MISSING_BROKER_ID, "Broker id is required when segregation code is provided");
       }
 
-      OrganizationStation saved = defaultOrganizationStationService.createDefaultOrganizationStation(organizationId, brokerId, segregationCode);
+      OrganizationStation saved = defaultOrganizationStationService.createOrUpdateDefaultOrganizationStation(organizationId, brokerId, segregationCode);
 
       organization.setDefaultOrganizationStationId(saved.getOrganizationStationId());
       organization = organizationRepository.save(organization);
@@ -133,54 +131,41 @@ public class OrganizationService {
     Organization existingOrganization = organizationRepository.findById(organizationId)
             .orElseThrow(() -> new OrganizationNotFoundException(ORGANIZATION_NOT_FOUND_MSG.formatted(organizationId)));
 
-    String segregationCode = organization.getSegregationCode();
-    Long brokerId = organization.getBrokerId();
-
-    if (segregationCode != null) {
-      if (brokerId == null) {
-        throw new InvalidValueException(ErrorCodeConstants.ERROR_CODE_MISSING_BROKER_ID, "Broker id is required when segregation code is provided");
-      }
-
-      Long defaultOrganizationStationId = organization.getDefaultOrganizationStationId();
-
-      if (defaultOrganizationStationId != null) {
-        OrganizationStation existingOrganizationStation = organizationStationRepository
-          .findById(defaultOrganizationStationId)
-          .orElseThrow(() -> new NotFoundException(ErrorCodeConstants.ERROR_CODE_ORGANIZATION_STATION_NOT_FOUND, "OrganizationStation having id " + defaultOrganizationStationId + " not found"));
-
-        if (!Objects.equals(existingOrganizationStation.getOrganizationId(), organizationId)) {
-          throw new InvalidValueException("INVALID_ORGANIZATION_STATION_ID", "OrganizationStation does not belong to the given organization");
-        }
-
-        existingOrganizationStation.setSegregationCode(segregationCode);
-        organizationStationRepository.save(existingOrganizationStation);
-        organization.setDefaultOrganizationStationId(defaultOrganizationStationId);
-      } else {
-        Broker broker = brokerRepository
-          .findById(brokerId)
-          .orElseThrow(() -> new BrokerNotFoundException("Broker having brokerId " + brokerId + " not found"));
-
-        Optional<OrganizationStation> organizationStation = organizationStationRepository.findByOrganizationIdAndStationId(organizationId, broker.getDefaultStationId());
-
-        if (organizationStation.isPresent()) {
-          OrganizationStation existingOrganizationStation = organizationStation.get();
-          existingOrganizationStation.setSegregationCode(segregationCode);
-          organizationStationRepository.save(existingOrganizationStation);
-          organization.setDefaultOrganizationStationId(existingOrganizationStation.getOrganizationStationId());
-        } else {
-          OrganizationStation saved = defaultOrganizationStationService.createDefaultOrganizationStation(organizationId, brokerId, segregationCode);
-          organization.setDefaultOrganizationStationId(saved.getOrganizationStationId());
-        }
-      }
-    } else {
-      if (OrganizationStatus.DRAFT.equals(organization.getStatus())) {
-        organization.setDefaultOrganizationStationId(null);
-      }
-    }
+    handleOrganizationStationUpdate(organization);
 
     organizationValidatorService.validateOrganizationDTO(organization, existingOrganization);
     triggerMassiveIbanUpdateIfNeeded(existingOrganization, organization, accessToken);
     organizationRepository.save(organizationMapper.toModel(organization));
+  }
+
+  private void handleOrganizationStationUpdate(OrganizationDetailDTO organization) {
+    String segregationCode = organization.getSegregationCode();
+    if (segregationCode == null) {
+      if (OrganizationStatus.DRAFT.equals(organization.getStatus())) {
+        organization.setDefaultOrganizationStationId(null);
+      }
+      return;
+    }
+
+    Long brokerId = organization.getBrokerId();
+    if (brokerId == null) {
+      throw new InvalidValueException(ErrorCodeConstants.ERROR_CODE_MISSING_BROKER_ID, "Broker id is required when segregation code is provided");
+    }
+
+    Long defaultOrganizationStationId = organization.getDefaultOrganizationStationId();
+    if (defaultOrganizationStationId != null) {
+      defaultOrganizationStationService.updateDefaultOrganizationStationSegregationCode(
+        defaultOrganizationStationId,
+        organization.getOrganizationId(),
+        segregationCode
+      );
+    } else {
+      OrganizationStation station = defaultOrganizationStationService.createOrUpdateDefaultOrganizationStation(
+        organization.getOrganizationId(), brokerId, segregationCode
+      );
+
+      organization.setDefaultOrganizationStationId(station.getOrganizationStationId());
+    }
   }
 
   private void triggerMassiveIbanUpdateIfNeeded(Organization existingOrganization, OrganizationDetailDTO organization, String accessToken) {
