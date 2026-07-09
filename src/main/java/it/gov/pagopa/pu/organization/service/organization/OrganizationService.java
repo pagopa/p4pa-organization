@@ -19,7 +19,6 @@ import it.gov.pagopa.pu.organization.model.Organization;
 import it.gov.pagopa.pu.organization.model.OrganizationStation;
 import it.gov.pagopa.pu.organization.repository.BrokerRepository;
 import it.gov.pagopa.pu.organization.repository.OrganizationRepository;
-import it.gov.pagopa.pu.organization.repository.OrganizationStationRepository;
 import it.gov.pagopa.pu.organization.service.brokerkeys.BrokerKeysService;
 import it.gov.pagopa.pu.organization.service.organizationkeys.OrganizationKeysService;
 import it.gov.pagopa.pu.organization.service.organizationstation.DefaultOrganizationStationService;
@@ -44,7 +43,6 @@ public class OrganizationService {
   private final DefaultOrganizationStationService defaultOrganizationStationService;
   private final OrganizationValidatorService organizationValidatorService;
   private final OrganizationKeysService organizationKeysService;
-  private final OrganizationStationRepository organizationStationRepository;
 
   private static final String ORGANIZATION_NOT_FOUND_MSG = "Organization with id %s not found";
 
