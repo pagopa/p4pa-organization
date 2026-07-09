@@ -30,6 +30,7 @@ import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
+import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.Mockito;
 import org.mockito.junit.jupiter.MockitoExtension;
@@ -66,18 +67,8 @@ class OrganizationServiceTest {
   @Mock
   private OrganizationKeysService organizationKeysServiceMock;
 
+  @InjectMocks
   private OrganizationService service;
-
-  @BeforeEach
-  void setUp() {
-    service = new OrganizationService(
-      brokerKeysServiceMock,
-      organizationMapperMock, organizationRepositoryMock,
-      brokerRepositoryMock, debtPositionTypeOrgClientMock,
-      workflowDebtPositionServiceMock, organizationStationMapperMock,
-      defaultOrganizationStationServiceMock, organizationValidatorServiceMock,
-      organizationKeysServiceMock);
-  }
 
   @AfterEach
   void verifyNoMoreInteractions() {

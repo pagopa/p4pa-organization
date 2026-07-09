@@ -1,12 +1,10 @@
 package it.gov.pagopa.pu.organization.service.organizationstation;
 
 import it.gov.pagopa.pu.organization.exception.custom.BrokerNotFoundException;
-import it.gov.pagopa.pu.organization.exception.custom.NotFoundException;
 import it.gov.pagopa.pu.organization.model.Broker;
 import it.gov.pagopa.pu.organization.model.OrganizationStation;
 import it.gov.pagopa.pu.organization.repository.BrokerRepository;
 import it.gov.pagopa.pu.organization.repository.OrganizationStationRepository;
-import it.gov.pagopa.pu.organization.util.ErrorCodeConstants;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
 
@@ -34,14 +32,5 @@ public class DefaultOrganizationStationService {
     toSave.setOrganizationId(organizationId);
 
     return organizationStationRepository.save(toSave);
-  }
-
-  public void updateDefaultOrganizationStationSegregationCode(Long organizationStationId, String segregationCode) {
-    OrganizationStation existingOrganizationStation = organizationStationRepository
-      .findById(organizationStationId)
-      .orElseThrow(() -> new NotFoundException(ErrorCodeConstants.ERROR_CODE_ORGANIZATION_STATION_NOT_FOUND, "OrganizationStation having id " + organizationStationId + " not found"));
-
-    existingOrganizationStation.setSegregationCode(segregationCode);
-    organizationStationRepository.save(existingOrganizationStation);
   }
 }

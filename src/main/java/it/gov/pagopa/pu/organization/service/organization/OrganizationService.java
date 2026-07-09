@@ -11,6 +11,7 @@ import it.gov.pagopa.pu.organization.dto.generated.OrganizationCreateDTO;
 import it.gov.pagopa.pu.organization.enums.OrganizationStatus;
 import it.gov.pagopa.pu.organization.exception.custom.BrokerNotFoundException;
 import it.gov.pagopa.pu.organization.exception.custom.InvalidValueException;
+import it.gov.pagopa.pu.organization.exception.custom.NotFoundException;
 import it.gov.pagopa.pu.organization.exception.custom.OrganizationNotFoundException;
 import it.gov.pagopa.pu.organization.mapper.OrganizationMapper;
 import it.gov.pagopa.pu.organization.mapper.OrganizationStationMapper;
@@ -19,19 +20,22 @@ import it.gov.pagopa.pu.organization.model.Organization;
 import it.gov.pagopa.pu.organization.model.OrganizationStation;
 import it.gov.pagopa.pu.organization.repository.BrokerRepository;
 import it.gov.pagopa.pu.organization.repository.OrganizationRepository;
+import it.gov.pagopa.pu.organization.repository.OrganizationStationRepository;
 import it.gov.pagopa.pu.organization.service.brokerkeys.BrokerKeysService;
 import it.gov.pagopa.pu.organization.service.organizationkeys.OrganizationKeysService;
 import it.gov.pagopa.pu.organization.service.organizationstation.DefaultOrganizationStationService;
 import it.gov.pagopa.pu.organization.util.ErrorCodeConstants;
 import it.gov.pagopa.pu.workflowhub.dto.generated.MassiveDebtPositionIbanUpdateRequestDTO;
 import jakarta.transaction.Transactional;
+import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 
 import java.util.Objects;
+import java.util.Optional;
 
 @Service
+@RequiredArgsConstructor
 public class OrganizationService {
-
   private final BrokerKeysService brokerKeysService;
   private final OrganizationMapper organizationMapper;
   private final OrganizationRepository organizationRepository;
@@ -42,31 +46,9 @@ public class OrganizationService {
   private final DefaultOrganizationStationService defaultOrganizationStationService;
   private final OrganizationValidatorService organizationValidatorService;
   private final OrganizationKeysService organizationKeysService;
+  private final OrganizationStationRepository organizationStationRepository;
 
   private static final String ORGANIZATION_NOT_FOUND_MSG = "Organization with id %s not found";
-
-  public OrganizationService(
-    BrokerKeysService brokerKeysService,
-    OrganizationMapper organizationMapper,
-    OrganizationRepository organizationRepository,
-    BrokerRepository brokerRepository,
-    DebtPositionTypeOrgClient debtPositionTypeOrgClient,
-    WorkflowDebtPositionService workflowDebtPositionService,
-    OrganizationStationMapper organizationStationMapper,
-    DefaultOrganizationStationService defaultOrganizationStationService,
-    OrganizationValidatorService organizationValidatorService, OrganizationKeysService organizationKeysService
-  ) {
-    this.brokerKeysService = brokerKeysService;
-    this.organizationMapper = organizationMapper;
-    this.organizationRepository = organizationRepository;
-    this.brokerRepository = brokerRepository;
-    this.debtPositionTypeOrgClient = debtPositionTypeOrgClient;
-    this.organizationStationMapper = organizationStationMapper;
-    this.workflowDebtPositionService = workflowDebtPositionService;
-    this.defaultOrganizationStationService = defaultOrganizationStationService;
-    this.organizationValidatorService = organizationValidatorService;
-    this.organizationKeysService = organizationKeysService;
-  }
 
   public void encryptAndSaveApiKey(Long organizationId, OrganizationApiKeys organizationApiKeys, String subUnitCode) {
     organizationKeysService.encryptAndSave(organizationId, organizationApiKeys, subUnitCode);
@@ -150,8 +132,6 @@ public class OrganizationService {
 
     Organization existingOrganization = organizationRepository.findById(organizationId)
             .orElseThrow(() -> new OrganizationNotFoundException(ORGANIZATION_NOT_FOUND_MSG.formatted(organizationId)));
-    Long existingDefaultOrganizationStationId = existingOrganization.getDefaultOrganizationStationId();
-    organization.setDefaultOrganizationStationId(existingDefaultOrganizationStationId);
 
     String segregationCode = organization.getSegregationCode();
     Long brokerId = organization.getBrokerId();
@@ -161,15 +141,40 @@ public class OrganizationService {
         throw new InvalidValueException(ErrorCodeConstants.ERROR_CODE_MISSING_BROKER_ID, "Broker id is required when segregation code is provided");
       }
 
-      if (existingDefaultOrganizationStationId == null) {
-        OrganizationStation saved = defaultOrganizationStationService.createDefaultOrganizationStation(organizationId, brokerId, segregationCode);
-        organization.setDefaultOrganizationStationId(saved.getOrganizationStationId());
+      Long defaultOrganizationStationId = organization.getDefaultOrganizationStationId();
+
+      if (defaultOrganizationStationId != null) {
+        OrganizationStation existingOrganizationStation = organizationStationRepository
+          .findById(defaultOrganizationStationId)
+          .orElseThrow(() -> new NotFoundException(ErrorCodeConstants.ERROR_CODE_ORGANIZATION_STATION_NOT_FOUND, "OrganizationStation having id " + defaultOrganizationStationId + " not found"));
+
+        if (!Objects.equals(existingOrganizationStation.getOrganizationId(), organizationId)) {
+          throw new InvalidValueException("INVALID_ORGANIZATION_STATION_ID", "OrganizationStation does not belong to the given organization");
+        }
+
+        existingOrganizationStation.setSegregationCode(segregationCode);
+        organizationStationRepository.save(existingOrganizationStation);
+        organization.setDefaultOrganizationStationId(defaultOrganizationStationId);
       } else {
-        defaultOrganizationStationService.updateDefaultOrganizationStationSegregationCode(existingDefaultOrganizationStationId, segregationCode);
+        Broker broker = brokerRepository
+          .findById(brokerId)
+          .orElseThrow(() -> new BrokerNotFoundException("Broker having brokerId " + brokerId + " not found"));
+
+        Optional<OrganizationStation> organizationStation = organizationStationRepository.findByOrganizationIdAndStationId(organizationId, broker.getDefaultStationId());
+
+        if (organizationStation.isPresent()) {
+          OrganizationStation existingOrganizationStation = organizationStation.get();
+          existingOrganizationStation.setSegregationCode(segregationCode);
+          organizationStationRepository.save(existingOrganizationStation);
+          organization.setDefaultOrganizationStationId(existingOrganizationStation.getOrganizationStationId());
+        } else {
+          OrganizationStation saved = defaultOrganizationStationService.createDefaultOrganizationStation(organizationId, brokerId, segregationCode);
+          organization.setDefaultOrganizationStationId(saved.getOrganizationStationId());
+        }
       }
     } else {
-      if (existingDefaultOrganizationStationId != null) {
-        defaultOrganizationStationService.updateDefaultOrganizationStationSegregationCode(existingDefaultOrganizationStationId, null);
+      if (OrganizationStatus.DRAFT.equals(organization.getStatus())) {
+        organization.setDefaultOrganizationStationId(null);
       }
     }
 
