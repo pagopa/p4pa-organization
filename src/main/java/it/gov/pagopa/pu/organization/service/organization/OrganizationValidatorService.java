@@ -5,10 +5,7 @@ import it.gov.pagopa.pu.organization.dto.OrganizationDetailDTO;
 import it.gov.pagopa.pu.organization.dto.generated.OrganizationCreateDTO;
 import it.gov.pagopa.pu.organization.enums.OrganizationStatus;
 import it.gov.pagopa.pu.organization.exception.custom.InvalidValueException;
-import it.gov.pagopa.pu.organization.exception.custom.NotFoundException;
 import it.gov.pagopa.pu.organization.model.Organization;
-import it.gov.pagopa.pu.organization.model.OrganizationStation;
-import it.gov.pagopa.pu.organization.repository.OrganizationStationRepository;
 import it.gov.pagopa.pu.organization.util.ErrorCodeConstants;
 import org.apache.commons.lang3.StringUtils;
 import org.springframework.beans.factory.annotation.Value;
@@ -22,11 +19,9 @@ import static it.gov.pagopa.pu.organization.util.Utilities.*;
 
 @Service
 public class OrganizationValidatorService {
-  private final OrganizationStationRepository organizationStationRepository;
   private final boolean isOrgPIvaCheckEnabled;
 
-  public OrganizationValidatorService(OrganizationStationRepository organizationStationRepository, @Value("${features.organization.piva-check}") boolean isOrgPIvaCheckEnabled) {
-    this.organizationStationRepository = organizationStationRepository;
+  public OrganizationValidatorService(@Value("${features.organization.piva-check}") boolean isOrgPIvaCheckEnabled) {
     this.isOrgPIvaCheckEnabled = isOrgPIvaCheckEnabled;
   }
 
@@ -48,22 +43,7 @@ public class OrganizationValidatorService {
       List<String> emptyOrNullFields = new ArrayList<>();
       checkBlankOrNullField("orgLogo", organization.getOrgLogo(), emptyOrNullFields);
       checkBlankOrNullField("iban", organization.getIban(), emptyOrNullFields);
-
-      Long defaultOrganizationStationId = organization.getDefaultOrganizationStationId();
-
-      if (defaultOrganizationStationId == null) {
-        emptyOrNullFields.add("defaultOrganizationStationId");
-      } else {
-        OrganizationStation organizationStation = organizationStationRepository.findById(defaultOrganizationStationId)
-          .orElseThrow(() -> new NotFoundException(
-            ErrorCodeConstants.ERROR_CODE_ORGANIZATION_STATION_NOT_FOUND,
-            "OrganizationStation with id " + defaultOrganizationStationId + " not found"
-          ));
-
-        if (StringUtils.isBlank(organizationStation.getSegregationCode())) {
-          emptyOrNullFields.add("segregationCode on defaultOrganizationStation");
-        }
-      }
+      checkBlankOrNullField("defaultOrganizationStationId", organization.getDefaultOrganizationStationId(), emptyOrNullFields);
 
       if (!CollectionUtils.isEmpty(emptyOrNullFields)) {
         throw new InvalidValueException(
@@ -97,8 +77,14 @@ public class OrganizationValidatorService {
   }
 
   private void validateSegregationCode(OrganizationCreateDTO organizationCreateDTO) {
-    if (StringUtils.isNotBlank(organizationCreateDTO.getSegregationCode()) &&
-      !isValidSegregationCode(organizationCreateDTO.getSegregationCode())) {
+    String segregationCode = organizationCreateDTO.getSegregationCode();
+    if (OrganizationStatus.ACTIVE.equals(organizationCreateDTO.getStatus()) && StringUtils.isBlank(segregationCode)) {
+      throw new InvalidValueException(ErrorCodeConstants.ERROR_CODE_INVALID_SEGREGATION_CODE,
+        "Segregation code is required for organization status %s".formatted(OrganizationStatus.ACTIVE)
+      );
+    }
+
+    if (StringUtils.isNotBlank(segregationCode) && !isValidSegregationCode(organizationCreateDTO.getSegregationCode())) {
       throw new InvalidValueException(ErrorCodeConstants.ERROR_CODE_INVALID_SEGREGATION_CODE, "Segregation code is not valid");
     }
   }
