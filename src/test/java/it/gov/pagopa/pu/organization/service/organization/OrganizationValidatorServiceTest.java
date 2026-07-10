@@ -217,4 +217,20 @@ class OrganizationValidatorServiceTest {
 
     assertDoesNotThrow(() -> organizationValidatorService.validateStatusUpdate(organization));
   }
+
+  @Test
+  void givenActiveStatusAndNullSegregationCodeWhenValidateOrganizationCreateDTOThenThrowException() {
+    OrganizationCreateDTO dto = new OrganizationCreateDTO();
+    dto.setStatus(OrganizationStatus.ACTIVE);
+    dto.setSegregationCode(null);
+    dto.setOrgFiscalCode("12345678903");
+    dto.setIban("IT60X0542811101000000123456");
+    dto.setPostalIban("IT00X0760100000000000000000");
+
+    InvalidValueException exception = assertThrows(InvalidValueException.class,
+      () -> organizationValidatorService.validateOrganizationCreateDTO(dto));
+
+    assertEquals(ErrorCodeConstants.ERROR_CODE_INVALID_SEGREGATION_CODE, exception.getCode());
+    assertTrue(exception.getMessage().contains("Segregation code is required for organization status ACTIVE"));
+  }
 }
