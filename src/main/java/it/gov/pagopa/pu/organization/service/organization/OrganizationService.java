@@ -158,11 +158,11 @@ public class OrganizationService {
         segregationCode
       );
     } else {
-      OrganizationStation station = defaultOrganizationStationService.createOrUpdateDefaultOrganizationStation(
+      OrganizationStation organizationStation = defaultOrganizationStationService.createOrUpdateDefaultOrganizationStation(
         organization.getOrganizationId(), brokerId, segregationCode
       );
 
-      organization.setDefaultOrganizationStationId(station.getOrganizationStationId());
+      organization.setDefaultOrganizationStationId(organizationStation.getOrganizationStationId());
     }
   }
 
