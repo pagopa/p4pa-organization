@@ -440,6 +440,7 @@ class OrganizationServiceTest {
     when(organizationMapperMock.toModel(organization)).thenReturn(existingOrganization);
     when(organizationRepositoryMock.save(existingOrganization)).thenReturn(existingOrganization);
     doNothing().when(organizationValidatorServiceMock).validateOrganizationDTO(organization, existingOrganization);
+
     service.updateOrganization(organization, accessToken);
 
     assertEquals(defaultOrganizationStationId, organization.getDefaultOrganizationStationId());
@@ -448,24 +449,23 @@ class OrganizationServiceTest {
   @Test
   void givenSegregationCodeNullAndStatusDraftWhenUpdateOrganizationThenClearDefaultOrganizationStationId() {
     String accessToken = "accessToken";
-    OrganizationDetailDTO dto = podamFactory.manufacturePojo(OrganizationDetailDTO.class);
-    dto.setSegregationCode(null);
-    dto.setStatus(OrganizationStatus.DRAFT);
-    dto.setDefaultOrganizationStationId(1L);
+    OrganizationDetailDTO organization = podamFactory.manufacturePojo(OrganizationDetailDTO.class);
+    organization.setSegregationCode(null);
+    organization.setStatus(OrganizationStatus.DRAFT);
+    organization.setDefaultOrganizationStationId(1L);
 
     Organization existingOrganization = OrganizationFaker.buildOrganization();
     existingOrganization.setStatus(OrganizationStatus.DRAFT);
 
-    when(organizationRepositoryMock.findById(dto.getOrganizationId())).thenReturn(Optional.of(existingOrganization));
-    when(organizationMapperMock.toModel(dto)).thenReturn(existingOrganization);
+    when(organizationRepositoryMock.findById(organization.getOrganizationId())).thenReturn(Optional.of(existingOrganization));
+    when(organizationMapperMock.toModel(organization)).thenReturn(existingOrganization);
     when(organizationRepositoryMock.save(existingOrganization)).thenReturn(existingOrganization);
+    doNothing().when(organizationValidatorServiceMock).validateOrganizationDTO(organization, existingOrganization);
 
-    service.updateOrganization(dto, accessToken);
+    service.updateOrganization(organization, accessToken);
 
-    assertNull(dto.getDefaultOrganizationStationId());
+    assertNull(organization.getDefaultOrganizationStationId());
   }
-
-
 
   @Test
   void givenNonExistingOrganizationWhenUpdateOrganizationThenResourceNotFoundException() {
