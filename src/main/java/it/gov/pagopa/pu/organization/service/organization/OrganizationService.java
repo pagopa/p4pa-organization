@@ -25,13 +25,14 @@ import it.gov.pagopa.pu.organization.service.organizationstation.DefaultOrganiza
 import it.gov.pagopa.pu.organization.util.ErrorCodeConstants;
 import it.gov.pagopa.pu.workflowhub.dto.generated.MassiveDebtPositionIbanUpdateRequestDTO;
 import jakarta.transaction.Transactional;
+import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 
 import java.util.Objects;
 
 @Service
+@RequiredArgsConstructor
 public class OrganizationService {
-
   private final BrokerKeysService brokerKeysService;
   private final OrganizationMapper organizationMapper;
   private final OrganizationRepository organizationRepository;
@@ -44,29 +45,6 @@ public class OrganizationService {
   private final OrganizationKeysService organizationKeysService;
 
   private static final String ORGANIZATION_NOT_FOUND_MSG = "Organization with id %s not found";
-
-  public OrganizationService(
-    BrokerKeysService brokerKeysService,
-    OrganizationMapper organizationMapper,
-    OrganizationRepository organizationRepository,
-    BrokerRepository brokerRepository,
-    DebtPositionTypeOrgClient debtPositionTypeOrgClient,
-    WorkflowDebtPositionService workflowDebtPositionService,
-    OrganizationStationMapper organizationStationMapper,
-    DefaultOrganizationStationService defaultOrganizationStationService,
-    OrganizationValidatorService organizationValidatorService, OrganizationKeysService organizationKeysService
-  ) {
-    this.brokerKeysService = brokerKeysService;
-    this.organizationMapper = organizationMapper;
-    this.organizationRepository = organizationRepository;
-    this.brokerRepository = brokerRepository;
-    this.debtPositionTypeOrgClient = debtPositionTypeOrgClient;
-    this.organizationStationMapper = organizationStationMapper;
-    this.workflowDebtPositionService = workflowDebtPositionService;
-    this.defaultOrganizationStationService = defaultOrganizationStationService;
-    this.organizationValidatorService = organizationValidatorService;
-    this.organizationKeysService = organizationKeysService;
-  }
 
   public void encryptAndSaveApiKey(Long organizationId, OrganizationApiKeys organizationApiKeys, String subUnitCode) {
     organizationKeysService.encryptAndSave(organizationId, organizationApiKeys, subUnitCode);
@@ -87,7 +65,7 @@ public class OrganizationService {
         throw new InvalidValueException(ErrorCodeConstants.ERROR_CODE_MISSING_BROKER_ID, "Broker id is required when segregation code is provided");
       }
 
-      OrganizationStation saved = defaultOrganizationStationService.createDefaultOrganizationStation(organizationId, brokerId, segregationCode);
+      OrganizationStation saved = defaultOrganizationStationService.createOrUpdateDefaultOrganizationStation(organizationId, brokerId, segregationCode);
 
       organization.setDefaultOrganizationStationId(saved.getOrganizationStationId());
       organization = organizationRepository.save(organization);
@@ -150,32 +128,42 @@ public class OrganizationService {
 
     Organization existingOrganization = organizationRepository.findById(organizationId)
             .orElseThrow(() -> new OrganizationNotFoundException(ORGANIZATION_NOT_FOUND_MSG.formatted(organizationId)));
-    Long existingDefaultOrganizationStationId = existingOrganization.getDefaultOrganizationStationId();
-    organization.setDefaultOrganizationStationId(existingDefaultOrganizationStationId);
 
-    String segregationCode = organization.getSegregationCode();
-    Long brokerId = organization.getBrokerId();
-
-    if (segregationCode != null) {
-      if (brokerId == null) {
-        throw new InvalidValueException(ErrorCodeConstants.ERROR_CODE_MISSING_BROKER_ID, "Broker id is required when segregation code is provided");
-      }
-
-      if (existingDefaultOrganizationStationId == null) {
-        OrganizationStation saved = defaultOrganizationStationService.createDefaultOrganizationStation(organizationId, brokerId, segregationCode);
-        organization.setDefaultOrganizationStationId(saved.getOrganizationStationId());
-      } else {
-        defaultOrganizationStationService.updateDefaultOrganizationStationSegregationCode(existingDefaultOrganizationStationId, segregationCode);
-      }
-    } else {
-      if (existingDefaultOrganizationStationId != null) {
-        defaultOrganizationStationService.updateDefaultOrganizationStationSegregationCode(existingDefaultOrganizationStationId, null);
-      }
-    }
+    handleOrganizationStationUpdate(organization);
 
     organizationValidatorService.validateOrganizationDTO(organization, existingOrganization);
     triggerMassiveIbanUpdateIfNeeded(existingOrganization, organization, accessToken);
     organizationRepository.save(organizationMapper.toModel(organization));
+  }
+
+  private void handleOrganizationStationUpdate(OrganizationDetailDTO organization) {
+    String segregationCode = organization.getSegregationCode();
+    if (segregationCode == null) {
+      if (OrganizationStatus.DRAFT.equals(organization.getStatus())) {
+        organization.setDefaultOrganizationStationId(null);
+      }
+      return;
+    }
+
+    Long brokerId = organization.getBrokerId();
+    if (brokerId == null) {
+      throw new InvalidValueException(ErrorCodeConstants.ERROR_CODE_MISSING_BROKER_ID, "Broker id is required when segregation code is provided");
+    }
+
+    Long defaultOrganizationStationId = organization.getDefaultOrganizationStationId();
+    if (defaultOrganizationStationId != null) {
+      defaultOrganizationStationService.updateDefaultOrganizationStationSegregationCode(
+        defaultOrganizationStationId,
+        organization.getOrganizationId(),
+        segregationCode
+      );
+    } else {
+      OrganizationStation organizationStation = defaultOrganizationStationService.createOrUpdateDefaultOrganizationStation(
+        organization.getOrganizationId(), brokerId, segregationCode
+      );
+
+      organization.setDefaultOrganizationStationId(organizationStation.getOrganizationStationId());
+    }
   }
 
   private void triggerMassiveIbanUpdateIfNeeded(Organization existingOrganization, OrganizationDetailDTO organization, String accessToken) {
