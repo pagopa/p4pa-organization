@@ -27,9 +27,9 @@ import it.gov.pagopa.pu.organization.util.faker.OrganizationFaker;
 import it.gov.pagopa.pu.workflowhub.dto.generated.MassiveDebtPositionIbanUpdateRequestDTO;
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.Assertions;
-import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
+import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.Mockito;
 import org.mockito.junit.jupiter.MockitoExtension;
@@ -66,18 +66,8 @@ class OrganizationServiceTest {
   @Mock
   private OrganizationKeysService organizationKeysServiceMock;
 
+  @InjectMocks
   private OrganizationService service;
-
-  @BeforeEach
-  void setUp() {
-    service = new OrganizationService(
-      brokerKeysServiceMock,
-      organizationMapperMock, organizationRepositoryMock,
-      brokerRepositoryMock, debtPositionTypeOrgClientMock,
-      workflowDebtPositionServiceMock, organizationStationMapperMock,
-      defaultOrganizationStationServiceMock, organizationValidatorServiceMock,
-      organizationKeysServiceMock);
-  }
 
   @AfterEach
   void verifyNoMoreInteractions() {
@@ -110,7 +100,7 @@ class OrganizationServiceTest {
 
     when(organizationMapperMock.toModel(dto)).thenReturn(organization);
     when(organizationRepositoryMock.save(organization)).thenReturn(organization);
-    when(defaultOrganizationStationServiceMock.createDefaultOrganizationStation(organization.getOrganizationId(), 1L, "12")).thenReturn(station);
+    when(defaultOrganizationStationServiceMock.createOrUpdateDefaultOrganizationStation(organization.getOrganizationId(), 1L, "12")).thenReturn(station);
 
     Organization result = service.createOrganization(dto, accessToken);
 
@@ -137,7 +127,7 @@ class OrganizationServiceTest {
 
     when(organizationMapperMock.toModel(dto)).thenReturn(organization);
     when(organizationRepositoryMock.save(organization)).thenReturn(organization);
-    when(defaultOrganizationStationServiceMock.createDefaultOrganizationStation(organization.getOrganizationId(), 1L, "12")).thenReturn(station);
+    when(defaultOrganizationStationServiceMock.createOrUpdateDefaultOrganizationStation(organization.getOrganizationId(), 1L, "12")).thenReturn(station);
 
     Organization result = service.createOrganization(dto, accessToken);
 
@@ -435,29 +425,102 @@ class OrganizationServiceTest {
   }
 
   @Test
-  void givenOrganizationDTOWithoutSegregationCodeWhenUpdateOrganizationThenOk() {
+  void givenSegregationCodeNullAndStatusActiveWhenUpdateOrganizationThenDoNotClearDefaultStation() {
+    Long defaultOrganizationStationId = 1L;
+
     String accessToken = "accessToken";
-    OrganizationDetailDTO organizationDetailDTO = podamFactory.manufacturePojo(OrganizationDetailDTO.class);
-    organizationDetailDTO.setOrgFiscalCode("12345678903");
-    organizationDetailDTO.setIban("IT60X0542811101000000123456");
-    organizationDetailDTO.setPostalIban("IT60X0542811101000000123456");
-    organizationDetailDTO.setSegregationCode(null);
+    OrganizationDetailDTO organization = podamFactory.manufacturePojo(OrganizationDetailDTO.class);
+    organization.setSegregationCode(null);
+    organization.setStatus(OrganizationStatus.ACTIVE);
+    organization.setDefaultOrganizationStationId(defaultOrganizationStationId);
 
-    Organization organization = OrganizationFaker.buildOrganization();
-    organization.setBrokerId(organizationDetailDTO.getBrokerId());
-    organization.setExternalOrganizationId(organizationDetailDTO.getExternalOrganizationId());
-    organization.setIpaCode(organizationDetailDTO.getIpaCode());
-    organization.setOrgFiscalCode(organizationDetailDTO.getOrgFiscalCode());
-    organization.setOrgName(organizationDetailDTO.getOrgName());
-    organization.setOrgTypeCode(organizationDetailDTO.getOrgTypeCode());
+    Organization existingOrganization = OrganizationFaker.buildOrganization();
 
-    when(organizationRepositoryMock.findById(organizationDetailDTO.getOrganizationId())).thenReturn(Optional.of(organization));
-    when(organizationMapperMock.toModel(organizationDetailDTO)).thenReturn(organization);
-    when(organizationRepositoryMock.save(organization)).thenReturn(organization);
+    when(organizationRepositoryMock.findById(organization.getOrganizationId())).thenReturn(Optional.of(existingOrganization));
+    when(organizationMapperMock.toModel(organization)).thenReturn(existingOrganization);
+    when(organizationRepositoryMock.save(existingOrganization)).thenReturn(existingOrganization);
+    doNothing().when(organizationValidatorServiceMock).validateOrganizationDTO(organization, existingOrganization);
 
-    service.updateOrganization(organizationDetailDTO, accessToken);
+    service.updateOrganization(organization, accessToken);
 
-    verify(organizationValidatorServiceMock).validateOrganizationDTO(organizationDetailDTO, organization);
+    assertEquals(defaultOrganizationStationId, organization.getDefaultOrganizationStationId());
+  }
+
+  @Test
+  void givenSegregationCodeNullAndStatusDraftWhenUpdateOrganizationThenClearDefaultOrganizationStationId() {
+    String accessToken = "accessToken";
+    OrganizationDetailDTO organization = podamFactory.manufacturePojo(OrganizationDetailDTO.class);
+    organization.setSegregationCode(null);
+    organization.setStatus(OrganizationStatus.DRAFT);
+    organization.setDefaultOrganizationStationId(1L);
+
+    Organization existingOrganization = OrganizationFaker.buildOrganization();
+    existingOrganization.setStatus(OrganizationStatus.DRAFT);
+
+    when(organizationRepositoryMock.findById(organization.getOrganizationId())).thenReturn(Optional.of(existingOrganization));
+    when(organizationMapperMock.toModel(organization)).thenReturn(existingOrganization);
+    when(organizationRepositoryMock.save(existingOrganization)).thenReturn(existingOrganization);
+    doNothing().when(organizationValidatorServiceMock).validateOrganizationDTO(organization, existingOrganization);
+
+    service.updateOrganization(organization, accessToken);
+
+    assertNull(organization.getDefaultOrganizationStationId());
+  }
+
+  @Test
+  void givenSegregationCodeNotNullAndDefaultStationNotNullWhenUpdateOrganizationThenUpdateDefaultOrganizationStationSegregationCode() {
+    String accessToken = "accessToken";
+    OrganizationDetailDTO organization = podamFactory.manufacturePojo(OrganizationDetailDTO.class);
+    organization.setOrganizationId(11L);
+    organization.setSegregationCode("12");
+    organization.setBrokerId(1L);
+    organization.setDefaultOrganizationStationId(1L);
+
+    Organization existingOrganization = OrganizationFaker.buildOrganization();
+
+    when(organizationRepositoryMock.findById(organization.getOrganizationId())).thenReturn(Optional.of(existingOrganization));
+    when(organizationMapperMock.toModel(organization)).thenReturn(existingOrganization);
+    when(organizationRepositoryMock.save(existingOrganization)).thenReturn(existingOrganization);
+    doNothing().when(defaultOrganizationStationServiceMock)
+      .updateDefaultOrganizationStationSegregationCode(
+        organization.getDefaultOrganizationStationId(),
+        organization.getOrganizationId(),
+        organization.getSegregationCode()
+      );
+    doNothing().when(organizationValidatorServiceMock).validateOrganizationDTO(organization, existingOrganization);
+
+    assertDoesNotThrow(() -> service.updateOrganization(organization, accessToken));
+  }
+
+  @Test
+  void givenSegregationCodeNotNullAndDefaultStationNullWhenUpdateOrganizationThenCreateStation() {
+    String accessToken = "accessToken";
+    OrganizationDetailDTO organization = podamFactory.manufacturePojo(OrganizationDetailDTO.class);
+    organization.setOrganizationId(1L);
+    organization.setSegregationCode("12");
+    organization.setBrokerId(1L);
+    organization.setDefaultOrganizationStationId(null);
+
+    Organization existingOrganization = OrganizationFaker.buildOrganization();
+
+    OrganizationStation newStation = new OrganizationStation();
+    newStation.setOrganizationStationId(1L);
+
+    when(organizationRepositoryMock.findById(organization.getOrganizationId())).thenReturn(Optional.of(existingOrganization));
+    when(defaultOrganizationStationServiceMock
+      .createOrUpdateDefaultOrganizationStation(
+        organization.getOrganizationId(),
+        organization.getBrokerId(),
+        organization.getSegregationCode()
+      )
+    ).thenReturn(newStation);
+    when(organizationMapperMock.toModel(organization)).thenReturn(existingOrganization);
+    when(organizationRepositoryMock.save(existingOrganization)).thenReturn(existingOrganization);
+    doNothing().when(organizationValidatorServiceMock).validateOrganizationDTO(organization, existingOrganization);
+
+    service.updateOrganization(organization, accessToken);
+
+    assertEquals(newStation.getOrganizationStationId(), organization.getDefaultOrganizationStationId());
   }
 
   @Test
@@ -467,16 +530,6 @@ class OrganizationServiceTest {
     when(organizationRepositoryMock.findById(organizationDetailDTO.getOrganizationId())).thenReturn(Optional.empty());
 
     assertThrows(OrganizationNotFoundException.class,() -> service.updateOrganization(organizationDetailDTO, accessToken));
-  }
-
-  @Test
-  void givenNonExistingOrganizationWhenUpdateOrganizationStatusThenResourceNotFoundException(){
-    Long organizationId = 1L;
-    OrganizationStatus newStatus = OrganizationStatus.ACTIVE;
-
-    when(organizationRepositoryMock.findById(organizationId)).thenReturn(Optional.empty());
-
-    assertThrows(OrganizationNotFoundException.class,()->service.updateOrganizationStatus(organizationId, newStatus));
   }
 
   @Test
@@ -496,92 +549,6 @@ class OrganizationServiceTest {
       () -> service.updateOrganization(dto, accessToken));
 
     assertEquals("Broker id is required when segregation code is provided", exception.getMessage());
-  }
-
-  @Test
-  void givenSegregationCodeAndNoExistingOrganizationStationWhenUpdateOrganizationThenCreateOrganizationStation() {
-    String accessToken = "accessToken";
-
-    OrganizationDetailDTO organizationDetailDTO = podamFactory.manufacturePojo(OrganizationDetailDTO.class);
-    organizationDetailDTO.setSegregationCode("12");
-    organizationDetailDTO.setBrokerId(1L);
-
-    Organization existingOrganization = OrganizationFaker.buildOrganization();
-    existingOrganization.setDefaultOrganizationStationId(null);
-
-    OrganizationStation newOrganizationStation = new OrganizationStation();
-    newOrganizationStation.setOrganizationStationId(1L);
-
-    when(organizationRepositoryMock.findById(organizationDetailDTO.getOrganizationId())).thenReturn(Optional.of(existingOrganization));
-    when(defaultOrganizationStationServiceMock.createDefaultOrganizationStation(organizationDetailDTO.getOrganizationId(), 1L, "12"))
-      .thenReturn(newOrganizationStation);
-    when(organizationMapperMock.toModel(organizationDetailDTO)).thenReturn(existingOrganization);
-    when(organizationRepositoryMock.save(existingOrganization)).thenReturn(existingOrganization);
-
-    service.updateOrganization(organizationDetailDTO, accessToken);
-
-    assertEquals(1L, organizationDetailDTO.getDefaultOrganizationStationId());
-
-    verify(organizationValidatorServiceMock).validateOrganizationDTO(organizationDetailDTO, existingOrganization);
-  }
-
-  @Test
-  void givenSegregationCodeAndExistingOrganizationStationWhenUpdateOrganizationThenUpdateOrganizationStationSegregationCode() {
-    String accessToken = "accessToken";
-
-    OrganizationDetailDTO organizationDetailDTO = podamFactory.manufacturePojo(OrganizationDetailDTO.class);
-    organizationDetailDTO.setSegregationCode("12");
-    organizationDetailDTO.setBrokerId(1L);
-
-    Organization existingOrganization = OrganizationFaker.buildOrganization();
-    Long existingStationId = 1L;
-    existingOrganization.setDefaultOrganizationStationId(existingStationId);
-
-    when(organizationRepositoryMock.findById(organizationDetailDTO.getOrganizationId())).thenReturn(Optional.of(existingOrganization));
-    when(organizationMapperMock.toModel(organizationDetailDTO)).thenReturn(existingOrganization);
-    when(organizationRepositoryMock.save(existingOrganization)).thenReturn(existingOrganization);
-
-    service.updateOrganization(organizationDetailDTO, accessToken);
-
-    verify(defaultOrganizationStationServiceMock).updateDefaultOrganizationStationSegregationCode(existingStationId, "12");
-    verify(organizationValidatorServiceMock).validateOrganizationDTO(organizationDetailDTO, existingOrganization);
-  }
-
-  @Test
-  void givenNoSegregationCodeAndExistingStationWhenUpdateOrganizationThenUpdateOrganizationStationSegregationCodeToNull() {
-    String accessToken = "accessToken";
-
-    OrganizationDetailDTO organizationDetailDTO = podamFactory.manufacturePojo(OrganizationDetailDTO.class);
-    organizationDetailDTO.setSegregationCode(null);
-
-    Organization existingOrganization = OrganizationFaker.buildOrganization();
-    Long existingStationId = 1L;
-    existingOrganization.setDefaultOrganizationStationId(existingStationId);
-
-    when(organizationRepositoryMock.findById(organizationDetailDTO.getOrganizationId())).thenReturn(Optional.of(existingOrganization));
-    when(organizationMapperMock.toModel(organizationDetailDTO)).thenReturn(existingOrganization);
-    when(organizationRepositoryMock.save(existingOrganization)).thenReturn(existingOrganization);
-
-    service.updateOrganization(organizationDetailDTO, accessToken);
-
-    verify(defaultOrganizationStationServiceMock).updateDefaultOrganizationStationSegregationCode(existingStationId, null);
-    verify(organizationValidatorServiceMock).validateOrganizationDTO(organizationDetailDTO, existingOrganization);
-  }
-
-  @Test
-  void givenValidRequestWhenUpdateOrganizationStatusThenOk(){
-    Long organizationId = 1L;
-    OrganizationStatus newStatus = OrganizationStatus.ACTIVE;
-
-    Organization organization = podamFactory.manufacturePojo(Organization.class);
-    organization.setStatus(OrganizationStatus.DRAFT);
-    when(organizationRepositoryMock.findById(organizationId)).thenReturn(Optional.of(organization));
-
-    service.updateOrganizationStatus(organizationId, newStatus);
-
-    verify(organizationValidatorServiceMock).validateStatusUpdate(organization);
-    Mockito.verify(organizationRepositoryMock).save(Mockito.same(organization));
-    Assertions.assertEquals(newStatus, organization.getStatus());
   }
 
   @Test
@@ -677,5 +644,31 @@ class OrganizationServiceTest {
 
     verify(organizationValidatorServiceMock).validateOrganizationDTO(organizationDetailDTO, existingOrganization);
     Mockito.verifyNoInteractions(workflowDebtPositionServiceMock);
+  }
+
+  @Test
+  void givenValidRequestWhenUpdateOrganizationStatusThenOk(){
+    Long organizationId = 1L;
+    OrganizationStatus newStatus = OrganizationStatus.ACTIVE;
+
+    Organization organization = podamFactory.manufacturePojo(Organization.class);
+    organization.setStatus(OrganizationStatus.DRAFT);
+    when(organizationRepositoryMock.findById(organizationId)).thenReturn(Optional.of(organization));
+
+    service.updateOrganizationStatus(organizationId, newStatus);
+
+    verify(organizationValidatorServiceMock).validateStatusUpdate(organization);
+    Mockito.verify(organizationRepositoryMock).save(Mockito.same(organization));
+    Assertions.assertEquals(newStatus, organization.getStatus());
+  }
+
+  @Test
+  void givenNonExistingOrganizationWhenUpdateOrganizationStatusThenResourceNotFoundException(){
+    Long organizationId = 1L;
+    OrganizationStatus newStatus = OrganizationStatus.ACTIVE;
+
+    when(organizationRepositoryMock.findById(organizationId)).thenReturn(Optional.empty());
+
+    assertThrows(OrganizationNotFoundException.class,() -> service.updateOrganizationStatus(organizationId, newStatus));
   }
 }

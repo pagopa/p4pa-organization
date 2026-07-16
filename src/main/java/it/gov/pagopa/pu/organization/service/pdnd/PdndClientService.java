@@ -45,8 +45,8 @@ public class PdndClientService {
     }
   }
 
-  public PdndClientDTO getPdndClientByOrganizationIdAndPdndServiceType(Long organizationId, PdndServiceType pdndServiceType, String subUnitCode) {
-    PdndClient pdndClient = pdndClientRepository.findByOrganizationIdAndServiceTypeAndSubUnitCode(organizationId, pdndServiceType, subUnitCode)
+  public PdndClientDTO getUsablePdndClientByOrganizationIdAndPdndServiceType(Long organizationId, PdndServiceType pdndServiceType, String subUnitCode) {
+    PdndClient pdndClient = pdndClientRepository.findUsableByOrganizationIdAndServiceTypeAndSubUnitCode(organizationId, pdndServiceType, subUnitCode)
       .orElseThrow(() -> new NotFoundException(ErrorCodeConstants.ERROR_CODE_PDND_CLIENT_NOT_FOUND,
         "PdndClient having organizationId %d and pdndServiceType %s and subUnitCode %s not found".formatted(organizationId, pdndServiceType, subUnitCode)));
     return pdndClientMapper.toDTO(pdndClient);

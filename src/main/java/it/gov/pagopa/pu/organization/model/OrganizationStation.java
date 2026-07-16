@@ -21,5 +21,6 @@ public class OrganizationStation extends BaseEntity implements Serializable {
   private Long organizationId;
   @NotNull
   private String stationId;
+  @NotNull
   private String segregationCode;
 }

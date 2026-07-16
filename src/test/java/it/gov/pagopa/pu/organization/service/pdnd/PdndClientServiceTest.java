@@ -132,11 +132,11 @@ class PdndClientServiceTest {
     PdndClient pdndClient = podamFactory.manufacturePojo(PdndClient.class);
     PdndClientDTO expectedResult = podamFactory.manufacturePojo(PdndClientDTO.class);
 
-    when(pdndClientRepositoryMock.findByOrganizationIdAndServiceTypeAndSubUnitCode(organizationId,pdndServiceType,subUnitCode))
+    when(pdndClientRepositoryMock.findUsableByOrganizationIdAndServiceTypeAndSubUnitCode(organizationId,pdndServiceType,subUnitCode))
       .thenReturn(Optional.of(pdndClient));
     when(pdndClientMapperMock.toDTO(pdndClient)).thenReturn(expectedResult);
 
-    PdndClientDTO result = service.getPdndClientByOrganizationIdAndPdndServiceType(organizationId,pdndServiceType,subUnitCode);
+    PdndClientDTO result = service.getUsablePdndClientByOrganizationIdAndPdndServiceType(organizationId,pdndServiceType,subUnitCode);
 
     Assertions.assertSame(expectedResult, result);
   }
@@ -147,10 +147,10 @@ class PdndClientServiceTest {
     PdndServiceType pdndServiceType = PdndServiceType.SEND;
     String subUnitCode = "subUnitCode";
 
-    when(pdndClientRepositoryMock.findByOrganizationIdAndServiceTypeAndSubUnitCode(organizationId,pdndServiceType,subUnitCode))
+    when(pdndClientRepositoryMock.findUsableByOrganizationIdAndServiceTypeAndSubUnitCode(organizationId,pdndServiceType,subUnitCode))
       .thenReturn(Optional.empty());
 
-    NotFoundException notFoundException = Assertions.assertThrows(NotFoundException.class, () -> service.getPdndClientByOrganizationIdAndPdndServiceType(organizationId, pdndServiceType, subUnitCode));
+    NotFoundException notFoundException = Assertions.assertThrows(NotFoundException.class, () -> service.getUsablePdndClientByOrganizationIdAndPdndServiceType(organizationId, pdndServiceType, subUnitCode));
 
     Assertions.assertSame(ErrorCodeConstants.ERROR_CODE_PDND_CLIENT_NOT_FOUND, notFoundException.getCode());
   }
