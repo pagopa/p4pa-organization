@@ -39,7 +39,6 @@ public interface OrgSubUnitRepository extends JpaRepository<OrgSubUnit, OrgSubUn
         AND orgSubOperators.subUnitCode = orgSub.id.subUnitCode
         WHERE orgSub.id.organizationId = :organizationId
         AND orgSubOperators.operatorExternalUserId = :operatorExternalUserId
-        AND orgSub.status = :#{T(it.gov.pagopa.pu.organization.enums.OrgSubUnitStatus).ACTIVE}
         """)
   List<OrgSubUnit> findAllByOrganizationIdAndOperatorExternalUserId(
     @Param("organizationId") @Parameter(required = true, schema = @Schema(type = "integer", format = "int64")) Long organizationId,
