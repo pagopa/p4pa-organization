@@ -1,9 +1,12 @@
 package it.gov.pagopa.pu.organization.repository;
 
+import io.swagger.v3.oas.annotations.Parameter;
+import io.swagger.v3.oas.annotations.media.Schema;
 import it.gov.pagopa.pu.organization.dto.generated.OrganizationApiKeyType;
 import it.gov.pagopa.pu.organization.model.OrgSubUnit;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Query;
+import org.springframework.data.repository.query.Param;
 import org.springframework.data.rest.core.annotation.RepositoryRestResource;
 
 import java.util.List;
@@ -21,4 +24,24 @@ public interface OrgSubUnitRepository extends JpaRepository<OrgSubUnit, OrgSubUn
         and ok.keyType = :keyType
   """)
   List<OrgSubUnit> getActiveOrgSubUnitWithKey(Long organizationId, String operatorExternalUserId, OrganizationApiKeyType keyType);
+
+  @Query("""
+        SELECT o
+        FROM OrgSubUnit o
+        WHERE o.id.organizationId = :organizationId
+        """)
+  List<OrgSubUnit> findAllByOrganizationId(@Param("organizationId") Long organizationId);
+
+  @Query("""
+        SELECT distinct orgSub
+        FROM OrgSubUnit orgSub
+        JOIN OrgSubUnitOperators orgSubOperators on orgSubOperators.organizationId = orgSub.id.organizationId
+        AND orgSubOperators.subUnitCode = orgSub.id.subUnitCode
+        WHERE orgSub.id.organizationId = :organizationId
+        AND orgSubOperators.operatorExternalUserId = :operatorExternalUserId
+        AND orgSub.status = :#{T(it.gov.pagopa.pu.organization.enums.OrgSubUnitStatus).ACTIVE}
+        """)
+  List<OrgSubUnit> findAllByOrganizationIdAndOperatorExternalUserId(
+    @Param("organizationId") @Parameter(required = true, schema = @Schema(type = "integer", format = "int64")) Long organizationId,
+    @Param("operatorExternalUserId") @Parameter(required = true) String operatorExternalUserId);
 }
