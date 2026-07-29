@@ -53,7 +53,7 @@ repositories {
 val springDocOpenApiVersion = "3.0.3"
 val openApiToolsVersion = "0.2.10"
 val micrometerVersion = "1.7.0"
-val postgresJdbcVersion = "42.7.11"
+val postgresJdbcVersion = "42.7.12"
 val bouncycastleVersion = "1.84"
 val httpClientVersion = "5.6.1"
 val httpCoreVersion = "5.4.2"
