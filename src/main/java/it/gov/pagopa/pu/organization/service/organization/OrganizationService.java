@@ -136,6 +136,13 @@ public class OrganizationService {
     organizationRepository.save(organizationMapper.toModel(organization));
   }
 
+  public void updateOrganizationExternalId(Long organizationId, String organizationExternalId) {
+    Organization organization = organizationRepository.findById(organizationId)
+      .orElseThrow(()->new OrganizationNotFoundException(ORGANIZATION_NOT_FOUND_MSG.formatted(organizationId)));
+    organization.setExternalOrganizationId(organizationExternalId);
+    organizationRepository.save(organization);
+  }
+
   private void handleOrganizationStationUpdate(OrganizationDetailDTO organization) {
     String segregationCode = organization.getSegregationCode();
     if (segregationCode == null) {
