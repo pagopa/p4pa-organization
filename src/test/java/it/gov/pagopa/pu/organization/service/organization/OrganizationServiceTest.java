@@ -671,4 +671,29 @@ class OrganizationServiceTest {
 
     assertThrows(OrganizationNotFoundException.class,() -> service.updateOrganizationStatus(organizationId, newStatus));
   }
+
+  @Test
+  void givenValidRequestWhenUpdateOrganizationExternalIdThenOk(){
+    Long organizationId = 1L;
+    String organizationExternalId = "ORGEXTID";
+
+    Organization organization = podamFactory.manufacturePojo(Organization.class);
+    organization.setExternalOrganizationId("OLDEXTID");
+    when(organizationRepositoryMock.findById(organizationId)).thenReturn(Optional.of(organization));
+
+    service.updateOrganizationExternalId(organizationId, organizationExternalId);
+
+    Mockito.verify(organizationRepositoryMock).save(Mockito.same(organization));
+    Assertions.assertEquals(organizationExternalId, organization.getExternalOrganizationId());
+  }
+
+  @Test
+  void givenNonExistingOrganizationWhenUpdateOrganizationExternalIdThenResourceNotFoundException(){
+    Long organizationId = 1L;
+    String organizationExternalId = "ORGEXTID";
+
+    when(organizationRepositoryMock.findById(organizationId)).thenReturn(Optional.empty());
+
+    assertThrows(OrganizationNotFoundException.class,() -> service.updateOrganizationExternalId(organizationId, organizationExternalId));
+  }
 }
