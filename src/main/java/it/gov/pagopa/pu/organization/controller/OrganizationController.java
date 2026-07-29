@@ -69,6 +69,13 @@ public class OrganizationController implements OrganizationApi {
   }
 
   @Override
+  public ResponseEntity<Void> updateOrganizationExternalId(Long organizationId, String organizationExternalId) {
+    log.info("Updating organizationExternalId for organization {}", organizationId);
+    service.updateOrganizationExternalId(organizationId, organizationExternalId);
+    return ResponseEntity.ok().build();
+  }
+
+  @Override
   public ResponseEntity<Void> updateOrganizationStatus(Long organizationId, OrganizationStatus newStatus) {
     log.info("Updating status of organization {} to {}", organizationId, newStatus);
     service.updateOrganizationStatus(organizationId, newStatus);

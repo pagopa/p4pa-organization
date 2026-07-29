@@ -166,6 +166,24 @@ class OrganizationControllerTest {
   }
 
   @Test
+  void whenUpdateOrganizationExternalIdThenOk() throws Exception {
+    TestUtils.setFakeAccessTokenInContext();
+
+    Long organizationId = 1L;
+    String organizationExternalId = "ORGEXTID";
+
+    mockMvc.perform(
+        put("/organization/{organizationId}/organizationexternalid/{organizationExternalId}",
+          organizationId, organizationExternalId
+        )
+          .contentType(MediaType.APPLICATION_JSON_VALUE))
+      .andExpect(status().isOk())
+      .andReturn();
+
+    verify(organizationServiceMock).updateOrganizationExternalId(organizationId, organizationExternalId);
+  }
+
+  @Test
   void whenUpdateOrganizationStatusThenOk() throws Exception {
     TestUtils.setFakeAccessTokenInContext();
 
