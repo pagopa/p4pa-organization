@@ -683,7 +683,7 @@ class OrganizationServiceTest {
 
     service.updateOrganizationExternalId(organizationId, organizationExternalId);
 
-    Mockito.verify(organizationRepositoryMock).save(Mockito.same(organization));
+    verify(organizationRepositoryMock).save(Mockito.same(organization));
     Assertions.assertEquals(organizationExternalId, organization.getExternalOrganizationId());
   }
 
