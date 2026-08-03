@@ -1,6 +1,7 @@
 package it.gov.pagopa.pu.organization.service.pdnd;
 
 import it.gov.pagopa.pu.organization.dto.generated.PdndClientDTO;
+import it.gov.pagopa.pu.organization.dto.generated.PdndClientResponse;
 import it.gov.pagopa.pu.organization.enums.PdndServiceType;
 import it.gov.pagopa.pu.organization.exception.custom.NotFoundException;
 import it.gov.pagopa.pu.organization.exception.custom.OrganizationNotFoundException;
@@ -14,6 +15,8 @@ import it.gov.pagopa.pu.organization.util.ErrorCodeConstants;
 import jakarta.transaction.Transactional;
 import org.apache.commons.lang3.StringUtils;
 import org.springframework.stereotype.Service;
+
+import java.util.List;
 
 @Service
 public class PdndClientService {
@@ -50,5 +53,19 @@ public class PdndClientService {
       .orElseThrow(() -> new NotFoundException(ErrorCodeConstants.ERROR_CODE_PDND_CLIENT_NOT_FOUND,
         "PdndClient having organizationId %d and pdndServiceType %s and subUnitCode %s not found".formatted(organizationId, pdndServiceType, subUnitCode)));
     return pdndClientMapper.toDTO(pdndClient);
+  }
+
+  public List<PdndClientResponse> getPdndClientsByOrganizationIdAndSubUnitCode(Long organizationId, String subUnitCode) {
+    List<PdndClient> pdndClients;
+
+    if (subUnitCode == null) {
+      pdndClients = pdndClientRepository.findAllByOrganizationIdAndSubUnitCodeIsNull(organizationId);
+    } else {
+      pdndClients = pdndClientRepository.findAllByOrganizationIdAndSubUnitCode(organizationId, subUnitCode);
+    }
+
+    return pdndClients.stream()
+      .map(pdndClientMapper::mapToPdndClientResponse)
+      .toList();
   }
 }
