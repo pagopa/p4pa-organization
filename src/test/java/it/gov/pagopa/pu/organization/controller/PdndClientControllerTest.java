@@ -1,7 +1,7 @@
 package it.gov.pagopa.pu.organization.controller;
 
 import it.gov.pagopa.pu.organization.dto.generated.PdndClientDTO;
-import it.gov.pagopa.pu.organization.dto.generated.PdndClientResponse;
+import it.gov.pagopa.pu.organization.dto.generated.PdndClientNoSecretDTO;
 import it.gov.pagopa.pu.organization.enums.PdndServiceType;
 import it.gov.pagopa.pu.organization.model.PdndClient;
 import it.gov.pagopa.pu.organization.service.pdnd.PdndClientService;
@@ -67,12 +67,12 @@ class PdndClientControllerTest {
   void whenGetPdndClientsByOrganizationIdAndSubUnitCodeThenOk(){
     Long organizationId = 1L;
     String subUnitCode = "subUnitCode";
-    List<PdndClientResponse> expectedResponse = List.of(podamFactory.manufacturePojo(PdndClientResponse.class));
+    List<PdndClientNoSecretDTO> expectedResponse = List.of(podamFactory.manufacturePojo(PdndClientNoSecretDTO.class));
 
     when(pdndClientServiceMock.getPdndClientsByOrganizationIdAndSubUnitCode(organizationId,subUnitCode))
       .thenReturn(expectedResponse);
 
-    ResponseEntity<List<PdndClientResponse>> response = pdndClientController.getPdndClientsByOrganizationIdAndSubUnitCode(organizationId, subUnitCode);
+    ResponseEntity<List<PdndClientNoSecretDTO>> response = pdndClientController.getPdndClientsByOrganizationIdAndSubUnitCode(organizationId, subUnitCode);
 
     Assertions.assertNotNull(response);
     Assertions.assertEquals(expectedResponse, response.getBody());

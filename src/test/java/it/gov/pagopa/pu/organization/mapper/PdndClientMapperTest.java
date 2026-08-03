@@ -1,7 +1,7 @@
 package it.gov.pagopa.pu.organization.mapper;
 
 import it.gov.pagopa.pu.organization.dto.generated.PdndClientDTO;
-import it.gov.pagopa.pu.organization.dto.generated.PdndClientResponse;
+import it.gov.pagopa.pu.organization.dto.generated.PdndClientNoSecretDTO;
 import it.gov.pagopa.pu.organization.model.PdndClient;
 import it.gov.pagopa.pu.organization.service.pdnd.PdndClientEncryptionService;
 import it.gov.pagopa.pu.organization.util.TestUtils;
@@ -98,15 +98,15 @@ class PdndClientMapperTest {
   }
 
   @Test
-  void givenNullPdndClientWhenMapToPdndClientResponseThenReturnNull() {
-    PdndClientResponse result = pdndClientMapper.mapToPdndClientResponse(null);
+  void givenNullPdndClientWhenMapToPdndClientNoSecretDTOThenReturnNull() {
+    PdndClientNoSecretDTO result = pdndClientMapper.mapToPdndClientNoSecretDTO(null);
     assertNull(result);
   }
 
   @Test
-  void whenMapToPdndClientResponseThenReturnResponse() {
+  void whenMapToPdndClientNoSecretDTOThenReturnResponse() {
     PdndClient pdndClient = podamFactory.manufacturePojo(PdndClient.class);
-    PdndClientResponse result = pdndClientMapper.mapToPdndClientResponse(pdndClient);
+    PdndClientNoSecretDTO result = pdndClientMapper.mapToPdndClientNoSecretDTO(pdndClient);
 
     assertNotNull(result);
     TestUtils.checkNotNullFields(result);

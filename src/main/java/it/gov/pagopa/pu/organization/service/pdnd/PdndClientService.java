@@ -1,7 +1,7 @@
 package it.gov.pagopa.pu.organization.service.pdnd;
 
 import it.gov.pagopa.pu.organization.dto.generated.PdndClientDTO;
-import it.gov.pagopa.pu.organization.dto.generated.PdndClientResponse;
+import it.gov.pagopa.pu.organization.dto.generated.PdndClientNoSecretDTO;
 import it.gov.pagopa.pu.organization.enums.PdndServiceType;
 import it.gov.pagopa.pu.organization.exception.custom.NotFoundException;
 import it.gov.pagopa.pu.organization.exception.custom.OrganizationNotFoundException;
@@ -55,7 +55,7 @@ public class PdndClientService {
     return pdndClientMapper.toDTO(pdndClient);
   }
 
-  public List<PdndClientResponse> getPdndClientsByOrganizationIdAndSubUnitCode(Long organizationId, String subUnitCode) {
+  public List<PdndClientNoSecretDTO> getPdndClientsByOrganizationIdAndSubUnitCode(Long organizationId, String subUnitCode) {
     List<PdndClient> pdndClients;
 
     if (subUnitCode == null) {
@@ -65,7 +65,7 @@ public class PdndClientService {
     }
 
     return pdndClients.stream()
-      .map(pdndClientMapper::mapToPdndClientResponse)
+      .map(pdndClientMapper::mapToPdndClientNoSecretDTO)
       .toList();
   }
 }

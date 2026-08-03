@@ -2,7 +2,7 @@ package it.gov.pagopa.pu.organization.controller;
 
 import it.gov.pagopa.pu.organization.controller.generated.PdndClientApi;
 import it.gov.pagopa.pu.organization.dto.generated.PdndClientDTO;
-import it.gov.pagopa.pu.organization.dto.generated.PdndClientResponse;
+import it.gov.pagopa.pu.organization.dto.generated.PdndClientNoSecretDTO;
 import it.gov.pagopa.pu.organization.enums.PdndServiceType;
 import it.gov.pagopa.pu.organization.model.PdndClient;
 import it.gov.pagopa.pu.organization.service.pdnd.PdndClientService;
@@ -35,7 +35,7 @@ public class PdndClientController implements PdndClientApi {
   }
 
   @Override
-  public ResponseEntity<List<PdndClientResponse>> getPdndClientsByOrganizationIdAndSubUnitCode(Long organizationId, String subUnitCode) {
+  public ResponseEntity<List<PdndClientNoSecretDTO>> getPdndClientsByOrganizationIdAndSubUnitCode(Long organizationId, String subUnitCode) {
     log.info("Requested PDND client of organizationId {} and subUnitCode {}", organizationId, subUnitCode);
     return ResponseEntity.ok(service.getPdndClientsByOrganizationIdAndSubUnitCode(organizationId,subUnitCode));
   }

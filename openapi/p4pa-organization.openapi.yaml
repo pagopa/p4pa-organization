@@ -550,7 +550,7 @@ paths:
               schema:
                 type: array
                 items:
-                  $ref: '#/components/schemas/PdndClientResponse'
+                  $ref: '#/components/schemas/PdndClientNoSecretDTO'
         '400':
           description: Bad Request
         '404':
@@ -835,7 +835,7 @@ components:
           type: string
         publicKey:
           type: string
-    PdndClientResponse:
+    PdndClientNoSecretDTO:
       type: object
       required:
         - clientId

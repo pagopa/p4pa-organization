@@ -1,7 +1,7 @@
 package it.gov.pagopa.pu.organization.service.pdnd;
 
 import it.gov.pagopa.pu.organization.dto.generated.PdndClientDTO;
-import it.gov.pagopa.pu.organization.dto.generated.PdndClientResponse;
+import it.gov.pagopa.pu.organization.dto.generated.PdndClientNoSecretDTO;
 import it.gov.pagopa.pu.organization.enums.PdndServiceType;
 import it.gov.pagopa.pu.organization.exception.custom.NotFoundException;
 import it.gov.pagopa.pu.organization.exception.custom.OrganizationNotFoundException;
@@ -168,17 +168,17 @@ class PdndClientServiceTest {
     PdndClient firstPdndClient = podamFactory.manufacturePojo(PdndClient.class);
     PdndClient secondPdndClient = podamFactory.manufacturePojo(PdndClient.class);
 
-    PdndClientResponse firstExpectedResponse = podamFactory.manufacturePojo(PdndClientResponse.class);
-    PdndClientResponse secondExpectedResponse = podamFactory.manufacturePojo(PdndClientResponse.class);
+    PdndClientNoSecretDTO firstExpectedResponse = podamFactory.manufacturePojo(PdndClientNoSecretDTO.class);
+    PdndClientNoSecretDTO secondExpectedResponse = podamFactory.manufacturePojo(PdndClientNoSecretDTO.class);
 
     when(pdndClientRepositoryMock.findAllByOrganizationIdAndSubUnitCode(organizationId, subUnitCode))
       .thenReturn(List.of(firstPdndClient, secondPdndClient));
-    when(pdndClientMapperMock.mapToPdndClientResponse(firstPdndClient))
+    when(pdndClientMapperMock.mapToPdndClientNoSecretDTO(firstPdndClient))
       .thenReturn(firstExpectedResponse);
-    when(pdndClientMapperMock.mapToPdndClientResponse(secondPdndClient))
+    when(pdndClientMapperMock.mapToPdndClientNoSecretDTO(secondPdndClient))
       .thenReturn(secondExpectedResponse);
 
-    List<PdndClientResponse> result = service.getPdndClientsByOrganizationIdAndSubUnitCode(organizationId, subUnitCode);
+    List<PdndClientNoSecretDTO> result = service.getPdndClientsByOrganizationIdAndSubUnitCode(organizationId, subUnitCode);
 
     Assertions.assertEquals(List.of(firstExpectedResponse, secondExpectedResponse), result);
   }
@@ -190,18 +190,18 @@ class PdndClientServiceTest {
     PdndClient firstPdndClient = podamFactory.manufacturePojo(PdndClient.class);
     PdndClient secondPdndClient = podamFactory.manufacturePojo(PdndClient.class);
 
-    PdndClientResponse firstExpectedResponse = podamFactory.manufacturePojo(PdndClientResponse.class);
-    PdndClientResponse secondExpectedResponse = podamFactory.manufacturePojo(PdndClientResponse.class);
+    PdndClientNoSecretDTO firstExpectedResponse = podamFactory.manufacturePojo(PdndClientNoSecretDTO.class);
+    PdndClientNoSecretDTO secondExpectedResponse = podamFactory.manufacturePojo(PdndClientNoSecretDTO.class);
 
     when(pdndClientRepositoryMock.findAllByOrganizationIdAndSubUnitCodeIsNull(organizationId))
       .thenReturn(List.of(firstPdndClient, secondPdndClient));
 
-    when(pdndClientMapperMock.mapToPdndClientResponse(firstPdndClient))
+    when(pdndClientMapperMock.mapToPdndClientNoSecretDTO(firstPdndClient))
       .thenReturn(firstExpectedResponse);
-    when(pdndClientMapperMock.mapToPdndClientResponse(secondPdndClient))
+    when(pdndClientMapperMock.mapToPdndClientNoSecretDTO(secondPdndClient))
       .thenReturn(secondExpectedResponse);
 
-    List<PdndClientResponse> result = service.getPdndClientsByOrganizationIdAndSubUnitCode(organizationId, null);
+    List<PdndClientNoSecretDTO> result = service.getPdndClientsByOrganizationIdAndSubUnitCode(organizationId, null);
 
     Assertions.assertEquals(List.of(firstExpectedResponse, secondExpectedResponse), result);
   }
@@ -214,7 +214,7 @@ class PdndClientServiceTest {
     when(pdndClientRepositoryMock.findAllByOrganizationIdAndSubUnitCode(organizationId, subUnitCode))
       .thenReturn(Collections.emptyList());
 
-    List<PdndClientResponse> result = service.getPdndClientsByOrganizationIdAndSubUnitCode(organizationId, subUnitCode);
+    List<PdndClientNoSecretDTO> result = service.getPdndClientsByOrganizationIdAndSubUnitCode(organizationId, subUnitCode);
 
     assertNotNull(result);
     assertTrue(result.isEmpty());
@@ -227,7 +227,7 @@ class PdndClientServiceTest {
     when(pdndClientRepositoryMock.findAllByOrganizationIdAndSubUnitCodeIsNull(organizationId))
       .thenReturn(Collections.emptyList());
 
-    List<PdndClientResponse> result = service.getPdndClientsByOrganizationIdAndSubUnitCode(organizationId, null);
+    List<PdndClientNoSecretDTO> result = service.getPdndClientsByOrganizationIdAndSubUnitCode(organizationId, null);
 
     assertNotNull(result);
     assertTrue(result.isEmpty());
@@ -241,7 +241,7 @@ class PdndClientServiceTest {
     when(pdndClientRepositoryMock.findAllByOrganizationIdAndSubUnitCode(organizationId, subUnitCode))
       .thenReturn(Collections.emptyList());
 
-    List<PdndClientResponse> result = service.getPdndClientsByOrganizationIdAndSubUnitCode(organizationId, subUnitCode);
+    List<PdndClientNoSecretDTO> result = service.getPdndClientsByOrganizationIdAndSubUnitCode(organizationId, subUnitCode);
 
     assertNotNull(result);
     assertTrue(result.isEmpty());

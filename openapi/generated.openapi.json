@@ -4479,7 +4479,7 @@
                 "schema" : {
                   "type" : "array",
                   "items" : {
-                    "$ref" : "#/components/schemas/PdndClientResponse"
+                    "$ref" : "#/components/schemas/PdndClientNoSecretDTO"
                   }
                 }
               }
@@ -4492,7 +4492,7 @@
                 "schema" : {
                   "type" : "array",
                   "items" : {
-                    "$ref" : "#/components/schemas/PdndClientResponse"
+                    "$ref" : "#/components/schemas/PdndClientNoSecretDTO"
                   }
                 }
               }
@@ -4505,7 +4505,7 @@
                 "schema" : {
                   "type" : "array",
                   "items" : {
-                    "$ref" : "#/components/schemas/PdndClientResponse"
+                    "$ref" : "#/components/schemas/PdndClientNoSecretDTO"
                   }
                 }
               }
@@ -4518,7 +4518,7 @@
                 "schema" : {
                   "type" : "array",
                   "items" : {
-                    "$ref" : "#/components/schemas/PdndClientResponse"
+                    "$ref" : "#/components/schemas/PdndClientNoSecretDTO"
                   }
                 }
               }
@@ -6160,7 +6160,7 @@
           }
         }
       },
-      "PdndClientResponse" : {
+      "PdndClientNoSecretDTO" : {
         "required" : [ "clientId", "clientName", "kid", "organizationId", "publicKey" ],
         "type" : "object",
         "properties" : {
