@@ -1,6 +1,7 @@
 package it.gov.pagopa.pu.organization.controller;
 
 import it.gov.pagopa.pu.organization.dto.generated.PdndClientDTO;
+import it.gov.pagopa.pu.organization.dto.generated.PdndClientNoSecretDTO;
 import it.gov.pagopa.pu.organization.enums.PdndServiceType;
 import it.gov.pagopa.pu.organization.model.PdndClient;
 import it.gov.pagopa.pu.organization.service.pdnd.PdndClientService;
@@ -15,6 +16,10 @@ import org.mockito.Mockito;
 import org.mockito.junit.jupiter.MockitoExtension;
 import org.springframework.http.ResponseEntity;
 import uk.co.jemos.podam.api.PodamFactory;
+
+import java.util.List;
+
+import static org.mockito.Mockito.when;
 
 @ExtendWith(MockitoExtension.class)
 class PdndClientControllerTest {
@@ -35,7 +40,7 @@ class PdndClientControllerTest {
     PdndClientDTO pdndClientDTO = podamFactory.manufacturePojo(PdndClientDTO.class);
     PdndClient expectedResponse = podamFactory.manufacturePojo(PdndClient.class);
 
-    Mockito.when(pdndClientServiceMock.savePdndClient(pdndClientDTO)).thenReturn(expectedResponse);
+    when(pdndClientServiceMock.savePdndClient(pdndClientDTO)).thenReturn(expectedResponse);
 
     ResponseEntity<PdndClient> response = pdndClientController.savePdndClient(pdndClientDTO);
 
@@ -50,9 +55,24 @@ class PdndClientControllerTest {
     String subUnitCode = "subUnitCode";
     PdndClientDTO expectedResponse = podamFactory.manufacturePojo(PdndClientDTO.class);
 
-    Mockito.when(pdndClientServiceMock.getUsablePdndClientByOrganizationIdAndPdndServiceType(organizationId,pdndServiceType,subUnitCode)).thenReturn(expectedResponse);
+    when(pdndClientServiceMock.getUsablePdndClientByOrganizationIdAndPdndServiceType(organizationId,pdndServiceType,subUnitCode)).thenReturn(expectedResponse);
 
     ResponseEntity<PdndClientDTO> response = pdndClientController.getUsablePdndClientByOrganizationIdAndPdndServiceType(organizationId, pdndServiceType, subUnitCode);
+
+    Assertions.assertNotNull(response);
+    Assertions.assertEquals(expectedResponse, response.getBody());
+  }
+
+  @Test
+  void whenGetPdndClientsByOrganizationIdAndSubUnitCodeThenOk(){
+    Long organizationId = 1L;
+    String subUnitCode = "subUnitCode";
+    List<PdndClientNoSecretDTO> expectedResponse = List.of(podamFactory.manufacturePojo(PdndClientNoSecretDTO.class));
+
+    when(pdndClientServiceMock.getPdndClientsByOrganizationIdAndSubUnitCode(organizationId,subUnitCode))
+      .thenReturn(expectedResponse);
+
+    ResponseEntity<List<PdndClientNoSecretDTO>> response = pdndClientController.getPdndClientsByOrganizationIdAndSubUnitCode(organizationId, subUnitCode);
 
     Assertions.assertNotNull(response);
     Assertions.assertEquals(expectedResponse, response.getBody());

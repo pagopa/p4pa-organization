@@ -11,6 +11,7 @@ import org.springframework.data.rest.core.annotation.RepositoryRestResource;
 import org.springframework.data.rest.core.annotation.RestResource;
 import org.springframework.web.bind.annotation.RequestParam;
 
+import java.util.List;
 import java.util.Optional;
 
 @RepositoryRestResource(path = "pdnd-clients")
@@ -42,4 +43,10 @@ public interface PdndClientRepository extends JpaRepository<PdndClient, String> 
     @Parameter(required = true) PdndServiceType serviceType,
     @RequestParam(required = false) @Param("subUnitCode") String subUnitCode
   );
+
+  @RestResource(exported = false)
+  List<PdndClient> findAllByOrganizationIdAndSubUnitCode(Long organizationId, String subUnitCode);
+
+  @RestResource(exported = false)
+  List<PdndClient> findAllByOrganizationIdAndSubUnitCodeIsNull(Long organizationId);
 }
