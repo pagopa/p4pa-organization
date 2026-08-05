@@ -49,4 +49,7 @@ public interface PdndClientRepository extends JpaRepository<PdndClient, String> 
 
   @RestResource(exported = false)
   List<PdndClient> findAllByOrganizationIdAndSubUnitCodeIsNull(Long organizationId);
+
+  @RestResource(exported = false)
+  Optional<PdndClient> findByClientIdAndOrganizationId(String clientId, Long organizationId);
 }
