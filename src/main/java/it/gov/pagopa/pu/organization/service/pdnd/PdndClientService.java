@@ -68,4 +68,12 @@ public class PdndClientService {
       .map(pdndClientMapper::mapToPdndClientNoSecretDTO)
       .toList();
   }
+
+  public PdndClientNoSecretDTO getPdndClientDetail(Long organizationId, String clientId) {
+    PdndClient pdndClient = pdndClientRepository.findByClientIdAndOrganizationId(clientId, organizationId)
+      .orElseThrow(() -> new NotFoundException(ErrorCodeConstants.ERROR_CODE_PDND_CLIENT_NOT_FOUND,
+        "PdndClient having clientId %s and organizationId %d not found".formatted(clientId, organizationId)));
+
+    return pdndClientMapper.mapToPdndClientNoSecretDTO(pdndClient);
+  }
 }

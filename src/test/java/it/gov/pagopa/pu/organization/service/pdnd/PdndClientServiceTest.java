@@ -246,4 +246,38 @@ class PdndClientServiceTest {
     assertNotNull(result);
     assertTrue(result.isEmpty());
   }
+
+  @Test
+  void whenGetPdndClientDetailThenOk() {
+    Long organizationId = 1L;
+    String clientId = "clientId";
+
+    PdndClient pdndClient = podamFactory.manufacturePojo(PdndClient.class);
+
+    PdndClientNoSecretDTO expectedResult = podamFactory.manufacturePojo(PdndClientNoSecretDTO.class);
+
+    when(pdndClientRepositoryMock.findByClientIdAndOrganizationId(clientId, organizationId))
+      .thenReturn(Optional.of(pdndClient));
+
+    when(pdndClientMapperMock.mapToPdndClientNoSecretDTO(pdndClient))
+      .thenReturn(expectedResult);
+
+    PdndClientNoSecretDTO result = service.getPdndClientDetail(organizationId, clientId);
+
+    Assertions.assertSame(expectedResult, result);
+  }
+
+  @Test
+  void givenPdndClientNotFoundWhenGetPdndClientDetailThenThrowNotFoundException() {
+    Long organizationId = 1L;
+    String clientId = "notExistingClientId";
+
+    when(pdndClientRepositoryMock.findByClientIdAndOrganizationId(clientId, organizationId))
+      .thenReturn(Optional.empty());
+
+    NotFoundException exception = Assertions.assertThrows(
+      NotFoundException.class, () -> service.getPdndClientDetail(organizationId, clientId));
+
+    Assertions.assertSame(ErrorCodeConstants.ERROR_CODE_PDND_CLIENT_NOT_FOUND, exception.getCode());
+  }
 }

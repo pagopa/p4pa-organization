@@ -77,4 +77,20 @@ class PdndClientControllerTest {
     Assertions.assertNotNull(response);
     Assertions.assertEquals(expectedResponse, response.getBody());
   }
+
+  @Test
+  void whenGetPdndClientThenOk() {
+    Long organizationId = 1L;
+    String clientId = "clientId";
+
+    PdndClientNoSecretDTO expectedResponse = podamFactory.manufacturePojo(PdndClientNoSecretDTO.class);
+
+    when(pdndClientServiceMock.getPdndClientDetail(organizationId, clientId))
+      .thenReturn(expectedResponse);
+
+    ResponseEntity<PdndClientNoSecretDTO> response = pdndClientController.getPdndClient(organizationId, clientId);
+
+    Assertions.assertNotNull(response);
+    Assertions.assertSame(expectedResponse, response.getBody());
+  }
 }
