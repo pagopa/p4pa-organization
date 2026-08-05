@@ -21,6 +21,10 @@ public class Utilities {
     return MDC.get("traceId");
   }
 
+  public static String getSpanId(){
+    return MDC.get("spanId");
+  }
+
   public static boolean isValidPIVA(String pi, boolean isOrgPIvaCheckEnabled) {
     int i;
     int c;

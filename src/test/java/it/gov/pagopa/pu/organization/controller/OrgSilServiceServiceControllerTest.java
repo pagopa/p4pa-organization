@@ -1,5 +1,6 @@
 package it.gov.pagopa.pu.organization.controller;
 
+import io.micrometer.tracing.Tracer;
 import it.gov.pagopa.pu.organization.dto.generated.OrgSilServiceDTO;
 import it.gov.pagopa.pu.organization.dto.orgsilservice.SilServiceLegacyBasicAuthConfigDTO;
 import it.gov.pagopa.pu.organization.enums.OrgSilServiceType;
@@ -35,6 +36,8 @@ class OrgSilServiceServiceControllerTest {
 
   @MockitoBean
   private OrgSilServiceService orgSilServiceServiceMock;
+  @MockitoBean
+  private Tracer tracerMock;
 
   @Test
   void givenExistingOrgSilServiceIdThenReturnsDTO() throws Exception {

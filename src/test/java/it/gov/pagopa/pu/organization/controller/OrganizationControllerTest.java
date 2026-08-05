@@ -1,5 +1,6 @@
 package it.gov.pagopa.pu.organization.controller;
 
+import io.micrometer.tracing.Tracer;
 import it.gov.pagopa.pu.organization.dto.OrganizationDetailDTO;
 import it.gov.pagopa.pu.organization.dto.OrganizationStationDTO;
 import it.gov.pagopa.pu.organization.dto.generated.OrganizationApiKeyType;
@@ -10,7 +11,6 @@ import it.gov.pagopa.pu.organization.enums.OrganizationStatus;
 import it.gov.pagopa.pu.organization.service.organization.OrganizationService;
 import it.gov.pagopa.pu.organization.util.TestUtils;
 import org.junit.jupiter.api.Test;
-import org.mockito.Mockito;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.webmvc.test.autoconfigure.AutoConfigureMockMvc;
 import org.springframework.boot.webmvc.test.autoconfigure.WebMvcTest;
@@ -25,6 +25,7 @@ import java.time.LocalDate;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.mockito.Mockito.verify;
+import static org.mockito.Mockito.when;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.*;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
@@ -41,6 +42,8 @@ class OrganizationControllerTest {
 
   @MockitoBean
   private OrganizationService organizationServiceMock;
+  @MockitoBean
+  private Tracer tracerMock;
 
   @Test
   void whenCreateOrganizationThenOk() throws Exception {
@@ -102,7 +105,7 @@ class OrganizationControllerTest {
   @Test
   void whenGetApiKeyThenOk() throws Exception {
     String apiKey = "apikey";
-    Mockito.when(organizationServiceMock.getApiKey(1L, OrganizationApiKeyType.IO, "CODE")).thenReturn(apiKey);
+    when(organizationServiceMock.getApiKey(1L, OrganizationApiKeyType.IO, "CODE")).thenReturn(apiKey);
 
     MvcResult result = mockMvc.perform(
         get("/organization/1/apiKey/IO")
@@ -116,7 +119,7 @@ class OrganizationControllerTest {
 
   @Test
   void givenNoKeyWhenGetApiKeyThenOk() throws Exception {
-    Mockito.when(organizationServiceMock.getApiKey(1L, OrganizationApiKeyType.IO, null)).thenReturn(null);
+    when(organizationServiceMock.getApiKey(1L, OrganizationApiKeyType.IO, null)).thenReturn(null);
 
     mockMvc.perform(
         get("/organization/1/apiKey/IO")
@@ -131,7 +134,7 @@ class OrganizationControllerTest {
     dto.setOrgName("My Org");
     dto.setIpaCode("IPA123");
 
-    Mockito.when(organizationServiceMock.getOrganization(1L)).thenReturn(dto);
+    when(organizationServiceMock.getOrganization(1L)).thenReturn(dto);
 
     MvcResult result = mockMvc.perform(
         get("/organization/1")
@@ -208,7 +211,7 @@ class OrganizationControllerTest {
     dto.setOrgName("My Org");
     dto.setIpaCode("IPA123");
 
-    Mockito.when(organizationServiceMock.getOrganizationStation(1L, null)).thenReturn(dto);
+    when(organizationServiceMock.getOrganizationStation(1L, null)).thenReturn(dto);
 
     MvcResult result = mockMvc.perform(
         get("/organization/1/organization-station")
