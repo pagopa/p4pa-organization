@@ -6,7 +6,7 @@ import it.gov.pagopa.pu.organization.dto.orgsilservice.SilServiceLegacyBasicAuth
 import it.gov.pagopa.pu.organization.dto.orgsilservice.SilServiceLegacyJwtAuthConfigDTO;
 import it.gov.pagopa.pu.organization.enums.JwtAlgorithm;
 import it.gov.pagopa.pu.organization.enums.OrgSilServiceType;
-import it.gov.pagopa.pu.organization.exception.custom.InvalidValueException;
+import it.gov.pagopa.pu.organization.exception.common.InvalidValueException;
 import it.gov.pagopa.pu.organization.model.orgsilservice.OrgSilService;
 import it.gov.pagopa.pu.organization.model.orgsilservice.SilServiceAuthConfig;
 import it.gov.pagopa.pu.organization.model.orgsilservice.SilServiceLegacyBasicAuthConfig;

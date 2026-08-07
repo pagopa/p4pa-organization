@@ -3,7 +3,7 @@ package it.gov.pagopa.pu.organization.service.pdnd;
 import it.gov.pagopa.pu.organization.dto.generated.PdndClientDTO;
 import it.gov.pagopa.pu.organization.dto.generated.PdndClientNoSecretDTO;
 import it.gov.pagopa.pu.organization.enums.PdndServiceType;
-import it.gov.pagopa.pu.organization.exception.custom.NotFoundException;
+import it.gov.pagopa.pu.organization.exception.common.NotFoundException;
 import it.gov.pagopa.pu.organization.exception.custom.OrganizationNotFoundException;
 import it.gov.pagopa.pu.organization.mapper.PdndClientMapper;
 import it.gov.pagopa.pu.organization.model.OrgSubUnit;

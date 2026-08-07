@@ -1,8 +1,8 @@
 package it.gov.pagopa.pu.organization.service.organizationstation;
 
 import it.gov.pagopa.pu.organization.exception.custom.BrokerNotFoundException;
-import it.gov.pagopa.pu.organization.exception.custom.InvalidValueException;
-import it.gov.pagopa.pu.organization.exception.custom.NotFoundException;
+import it.gov.pagopa.pu.organization.exception.common.InvalidValueException;
+import it.gov.pagopa.pu.organization.exception.common.NotFoundException;
 import it.gov.pagopa.pu.organization.model.Broker;
 import it.gov.pagopa.pu.organization.model.OrganizationStation;
 import it.gov.pagopa.pu.organization.repository.BrokerRepository;
