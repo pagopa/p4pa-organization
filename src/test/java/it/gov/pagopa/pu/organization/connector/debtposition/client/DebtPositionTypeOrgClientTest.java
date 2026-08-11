@@ -3,7 +3,7 @@ package it.gov.pagopa.pu.organization.connector.debtposition.client;
 import static org.mockito.Mockito.doNothing;
 import static org.mockito.Mockito.when;
 
-import it.gov.pagopa.pu.debtposition.client.generated.DebtPositionTypeOrgApi;
+import it.gov.pagopa.pu.debtpositions.client.generated.DebtPositionTypeOrgApi;
 import it.gov.pagopa.pu.organization.connector.debtposition.config.DebtPositionApisHolder;
 import it.gov.pagopa.pu.organization.util.TestUtils;
 import org.junit.jupiter.api.Test;

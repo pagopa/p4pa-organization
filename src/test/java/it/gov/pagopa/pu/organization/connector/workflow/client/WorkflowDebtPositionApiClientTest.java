@@ -1,7 +1,7 @@
 package it.gov.pagopa.pu.organization.connector.workflow.client;
 
 import it.gov.pagopa.pu.organization.connector.workflow.config.WorkflowApisHolder;
-import it.gov.pagopa.pu.workflowhub.controller.generated.DebtPositionApi;
+import it.gov.pagopa.pu.workflowhub.client.generated.DebtPositionApi;
 import it.gov.pagopa.pu.workflowhub.dto.generated.MassiveDebtPositionIbanUpdateRequestDTO;
 import it.gov.pagopa.pu.workflowhub.dto.generated.WorkflowCreatedDTO;
 import org.junit.jupiter.api.AfterEach;

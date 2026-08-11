@@ -1,13 +1,15 @@
 package it.gov.pagopa.pu.organization.connector.pagopapayments.config;
 
-import it.gov.pagopa.pu.organization.config.rest.RestTemplateConfig;
-import it.gov.pagopa.pu.pagopapayments.controller.ApiClient;
-import it.gov.pagopa.pu.pagopapayments.controller.BaseApi;
-import it.gov.pagopa.pu.pagopapayments.controller.generated.TaxonomiesApi;
+import it.gov.pagopa.pu.organization.config.rest.HttpClientErrorJsonBodyHandler;
+import it.gov.pagopa.pu.pagopapayments.generated.ApiClient;
+import it.gov.pagopa.pu.pagopapayments.generated.BaseApi;
+import it.gov.pagopa.pu.pagopapayments.client.generated.TaxonomiesApi;
+import it.gov.pagopa.pu.pagopapayments.dto.generated.PagoPaPaymentsErrorDTO;
 import jakarta.annotation.PreDestroy;
 import org.springframework.boot.restclient.RestTemplateBuilder;
 import org.springframework.stereotype.Service;
 import org.springframework.web.client.RestTemplate;
+import tools.jackson.databind.json.JsonMapper;
 
 @Service
 public class PagopaPaymentsApisHolder {
@@ -18,7 +20,8 @@ public class PagopaPaymentsApisHolder {
 
   public PagopaPaymentsApisHolder(
     PagopaPaymentsApiClientConfig clientConfig,
-    RestTemplateBuilder restTemplateBuilder
+    RestTemplateBuilder restTemplateBuilder,
+    JsonMapper jsonMapper
   ) {
     RestTemplate restTemplate = restTemplateBuilder.build();
     ApiClient apiClient = new ApiClient(restTemplate);
@@ -26,9 +29,9 @@ public class PagopaPaymentsApisHolder {
     apiClient.setBearerToken(bearerTokenHolder::get);
     apiClient.setMaxAttemptsForRetry(Math.max(1, clientConfig.getMaxAttempts()));
     apiClient.setWaitTimeMillis(clientConfig.getWaitTimeMillis());
-    if (clientConfig.isPrintBodyWhenError()) {
-      restTemplate.setErrorHandler(RestTemplateConfig.bodyPrinterWhenError("PAGOPA-PAYMENTS"));
-    }
+    restTemplate.setErrorHandler(new HttpClientErrorJsonBodyHandler<>(jsonMapper, "PAGOPA-PAYMENTS", clientConfig.isPrintBodyWhenError(),
+      PagoPaPaymentsErrorDTO.class, PagoPaPaymentsErrorDTO::getCode, PagoPaPaymentsErrorDTO::getMessage)
+    );
 
     this.taxonomiesApi = new TaxonomiesApi(apiClient);
   }

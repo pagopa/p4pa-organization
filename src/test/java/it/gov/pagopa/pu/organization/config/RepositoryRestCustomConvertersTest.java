@@ -1,6 +1,6 @@
 package it.gov.pagopa.pu.organization.config;
 
-import it.gov.pagopa.pu.organization.exception.custom.InvalidValueException;
+import it.gov.pagopa.pu.organization.exception.common.InvalidValueException;
 import it.gov.pagopa.pu.organization.model.OrgSubUnit;
 import it.gov.pagopa.pu.organization.util.ErrorCodeConstants;
 import org.junit.jupiter.api.AfterEach;
@@ -13,6 +13,8 @@ import org.mockito.Mockito;
 import org.mockito.junit.jupiter.MockitoExtension;
 import org.springframework.core.convert.converter.Converter;
 import org.springframework.format.support.DefaultFormattingConversionService;
+
+import static org.mockito.Mockito.verify;
 
 
 @ExtendWith(MockitoExtension.class)
@@ -28,7 +30,7 @@ class RepositoryRestCustomConvertersTest {
     RepositoryRestCustomConverters repositoryRestCustomConverters = new RepositoryRestCustomConverters(conversionServiceMock);
 
     orgSubUnitIdConverter = repositoryRestCustomConverters.orgSubUnitIdConverter();
-    Mockito.verify(conversionServiceMock).addConverter(orgSubUnitIdConverter);
+    verify(conversionServiceMock).addConverter(orgSubUnitIdConverter);
   }
 
   @AfterEach

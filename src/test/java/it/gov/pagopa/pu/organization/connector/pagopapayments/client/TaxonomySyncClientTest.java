@@ -1,7 +1,7 @@
 package it.gov.pagopa.pu.organization.connector.pagopapayments.client;
 
 import it.gov.pagopa.pu.organization.connector.pagopapayments.config.PagopaPaymentsApisHolder;
-import it.gov.pagopa.pu.pagopapayments.controller.generated.TaxonomiesApi;
+import it.gov.pagopa.pu.pagopapayments.client.generated.TaxonomiesApi;
 import it.gov.pagopa.pu.pagopapayments.dto.generated.TaxonomyDTO;
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.Assertions;

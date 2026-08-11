@@ -1,5 +1,6 @@
 package it.gov.pagopa.pu.organization.connector.pagopapayments.config;
 
+import it.gov.pagopa.pu.organization.config.json.JsonConfig;
 import it.gov.pagopa.pu.organization.connector.BaseApiHolderTest;
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeEach;
@@ -12,22 +13,29 @@ import org.springframework.boot.restclient.RestTemplateBuilder;
 import org.springframework.core.ParameterizedTypeReference;
 import org.springframework.web.util.DefaultUriBuilderFactory;
 
+import static org.mockito.Mockito.when;
+
 @ExtendWith(MockitoExtension.class)
 class PagopaPaymentsApisHolderTest extends BaseApiHolderTest {
 
   @Mock
   private RestTemplateBuilder restTemplateBuilderMock;
 
-  private PagopaPaymentsApisHolder pagopaPaymentsApisHolder;
+  private PagopaPaymentsApisHolder apisHolder;
+  private PagopaPaymentsApiClientConfig apiClientConfig;
 
   @BeforeEach
   void setUp() {
-    Mockito.when(restTemplateBuilderMock.build()).thenReturn(restTemplateMock);
-    Mockito.when(restTemplateMock.getUriTemplateHandler()).thenReturn(new DefaultUriBuilderFactory());
-    PagopaPaymentsApiClientConfig clientConfig = PagopaPaymentsApiClientConfig.builder()
+    when(restTemplateBuilderMock.build()).thenReturn(restTemplateMock);
+    when(restTemplateMock.getUriTemplateHandler()).thenReturn(new DefaultUriBuilderFactory());
+
+    apiClientConfig = PagopaPaymentsApiClientConfig.builder()
       .baseUrl("http://example.com")
+      .maxAttempts(3)
       .build();
-    pagopaPaymentsApisHolder = new PagopaPaymentsApisHolder(clientConfig, restTemplateBuilderMock);
+    apisHolder = new PagopaPaymentsApisHolder(apiClientConfig, restTemplateBuilderMock, new JsonConfig().objectMapperJackson3());
+
+    verifyHttpClientErrorJsonBodyHandlerConfiguration(apisHolder.getTaxonomiesApi(null));
   }
 
   @AfterEach
@@ -39,10 +47,18 @@ class PagopaPaymentsApisHolderTest extends BaseApiHolderTest {
   }
 
   @Test
+  void testRetryConfiguration() {
+    assertRetry(apiClientConfig,
+      accessToken -> apisHolder.getTaxonomiesApi(accessToken).fetchTaxonomies(),
+      new ParameterizedTypeReference<>() {}
+    );
+  }
+
+  @Test
   void whenGetTaxonomiesApiThenAuthenticationShouldBeSetInThreadSafeMode() throws InterruptedException {
     assertAuthenticationShouldBeSetInThreadSafeMode(
-      accessToken -> pagopaPaymentsApisHolder.getTaxonomiesApi(accessToken).fetchTaxonomies(),
+      accessToken -> apisHolder.getTaxonomiesApi(accessToken).fetchTaxonomies(),
       new ParameterizedTypeReference<>() {},
-      pagopaPaymentsApisHolder::unload);
+      apisHolder::unload);
   }
 }
