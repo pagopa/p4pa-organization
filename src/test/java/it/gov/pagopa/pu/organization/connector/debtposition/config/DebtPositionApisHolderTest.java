@@ -1,5 +1,6 @@
 package it.gov.pagopa.pu.organization.connector.debtposition.config;
 
+import it.gov.pagopa.pu.organization.config.json.JsonConfig;
 import it.gov.pagopa.pu.organization.connector.BaseApiHolderTest;
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeEach;
@@ -12,6 +13,8 @@ import org.springframework.boot.restclient.RestTemplateBuilder;
 import org.springframework.core.ParameterizedTypeReference;
 import org.springframework.web.util.DefaultUriBuilderFactory;
 
+import static org.mockito.Mockito.when;
+
 @ExtendWith(MockitoExtension.class)
 class DebtPositionApisHolderTest extends BaseApiHolderTest {
 
@@ -19,17 +22,20 @@ class DebtPositionApisHolderTest extends BaseApiHolderTest {
   private RestTemplateBuilder restTemplateBuilderMock;
 
   private DebtPositionApisHolder apisHolder;
+  private DebtPositionApiClientConfig apiClientConfig;
 
   @BeforeEach
   void setUp() {
-    Mockito.when(restTemplateBuilderMock.build()).thenReturn(restTemplateMock);
-    Mockito.when(restTemplateMock.getUriTemplateHandler())
-      .thenReturn(new DefaultUriBuilderFactory());
-    DebtPositionApiClientConfig clientConfig = DebtPositionApiClientConfig.builder()
+    when(restTemplateBuilderMock.build()).thenReturn(restTemplateMock);
+    when(restTemplateMock.getUriTemplateHandler()).thenReturn(new DefaultUriBuilderFactory());
+
+    apiClientConfig = DebtPositionApiClientConfig.builder()
       .baseUrl("http://example.com")
+      .maxAttempts(3)
       .build();
-    apisHolder = new DebtPositionApisHolder(clientConfig,
-      restTemplateBuilderMock);
+    apisHolder = new DebtPositionApisHolder(apiClientConfig, restTemplateBuilderMock, new JsonConfig().objectMapperJackson3());
+
+    verifyHttpClientErrorJsonBodyHandlerConfiguration(apisHolder.getDebtPositionTypeOrgApi(null));
   }
 
   @AfterEach
@@ -37,6 +43,18 @@ class DebtPositionApisHolderTest extends BaseApiHolderTest {
     Mockito.verifyNoMoreInteractions(
       restTemplateBuilderMock,
       restTemplateMock
+    );
+  }
+
+  @Test
+  void testRetryConfiguration() {
+    assertRetry(apiClientConfig,
+      accessToken -> {
+        apisHolder.getDebtPositionTypeOrgApi(accessToken)
+          .createTechnicalDebtPositionTypeOrg(1L);
+        return voidMock;
+      },
+      new ParameterizedTypeReference<>() {}
     );
   }
 

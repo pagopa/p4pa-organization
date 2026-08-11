@@ -58,7 +58,7 @@ val bouncycastleVersion = "1.84"
 val httpClientVersion = "5.6.1"
 val httpCoreVersion = "5.4.2"
 val kafkaAppender = "0.2.0-RC2"
-val lz4JavaVersion = "1.11.0"
+val lz4JavaVersion = "1.11.1"
 val podamVersion = "8.0.2.RELEASE"
 val commonsLang3Version = "3.20.0"
 
@@ -235,9 +235,9 @@ tasks.register<org.openapitools.generator.gradle.plugin.tasks.GenerateTask>("ope
   generatorName.set("java")
   remoteInputSpec.set("https://raw.githubusercontent.com/pagopa/p4pa-doc/refs/heads/main/openapi/$targetEnv/internal/p4pa-debt-positions.generated.openapi.json")
   outputDir.set("$projectDir/build/generated")
-  invokerPackage.set("it.gov.pagopa.pu.debtposition.generated")
-  apiPackage.set("it.gov.pagopa.pu.debtposition.client.generated")
-  modelPackage.set("it.gov.pagopa.pu.debtposition.dto.generated")
+  invokerPackage.set("it.gov.pagopa.pu.debtpositions.generated")
+  apiPackage.set("it.gov.pagopa.pu.debtpositions.client.generated")
+  modelPackage.set("it.gov.pagopa.pu.debtpositions.dto.generated")
   typeMappings.set(mapOf("LocalDateTime" to "java.time.LocalDateTime"))
   configOptions.set(
     mapOf(
@@ -268,7 +268,8 @@ tasks.register<org.openapitools.generator.gradle.plugin.tasks.GenerateTask>("ope
   generatorName.set("java")
   remoteInputSpec.set("https://raw.githubusercontent.com/pagopa/p4pa-doc/refs/heads/main/openapi/$targetEnv/internal/p4pa-pagopa-payments.generated.openapi.json")
   outputDir.set("$projectDir/build/generated")
-  apiPackage.set("it.gov.pagopa.pu.pagopapayments.controller.generated")
+  invokerPackage.set("it.gov.pagopa.pu.pagopapayments.generated")
+  apiPackage.set("it.gov.pagopa.pu.pagopapayments.client.generated")
   modelPackage.set("it.gov.pagopa.pu.pagopapayments.dto.generated")
   configOptions.set(
     mapOf(
@@ -300,7 +301,7 @@ tasks.register<org.openapitools.generator.gradle.plugin.tasks.GenerateTask>("ope
   remoteInputSpec.set("https://raw.githubusercontent.com/pagopa/p4pa-doc/refs/heads/main/openapi/$targetEnv/internal/p4pa-workflow-hub.generated.openapi.json")
   outputDir.set("$projectDir/build/generated")
   invokerPackage.set("it.gov.pagopa.pu.workflowhub.generated")
-  apiPackage.set("it.gov.pagopa.pu.workflowhub.controller.generated")
+  apiPackage.set("it.gov.pagopa.pu.workflowhub.client.generated")
   modelPackage.set("it.gov.pagopa.pu.workflowhub.dto.generated")
   typeMappings.set(
     mapOf(

@@ -1,7 +1,5 @@
-package it.gov.pagopa.pu.organization.connector;
+package it.gov.pagopa.pu.organization.connector.pagopapayments;
 
-import it.gov.pagopa.pu.organization.connector.pagopapayments.TaxonomyService;
-import it.gov.pagopa.pu.organization.connector.pagopapayments.TaxonomyServiceImpl;
 import it.gov.pagopa.pu.organization.connector.pagopapayments.client.TaxonomySyncClient;
 import it.gov.pagopa.pu.pagopapayments.dto.generated.TaxonomyDTO;
 import org.junit.jupiter.api.AfterEach;
