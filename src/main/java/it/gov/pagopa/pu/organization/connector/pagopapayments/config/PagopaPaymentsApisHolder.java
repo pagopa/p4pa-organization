@@ -1,6 +1,7 @@
 package it.gov.pagopa.pu.organization.connector.pagopapayments.config;
 
 import it.gov.pagopa.pu.organization.config.rest.HttpClientErrorJsonBodyHandler;
+import it.gov.pagopa.pu.organization.connector.pagopapayments.mapper.PagoPaPaymentsErrorDTOMapper;
 import it.gov.pagopa.pu.pagopapayments.generated.ApiClient;
 import it.gov.pagopa.pu.pagopapayments.generated.BaseApi;
 import it.gov.pagopa.pu.pagopapayments.client.generated.TaxonomiesApi;
@@ -30,7 +31,7 @@ public class PagopaPaymentsApisHolder {
     apiClient.setMaxAttemptsForRetry(Math.max(1, clientConfig.getMaxAttempts()));
     apiClient.setWaitTimeMillis(clientConfig.getWaitTimeMillis());
     restTemplate.setErrorHandler(new HttpClientErrorJsonBodyHandler<>(jsonMapper, "PAGOPA-PAYMENTS", clientConfig.isPrintBodyWhenError(),
-      PagoPaPaymentsErrorDTO.class, PagoPaPaymentsErrorDTO::getCode, PagoPaPaymentsErrorDTO::getMessage)
+      PagoPaPaymentsErrorDTO.class, PagoPaPaymentsErrorDTOMapper::map)
     );
 
     this.taxonomiesApi = new TaxonomiesApi(apiClient);
