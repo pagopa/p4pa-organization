@@ -3,11 +3,15 @@ package it.gov.pagopa.pu.organization.repository;
 import io.swagger.v3.oas.annotations.Parameter;
 import io.swagger.v3.oas.annotations.media.Schema;
 import it.gov.pagopa.pu.organization.dto.generated.OrganizationApiKeyType;
+import it.gov.pagopa.pu.organization.enums.OrgSubUnitStatus;
 import it.gov.pagopa.pu.organization.model.OrgSubUnit;
 import org.springframework.data.jpa.repository.JpaRepository;
+import org.springframework.data.jpa.repository.Modifying;
 import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.query.Param;
 import org.springframework.data.rest.core.annotation.RepositoryRestResource;
+import org.springframework.data.rest.core.annotation.RestResource;
+import org.springframework.transaction.annotation.Transactional;
 
 import java.util.List;
 
@@ -43,4 +47,15 @@ public interface OrgSubUnitRepository extends JpaRepository<OrgSubUnit, OrgSubUn
   List<OrgSubUnit> findAllByOrganizationIdAndOperatorExternalUserId(
     @Param("organizationId") @Parameter(required = true, schema = @Schema(type = "integer", format = "int64")) Long organizationId,
     @Param("operatorExternalUserId") @Parameter(required = true) String operatorExternalUserId);
+
+  @Transactional
+  @RestResource(exported = false)
+  @Modifying
+  @Query("""
+        UPDATE OrgSubUnit o
+        SET o.status = :newStatus
+        WHERE o.id.organizationId = :organizationId
+        AND o.id.subUnitCode = :subUnitCode
+        """)
+  void updateStatus(Long organizationId, String subUnitCode, OrgSubUnitStatus newStatus);
 }
