@@ -16,6 +16,8 @@ import java.util.List;
 public interface PdndServiceRepository extends JpaRepository<PdndService, String> {
   PdndService findByClientIdAndServiceType(String clientId, PdndServiceType serviceType);
 
+  boolean existsByClientId(String clientId);
+
   @RestResource(exported = false)
   @Query("""
     select ps

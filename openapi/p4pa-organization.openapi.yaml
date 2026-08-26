@@ -763,12 +763,15 @@ paths:
             application/json:
               schema:
                 $ref: '#/components/schemas/OrganizationErrorDTO'
-  /organization/{organizationId}/pdnd/services:
-    post:
+    delete:
       tags:
-        - PdndService
-      summary: Save a PdndService
-      operationId: savePdndService
+        - PdndClient
+      operationId: deletePdndClient
+      summary: Deletes a Pdnd Client
+      description: >
+        Deletes the PDND client identified by clientId.
+        The client must be associated with the requested organization.
+        The deletion is not allowed if the client is referenced by PDND services.
       parameters:
         - name: organizationId
           in: path
@@ -776,24 +779,14 @@ paths:
           schema:
             type: integer
             format: int64
-        - name: subUnitCode
-          in: query
-          required: false
+        - name: clientId
+          in: path
+          required: true
           schema:
             type: string
-      requestBody:
-        required: true
-        content:
-          application/json:
-            schema:
-              $ref: '#/components/schemas/PdndServiceRequestDTO'
       responses:
-        '200':
-          description: OK
-          content:
-            application/json:
-              schema:
-                type: 'PdndService'
+        '204':
+          description: PdndClient deleted successfully
         '400':
           description: Bad Request
           content:
@@ -1137,20 +1130,3 @@ components:
           type: string
         publicKey:
           type: string
-    PdndServiceRequestDTO:
-      type: object
-      required:
-        - purposeId
-        - serviceName
-        - serviceType
-        - clientId
-      properties:
-        purposeId:
-          type: string
-        serviceName:
-          type: string
-        serviceType:
-          type: 'PdndServiceType'
-        clientId:
-          type: string
-
