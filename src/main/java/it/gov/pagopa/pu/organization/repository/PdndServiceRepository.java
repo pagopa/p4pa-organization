@@ -8,4 +8,6 @@ import org.springframework.data.rest.core.annotation.RepositoryRestResource;
 @RepositoryRestResource(path = "pdnd-services")
 public interface PdndServiceRepository extends JpaRepository<PdndService, String> {
   PdndService findByClientIdAndServiceType(String clientId, PdndServiceType serviceType);
+
+  boolean existsByClientId(String clientId);
 }
