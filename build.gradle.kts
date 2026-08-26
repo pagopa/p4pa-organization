@@ -199,7 +199,8 @@ tasks.register<org.openapitools.generator.gradle.plugin.tasks.GenerateTask>("ope
       "OrganizationStationDTO" to "it.gov.pagopa.pu.organization.dto.OrganizationStationDTO",
       "Broker" to "it.gov.pagopa.pu.organization.model.Broker",
       "PdndClient" to "it.gov.pagopa.pu.organization.model.PdndClient",
-      "PdndServiceType" to "it.gov.pagopa.pu.organization.enums.PdndServiceType"
+      "PdndServiceType" to "it.gov.pagopa.pu.organization.enums.PdndServiceType",
+      "OrgSubUnitStatus" to "it.gov.pagopa.pu.organization.enums.OrgSubUnitStatus"
     )
   )
   configOptions.set(
