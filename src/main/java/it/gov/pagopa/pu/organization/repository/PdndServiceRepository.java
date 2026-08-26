@@ -27,7 +27,7 @@ public interface PdndServiceRepository extends JpaRepository<PdndService, String
     AND (
       (:subUnitCode IS NULL AND pc.subUnitCode IS NULL)
       OR
-      (pc.subUnitCode = :orgSubUnitCode)
+      (pc.subUnitCode = :subUnitCode)
    )
    """)
   List<PdndService> findByOrganizationIdAndServiceTypeAndSubUnitCode(

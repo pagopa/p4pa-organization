@@ -39,12 +39,12 @@ public class PdndServiceService {
       PdndClientDTO pdndClientDTO = pdndClientService.getUsablePdndClientByOrganizationIdAndPdndServiceType(organizationId, requestDTO.getServiceType(), subUnitCode);
       if(pdndClientDTO!=null){
         throw new InvalidValueException(ErrorCodeConstants.ERROR_CODE_INVALID_PDND_SERVICE_TYPE,
-          String.format("PdndService having pdndServiceType %s not usable for organizationId %s and subUnitCode %s", requestDTO.getServiceType(), organizationId, subUnitCode)
+          String.format("PdndServiceType %s already in use for organizationId %s and subUnitCode %s", requestDTO.getServiceType(), organizationId, subUnitCode)
         );
       }
     }catch (NotFoundException ignored){
       // getUsablePdndClientByOrganizationIdAndPdndServiceType throw NotFoundExeption if not exists PdndClient,
-      // but in this case we need to test if not exists other pdnd-services with same type for org or subunit to proceed
+      // but in this case we need to test if no other pdnd-services already exists with same type for this org or subunit to proceed
     }
 
     return pdndServiceRepository.save(pdndServiceMapper.toModel(requestDTO));
