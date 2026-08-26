@@ -302,6 +302,8 @@ class PdndClientServiceTest {
       .thenReturn(false);
 
     assertDoesNotThrow(() -> service.deletePdndClient(organizationId, clientId));
+
+    verify(pdndClientRepositoryMock).delete(pdndClient);
   }
 
   @Test
