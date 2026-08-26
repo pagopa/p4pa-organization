@@ -7,7 +7,6 @@ import it.gov.pagopa.pu.organization.model.PdndClient;
 import it.gov.pagopa.pu.organization.service.pdnd.PdndClientService;
 import it.gov.pagopa.pu.organization.util.TestUtils;
 import org.junit.jupiter.api.AfterEach;
-import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.InjectMocks;
@@ -19,6 +18,8 @@ import uk.co.jemos.podam.api.PodamFactory;
 
 import java.util.List;
 
+import static org.junit.jupiter.api.Assertions.*;
+import static org.mockito.Mockito.doNothing;
 import static org.mockito.Mockito.when;
 
 @ExtendWith(MockitoExtension.class)
@@ -44,8 +45,8 @@ class PdndClientControllerTest {
 
     ResponseEntity<PdndClient> response = pdndClientController.savePdndClient(pdndClientDTO);
 
-    Assertions.assertNotNull(response);
-    Assertions.assertEquals(expectedResponse, response.getBody());
+    assertNotNull(response);
+    assertEquals(expectedResponse, response.getBody());
   }
 
   @Test
@@ -59,8 +60,8 @@ class PdndClientControllerTest {
 
     ResponseEntity<PdndClientDTO> response = pdndClientController.getUsablePdndClientByOrganizationIdAndPdndServiceType(organizationId, pdndServiceType, subUnitCode);
 
-    Assertions.assertNotNull(response);
-    Assertions.assertEquals(expectedResponse, response.getBody());
+    assertNotNull(response);
+    assertEquals(expectedResponse, response.getBody());
   }
 
   @Test
@@ -74,8 +75,8 @@ class PdndClientControllerTest {
 
     ResponseEntity<List<PdndClientNoSecretDTO>> response = pdndClientController.getPdndClientsByOrganizationIdAndSubUnitCode(organizationId, subUnitCode);
 
-    Assertions.assertNotNull(response);
-    Assertions.assertEquals(expectedResponse, response.getBody());
+    assertNotNull(response);
+    assertEquals(expectedResponse, response.getBody());
   }
 
   @Test
@@ -90,7 +91,20 @@ class PdndClientControllerTest {
 
     ResponseEntity<PdndClientNoSecretDTO> response = pdndClientController.getPdndClient(organizationId, clientId);
 
-    Assertions.assertNotNull(response);
-    Assertions.assertSame(expectedResponse, response.getBody());
+    assertNotNull(response);
+    assertSame(expectedResponse, response.getBody());
+  }
+
+  @Test
+  void whenDeletePdndClientThenOk() {
+    Long organizationId = 1L;
+    String clientId = "clientId";
+
+    doNothing().when(pdndClientServiceMock).deletePdndClient(organizationId, clientId);
+
+    ResponseEntity<Void> response = pdndClientController.deletePdndClient(organizationId, clientId);
+
+    assertNotNull(response);
+    assertEquals(200, response.getStatusCode().value());
   }
 }

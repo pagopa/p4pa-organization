@@ -45,4 +45,11 @@ public class PdndClientController implements PdndClientApi {
     log.info("Requested PDND client of organizationId {} and clientId {}", organizationId, clientId);
     return ResponseEntity.ok(service.getPdndClientDetail(organizationId, clientId));
   }
+
+  @Override
+  public ResponseEntity<Void> deletePdndClient(Long organizationId, String clientId) {
+    log.info("Requested to delete PDND client of organizationId {} and clientId {}", organizationId, clientId);
+    service.deletePdndClient(organizationId, clientId);
+    return ResponseEntity.ok().build();
+  }
 }
