@@ -42,7 +42,10 @@ public class PdndServiceService {
           String.format("PdndService having pdndServiceType %s not usable for organizationId %s and subUnitCode %s", requestDTO.getServiceType(), organizationId, subUnitCode)
         );
       }
-    }catch (NotFoundException ignored){}
+    }catch (NotFoundException ignored){
+      // getUsablePdndClientByOrganizationIdAndPdndServiceType throw NotFoundExeption if not exists PdndClient,
+      // but in this case we need to test if not exists other pdnd-services with same type for org or subunit to proceed
+    }
 
     return pdndServiceRepository.save(pdndServiceMapper.toModel(requestDTO));
   }
