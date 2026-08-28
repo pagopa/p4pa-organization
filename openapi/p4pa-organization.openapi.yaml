@@ -964,13 +964,18 @@ paths:
           required: true
           schema:
             type: string
+        - name: subUnitCode
+          in: query
+          required: false
+          schema:
+            type: string
       responses:
         '200':
           description: OK
           content:
             application/json:
               schema:
-                type: 'PdndService'
+                $ref: '#/components/schemas/PdndServiceDTO'
         '400':
           description: Bad Request
           content:
