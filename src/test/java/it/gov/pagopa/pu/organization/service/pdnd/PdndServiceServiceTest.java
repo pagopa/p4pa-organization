@@ -1,7 +1,9 @@
 package it.gov.pagopa.pu.organization.service.pdnd;
 
 import it.gov.pagopa.pu.organization.dto.generated.PdndClientDTO;
+import it.gov.pagopa.pu.organization.dto.generated.PdndServiceDTO;
 import it.gov.pagopa.pu.organization.dto.generated.PdndServiceRequestDTO;
+import it.gov.pagopa.pu.organization.enums.PdndServiceType;
 import it.gov.pagopa.pu.organization.exception.common.ConflictException;
 import it.gov.pagopa.pu.organization.exception.common.InvalidValueException;
 import it.gov.pagopa.pu.organization.exception.common.NotFoundException;
@@ -22,7 +24,6 @@ import uk.co.jemos.podam.api.PodamFactory;
 
 import java.util.Collections;
 import java.util.List;
-import java.util.Optional;
 
 import static org.junit.jupiter.api.Assertions.*;
 import static org.mockito.Mockito.when;
@@ -117,31 +118,20 @@ class PdndServiceServiceTest {
   }
 
   @Test
-  void whenGetPdndServiceThenOk() {
+  void givenOrganizationIdWhenGetPdndServicesByOrganizationIdAndSubUnitCodeThenOk() {
     Long organizationId = 1L;
-    String purposeId = "PURPOSE_ID";
+    String subUnitCode = "subUnitCode";
 
-    PdndService expectedResult = podamFactory.manufacturePojo(PdndService.class);
+    PdndService pdndService = podamFactory.manufacturePojo(PdndService.class);
+    PdndServiceDTO expectedResponse = podamFactory.manufacturePojo(PdndServiceDTO.class);
 
-    when(pdndServiceRepositoryMock.findByOrganizationIdAndPurposeId(organizationId, purposeId))
-      .thenReturn(Optional.of(expectedResult));
+    when(pdndServiceRepositoryMock.findByOrganizationIdAndServiceTypeAndSubUnitCode(organizationId, PdndServiceType.SEND, subUnitCode))
+      .thenReturn(List.of(pdndService));
+    when(pdndServiceMapperMock.toPdndServiceDTO(pdndService)).thenReturn(expectedResponse);
 
-    PdndService result = service.getPdndService(organizationId, purposeId);
+    List<PdndServiceDTO> result = service.getPdndServices(organizationId, PdndServiceType.SEND, subUnitCode);
 
-    assertSame(expectedResult, result);
+    assertEquals(List.of(expectedResponse), result);
   }
 
-  @Test
-  void givenPdndServiceNotFoundWhenGetPdndServiceThenThrowNotFoundException() {
-    Long organizationId = 1L;
-    String purposeId = "PURPOSE_ID";
-
-    when(pdndServiceRepositoryMock.findByOrganizationIdAndPurposeId(organizationId, purposeId))
-      .thenReturn(Optional.empty());
-
-    NotFoundException exception = assertThrows(
-      NotFoundException.class, () -> service.getPdndService(organizationId, purposeId));
-
-    assertEquals(ErrorCodeConstants.ERROR_CODE_PDND_SERVICE_NOT_FOUND, exception.getCode());
-  }
 }
