@@ -1,7 +1,9 @@
 package it.gov.pagopa.pu.organization.service.pdnd;
 
 import it.gov.pagopa.pu.organization.dto.generated.PdndClientDTO;
+import it.gov.pagopa.pu.organization.dto.generated.PdndServiceDTO;
 import it.gov.pagopa.pu.organization.dto.generated.PdndServiceRequestDTO;
+import it.gov.pagopa.pu.organization.enums.PdndServiceType;
 import it.gov.pagopa.pu.organization.exception.common.ConflictException;
 import it.gov.pagopa.pu.organization.exception.common.InvalidValueException;
 import it.gov.pagopa.pu.organization.exception.common.NotFoundException;
@@ -113,6 +115,23 @@ class PdndServiceServiceTest {
     );
 
     assertEquals(ErrorCodeConstants.ERROR_CODE_INVALID_PDND_SERVICE_TYPE, exception.getCode());
+  }
+
+  @Test
+  void givenOrganizationIdWhenGetPdndServicesByOrganizationIdAndSubUnitCodeThenOk() {
+    Long organizationId = 1L;
+    String subUnitCode = "subUnitCode";
+
+    PdndService pdndService = podamFactory.manufacturePojo(PdndService.class);
+    PdndServiceDTO expectedResponse = podamFactory.manufacturePojo(PdndServiceDTO.class);
+
+    when(pdndServiceRepositoryMock.findByOrganizationIdAndServiceTypeAndSubUnitCode(organizationId, PdndServiceType.SEND, subUnitCode))
+      .thenReturn(List.of(pdndService));
+    when(pdndServiceMapperMock.toPdndServiceDTO(pdndService)).thenReturn(expectedResponse);
+
+    List<PdndServiceDTO> result = service.getPdndServices(organizationId, PdndServiceType.SEND, subUnitCode);
+
+    assertEquals(List.of(expectedResponse), result);
   }
 
 }

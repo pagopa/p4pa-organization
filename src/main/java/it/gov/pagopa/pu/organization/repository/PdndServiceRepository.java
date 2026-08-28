@@ -23,12 +23,17 @@ public interface PdndServiceRepository extends JpaRepository<PdndService, String
     select ps
     FROM PdndService ps
     JOIN PdndClient pc ON ps.clientId=pc.clientId
-    WHERE ps.serviceType=:serviceType AND pc.organizationId=:organizationId
+    WHERE pc.organizationId=:organizationId
+    AND (
+      (:serviceType IS NULL)
+      OR
+      (ps.serviceType = :serviceType)
+    )
     AND (
       (:subUnitCode IS NULL AND pc.subUnitCode IS NULL)
       OR
       (pc.subUnitCode = :subUnitCode)
-   )
+    )
    """)
   List<PdndService> findByOrganizationIdAndServiceTypeAndSubUnitCode(
     @Parameter(required = true) Long organizationId,
