@@ -14,7 +14,6 @@ import it.gov.pagopa.pu.organization.util.ErrorCodeConstants;
 import jakarta.transaction.Transactional;
 import org.springframework.stereotype.Service;
 
-import java.util.ArrayList;
 import java.util.List;
 
 @Service
@@ -54,9 +53,10 @@ public class PdndServiceService {
   }
 
   public List<PdndServiceDTO> getPdndServices(Long organizationId, PdndServiceType serviceType, String subUnitCode) {
-   return pdndServiceMapper.toPdndServiceDTO(organizationId,
-     pdndServiceRepository.findByOrganizationIdAndServiceTypeAndSubUnitCode(organizationId, serviceType, subUnitCode),
-     subUnitCode);
+    List<PdndService> pdndServices = pdndServiceRepository.findByOrganizationIdAndServiceTypeAndSubUnitCode(organizationId, serviceType, subUnitCode);
+    return pdndServices.stream()
+      .map(pdndService -> pdndServiceMapper.toPdndServiceDTO(organizationId, pdndService, subUnitCode))
+      .toList();
   }
 
 }
