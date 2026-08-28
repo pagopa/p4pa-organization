@@ -1,7 +1,9 @@
 package it.gov.pagopa.pu.organization.service.pdnd;
 
 import it.gov.pagopa.pu.organization.dto.generated.PdndClientDTO;
+import it.gov.pagopa.pu.organization.dto.generated.PdndServiceDTO;
 import it.gov.pagopa.pu.organization.dto.generated.PdndServiceRequestDTO;
+import it.gov.pagopa.pu.organization.enums.PdndServiceType;
 import it.gov.pagopa.pu.organization.exception.common.ConflictException;
 import it.gov.pagopa.pu.organization.exception.common.InvalidValueException;
 import it.gov.pagopa.pu.organization.exception.common.NotFoundException;
@@ -12,6 +14,7 @@ import it.gov.pagopa.pu.organization.util.ErrorCodeConstants;
 import jakarta.transaction.Transactional;
 import org.springframework.stereotype.Service;
 
+import java.util.ArrayList;
 import java.util.List;
 
 @Service
@@ -48,6 +51,12 @@ public class PdndServiceService {
     }
 
     return pdndServiceRepository.save(pdndServiceMapper.toModel(requestDTO));
+  }
+
+  public List<PdndServiceDTO> getPdndServices(Long organizationId, PdndServiceType serviceType, String subUnitCode) {
+   return pdndServiceMapper.toPdndServiceDTO(organizationId,
+     pdndServiceRepository.findByOrganizationIdAndServiceTypeAndSubUnitCode(organizationId, serviceType, subUnitCode),
+     subUnitCode);
   }
 
 }
