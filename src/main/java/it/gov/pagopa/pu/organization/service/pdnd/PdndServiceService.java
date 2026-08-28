@@ -50,4 +50,10 @@ public class PdndServiceService {
     return pdndServiceRepository.save(pdndServiceMapper.toModel(requestDTO));
   }
 
+  public PdndService getPdndService(Long organizationId, String purposeId) {
+    return pdndServiceRepository.findByOrganizationIdAndPurposeId(organizationId, purposeId)
+      .orElseThrow(() -> new NotFoundException(
+        ErrorCodeConstants.ERROR_CODE_PDND_SERVICE_NOT_FOUND,
+        "PdndService having purposeId %s and organizationId %d not found".formatted(purposeId, organizationId)));
+  }
 }

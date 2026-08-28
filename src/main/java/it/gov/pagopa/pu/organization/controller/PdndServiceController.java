@@ -23,4 +23,10 @@ public class PdndServiceController implements PdndServiceApi {
     log.info("Requested savePdndService with purposeId {}", pdndServiceRequestDTO.getPurposeId());
     return ResponseEntity.ok(service.savePdndService(organizationId, pdndServiceRequestDTO, subUnitCode));
   }
+
+  @Override
+  public ResponseEntity<PdndService> getPdndService(Long organizationId, String purposeId) {
+    log.info("Requested getPdndService having organizationId {} and purposeId {}", organizationId, purposeId);
+    return ResponseEntity.ok(service.getPdndService(organizationId, purposeId));
+  }
 }

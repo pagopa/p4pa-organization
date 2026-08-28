@@ -11,6 +11,7 @@ import org.springframework.data.rest.core.annotation.RestResource;
 import org.springframework.web.bind.annotation.RequestParam;
 
 import java.util.List;
+import java.util.Optional;
 
 @RepositoryRestResource(path = "pdnd-services")
 public interface PdndServiceRepository extends JpaRepository<PdndService, String> {
@@ -36,4 +37,16 @@ public interface PdndServiceRepository extends JpaRepository<PdndService, String
     @RequestParam(required = false) @Param("subUnitCode") String subUnitCode
   );
 
+  @RestResource(exported = false)
+  @Query("""
+  SELECT ps
+  FROM PdndService ps
+  JOIN PdndClient pc ON ps.clientId = pc.clientId
+  WHERE pc.organizationId = :organizationId
+  AND ps.purposeId = :purposeId
+  """)
+  Optional<PdndService> findByOrganizationIdAndPurposeId(
+    @Param("organizationId") Long organizationId,
+    @Param("purposeId") String purposeId
+  );
 }

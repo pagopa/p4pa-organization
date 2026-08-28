@@ -22,6 +22,7 @@ import uk.co.jemos.podam.api.PodamFactory;
 
 import java.util.Collections;
 import java.util.List;
+import java.util.Optional;
 
 import static org.junit.jupiter.api.Assertions.*;
 import static org.mockito.Mockito.when;
@@ -115,4 +116,32 @@ class PdndServiceServiceTest {
     assertEquals(ErrorCodeConstants.ERROR_CODE_INVALID_PDND_SERVICE_TYPE, exception.getCode());
   }
 
+  @Test
+  void whenGetPdndServiceThenOk() {
+    Long organizationId = 1L;
+    String purposeId = "PURPOSE_ID";
+
+    PdndService expectedResult = podamFactory.manufacturePojo(PdndService.class);
+
+    when(pdndServiceRepositoryMock.findByOrganizationIdAndPurposeId(organizationId, purposeId))
+      .thenReturn(Optional.of(expectedResult));
+
+    PdndService result = service.getPdndService(organizationId, purposeId);
+
+    assertSame(expectedResult, result);
+  }
+
+  @Test
+  void givenPdndServiceNotFoundWhenGetPdndServiceThenThrowNotFoundException() {
+    Long organizationId = 1L;
+    String purposeId = "PURPOSE_ID";
+
+    when(pdndServiceRepositoryMock.findByOrganizationIdAndPurposeId(organizationId, purposeId))
+      .thenReturn(Optional.empty());
+
+    NotFoundException exception = assertThrows(
+      NotFoundException.class, () -> service.getPdndService(organizationId, purposeId));
+
+    assertEquals(ErrorCodeConstants.ERROR_CODE_PDND_SERVICE_NOT_FOUND, exception.getCode());
+  }
 }
