@@ -1,10 +1,10 @@
 package it.gov.pagopa.pu.organization.mapper;
 
-import it.gov.pagopa.pu.organization.dto.generated.PdndClientDTO;
 import it.gov.pagopa.pu.organization.dto.generated.PdndServiceDTO;
 import it.gov.pagopa.pu.organization.dto.generated.PdndServiceRequestDTO;
+import it.gov.pagopa.pu.organization.model.PdndClient;
 import it.gov.pagopa.pu.organization.model.PdndService;
-import it.gov.pagopa.pu.organization.service.pdnd.PdndClientService;
+import it.gov.pagopa.pu.organization.repository.PdndClientRepository;
 import it.gov.pagopa.pu.organization.util.TestUtils;
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.Test;
@@ -14,6 +14,8 @@ import org.mockito.Mock;
 import org.mockito.Mockito;
 import org.mockito.junit.jupiter.MockitoExtension;
 import uk.co.jemos.podam.api.PodamFactory;
+
+import java.util.Optional;
 
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.junit.jupiter.api.Assertions.*;
@@ -25,7 +27,7 @@ class PdndServiceMapperTest {
   public static final PodamFactory podamFactory = TestUtils.getPodamFactory();
 
   @Mock
-  private PdndClientService pdndClientServiceMock;
+  private PdndClientRepository pdndClientRepositoryMock;
 
   @InjectMocks
   private PdndServiceMapper pdndServiceMapper;
@@ -33,7 +35,7 @@ class PdndServiceMapperTest {
   @AfterEach
   void verifyNoMoreInteractions() {
     Mockito.verifyNoMoreInteractions(
-      pdndClientServiceMock
+      pdndClientRepositoryMock
     );
   }
 
@@ -65,20 +67,18 @@ class PdndServiceMapperTest {
 
   @Test
   void givenNullPdndServiceWhenToPdndServiceDTOThenReturnNull() {
-    assertNull(pdndServiceMapper.toPdndServiceDTO(1L, null, null));
+    assertNull(pdndServiceMapper.toPdndServiceDTO(null));
   }
 
   @Test
   void whenToPdndServiceThenReturnPdndService() {
-    Long organizationId = 1L;
-    String subUnitCode = "SUB";
     PdndService request = podamFactory.manufacturePojo(PdndService.class);
-    PdndClientDTO pdndClientDTO = podamFactory.manufacturePojo(PdndClientDTO.class);
+    PdndClient pdndClient = podamFactory.manufacturePojo(PdndClient.class);
 
-    when(pdndClientServiceMock.getUsablePdndClientByOrganizationIdAndPdndServiceType(organizationId, request.getServiceType(), subUnitCode))
-      .thenReturn(pdndClientDTO);
+    when(pdndClientRepositoryMock.findById(request.getClientId()))
+      .thenReturn(Optional.ofNullable(pdndClient));
 
-    PdndServiceDTO result = pdndServiceMapper.toPdndServiceDTO(organizationId, request, subUnitCode);
+    PdndServiceDTO result = pdndServiceMapper.toPdndServiceDTO(request);
 
     assertNotNull(result);
     TestUtils.checkNotNullFields(result, "creationDate", "updateDate", "updateOperatorExternalId", "updateTraceId");

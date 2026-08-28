@@ -127,8 +127,7 @@ class PdndServiceServiceTest {
 
     when(pdndServiceRepositoryMock.findByOrganizationIdAndServiceTypeAndSubUnitCode(organizationId, PdndServiceType.SEND, subUnitCode))
       .thenReturn(List.of(pdndService));
-    when(pdndServiceMapperMock.toPdndServiceDTO(organizationId, pdndService, subUnitCode))
-      .thenReturn(expectedResponse);
+    when(pdndServiceMapperMock.toPdndServiceDTO(pdndService)).thenReturn(expectedResponse);
 
     List<PdndServiceDTO> result = service.getPdndServices(organizationId, PdndServiceType.SEND, subUnitCode);
 

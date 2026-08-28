@@ -55,7 +55,7 @@ public class PdndServiceService {
   public List<PdndServiceDTO> getPdndServices(Long organizationId, PdndServiceType serviceType, String subUnitCode) {
     List<PdndService> pdndServices = pdndServiceRepository.findByOrganizationIdAndServiceTypeAndSubUnitCode(organizationId, serviceType, subUnitCode);
     return pdndServices.stream()
-      .map(pdndService -> pdndServiceMapper.toPdndServiceDTO(organizationId, pdndService, subUnitCode))
+      .map(pdndServiceMapper::toPdndServiceDTO)
       .toList();
   }
 

@@ -1,9 +1,9 @@
 package it.gov.pagopa.pu.organization.mapper;
 
-import it.gov.pagopa.pu.organization.dto.generated.PdndClientDTO;
 import it.gov.pagopa.pu.organization.dto.generated.PdndServiceDTO;
 import it.gov.pagopa.pu.organization.dto.generated.PdndServiceRequestDTO;
 import it.gov.pagopa.pu.organization.model.PdndService;
+import it.gov.pagopa.pu.organization.repository.PdndClientRepository;
 import it.gov.pagopa.pu.organization.service.pdnd.PdndClientService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Component;
@@ -13,6 +13,7 @@ import org.springframework.stereotype.Component;
 public class PdndServiceMapper {
 
   private final PdndClientService pdndClientService;
+  private final PdndClientRepository pdndClientRepository;
 
   public PdndService toModel(PdndServiceRequestDTO requestDTO) {
     if(requestDTO == null) {
@@ -28,7 +29,7 @@ public class PdndServiceMapper {
     return pdndService;
   }
 
-  public PdndServiceDTO toPdndServiceDTO(Long organizationId, PdndService pdndService, String subUnitCode) {
+  public PdndServiceDTO toPdndServiceDTO(PdndService pdndService) {
     if (pdndService == null) {
       return null;
     }
@@ -39,8 +40,8 @@ public class PdndServiceMapper {
     dto.setServiceType(pdndService.getServiceType());
     dto.setServiceName(pdndService.getServiceName());
 
-    PdndClientDTO clientDTO = pdndClientService.getUsablePdndClientByOrganizationIdAndPdndServiceType(organizationId, pdndService.getServiceType(), subUnitCode);
-    dto.setClientName(clientDTO.getClientName());
+    pdndClientRepository.findById(pdndService.getClientId())
+      .ifPresent(pdndClient -> dto.setClientName(pdndClient.getClientName()));
 
     return dto;
   }
