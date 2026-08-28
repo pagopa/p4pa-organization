@@ -4,7 +4,10 @@ import io.swagger.v3.oas.annotations.Parameter;
 import io.swagger.v3.oas.annotations.media.Schema;
 import it.gov.pagopa.pu.organization.dto.generated.OrganizationApiKeyType;
 import it.gov.pagopa.pu.organization.enums.OrgSubUnitStatus;
+import it.gov.pagopa.pu.organization.enums.SubUnitType;
 import it.gov.pagopa.pu.organization.model.OrgSubUnit;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Modifying;
 import org.springframework.data.jpa.repository.Query;
@@ -12,6 +15,7 @@ import org.springframework.data.repository.query.Param;
 import org.springframework.data.rest.core.annotation.RepositoryRestResource;
 import org.springframework.data.rest.core.annotation.RestResource;
 import org.springframework.transaction.annotation.Transactional;
+import org.springframework.web.bind.annotation.RequestParam;
 
 import java.util.List;
 
@@ -47,6 +51,26 @@ public interface OrgSubUnitRepository extends JpaRepository<OrgSubUnit, OrgSubUn
   List<OrgSubUnit> findAllByOrganizationIdAndOperatorExternalUserId(
     @Param("organizationId") @Parameter(required = true, schema = @Schema(type = "integer", format = "int64")) Long organizationId,
     @Param("operatorExternalUserId") @Parameter(required = true) String operatorExternalUserId);
+
+  @Query("""
+         SELECT DISTINCT osu
+         FROM OrgSubUnit osu
+         LEFT JOIN OrgSubUnitOperators osuo
+          ON osuo.organizationId = osu.id.organizationId AND osuo.subUnitCode = osu.id.subUnitCode
+         WHERE osu.id.organizationId = :organizationId
+          AND (:operatorExternalUserId IS NULL OR osuo.operatorExternalUserId = :operatorExternalUserId)
+          AND (:subUnitCode IS NULL OR osu.id.subUnitCode = :subUnitCode)
+          AND (:status IS NULL OR osu.status = :status)
+          AND (:subUnitType IS NULL OR osu.subUnitType = :subUnitType)
+         """)
+  Page<OrgSubUnit> findByOrganizationIdAndFilters(
+    @Param("organizationId") Long organizationId,
+    @RequestParam(required = false) @Param("operatorExternalUserId") String operatorExternalUserId,
+    @RequestParam(required = false) @Param("subUnitCode") String subUnitCode,
+    @RequestParam(required = false) @Param("status") OrgSubUnitStatus status,
+    @RequestParam(required = false) @Param("subUnitType") SubUnitType subUnitType,
+    Pageable pageable
+  );
 
   @Transactional
   @RestResource(exported = false)
