@@ -7,18 +7,19 @@ import it.gov.pagopa.pu.organization.model.PdndService;
 import it.gov.pagopa.pu.organization.service.pdnd.PdndServiceService;
 import it.gov.pagopa.pu.organization.util.TestUtils;
 import org.junit.jupiter.api.AfterEach;
-import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.Mockito;
 import org.mockito.junit.jupiter.MockitoExtension;
+import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import uk.co.jemos.podam.api.PodamFactory;
 
 import java.util.List;
 
+import static org.junit.jupiter.api.Assertions.*;
 import static org.mockito.Mockito.when;
 
 @ExtendWith(MockitoExtension.class)
@@ -49,8 +50,8 @@ class PdndServiceControllerTest {
     ResponseEntity<PdndService> response = pdndServiceController
       .savePdndService(organizationId, pdndServiceRequestDTO, subUnitCode);
 
-    Assertions.assertNotNull(response);
-    Assertions.assertEquals(expectedResponse, response.getBody());
+    assertNotNull(response);
+    assertEquals(expectedResponse, response.getBody());
   }
 
 
@@ -66,9 +67,25 @@ class PdndServiceControllerTest {
     ResponseEntity<List<PdndServiceDTO>> response = pdndServiceController
       .getPdndServices(organizationId, subUnitCode, PdndServiceType.SEND);
 
-    Assertions.assertNotNull(response);
-    Assertions.assertEquals(expectedResponse, response.getBody());
+    assertNotNull(response);
+    assertEquals(expectedResponse, response.getBody());
   }
 
+  @Test
+  void whenGetPdndServiceThenOk() {
+    Long organizationId = 1L;
+    String purposeId = "PURPOSE_ID";
+    String subUnitCode = "SUB_01";
 
+    PdndServiceDTO expectedResponse = podamFactory.manufacturePojo(PdndServiceDTO.class);
+
+    when(pdndServiceServiceMock.getPdndService(organizationId, purposeId, subUnitCode))
+      .thenReturn(expectedResponse);
+
+    ResponseEntity<PdndServiceDTO> response = pdndServiceController.getPdndService(organizationId, purposeId, subUnitCode);
+
+    assertNotNull(response);
+    assertEquals(HttpStatus.OK, response.getStatusCode());
+    assertSame(expectedResponse, response.getBody());
+  }
 }

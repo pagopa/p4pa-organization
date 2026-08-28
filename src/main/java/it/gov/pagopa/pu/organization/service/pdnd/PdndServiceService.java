@@ -59,4 +59,12 @@ public class PdndServiceService {
       .toList();
   }
 
+  public PdndServiceDTO getPdndService(Long organizationId, String purposeId, String subUnitCode) {
+    PdndService pdndService = pdndServiceRepository.findByOrganizationIdAndPurposeIdAndSubUnitCode(organizationId, purposeId, subUnitCode)
+      .orElseThrow(() -> new NotFoundException(
+        ErrorCodeConstants.ERROR_CODE_PDND_SERVICE_NOT_FOUND,
+        "PdndService having purposeId %s, organizationId %d and subUnitCode %s not found".formatted(purposeId, organizationId, subUnitCode)));
+
+    return pdndServiceMapper.toPdndServiceDTO(pdndService);
+  }
 }

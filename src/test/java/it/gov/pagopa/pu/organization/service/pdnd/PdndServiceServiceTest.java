@@ -24,6 +24,7 @@ import uk.co.jemos.podam.api.PodamFactory;
 
 import java.util.Collections;
 import java.util.List;
+import java.util.Optional;
 
 import static org.junit.jupiter.api.Assertions.*;
 import static org.mockito.Mockito.when;
@@ -134,4 +135,40 @@ class PdndServiceServiceTest {
     assertEquals(List.of(expectedResponse), result);
   }
 
+  @Test
+  void whenGetPdndServiceThenOk() {
+    Long organizationId = 1L;
+    String purposeId = "PURPOSE_ID";
+    String subUnitCode = "SUB_01";
+
+    PdndService pdndService = podamFactory.manufacturePojo(PdndService.class);
+
+    PdndServiceDTO expectedResult = podamFactory.manufacturePojo(PdndServiceDTO.class);
+
+    when(pdndServiceRepositoryMock.findByOrganizationIdAndPurposeIdAndSubUnitCode(organizationId, purposeId, subUnitCode))
+      .thenReturn(Optional.of(pdndService));
+
+    when(pdndServiceMapperMock.toPdndServiceDTO(pdndService))
+      .thenReturn(expectedResult);
+
+    PdndServiceDTO result = service.getPdndService(organizationId, purposeId, subUnitCode);
+
+    assertSame(expectedResult, result);
+  }
+
+  @Test
+  void givenPdndServiceNotFoundWhenGetPdndServiceThenThrowNotFoundException() {
+    Long organizationId = 1L;
+    String purposeId = "PURPOSE_ID";
+    String subUnitCode = "SUB_01";
+
+    when(pdndServiceRepositoryMock.findByOrganizationIdAndPurposeIdAndSubUnitCode(organizationId, purposeId, subUnitCode))
+      .thenReturn(Optional.empty());
+
+    NotFoundException exception = assertThrows(
+      NotFoundException.class,
+      () -> service.getPdndService(organizationId, purposeId, subUnitCode));
+
+    assertEquals(ErrorCodeConstants.ERROR_CODE_PDND_SERVICE_NOT_FOUND, exception.getCode());
+  }
 }
