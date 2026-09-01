@@ -39,4 +39,11 @@ public class PdndServiceController implements PdndServiceApi {
     log.info("Requested getPdndService having organizationId {} and purposeId {}", organizationId, purposeId);
     return ResponseEntity.ok(service.getPdndService(organizationId, purposeId, subUnitCode));
   }
+
+  @Override
+  public ResponseEntity<Void> deletePdndService(Long organizationId, String purposeId, String subUnitCode) {
+    log.info("Requested deletePdndService having organizationId {}, purposeId {}", organizationId, purposeId);
+    service.deletePdndService(organizationId, purposeId, subUnitCode);
+    return ResponseEntity.ok().build();
+  }
 }
