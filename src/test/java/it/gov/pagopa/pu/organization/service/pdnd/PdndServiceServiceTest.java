@@ -27,6 +27,7 @@ import java.util.List;
 import java.util.Optional;
 
 import static org.junit.jupiter.api.Assertions.*;
+import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 
 @ExtendWith(MockitoExtension.class)
@@ -184,6 +185,7 @@ class PdndServiceServiceTest {
       .thenReturn(Optional.of(pdndService));
 
     assertDoesNotThrow(() -> service.deletePdndService(organizationId, purposeId, subUnitCode));
+    verify(pdndServiceRepositoryMock).delete(pdndService);
   }
 
   @Test
