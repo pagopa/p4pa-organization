@@ -60,11 +60,19 @@ public class PdndServiceService {
   }
 
   public PdndServiceDTO getPdndService(Long organizationId, String purposeId, String subUnitCode) {
-    PdndService pdndService = pdndServiceRepository.findByOrganizationIdAndPurposeIdAndSubUnitCode(organizationId, purposeId, subUnitCode)
+    return pdndServiceMapper.toPdndServiceDTO(findPdndService(organizationId, purposeId, subUnitCode));
+  }
+
+  @Transactional
+  public void deletePdndService(Long organizationId, String purposeId, String subUnitCode) {
+    PdndService pdndService = findPdndService(organizationId, purposeId, subUnitCode);
+    pdndServiceRepository.delete(pdndService);
+  }
+
+  private PdndService findPdndService(Long organizationId, String purposeId, String subUnitCode) {
+    return pdndServiceRepository.findByOrganizationIdAndPurposeIdAndSubUnitCode(organizationId, purposeId, subUnitCode)
       .orElseThrow(() -> new NotFoundException(
         ErrorCodeConstants.ERROR_CODE_PDND_SERVICE_NOT_FOUND,
         "PdndService having purposeId %s, organizationId %d and subUnitCode %s not found".formatted(purposeId, organizationId, subUnitCode)));
-
-    return pdndServiceMapper.toPdndServiceDTO(pdndService);
   }
 }

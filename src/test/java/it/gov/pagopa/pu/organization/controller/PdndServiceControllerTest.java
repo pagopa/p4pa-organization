@@ -20,6 +20,7 @@ import uk.co.jemos.podam.api.PodamFactory;
 import java.util.List;
 
 import static org.junit.jupiter.api.Assertions.*;
+import static org.mockito.Mockito.doNothing;
 import static org.mockito.Mockito.when;
 
 @ExtendWith(MockitoExtension.class)
@@ -87,5 +88,21 @@ class PdndServiceControllerTest {
     assertNotNull(response);
     assertEquals(HttpStatus.OK, response.getStatusCode());
     assertSame(expectedResponse, response.getBody());
+  }
+
+  @Test
+  void whenDeletePdndServiceThenOk() {
+    Long organizationId = 1L;
+    String purposeId = "PURPOSE_ID";
+    String subUnitCode = "SUB_01";
+
+    doNothing().when(pdndServiceServiceMock)
+      .deletePdndService(organizationId, purposeId, subUnitCode);
+
+    ResponseEntity<Void> response = pdndServiceController.deletePdndService(organizationId, purposeId, subUnitCode);
+
+    assertNotNull(response);
+    assertEquals(HttpStatus.OK, response.getStatusCode());
+    assertNull(response.getBody());
   }
 }

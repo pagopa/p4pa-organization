@@ -171,4 +171,32 @@ class PdndServiceServiceTest {
 
     assertEquals(ErrorCodeConstants.ERROR_CODE_PDND_SERVICE_NOT_FOUND, exception.getCode());
   }
+
+  @Test
+  void whenDeletePdndServiceThenOk() {
+    Long organizationId = 1L;
+    String purposeId = "PURPOSE_ID";
+    String subUnitCode = "SUB_01";
+
+    PdndService pdndService = podamFactory.manufacturePojo(PdndService.class);
+
+    when(pdndServiceRepositoryMock.findByOrganizationIdAndPurposeIdAndSubUnitCode(organizationId, purposeId, subUnitCode))
+      .thenReturn(Optional.of(pdndService));
+
+    assertDoesNotThrow(() -> service.deletePdndService(organizationId, purposeId, subUnitCode));
+  }
+
+  @Test
+  void givenPdndServiceNotFoundWhenDeletePdndServiceThenThrowNotFoundException() {
+    Long organizationId = 1L;
+    String purposeId = "PURPOSE_ID";
+    String subUnitCode = "SUB_01";
+
+    when(pdndServiceRepositoryMock.findByOrganizationIdAndPurposeIdAndSubUnitCode(organizationId, purposeId, subUnitCode))
+      .thenReturn(Optional.empty());
+
+    NotFoundException exception = assertThrows(NotFoundException.class, () -> service.deletePdndService(organizationId, purposeId, subUnitCode));
+
+    assertEquals(ErrorCodeConstants.ERROR_CODE_PDND_SERVICE_NOT_FOUND, exception.getCode());
+  }
 }
