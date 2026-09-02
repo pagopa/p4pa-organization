@@ -56,4 +56,18 @@ public interface PdndServiceRepository extends JpaRepository<PdndService, String
     @Param("purposeId") String purposeId,
     @RequestParam(required = false) @Param("subUnitCode") String subUnitCode
   );
+
+  @Query("""
+  SELECT ps
+  FROM PdndService ps
+  JOIN PdndClient pc ON ps.clientId = pc.clientId
+  WHERE ps.clientId = :clientId
+  AND pc.organizationId = :organizationId
+  AND ((:serviceType IS NULL) OR (ps.serviceType = :serviceType))
+  """)
+  List<PdndService> findByOrganizationIdAndClientId(
+    @Param("organizationId") Long organizationId,
+    @Param("clientId") String clientId,
+    @RequestParam(required = false) @Param("serviceType") PdndServiceType serviceType
+  );
 }
