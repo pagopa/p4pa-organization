@@ -6,12 +6,12 @@ import java.util.*
 
 plugins {
   java
-  id("org.springframework.boot") version "4.1.0"
+  id("org.springframework.boot") version "4.1.1"
   id("io.spring.dependency-management") version "1.1.7"
   jacoco
-  id("org.sonarqube") version "7.3.1.8318"
+  id("org.sonarqube") version "7.4.0.8496"
   id("com.github.ben-manes.versions") version "0.54.0"
-  id("org.openapi.generator") version "7.23.0"
+  id("org.openapi.generator") version "7.25.0"
   id("org.ajoberstar.grgit") version "5.3.2"
   id("com.gorylenko.gradle-git-properties") version "4.0.1"
   id("com.github.jk1.dependency-license-report") version "3.1.4"
@@ -42,7 +42,7 @@ licenseReport {
   outputDir = "$projectDir/dependency-licenses"
   filters = arrayOf(SpdxLicenseBundleNormalizer())
 }
-tasks.classes {
+tasks.dependencies {
   finalizedBy(tasks.generateLicenseReport)
 }
 
@@ -50,20 +50,23 @@ repositories {
   mavenCentral()
 }
 
-val springDocOpenApiVersion = "3.0.3"
-val openApiToolsVersion = "0.2.10"
-val micrometerVersion = "1.7.0"
-val postgresJdbcVersion = "42.7.11"
-val bouncycastleVersion = "1.84"
-val httpClientVersion = "5.6.1"
-val httpCoreVersion = "5.4.2"
+val springDocOpenApiVersion = "3.1.0"
+val openApiToolsVersion = "0.2.11"
+val micrometerVersion = "1.7.1"
+val postgresJdbcVersion = "42.7.13"
+val bouncycastleVersion = "1.85.2"
+val httpClientVersion = "5.6.4"
+val httpCoreVersion = "5.4.3"
 val kafkaAppender = "0.2.0-RC2"
-val lz4JavaVersion = "1.11.0"
+val lz4JavaVersion = "1.11.2"
 val podamVersion = "8.0.2.RELEASE"
 val commonsLang3Version = "3.20.0"
 
 // Downgrading in order to handle List of enums in SpringDataRest exposed queries (see https://github.com/spring-projects/spring-data-commons/issues/3502)
 val hibernateCoreVersion = "7.1.18.Final"
+
+// CVE Security dependencies
+val tomcatEmbedCoreVersion = "11.0.25"
 
 dependencies {
   implementation("org.springframework.boot:spring-boot-starter-webmvc")
@@ -73,7 +76,7 @@ dependencies {
   implementation("org.springframework.boot:spring-boot-starter-security-oauth2-resource-server")
   implementation("org.springframework.boot:spring-boot-starter-hateoas")
   implementation("org.springframework.boot:spring-boot-starter-data-rest")
-  implementation("org.hibernate.orm:hibernate-core:${hibernateCoreVersion}")
+  implementation("org.hibernate.orm:hibernate-core:$hibernateCoreVersion")
   implementation("org.springframework.boot:spring-boot-starter-data-jpa")
   implementation("org.springframework.boot:spring-boot-starter-actuator")
   implementation("io.micrometer:micrometer-tracing-bridge-otel:$micrometerVersion")
@@ -86,11 +89,15 @@ dependencies {
   implementation("org.bouncycastle:bcprov-jdk18on:$bouncycastleVersion")
   implementation("org.postgresql:postgresql:$postgresJdbcVersion")
   implementation("org.apache.httpcomponents.client5:httpclient5:$httpClientVersion")
+  implementation("org.apache.httpcomponents.core5:httpcore5-h2:$httpCoreVersion")
   implementation("org.apache.httpcomponents.core5:httpcore5:$httpCoreVersion")
   implementation("com.github.danielwegener:logback-kafka-appender:$kafkaAppender") {
     exclude(group = "org.lz4", module = "lz4-java")
   }
   implementation("at.yawk.lz4:lz4-java:$lz4JavaVersion")
+
+  // CVE Security dependencies
+  implementation("org.apache.tomcat.embed:tomcat-embed-core:$tomcatEmbedCoreVersion")
 
   compileOnly("org.projectlombok:lombok")
   annotationProcessor("org.projectlombok:lombok")
@@ -102,7 +109,7 @@ dependencies {
   testImplementation("org.mockito:mockito-core")
   testImplementation("org.projectlombok:lombok")
   testImplementation("com.h2database:h2")
-  testImplementation("uk.co.jemos.podam:podam:${podamVersion}")
+  testImplementation("uk.co.jemos.podam:podam:$podamVersion")
 }
 
 tasks.withType<Test> {
@@ -198,7 +205,9 @@ tasks.register<org.openapitools.generator.gradle.plugin.tasks.GenerateTask>("ope
       "OrganizationStationDTO" to "it.gov.pagopa.pu.organization.dto.OrganizationStationDTO",
       "Broker" to "it.gov.pagopa.pu.organization.model.Broker",
       "PdndClient" to "it.gov.pagopa.pu.organization.model.PdndClient",
-      "PdndServiceType" to "it.gov.pagopa.pu.organization.enums.PdndServiceType"
+      "PdndServiceType" to "it.gov.pagopa.pu.organization.enums.PdndServiceType",
+      "PdndService" to "it.gov.pagopa.pu.organization.model.PdndService",
+      "OrgSubUnitStatus" to "it.gov.pagopa.pu.organization.enums.OrgSubUnitStatus"
     )
   )
   configOptions.set(
@@ -235,9 +244,9 @@ tasks.register<org.openapitools.generator.gradle.plugin.tasks.GenerateTask>("ope
   generatorName.set("java")
   remoteInputSpec.set("https://raw.githubusercontent.com/pagopa/p4pa-doc/refs/heads/main/openapi/$targetEnv/internal/p4pa-debt-positions.generated.openapi.json")
   outputDir.set("$projectDir/build/generated")
-  invokerPackage.set("it.gov.pagopa.pu.debtposition.generated")
-  apiPackage.set("it.gov.pagopa.pu.debtposition.client.generated")
-  modelPackage.set("it.gov.pagopa.pu.debtposition.dto.generated")
+  invokerPackage.set("it.gov.pagopa.pu.debtpositions.generated")
+  apiPackage.set("it.gov.pagopa.pu.debtpositions.client.generated")
+  modelPackage.set("it.gov.pagopa.pu.debtpositions.dto.generated")
   typeMappings.set(mapOf("LocalDateTime" to "java.time.LocalDateTime"))
   configOptions.set(
     mapOf(
@@ -268,7 +277,8 @@ tasks.register<org.openapitools.generator.gradle.plugin.tasks.GenerateTask>("ope
   generatorName.set("java")
   remoteInputSpec.set("https://raw.githubusercontent.com/pagopa/p4pa-doc/refs/heads/main/openapi/$targetEnv/internal/p4pa-pagopa-payments.generated.openapi.json")
   outputDir.set("$projectDir/build/generated")
-  apiPackage.set("it.gov.pagopa.pu.pagopapayments.controller.generated")
+  invokerPackage.set("it.gov.pagopa.pu.pagopapayments.generated")
+  apiPackage.set("it.gov.pagopa.pu.pagopapayments.client.generated")
   modelPackage.set("it.gov.pagopa.pu.pagopapayments.dto.generated")
   configOptions.set(
     mapOf(
@@ -300,7 +310,7 @@ tasks.register<org.openapitools.generator.gradle.plugin.tasks.GenerateTask>("ope
   remoteInputSpec.set("https://raw.githubusercontent.com/pagopa/p4pa-doc/refs/heads/main/openapi/$targetEnv/internal/p4pa-workflow-hub.generated.openapi.json")
   outputDir.set("$projectDir/build/generated")
   invokerPackage.set("it.gov.pagopa.pu.workflowhub.generated")
-  apiPackage.set("it.gov.pagopa.pu.workflowhub.controller.generated")
+  apiPackage.set("it.gov.pagopa.pu.workflowhub.client.generated")
   modelPackage.set("it.gov.pagopa.pu.workflowhub.dto.generated")
   typeMappings.set(
     mapOf(

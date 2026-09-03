@@ -1,6 +1,7 @@
 package it.gov.pagopa.pu.organization.mapper;
 
 import it.gov.pagopa.pu.organization.dto.generated.PdndClientDTO;
+import it.gov.pagopa.pu.organization.dto.generated.PdndClientNoSecretDTO;
 import it.gov.pagopa.pu.organization.model.PdndClient;
 import it.gov.pagopa.pu.organization.service.pdnd.PdndClientEncryptionService;
 import it.gov.pagopa.pu.organization.util.TestUtils;
@@ -94,5 +95,24 @@ class PdndClientMapperTest {
       .isEqualTo(pdndClient);
 
     assertThat(result.getPrivateKey()).isEqualTo(privateKey);
+  }
+
+  @Test
+  void givenNullPdndClientWhenMapToPdndClientNoSecretDTOThenReturnNull() {
+    PdndClientNoSecretDTO result = pdndClientMapper.mapToPdndClientNoSecretDTO(null);
+    assertNull(result);
+  }
+
+  @Test
+  void whenMapToPdndClientNoSecretDTOThenReturnResponse() {
+    PdndClient pdndClient = podamFactory.manufacturePojo(PdndClient.class);
+    PdndClientNoSecretDTO result = pdndClientMapper.mapToPdndClientNoSecretDTO(pdndClient);
+
+    assertNotNull(result);
+    TestUtils.checkNotNullFields(result);
+
+    assertThat(result)
+      .usingRecursiveComparison()
+      .isEqualTo(pdndClient);
   }
 }

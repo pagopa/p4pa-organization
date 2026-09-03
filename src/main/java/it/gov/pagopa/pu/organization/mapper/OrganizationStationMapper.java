@@ -2,7 +2,7 @@ package it.gov.pagopa.pu.organization.mapper;
 
 import it.gov.pagopa.pu.organization.dto.OrganizationStationDTO;
 import it.gov.pagopa.pu.organization.dto.generated.OrganizationApiKeyType;
-import it.gov.pagopa.pu.organization.exception.custom.NotFoundException;
+import it.gov.pagopa.pu.organization.exception.common.NotFoundException;
 import it.gov.pagopa.pu.organization.model.Organization;
 import it.gov.pagopa.pu.organization.model.OrganizationStation;
 import it.gov.pagopa.pu.organization.model.Station;

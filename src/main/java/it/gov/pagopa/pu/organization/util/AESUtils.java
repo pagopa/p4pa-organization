@@ -1,6 +1,6 @@
 package it.gov.pagopa.pu.organization.util;
 
-import it.gov.pagopa.pu.organization.exception.custom.IllegalStateBusinessException;
+import it.gov.pagopa.pu.organization.exception.common.IllegalStateBusinessException;
 
 import javax.crypto.*;
 import javax.crypto.spec.GCMParameterSpec;

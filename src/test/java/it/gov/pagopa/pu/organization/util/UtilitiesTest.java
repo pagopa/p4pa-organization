@@ -18,6 +18,44 @@ import static org.junit.jupiter.api.Assertions.assertTrue;
 
 public class UtilitiesTest {
 
+  public static void setTraceId(String traceId) {
+    setTraceId(traceId, null);
+  }
+  public static void setTraceId(String traceId, String spanId) {
+    MDC.put("traceId", traceId);
+    MDC.put("spanId", spanId);
+  }
+  public static void clearTraceIdContext(){
+    MDC.clear();
+  }
+
+  @Test
+  void testGetTraceId(){
+    // Given
+    String expectedResult = "TRACEID";
+    setTraceId(expectedResult);
+
+    // When
+    String result = Utilities.getTraceId();
+
+    // Then
+    Assertions.assertSame(expectedResult, result);
+    clearTraceIdContext();
+  }
+
+  @Test
+  void testGetSpanId(){
+    // Given
+    String expectedResult = "SPANID";
+    setTraceId("TRACEID", expectedResult);
+
+    // When
+    String result = Utilities.getSpanId();
+
+    // Then
+    Assertions.assertSame(expectedResult, result);
+    clearTraceIdContext();
+  }
   @Test
   void givenInvalidIbanWhenIsValidIbanThenReturnFalse() {
     String iban = "test";
@@ -46,27 +84,6 @@ public class UtilitiesTest {
   @ValueSource(strings = {"", "12345", "12345abc123", "1234/abc123", "00000000001"})
   void testValidateEmptyPIVA(String piva){
     assertFalse(Utilities.isValidPIVA(piva, true));
-  }
-
-  @Test
-  void testGetTraceId(){
-    // Given
-    String expectedResult = "TRACEID";
-    setTraceId(expectedResult);
-
-    // When
-    String result = Utilities.getTraceId();
-
-    // Then
-    Assertions.assertSame(expectedResult, result);
-    clearTraceIdContext();
-  }
-
-  public static void setTraceId(String traceId) {
-    MDC.put("traceId", traceId);
-  }
-  public static void clearTraceIdContext(){
-    MDC.clear();
   }
 
   @Test

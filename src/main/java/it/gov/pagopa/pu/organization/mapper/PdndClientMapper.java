@@ -1,6 +1,7 @@
 package it.gov.pagopa.pu.organization.mapper;
 
 import it.gov.pagopa.pu.organization.dto.generated.PdndClientDTO;
+import it.gov.pagopa.pu.organization.dto.generated.PdndClientNoSecretDTO;
 import it.gov.pagopa.pu.organization.model.PdndClient;
 import it.gov.pagopa.pu.organization.service.pdnd.PdndClientEncryptionService;
 import lombok.RequiredArgsConstructor;
@@ -41,5 +42,20 @@ public class PdndClientMapper {
     pdndClientDTO.setPrivateKey(encryptionService.decryptKey(pdndClient.getPrivateKeyCipher()));
     pdndClientDTO.setPublicKey(pdndClient.getPublicKey());
     return pdndClientDTO;
+  }
+
+  public PdndClientNoSecretDTO mapToPdndClientNoSecretDTO(PdndClient pdndClient) {
+    if (pdndClient == null) {
+      return null;
+    }
+
+    return PdndClientNoSecretDTO.builder()
+      .clientId(pdndClient.getClientId())
+      .organizationId(pdndClient.getOrganizationId())
+      .subUnitCode(pdndClient.getSubUnitCode())
+      .clientName(pdndClient.getClientName())
+      .kid(pdndClient.getKid())
+      .publicKey(pdndClient.getPublicKey())
+      .build();
   }
 }
