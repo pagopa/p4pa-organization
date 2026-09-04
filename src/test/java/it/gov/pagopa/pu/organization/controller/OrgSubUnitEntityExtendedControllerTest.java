@@ -21,13 +21,8 @@ class OrgSubUnitEntityExtendedControllerTest {
 
   private OrgSubUnitEntityExtendedController controller;
 
-  private final String traceId = "traceId";
-  private final String userId = "userId";
-
   @BeforeEach
   void init() {
-    UtilitiesTest.setTraceId(traceId);
-    SecurityUtilsTest.configureSecurityContext("accessToken", userId);
     controller = new OrgSubUnitEntityExtendedController(repositoryMock);
   }
 
@@ -44,6 +39,6 @@ class OrgSubUnitEntityExtendedControllerTest {
 
     controller.updateStatus(orgId, subUnitCode, newStatus);
 
-    verify(repositoryMock).updateStatus(orgId, subUnitCode, newStatus, userId, traceId);
+    verify(repositoryMock).updateStatus(orgId, subUnitCode, newStatus);
   }
 }

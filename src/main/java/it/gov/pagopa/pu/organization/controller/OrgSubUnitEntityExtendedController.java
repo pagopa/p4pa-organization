@@ -22,7 +22,7 @@ public class OrgSubUnitEntityExtendedController implements OrgSubUnitEntityExten
   @Override
   public ResponseEntity<Void> updateStatus(Long organizationId, String subUnitCode, OrgSubUnitStatus status) {
     log.info("Updating status to {} for OrgSubUnit [organizationId={}, subUnitCode={}]", status, organizationId, subUnitCode);
-    repository.updateStatus(organizationId, subUnitCode, status, SecurityUtils.getCurrentUserExternalId(), Utilities.getTraceId());
+    repository.updateStatus(organizationId, subUnitCode, status);
     return ResponseEntity.ok().build();
   }
 }

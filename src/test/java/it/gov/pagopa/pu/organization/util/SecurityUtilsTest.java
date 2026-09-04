@@ -16,17 +16,6 @@ import java.net.URI;
 
 public class SecurityUtilsTest {
 
-  public static void configureSecurityContext(String principalName) {
-    configureSecurityContext("TOKENHEADER.TOKENPAYLOAD.TOKENDIGEST", principalName);
-  }
-
-  public static void configureSecurityContext(String accessToken, String principalName) {
-    SecurityContextHolder.setContext(new SecurityContextImpl(new JwtAuthenticationToken(Jwt
-      .withTokenValue(accessToken)
-      .header("", "")
-      .claim("", "")
-      .build(), null, principalName)));
-  }
   @AfterEach
   void clear(){
     SecurityContextHolder.clearContext();
