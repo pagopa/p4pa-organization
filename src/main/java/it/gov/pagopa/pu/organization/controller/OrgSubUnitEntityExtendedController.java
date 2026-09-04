@@ -3,8 +3,6 @@ package it.gov.pagopa.pu.organization.controller;
 import it.gov.pagopa.pu.organization.controller.generated.OrgSubUnitEntityExtendedControllerApi;
 import it.gov.pagopa.pu.organization.enums.OrgSubUnitStatus;
 import it.gov.pagopa.pu.organization.repository.OrgSubUnitRepository;
-import it.gov.pagopa.pu.organization.util.SecurityUtils;
-import it.gov.pagopa.pu.organization.util.Utilities;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.RestController;

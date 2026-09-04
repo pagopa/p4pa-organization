@@ -2,8 +2,6 @@ package it.gov.pagopa.pu.organization.controller;
 
 import it.gov.pagopa.pu.organization.enums.OrgSubUnitStatus;
 import it.gov.pagopa.pu.organization.repository.OrgSubUnitRepository;
-import it.gov.pagopa.pu.organization.util.SecurityUtilsTest;
-import it.gov.pagopa.pu.organization.util.UtilitiesTest;
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
