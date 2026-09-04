@@ -77,9 +77,9 @@ public interface OrgSubUnitRepository extends JpaRepository<OrgSubUnit, OrgSubUn
   @Modifying
   @Query("""
         UPDATE OrgSubUnit o
-        SET o.status = :newStatus
+        SET o.status = :newStatus, o.updateDate = CURRENT_TIMESTAMP, o.updateOperatorExternalId = :currentUserExternalId, o.updateTraceId = :traceId
         WHERE o.id.organizationId = :organizationId
         AND o.id.subUnitCode = :subUnitCode
         """)
-  void updateStatus(Long organizationId, String subUnitCode, OrgSubUnitStatus newStatus);
+  void updateStatus(Long organizationId, String subUnitCode, OrgSubUnitStatus newStatus, String currentUserExternalId, String traceId);
 }
