@@ -7,7 +7,6 @@ import it.gov.pagopa.pu.organization.dto.generated.OrganizationCreateDTO;
 import it.gov.pagopa.pu.organization.enums.OrganizationAdditionalLanguage;
 import it.gov.pagopa.pu.organization.enums.OrganizationStatus;
 import it.gov.pagopa.pu.organization.model.Organization;
-import it.gov.pagopa.pu.organization.repository.OrgSubUnitRepository;
 import it.gov.pagopa.pu.organization.service.organization.OrganizationEncryptionService;
 import it.gov.pagopa.pu.organization.service.organizationkeys.OrganizationKeysService;
 import it.gov.pagopa.pu.organization.util.TestUtils;
@@ -172,7 +171,7 @@ class OrganizationMapperTest {
     assertThat(dto.getSendApiKey()).isEqualTo("plainSendApiKey");
     assertThat(dto.getGenerateNoticeApiKey()).isEqualTo("plainGenerateNoticeApiKey");
     assertThat(dto.getSegregationCode()).isEqualTo("segregationCode");
-    // TODO: add assert for orgSubUnit count
+    assertThat(dto.getOrgSubUnitCount()).isEqualTo(1L);
   }
 
   @Test

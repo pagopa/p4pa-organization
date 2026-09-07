@@ -383,7 +383,6 @@ class OrganizationServiceTest {
 
     assertNotNull(result);
     assertEquals(expectedDto.getOrganizationId(), result.getOrganizationId());
-    verify(organizationRepositoryMock, times(2)).findById(organizationId);
     verify(organizationStationMapperMock).mapToDTO(org, null);
     verify(organizationMapperMock).mapToOrganizationDetailDTO(org, "segregationCode", 1L);
   }

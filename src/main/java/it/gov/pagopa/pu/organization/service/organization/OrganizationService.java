@@ -113,7 +113,8 @@ public class OrganizationService {
     Organization org = organizationRepository.findById(organizationId)
       .orElseThrow(() -> new OrganizationNotFoundException(ORGANIZATION_NOT_FOUND_MSG.formatted(organizationId)));
 
-    OrganizationStationDTO organizationStationDTO = getOrganizationStation(org.getOrganizationId(), null);
+    OrganizationStationDTO organizationStationDTO = organizationStationMapper.mapToDTO(org, null);
+
     Long subUnitCount = orgSubUnitRepository.countByIdOrganizationId(organizationId);
 
     return organizationMapper.mapToOrganizationDetailDTO(org, organizationStationDTO.getSegregationCode(), subUnitCount);
