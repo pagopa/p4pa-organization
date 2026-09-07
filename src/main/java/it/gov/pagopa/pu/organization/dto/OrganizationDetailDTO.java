@@ -20,4 +20,5 @@ public class OrganizationDetailDTO extends OrganizationCreateDTO implements Base
   private Boolean flagTreasury;
   private Long defaultOrganizationStationId;
   private Long orgSubUnitCount;
+  private String orgTypeDescription;
 }

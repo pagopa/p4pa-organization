@@ -53,7 +53,7 @@ public class OrganizationMapper {
     return organization;
   }
 
-  public OrganizationDetailDTO mapToOrganizationDetailDTO(Organization org, String segregationCode, Long subUnitCount) {
+  public OrganizationDetailDTO mapToOrganizationDetailDTO(Organization org, String segregationCode, Long subUnitCount, String orgTypeDescription) {
     if (org == null) {
       return null;
     }
@@ -90,6 +90,7 @@ public class OrganizationMapper {
     dto.setZipCode(org.getZipCode());
     dto.setCity(org.getCity());
     dto.setOrgSubUnitCount(subUnitCount);
+    dto.setOrgTypeDescription(orgTypeDescription);
 
     return dto;
   }

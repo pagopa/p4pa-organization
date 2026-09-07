@@ -18,9 +18,11 @@ import it.gov.pagopa.pu.organization.mapper.OrganizationStationMapper;
 import it.gov.pagopa.pu.organization.model.Broker;
 import it.gov.pagopa.pu.organization.model.Organization;
 import it.gov.pagopa.pu.organization.model.OrganizationStation;
+import it.gov.pagopa.pu.organization.model.taxonomy.TaxonomyOrganizationTypeDTO;
 import it.gov.pagopa.pu.organization.repository.BrokerRepository;
 import it.gov.pagopa.pu.organization.repository.OrgSubUnitRepository;
 import it.gov.pagopa.pu.organization.repository.OrganizationRepository;
+import it.gov.pagopa.pu.organization.repository.taxonomy.TaxonomyOrganizationTypeRepository;
 import it.gov.pagopa.pu.organization.service.brokerkeys.BrokerKeysService;
 import it.gov.pagopa.pu.organization.service.organizationkeys.OrganizationKeysService;
 import it.gov.pagopa.pu.organization.service.organizationstation.DefaultOrganizationStationService;
@@ -31,6 +33,7 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 
 import java.util.Objects;
+import java.util.Optional;
 
 @Service
 @RequiredArgsConstructor
@@ -46,6 +49,7 @@ public class OrganizationService {
   private final OrganizationValidatorService organizationValidatorService;
   private final OrganizationKeysService organizationKeysService;
   private final OrgSubUnitRepository orgSubUnitRepository;
+  private final TaxonomyOrganizationTypeRepository taxonomyOrganizationTypeRepository;
 
   private static final String ORGANIZATION_NOT_FOUND_MSG = "Organization with id %s not found";
 
@@ -117,7 +121,14 @@ public class OrganizationService {
 
     Long subUnitCount = orgSubUnitRepository.countByIdOrganizationId(organizationId);
 
-    return organizationMapper.mapToOrganizationDetailDTO(org, organizationStationDTO.getSegregationCode(), subUnitCount);
+    Optional<TaxonomyOrganizationTypeDTO> taxonomyOrganizationTypeDTO = taxonomyOrganizationTypeRepository
+      .findFirstByOrganizationType(org.getOrgTypeCode());
+
+    String organizationTypeDescription = taxonomyOrganizationTypeDTO
+      .map(TaxonomyOrganizationTypeDTO::getOrganizationTypeDescription)
+      .orElse(null);
+
+    return organizationMapper.mapToOrganizationDetailDTO(org, organizationStationDTO.getSegregationCode(), subUnitCount, organizationTypeDescription);
   }
 
   public OrganizationStationDTO getOrganizationStation(Long organizationId, String stationId){

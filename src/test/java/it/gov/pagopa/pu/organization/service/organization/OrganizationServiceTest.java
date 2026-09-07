@@ -18,9 +18,11 @@ import it.gov.pagopa.pu.organization.mapper.OrganizationStationMapper;
 import it.gov.pagopa.pu.organization.model.Broker;
 import it.gov.pagopa.pu.organization.model.Organization;
 import it.gov.pagopa.pu.organization.model.OrganizationStation;
+import it.gov.pagopa.pu.organization.model.taxonomy.TaxonomyOrganizationTypeDTO;
 import it.gov.pagopa.pu.organization.repository.BrokerRepository;
 import it.gov.pagopa.pu.organization.repository.OrgSubUnitRepository;
 import it.gov.pagopa.pu.organization.repository.OrganizationRepository;
+import it.gov.pagopa.pu.organization.repository.taxonomy.TaxonomyOrganizationTypeRepository;
 import it.gov.pagopa.pu.organization.service.brokerkeys.BrokerKeysService;
 import it.gov.pagopa.pu.organization.service.organizationkeys.OrganizationKeysService;
 import it.gov.pagopa.pu.organization.service.organizationstation.DefaultOrganizationStationService;
@@ -69,6 +71,8 @@ class OrganizationServiceTest {
   private OrganizationKeysService organizationKeysServiceMock;
   @Mock
   private OrgSubUnitRepository orgSubUnitRepositoryMock;
+  @Mock
+  private TaxonomyOrganizationTypeRepository taxonomyOrganizationTypeRepositoryMock;
 
   @InjectMocks
   private OrganizationService service;
@@ -85,7 +89,8 @@ class OrganizationServiceTest {
       defaultOrganizationStationServiceMock,
       organizationValidatorServiceMock,
       organizationKeysServiceMock,
-      orgSubUnitRepositoryMock
+      orgSubUnitRepositoryMock,
+      taxonomyOrganizationTypeRepositoryMock
     );
   }
 
@@ -367,6 +372,7 @@ class OrganizationServiceTest {
     Long organizationId = 1L;
     Organization org = new Organization();
     org.setOrganizationId(organizationId);
+    org.setOrgTypeCode("01");
 
     OrganizationDetailDTO expectedDto = new OrganizationDetailDTO();
     expectedDto.setOrganizationId(organizationId);
@@ -374,17 +380,23 @@ class OrganizationServiceTest {
     OrganizationStationDTO organizationStationDTO = new OrganizationStationDTO();
     organizationStationDTO.setSegregationCode("segregationCode");
 
+    TaxonomyOrganizationTypeDTO taxonomyOrgType = new TaxonomyOrganizationTypeDTO();
+    taxonomyOrgType.setOrganizationType("01");
+    taxonomyOrgType.setOrganizationTypeDescription("orgTypeDescription");
+
     when(organizationRepositoryMock.findById(organizationId)).thenReturn(Optional.of(org));
     when(organizationStationMapperMock.mapToDTO(org, null)).thenReturn(organizationStationDTO);
     when(orgSubUnitRepositoryMock.countByIdOrganizationId(organizationId)).thenReturn(1L);
-    when(organizationMapperMock.mapToOrganizationDetailDTO(org, "segregationCode", 1L)).thenReturn(expectedDto);
+    when(taxonomyOrganizationTypeRepositoryMock.findFirstByOrganizationType(org.getOrgTypeCode()))
+      .thenReturn(Optional.of(taxonomyOrgType));
+    when(organizationMapperMock.mapToOrganizationDetailDTO(org, "segregationCode", 1L, taxonomyOrgType.getOrganizationTypeDescription())).thenReturn(expectedDto);
 
     OrganizationDetailDTO result = service.getOrganization(organizationId);
 
     assertNotNull(result);
     assertEquals(expectedDto.getOrganizationId(), result.getOrganizationId());
     verify(organizationStationMapperMock).mapToDTO(org, null);
-    verify(organizationMapperMock).mapToOrganizationDetailDTO(org, "segregationCode", 1L);
+    verify(organizationMapperMock).mapToOrganizationDetailDTO(org, "segregationCode", 1L, "orgTypeDescription");
   }
 
   @Test

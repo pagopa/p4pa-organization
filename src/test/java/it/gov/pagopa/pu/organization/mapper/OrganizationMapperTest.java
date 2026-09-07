@@ -113,7 +113,7 @@ class OrganizationMapperTest {
 
   @Test
   void givenNullOrganizationWhenMapToOrganizationDetailDTOThenReturnNull() {
-    assertNull(organizationMapper.mapToOrganizationDetailDTO(null, null, null));
+    assertNull(organizationMapper.mapToOrganizationDetailDTO(null, null, null, null));
   }
 
   @Test
@@ -151,7 +151,7 @@ class OrganizationMapperTest {
     when(organizationKeysServiceMock.getApiKey(org.getOrganizationId(), OrganizationApiKeyType.SEND, null)).thenReturn("plainSendApiKey");
     when(organizationKeysServiceMock.getApiKey(org.getOrganizationId(), OrganizationApiKeyType.GENERATE_NOTICE, null)).thenReturn("plainGenerateNoticeApiKey");
 
-    OrganizationDetailDTO dto = organizationMapper.mapToOrganizationDetailDTO(org, "segregationCode", 1L);
+    OrganizationDetailDTO dto = organizationMapper.mapToOrganizationDetailDTO(org, "segregationCode", 1L, "orgTypeDescription");
 
     assertNotNull(dto);
     assertThat(dto)
@@ -162,7 +162,8 @@ class OrganizationMapperTest {
         "sendApiKey",
         "generateNoticeApiKey",
         "segregationCode",
-        "orgSubUnitCount"
+        "orgSubUnitCount",
+        "orgTypeDescription"
       )
       .isEqualTo(org);
 
@@ -172,6 +173,7 @@ class OrganizationMapperTest {
     assertThat(dto.getGenerateNoticeApiKey()).isEqualTo("plainGenerateNoticeApiKey");
     assertThat(dto.getSegregationCode()).isEqualTo("segregationCode");
     assertThat(dto.getOrgSubUnitCount()).isEqualTo(1L);
+    assertThat(dto.getOrgTypeDescription()).isEqualTo("orgTypeDescription");
   }
 
   @Test
