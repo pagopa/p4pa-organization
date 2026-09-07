@@ -13,11 +13,10 @@ import lombok.experimental.SuperBuilder;
 @AllArgsConstructor
 @NoArgsConstructor
 @SuperBuilder(toBuilder = true)
-public class OrganizationDetailDTO extends OrganizationCreateDTO implements BaseOrganization {
+public class OrganizationUpdateDTO extends OrganizationCreateDTO implements BaseOrganization {
   @NotNull
   private Long organizationId;
   @NotNull
   private Boolean flagTreasury;
   private Long defaultOrganizationStationId;
-  private Long orgSubUnitCount;
 }

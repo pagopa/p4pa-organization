@@ -23,6 +23,9 @@ import static it.gov.pagopa.pu.organization.util.Constants.UPDATE_AUDIT_FIELDS_S
 
 @RepositoryRestResource(path = "org-sub-unit")
 public interface OrgSubUnitRepository extends JpaRepository<OrgSubUnit, OrgSubUnit.OrgSubUnitId> {
+  @RestResource(exported = false)
+  Long countByIdOrganizationId(Long organizationId);
+
   @Query("""
       select orgSub
       from OrgSubUnit orgSub

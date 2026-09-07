@@ -1,6 +1,7 @@
 package it.gov.pagopa.pu.organization.mapper;
 
 import it.gov.pagopa.pu.organization.dto.OrganizationDetailDTO;
+import it.gov.pagopa.pu.organization.dto.OrganizationUpdateDTO;
 import it.gov.pagopa.pu.organization.dto.generated.OrganizationApiKeyType;
 import it.gov.pagopa.pu.organization.dto.generated.OrganizationCreateDTO;
 import it.gov.pagopa.pu.organization.model.Organization;
@@ -17,7 +18,7 @@ public class OrganizationMapper {
   private final OrganizationEncryptionService encryptionService;
   private final OrganizationKeysService organizationKeysService;
 
-  public Organization toModel(OrganizationCreateDTO createDTO) {
+  public Organization mapOrganizationCreateDTOToModel(OrganizationCreateDTO createDTO) {
     if (createDTO == null) {
       return null;
     }
@@ -52,7 +53,7 @@ public class OrganizationMapper {
     return organization;
   }
 
-  public OrganizationDetailDTO mapToDTO(Organization org, String segregationCode) {
+  public OrganizationDetailDTO mapToOrganizationDetailDTO(Organization org, String segregationCode, Long subUnitCount) {
     if (org == null) {
       return null;
     }
@@ -88,18 +89,19 @@ public class OrganizationMapper {
     dto.setAddress(org.getAddress());
     dto.setZipCode(org.getZipCode());
     dto.setCity(org.getCity());
+    dto.setOrgSubUnitCount(subUnitCount);
 
     return dto;
   }
 
-  public Organization toModel(OrganizationDetailDTO organizationDetailDTO) {
-    if (organizationDetailDTO == null) {
+  public Organization mapOrganizationUpdateDTOToModel(OrganizationUpdateDTO organizationUpdateDTO) {
+    if (organizationUpdateDTO == null) {
       return null;
     }
-    Organization organization = toModel((OrganizationCreateDTO) organizationDetailDTO);
-    organization.setOrganizationId(organizationDetailDTO.getOrganizationId());
-    organization.setFlagTreasury(organizationDetailDTO.getFlagTreasury());
-    organization.setDefaultOrganizationStationId(organizationDetailDTO.getDefaultOrganizationStationId());
+    Organization organization = mapOrganizationCreateDTOToModel(organizationUpdateDTO);
+    organization.setOrganizationId(organizationUpdateDTO.getOrganizationId());
+    organization.setFlagTreasury(organizationUpdateDTO.getFlagTreasury());
+    organization.setDefaultOrganizationStationId(organizationUpdateDTO.getDefaultOrganizationStationId());
     return organization;
   }
 }

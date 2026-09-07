@@ -3,6 +3,7 @@ package it.gov.pagopa.pu.organization.controller;
 import it.gov.pagopa.pu.organization.controller.generated.OrganizationApi;
 import it.gov.pagopa.pu.organization.dto.OrganizationDetailDTO;
 import it.gov.pagopa.pu.organization.dto.OrganizationStationDTO;
+import it.gov.pagopa.pu.organization.dto.OrganizationUpdateDTO;
 import it.gov.pagopa.pu.organization.dto.generated.OrganizationApiKeyType;
 import it.gov.pagopa.pu.organization.dto.generated.OrganizationApiKeys;
 import it.gov.pagopa.pu.organization.dto.generated.OrganizationCreateDTO;
@@ -62,9 +63,9 @@ public class OrganizationController implements OrganizationApi {
   }
 
   @Override
-  public ResponseEntity<Void> updateOrganization(OrganizationDetailDTO organizationDetailDTO) {
-    log.info("Updating organization {}", organizationDetailDTO.getOrganizationId());
-    service.updateOrganization(organizationDetailDTO, SecurityUtils.getAccessToken());
+  public ResponseEntity<Void> updateOrganization(OrganizationUpdateDTO organizationUpdateDTO) {
+    log.info("Updating organization {}", organizationUpdateDTO.getOrganizationId());
+    service.updateOrganization(organizationUpdateDTO, SecurityUtils.getAccessToken());
     return ResponseEntity.ok().build();
   }
 

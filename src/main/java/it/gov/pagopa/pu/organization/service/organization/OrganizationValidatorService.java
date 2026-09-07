@@ -1,7 +1,7 @@
 package it.gov.pagopa.pu.organization.service.organization;
 
 import it.gov.pagopa.pu.organization.dto.BaseOrganization;
-import it.gov.pagopa.pu.organization.dto.OrganizationDetailDTO;
+import it.gov.pagopa.pu.organization.dto.OrganizationUpdateDTO;
 import it.gov.pagopa.pu.organization.dto.generated.OrganizationCreateDTO;
 import it.gov.pagopa.pu.organization.enums.OrganizationStatus;
 import it.gov.pagopa.pu.organization.exception.common.InvalidValueException;
@@ -32,9 +32,9 @@ public class OrganizationValidatorService {
     validatePostalIban(organizationCreateDTO);
   }
 
-  public void validateOrganizationDTO(OrganizationDetailDTO organization, Organization existingOrganization) {
+  public void validateOrganizationDTO(OrganizationUpdateDTO organization, Organization existingOrganization) {
     validateOrganizationCreateDTO(organization);
-    checkReadOnlyFields(existingOrganization,organization);
+    checkReadOnlyFields(existingOrganization, organization);
     validateStatusUpdate(organization);
   }
 
@@ -89,7 +89,7 @@ public class OrganizationValidatorService {
     }
   }
 
-  private void checkReadOnlyFields(Organization existingOrganization, OrganizationDetailDTO organization) {
+  private void checkReadOnlyFields(Organization existingOrganization, OrganizationUpdateDTO organization) {
     List<String> modifiedFields = new ArrayList<>();
     checkImmutableField("brokerId", existingOrganization.getBrokerId(), organization.getBrokerId(), modifiedFields);
     checkImmutableField("externalOrganizationId", existingOrganization.getExternalOrganizationId(), organization.getExternalOrganizationId(), modifiedFields);

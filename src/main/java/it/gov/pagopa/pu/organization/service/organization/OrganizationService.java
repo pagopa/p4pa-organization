@@ -4,6 +4,7 @@ import it.gov.pagopa.pu.organization.connector.debtposition.client.DebtPositionT
 import it.gov.pagopa.pu.organization.connector.workflow.service.WorkflowDebtPositionService;
 import it.gov.pagopa.pu.organization.dto.OrganizationDetailDTO;
 import it.gov.pagopa.pu.organization.dto.OrganizationStationDTO;
+import it.gov.pagopa.pu.organization.dto.OrganizationUpdateDTO;
 import it.gov.pagopa.pu.organization.dto.generated.BrokerApiKeyType;
 import it.gov.pagopa.pu.organization.dto.generated.OrganizationApiKeyType;
 import it.gov.pagopa.pu.organization.dto.generated.OrganizationApiKeys;
@@ -18,6 +19,7 @@ import it.gov.pagopa.pu.organization.model.Broker;
 import it.gov.pagopa.pu.organization.model.Organization;
 import it.gov.pagopa.pu.organization.model.OrganizationStation;
 import it.gov.pagopa.pu.organization.repository.BrokerRepository;
+import it.gov.pagopa.pu.organization.repository.OrgSubUnitRepository;
 import it.gov.pagopa.pu.organization.repository.OrganizationRepository;
 import it.gov.pagopa.pu.organization.service.brokerkeys.BrokerKeysService;
 import it.gov.pagopa.pu.organization.service.organizationkeys.OrganizationKeysService;
@@ -43,6 +45,7 @@ public class OrganizationService {
   private final DefaultOrganizationStationService defaultOrganizationStationService;
   private final OrganizationValidatorService organizationValidatorService;
   private final OrganizationKeysService organizationKeysService;
+  private final OrgSubUnitRepository orgSubUnitRepository;
 
   private static final String ORGANIZATION_NOT_FOUND_MSG = "Organization with id %s not found";
 
@@ -54,7 +57,7 @@ public class OrganizationService {
   public Organization createOrganization(OrganizationCreateDTO organizationCreateDTO, String accessToken) {
     organizationValidatorService.validateOrganizationCreateDTO(organizationCreateDTO);
 
-    Organization organization = organizationRepository.save(organizationMapper.toModel(organizationCreateDTO));
+    Organization organization = organizationRepository.save(organizationMapper.mapOrganizationCreateDTOToModel(organizationCreateDTO));
 
     Long organizationId = organization.getOrganizationId();
 
@@ -111,8 +114,9 @@ public class OrganizationService {
       .orElseThrow(() -> new OrganizationNotFoundException(ORGANIZATION_NOT_FOUND_MSG.formatted(organizationId)));
 
     OrganizationStationDTO organizationStationDTO = getOrganizationStation(org.getOrganizationId(), null);
+    Long subUnitCount = orgSubUnitRepository.countByIdOrganizationId(organizationId);
 
-    return organizationMapper.mapToDTO(org, organizationStationDTO.getSegregationCode());
+    return organizationMapper.mapToOrganizationDetailDTO(org, organizationStationDTO.getSegregationCode(), subUnitCount);
   }
 
   public OrganizationStationDTO getOrganizationStation(Long organizationId, String stationId){
@@ -123,7 +127,7 @@ public class OrganizationService {
   }
 
   @Transactional
-  public void updateOrganization(OrganizationDetailDTO organization, String accessToken) {
+  public void updateOrganization(OrganizationUpdateDTO organization, String accessToken) {
     Long organizationId = organization.getOrganizationId();
 
     Organization existingOrganization = organizationRepository.findById(organizationId)
@@ -133,7 +137,7 @@ public class OrganizationService {
 
     organizationValidatorService.validateOrganizationDTO(organization, existingOrganization);
     triggerMassiveIbanUpdateIfNeeded(existingOrganization, organization, accessToken);
-    organizationRepository.save(organizationMapper.toModel(organization));
+    organizationRepository.save(organizationMapper.mapOrganizationUpdateDTOToModel(organization));
   }
 
   public void updateOrganizationExternalId(Long organizationId, String organizationExternalId) {
@@ -143,7 +147,7 @@ public class OrganizationService {
     organizationRepository.save(organization);
   }
 
-  private void handleOrganizationStationUpdate(OrganizationDetailDTO organization) {
+  private void handleOrganizationStationUpdate(OrganizationUpdateDTO organization) {
     String segregationCode = organization.getSegregationCode();
     if (segregationCode == null) {
       if (OrganizationStatus.DRAFT.equals(organization.getStatus())) {
@@ -173,7 +177,7 @@ public class OrganizationService {
     }
   }
 
-  private void triggerMassiveIbanUpdateIfNeeded(Organization existingOrganization, OrganizationDetailDTO organization, String accessToken) {
+  private void triggerMassiveIbanUpdateIfNeeded(Organization existingOrganization, OrganizationUpdateDTO organization, String accessToken) {
     String oldIban = existingOrganization.getIban();
     String newIban = organization.getIban();
     String oldPostalIban = existingOrganization.getPostalIban();

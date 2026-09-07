@@ -200,6 +200,7 @@ tasks.register<org.openapitools.generator.gradle.plugin.tasks.GenerateTask>("ope
       "SilServiceAuthConfigDTO" to "it.gov.pagopa.pu.organization.dto.orgsilservice.SilServiceAuthConfigDTO",
       "OrganizationDetailDTO" to "it.gov.pagopa.pu.organization.dto.OrganizationDetailDTO",
       "Organization" to "it.gov.pagopa.pu.organization.model.Organization",
+      "OrganizationUpdateDTO" to "it.gov.pagopa.pu.organization.dto.OrganizationUpdateDTO",
       "OrganizationAdditionalLanguage" to "it.gov.pagopa.pu.organization.enums.OrganizationAdditionalLanguage",
       "EmailServerConfig" to "it.gov.pagopa.pu.organization.dto.EmailServerConfig",
       "OrganizationStationDTO" to "it.gov.pagopa.pu.organization.dto.OrganizationStationDTO",
