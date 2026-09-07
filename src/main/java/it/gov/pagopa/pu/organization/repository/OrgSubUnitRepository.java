@@ -19,6 +19,8 @@ import org.springframework.web.bind.annotation.RequestParam;
 
 import java.util.List;
 
+import static it.gov.pagopa.pu.organization.util.Constants.UPDATE_AUDIT_FIELDS_SPEL;
+
 @RepositoryRestResource(path = "org-sub-unit")
 public interface OrgSubUnitRepository extends JpaRepository<OrgSubUnit, OrgSubUnit.OrgSubUnitId> {
   @Query("""
@@ -75,11 +77,6 @@ public interface OrgSubUnitRepository extends JpaRepository<OrgSubUnit, OrgSubUn
   @Transactional
   @RestResource(exported = false)
   @Modifying
-  @Query("""
-        UPDATE OrgSubUnit o
-        SET o.status = :newStatus
-        WHERE o.id.organizationId = :organizationId
-        AND o.id.subUnitCode = :subUnitCode
-        """)
+  @Query("UPDATE OrgSubUnit o SET status = :newStatus, " + UPDATE_AUDIT_FIELDS_SPEL + " WHERE o.id.organizationId = :organizationId AND o.id.subUnitCode = :subUnitCode")
   void updateStatus(Long organizationId, String subUnitCode, OrgSubUnitStatus newStatus);
 }
