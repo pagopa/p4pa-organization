@@ -22,6 +22,8 @@ public class OrgSubUnit extends BaseEntity implements Serializable {
   OrgSubUnitId id;
   @Enumerated(EnumType.STRING)
   SubUnitType subUnitType;
+  @NotNull
+  String subUnitName;
   @Enumerated(EnumType.STRING)
   @NotNull
   OrgSubUnitStatus status;
