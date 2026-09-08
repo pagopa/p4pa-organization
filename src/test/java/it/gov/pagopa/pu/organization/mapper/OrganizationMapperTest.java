@@ -1,6 +1,7 @@
 package it.gov.pagopa.pu.organization.mapper;
 
 import it.gov.pagopa.pu.organization.dto.OrganizationDetailDTO;
+import it.gov.pagopa.pu.organization.dto.OrganizationUpdateDTO;
 import it.gov.pagopa.pu.organization.dto.generated.OrganizationApiKeyType;
 import it.gov.pagopa.pu.organization.dto.generated.OrganizationCreateDTO;
 import it.gov.pagopa.pu.organization.enums.OrganizationAdditionalLanguage;
@@ -46,12 +47,12 @@ class OrganizationMapperTest {
   }
 
   @Test
-  void givenNullOrganizationCreateDTOWhenMapToModelThenReturnNull() {
-    assertNull(organizationMapper.toModel((OrganizationCreateDTO) null));
+  void givenNullOrganizationCreateDTOWhenMapOrganizationCreateDTOToModelThenReturnNull() {
+    assertNull(organizationMapper.mapOrganizationCreateDTOToModel(null));
   }
 
   @Test
-  void givenValidOrganizationCreateDTOWhenMapToModelThenReturnValidOrganization() {
+  void givenValidOrganizationCreateDTOWhenMapOrganizationCreateDTOToModelThenReturnValidOrganization() {
     OrganizationCreateDTO dto = OrganizationCreateDTO.builder()
       .externalOrganizationId("externalOrganizationId")
       .ipaCode("ipaCode")
@@ -82,7 +83,7 @@ class OrganizationMapperTest {
     byte[] expectedEncryptedPassword = "encryptedPassword".getBytes(StandardCharsets.UTF_8);
     when(encryptionServiceMock.encrypt(dto.getPassword())).thenReturn(expectedEncryptedPassword);
 
-    Organization result = organizationMapper.toModel(dto);
+    Organization result = organizationMapper.mapOrganizationCreateDTOToModel(dto);
 
     assertNotNull(result);
     TestUtils.checkNotNullFields(result, "organizationId", "creationDate", "updateDate", "updateOperatorExternalId",
@@ -111,12 +112,12 @@ class OrganizationMapperTest {
   }
 
   @Test
-  void givenNullOrganizationWhenMapToDTOThenReturnNull() {
-    assertNull(organizationMapper.mapToDTO(null, null));
+  void givenNullOrganizationWhenMapToOrganizationDetailDTOThenReturnNull() {
+    assertNull(organizationMapper.mapToOrganizationDetailDTO(null, null, null, null));
   }
 
   @Test
-  void givenValidOrganizationWhenMapToDTOThenReturnValidDTO() {
+  void givenValidOrganizationWhenMapToOrganizationDetailDTOThenReturnValidDTO() {
     Organization org = new Organization();
     org.setOrganizationId(1L);
     org.setExternalOrganizationId("externalOrganizationId");
@@ -150,7 +151,7 @@ class OrganizationMapperTest {
     when(organizationKeysServiceMock.getApiKey(org.getOrganizationId(), OrganizationApiKeyType.SEND, null)).thenReturn("plainSendApiKey");
     when(organizationKeysServiceMock.getApiKey(org.getOrganizationId(), OrganizationApiKeyType.GENERATE_NOTICE, null)).thenReturn("plainGenerateNoticeApiKey");
 
-    OrganizationDetailDTO dto = organizationMapper.mapToDTO(org, "segregationCode");
+    OrganizationDetailDTO dto = organizationMapper.mapToOrganizationDetailDTO(org, "segregationCode", 1L, "orgTypeDescription");
 
     assertNotNull(dto);
     assertThat(dto)
@@ -160,7 +161,9 @@ class OrganizationMapperTest {
         "ioApiKey",
         "sendApiKey",
         "generateNoticeApiKey",
-        "segregationCode"
+        "segregationCode",
+        "orgSubUnitCount",
+        "orgTypeDescription"
       )
       .isEqualTo(org);
 
@@ -169,22 +172,24 @@ class OrganizationMapperTest {
     assertThat(dto.getSendApiKey()).isEqualTo("plainSendApiKey");
     assertThat(dto.getGenerateNoticeApiKey()).isEqualTo("plainGenerateNoticeApiKey");
     assertThat(dto.getSegregationCode()).isEqualTo("segregationCode");
+    assertThat(dto.getOrgSubUnitCount()).isEqualTo(1L);
+    assertThat(dto.getOrgTypeDescription()).isEqualTo("orgTypeDescription");
   }
 
   @Test
-  void givenNullOrganizationDetailDTOWhenMapToModelThenReturnNull() {
-    assertNull(organizationMapper.toModel( null));
+  void givenNullOrganizationDetailDTOWhenMapOrganizationUpdateDTOToModelThenReturnNull() {
+    assertNull(organizationMapper.mapOrganizationUpdateDTOToModel(null));
   }
 
   @Test
-  void givenValidOrganizationDetailDTOWhenMapToModelThenReturnValidOrganization() {
-    OrganizationDetailDTO dto = podamFactory.manufacturePojo(OrganizationDetailDTO.class);
+  void givenValidOrganizationUpdateDTOWhenMmpOrganizationUpdateDTOToModelThenReturnValidOrganization() {
+    OrganizationUpdateDTO dto = podamFactory.manufacturePojo(OrganizationUpdateDTO.class);
 
     byte[] expectedEncryptedPassword = "encryptedPassword".getBytes(StandardCharsets.UTF_8);
     when(encryptionServiceMock.encrypt(dto.getPassword())).thenReturn(expectedEncryptedPassword);
 
 
-    Organization result = organizationMapper.toModel(dto);
+    Organization result = organizationMapper.mapOrganizationUpdateDTOToModel(dto);
 
     assertNotNull(result);
     TestUtils.checkNotNullFields(result, "creationDate", "updateDate", "updateOperatorExternalId", "updateTraceId", "defaultOrganizationStationId", "segregationCode",  "ioApiKey", "sendApiKey", "generateNoticeApiKey");

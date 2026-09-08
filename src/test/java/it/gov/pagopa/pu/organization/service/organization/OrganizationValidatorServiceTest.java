@@ -1,6 +1,6 @@
 package it.gov.pagopa.pu.organization.service.organization;
 
-import it.gov.pagopa.pu.organization.dto.OrganizationDetailDTO;
+import it.gov.pagopa.pu.organization.dto.OrganizationUpdateDTO;
 import it.gov.pagopa.pu.organization.dto.generated.OrganizationCreateDTO;
 import it.gov.pagopa.pu.organization.enums.OrganizationStatus;
 import it.gov.pagopa.pu.organization.exception.common.InvalidValueException;
@@ -118,49 +118,49 @@ class OrganizationValidatorServiceTest {
 
   @Test
   void givenValidOrganizationDTOWhenValidateOrganizationDTOThenOk() {
-    OrganizationDetailDTO organizationDetailDTO = podamFactory.manufacturePojo(OrganizationDetailDTO.class);
-    organizationDetailDTO.setOrgFiscalCode("12345678903");
-    organizationDetailDTO.setIban("IT60X0542811101000000123456");
-    organizationDetailDTO.setPostalIban("IT00X0760100000000000000000");
-    organizationDetailDTO.setSegregationCode("02");
-    organizationDetailDTO.setStatus(OrganizationStatus.DRAFT);
+    OrganizationUpdateDTO organizationUpdateDTO = podamFactory.manufacturePojo(OrganizationUpdateDTO.class);
+    organizationUpdateDTO.setOrgFiscalCode("12345678903");
+    organizationUpdateDTO.setIban("IT60X0542811101000000123456");
+    organizationUpdateDTO.setPostalIban("IT00X0760100000000000000000");
+    organizationUpdateDTO.setSegregationCode("02");
+    organizationUpdateDTO.setStatus(OrganizationStatus.DRAFT);
 
     Organization existingOrganization = OrganizationFaker.buildOrganization();
-    existingOrganization.setBrokerId(organizationDetailDTO.getBrokerId());
-    existingOrganization.setExternalOrganizationId(organizationDetailDTO.getExternalOrganizationId());
-    existingOrganization.setIpaCode(organizationDetailDTO.getIpaCode());
-    existingOrganization.setOrgFiscalCode(organizationDetailDTO.getOrgFiscalCode());
-    existingOrganization.setOrgName(organizationDetailDTO.getOrgName());
-    existingOrganization.setOrgTypeCode(organizationDetailDTO.getOrgTypeCode());
+    existingOrganization.setBrokerId(organizationUpdateDTO.getBrokerId());
+    existingOrganization.setExternalOrganizationId(organizationUpdateDTO.getExternalOrganizationId());
+    existingOrganization.setIpaCode(organizationUpdateDTO.getIpaCode());
+    existingOrganization.setOrgFiscalCode(organizationUpdateDTO.getOrgFiscalCode());
+    existingOrganization.setOrgName(organizationUpdateDTO.getOrgName());
+    existingOrganization.setOrgTypeCode(organizationUpdateDTO.getOrgTypeCode());
 
-    assertDoesNotThrow(() -> organizationValidatorService.validateOrganizationDTO(organizationDetailDTO, existingOrganization));
+    assertDoesNotThrow(() -> organizationValidatorService.validateOrganizationDTO(organizationUpdateDTO, existingOrganization));
   }
 
   @Test
   void givenUpdatedImmutableFieldWhenValidateOrganizationDTOThenValidationException() {
-    OrganizationDetailDTO organizationDetailDTO = podamFactory.manufacturePojo(OrganizationDetailDTO.class);
-    organizationDetailDTO.setOrgFiscalCode("12345678903");
-    organizationDetailDTO.setIban("IT60X0542811101000000123456");
-    organizationDetailDTO.setPostalIban("IT00X0760100000000000000000");
-    organizationDetailDTO.setSegregationCode("01");
+    OrganizationUpdateDTO organizationUpdateDTO = podamFactory.manufacturePojo(OrganizationUpdateDTO.class);
+    organizationUpdateDTO.setOrgFiscalCode("12345678903");
+    organizationUpdateDTO.setIban("IT60X0542811101000000123456");
+    organizationUpdateDTO.setPostalIban("IT00X0760100000000000000000");
+    organizationUpdateDTO.setSegregationCode("01");
 
     Organization existingOrganization = OrganizationFaker.buildOrganization();
-    existingOrganization.setBrokerId(organizationDetailDTO.getBrokerId());
-    existingOrganization.setExternalOrganizationId(organizationDetailDTO.getExternalOrganizationId());
-    existingOrganization.setIpaCode(organizationDetailDTO.getIpaCode());
-    existingOrganization.setOrgFiscalCode(organizationDetailDTO.getOrgFiscalCode());
-    existingOrganization.setOrgName(organizationDetailDTO.getOrgName());
-    existingOrganization.setOrgTypeCode(organizationDetailDTO.getOrgTypeCode() + "_old");
+    existingOrganization.setBrokerId(organizationUpdateDTO.getBrokerId());
+    existingOrganization.setExternalOrganizationId(organizationUpdateDTO.getExternalOrganizationId());
+    existingOrganization.setIpaCode(organizationUpdateDTO.getIpaCode());
+    existingOrganization.setOrgFiscalCode(organizationUpdateDTO.getOrgFiscalCode());
+    existingOrganization.setOrgName(organizationUpdateDTO.getOrgName());
+    existingOrganization.setOrgTypeCode(organizationUpdateDTO.getOrgTypeCode() + "_old");
 
     InvalidValueException exception = assertThrows(InvalidValueException.class, () ->
-      organizationValidatorService.validateOrganizationDTO(organizationDetailDTO, existingOrganization));
+      organizationValidatorService.validateOrganizationDTO(organizationUpdateDTO, existingOrganization));
 
     assertEquals(ErrorCodeConstants.ERROR_CODE_IMMUTABLE_FIELD, exception.getCode());
   }
 
   @Test
   void givenStatusActiveAndMissingLogoAndIbanWhenValidateStatusUpdateThenValidationException() {
-    OrganizationDetailDTO organization = new OrganizationDetailDTO();
+    OrganizationUpdateDTO organization = new OrganizationUpdateDTO();
     organization.setStatus(OrganizationStatus.ACTIVE);
     organization.setOrgLogo(null);
     organization.setIban(null);
@@ -179,7 +179,7 @@ class OrganizationValidatorServiceTest {
 
   @Test
   void givenStatusActiveAndMissingStationIdWhenValidateStatusUpdateThenValidationException() {
-    OrganizationDetailDTO organization = new OrganizationDetailDTO();
+    OrganizationUpdateDTO organization = new OrganizationUpdateDTO();
     organization.setStatus(OrganizationStatus.ACTIVE);
     organization.setOrgLogo("orgLogo");
     organization.setIban("IT60X0542811101000000123456");
@@ -194,7 +194,7 @@ class OrganizationValidatorServiceTest {
 
   @Test
   void givenValidActiveStatusWhenValidateStatusUpdateThenOk() {
-    OrganizationDetailDTO organization = new OrganizationDetailDTO();
+    OrganizationUpdateDTO organization = new OrganizationUpdateDTO();
     organization.setStatus(OrganizationStatus.ACTIVE);
     organization.setOrgLogo("logo_url");
     organization.setIban("IT60X0542811101000000123456");
@@ -208,7 +208,7 @@ class OrganizationValidatorServiceTest {
 
   @Test
   void givenDraftStatusWhenValidateStatusUpdateThenOk() {
-    OrganizationDetailDTO organization = new OrganizationDetailDTO();
+    OrganizationUpdateDTO organization = new OrganizationUpdateDTO();
     organization.setStatus(OrganizationStatus.DRAFT);
 
     organization.setOrgLogo(null);

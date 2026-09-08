@@ -3,6 +3,7 @@ package it.gov.pagopa.pu.organization.controller;
 import io.micrometer.tracing.Tracer;
 import it.gov.pagopa.pu.organization.dto.OrganizationDetailDTO;
 import it.gov.pagopa.pu.organization.dto.OrganizationStationDTO;
+import it.gov.pagopa.pu.organization.dto.OrganizationUpdateDTO;
 import it.gov.pagopa.pu.organization.dto.generated.OrganizationApiKeyType;
 import it.gov.pagopa.pu.organization.dto.generated.OrganizationApiKeys;
 import it.gov.pagopa.pu.organization.dto.generated.OrganizationCreateDTO;
@@ -156,16 +157,16 @@ class OrganizationControllerTest {
   void whenUpdateOrganizationThenOk() throws Exception {
     TestUtils.setFakeAccessTokenInContext();
 
-    OrganizationDetailDTO organizationDetailDTO = podamFactory.manufacturePojo(OrganizationDetailDTO.class);
+    OrganizationUpdateDTO organizationUpdateDTO = podamFactory.manufacturePojo(OrganizationUpdateDTO.class);
 
     mockMvc.perform(
                     put("/organization")
                             .contentType(MediaType.APPLICATION_JSON_VALUE)
-                            .content(jsonMapper.writeValueAsString(organizationDetailDTO)))
+                            .content(jsonMapper.writeValueAsString(organizationUpdateDTO)))
             .andExpect(status().isOk())
             .andReturn();
 
-    verify(organizationServiceMock).updateOrganization(organizationDetailDTO, TestUtils.getFakeAccessToken());
+    verify(organizationServiceMock).updateOrganization(organizationUpdateDTO, TestUtils.getFakeAccessToken());
   }
 
   @Test
