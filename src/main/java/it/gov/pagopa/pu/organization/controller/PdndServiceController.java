@@ -1,10 +1,10 @@
 package it.gov.pagopa.pu.organization.controller;
 
 import it.gov.pagopa.pu.organization.controller.generated.PdndServiceApi;
-import it.gov.pagopa.pu.organization.dto.generated.PdndServiceDTO;
 import it.gov.pagopa.pu.organization.dto.generated.PdndServiceRequestDTO;
 import it.gov.pagopa.pu.organization.enums.PdndServiceType;
 import it.gov.pagopa.pu.organization.model.PdndService;
+import it.gov.pagopa.pu.organization.model.view.PdndServiceView;
 import it.gov.pagopa.pu.organization.service.pdnd.PdndServiceService;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.ResponseEntity;
@@ -23,7 +23,7 @@ public class PdndServiceController implements PdndServiceApi {
   }
 
   @Override
-  public ResponseEntity<List<PdndServiceDTO>> getPdndServices(Long organizationId, String subUnitCode, PdndServiceType serviceType) {
+  public ResponseEntity<List<PdndServiceView>> getPdndServices(Long organizationId, String subUnitCode, PdndServiceType serviceType) {
     log.info("Requested PdndServices for organizationId {}", organizationId);
     return ResponseEntity.ok(service.getPdndServices(organizationId, serviceType, subUnitCode));
   }
@@ -35,7 +35,7 @@ public class PdndServiceController implements PdndServiceApi {
   }
 
   @Override
-  public ResponseEntity<PdndServiceDTO> getPdndService(Long organizationId, String purposeId, String subUnitCode) {
+  public ResponseEntity<PdndServiceView> getPdndService(Long organizationId, String purposeId, String subUnitCode) {
     log.info("Requested getPdndService having organizationId {} and purposeId {}", organizationId, purposeId);
     return ResponseEntity.ok(service.getPdndService(organizationId, purposeId, subUnitCode));
   }

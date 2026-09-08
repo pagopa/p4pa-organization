@@ -1,9 +1,9 @@
 package it.gov.pagopa.pu.organization.controller;
 
-import it.gov.pagopa.pu.organization.dto.generated.PdndServiceDTO;
 import it.gov.pagopa.pu.organization.dto.generated.PdndServiceRequestDTO;
 import it.gov.pagopa.pu.organization.enums.PdndServiceType;
 import it.gov.pagopa.pu.organization.model.PdndService;
+import it.gov.pagopa.pu.organization.model.view.PdndServiceView;
 import it.gov.pagopa.pu.organization.service.pdnd.PdndServiceService;
 import it.gov.pagopa.pu.organization.util.TestUtils;
 import org.junit.jupiter.api.AfterEach;
@@ -60,12 +60,12 @@ class PdndServiceControllerTest {
   void whenGetPdndServicesThenOk(){
     Long organizationId = 1L;
     String subUnitCode = "SUBUNITCODE";
-    List<PdndServiceDTO> expectedResponse = List.of(podamFactory.manufacturePojo(PdndServiceDTO.class));
+    List<PdndServiceView> expectedResponse = List.of(podamFactory.manufacturePojo(PdndServiceView.class));
 
     when(pdndServiceServiceMock.getPdndServices(organizationId, PdndServiceType.SEND, subUnitCode))
       .thenReturn(expectedResponse);
 
-    ResponseEntity<List<PdndServiceDTO>> response = pdndServiceController
+    ResponseEntity<List<PdndServiceView>> response = pdndServiceController
       .getPdndServices(organizationId, subUnitCode, PdndServiceType.SEND);
 
     assertNotNull(response);
@@ -78,12 +78,12 @@ class PdndServiceControllerTest {
     String purposeId = "PURPOSE_ID";
     String subUnitCode = "SUB_01";
 
-    PdndServiceDTO expectedResponse = podamFactory.manufacturePojo(PdndServiceDTO.class);
+    PdndServiceView expectedResponse = podamFactory.manufacturePojo(PdndServiceView.class);
 
     when(pdndServiceServiceMock.getPdndService(organizationId, purposeId, subUnitCode))
       .thenReturn(expectedResponse);
 
-    ResponseEntity<PdndServiceDTO> response = pdndServiceController.getPdndService(organizationId, purposeId, subUnitCode);
+    ResponseEntity<PdndServiceView> response = pdndServiceController.getPdndService(organizationId, purposeId, subUnitCode);
 
     assertNotNull(response);
     assertEquals(HttpStatus.OK, response.getStatusCode());
