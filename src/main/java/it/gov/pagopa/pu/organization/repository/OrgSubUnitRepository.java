@@ -17,7 +17,9 @@ import org.springframework.data.rest.core.annotation.RestResource;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.bind.annotation.RequestParam;
 
+import java.util.Collection;
 import java.util.List;
+import java.util.Set;
 
 import static it.gov.pagopa.pu.organization.util.Constants.UPDATE_AUDIT_FIELDS_SPEL;
 
@@ -82,4 +84,14 @@ public interface OrgSubUnitRepository extends JpaRepository<OrgSubUnit, OrgSubUn
   @Modifying
   @Query("UPDATE OrgSubUnit o SET status = :newStatus, " + UPDATE_AUDIT_FIELDS_SPEL + " WHERE o.id.organizationId = :organizationId AND o.id.subUnitCode = :subUnitCode")
   void updateStatus(Long organizationId, String subUnitCode, OrgSubUnitStatus newStatus);
+
+  @Query("""
+      SELECT osu.id.subUnitCode
+      FROM OrgSubUnit osu
+      WHERE osu.id.organizationId = :organizationId
+      AND osu.id.subUnitCode IN :subUnitCodes
+      """)
+  Set<String> findExistingSubUnitCodes(
+    @Param("organizationId") Long organizationId,
+    @Param("subUnitCodes") Collection<String> subUnitCodes);
 }
