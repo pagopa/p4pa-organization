@@ -142,14 +142,13 @@ class PdndServiceServiceTest {
   void whenGetPdndServiceThenOk() {
     Long organizationId = 1L;
     String purposeId = "PURPOSE_ID";
-    String subUnitCode = "SUB_01";
 
     PdndServiceView expectedResult = podamFactory.manufacturePojo(PdndServiceView.class);
 
-    when(pdndServiceViewRepositoryMock.findByOrganizationIdAndPurposeIdAndSubUnitCode(organizationId, purposeId, subUnitCode))
+    when(pdndServiceViewRepositoryMock.findByOrganizationIdAndPurposeId(organizationId, purposeId))
       .thenReturn(Optional.of(expectedResult));
 
-    PdndServiceView result = service.getPdndService(organizationId, purposeId, subUnitCode);
+    PdndServiceView result = service.getPdndService(organizationId, purposeId);
 
     assertSame(expectedResult, result);
   }
@@ -158,43 +157,38 @@ class PdndServiceServiceTest {
   void givenPdndServiceNotFoundWhenGetPdndServiceThenThrowNotFoundException() {
     Long organizationId = 1L;
     String purposeId = "PURPOSE_ID";
-    String subUnitCode = "SUB_01";
 
-    when(pdndServiceViewRepositoryMock.findByOrganizationIdAndPurposeIdAndSubUnitCode(organizationId, purposeId, subUnitCode))
+    when(pdndServiceViewRepositoryMock.findByOrganizationIdAndPurposeId(organizationId, purposeId))
       .thenReturn(Optional.empty());
 
     NotFoundException exception = assertThrows(
       NotFoundException.class,
-      () -> service.getPdndService(organizationId, purposeId, subUnitCode));
+      () -> service.getPdndService(organizationId, purposeId));
 
     assertEquals(ErrorCodeConstants.ERROR_CODE_PDND_SERVICE_NOT_FOUND, exception.getCode());
   }
 
   @Test
   void whenDeletePdndServiceThenOk() {
-    Long organizationId = 1L;
     String purposeId = "PURPOSE_ID";
-    String subUnitCode = "SUB_01";
 
     PdndService pdndService = podamFactory.manufacturePojo(PdndService.class);
 
-    when(pdndServiceRepositoryMock.findByOrganizationIdAndPurposeIdAndSubUnitCode(organizationId, purposeId, subUnitCode))
+    when(pdndServiceRepositoryMock.findById(purposeId))
       .thenReturn(Optional.of(pdndService));
 
-    assertDoesNotThrow(() -> service.deletePdndService(organizationId, purposeId, subUnitCode));
+    assertDoesNotThrow(() -> service.deletePdndService(purposeId));
     verify(pdndServiceRepositoryMock).delete(pdndService);
   }
 
   @Test
   void givenPdndServiceNotFoundWhenDeletePdndServiceThenThrowNotFoundException() {
-    Long organizationId = 1L;
     String purposeId = "PURPOSE_ID";
-    String subUnitCode = "SUB_01";
 
-    when(pdndServiceRepositoryMock.findByOrganizationIdAndPurposeIdAndSubUnitCode(organizationId, purposeId, subUnitCode))
+    when(pdndServiceRepositoryMock.findById(purposeId))
       .thenReturn(Optional.empty());
 
-    NotFoundException exception = assertThrows(NotFoundException.class, () -> service.deletePdndService(organizationId, purposeId, subUnitCode));
+    NotFoundException exception = assertThrows(NotFoundException.class, () -> service.deletePdndService(purposeId));
 
     assertEquals(ErrorCodeConstants.ERROR_CODE_PDND_SERVICE_NOT_FOUND, exception.getCode());
   }

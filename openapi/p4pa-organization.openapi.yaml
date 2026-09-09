@@ -964,11 +964,6 @@ paths:
           required: true
           schema:
             type: string
-        - name: subUnitCode
-          in: query
-          required: false
-          schema:
-            type: string
       responses:
         '200':
           description: OK
@@ -1009,11 +1004,6 @@ paths:
         - name: purposeId
           in: path
           required: true
-          schema:
-            type: string
-        - name: subUnitCode
-          in: query
-          required: false
           schema:
             type: string
       responses:

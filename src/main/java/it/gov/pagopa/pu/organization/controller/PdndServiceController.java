@@ -35,15 +35,15 @@ public class PdndServiceController implements PdndServiceApi {
   }
 
   @Override
-  public ResponseEntity<PdndServiceView> getPdndService(Long organizationId, String purposeId, String subUnitCode) {
+  public ResponseEntity<PdndServiceView> getPdndService(Long organizationId, String purposeId) {
     log.info("Requested getPdndService having organizationId {} and purposeId {}", organizationId, purposeId);
-    return ResponseEntity.ok(service.getPdndService(organizationId, purposeId, subUnitCode));
+    return ResponseEntity.ok(service.getPdndService(organizationId, purposeId));
   }
 
   @Override
-  public ResponseEntity<Void> deletePdndService(Long organizationId, String purposeId, String subUnitCode) {
+  public ResponseEntity<Void> deletePdndService(Long organizationId, String purposeId) {
     log.info("Requested deletePdndService having organizationId {}, purposeId {}", organizationId, purposeId);
-    service.deletePdndService(organizationId, purposeId, subUnitCode);
+    service.deletePdndService(purposeId);
     return ResponseEntity.ok().build();
   }
 }

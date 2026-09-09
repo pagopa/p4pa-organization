@@ -76,14 +76,13 @@ class PdndServiceControllerTest {
   void whenGetPdndServiceThenOk() {
     Long organizationId = 1L;
     String purposeId = "PURPOSE_ID";
-    String subUnitCode = "SUB_01";
 
     PdndServiceView expectedResponse = podamFactory.manufacturePojo(PdndServiceView.class);
 
-    when(pdndServiceServiceMock.getPdndService(organizationId, purposeId, subUnitCode))
+    when(pdndServiceServiceMock.getPdndService(organizationId, purposeId))
       .thenReturn(expectedResponse);
 
-    ResponseEntity<PdndServiceView> response = pdndServiceController.getPdndService(organizationId, purposeId, subUnitCode);
+    ResponseEntity<PdndServiceView> response = pdndServiceController.getPdndService(organizationId, purposeId);
 
     assertNotNull(response);
     assertEquals(HttpStatus.OK, response.getStatusCode());
@@ -94,12 +93,11 @@ class PdndServiceControllerTest {
   void whenDeletePdndServiceThenOk() {
     Long organizationId = 1L;
     String purposeId = "PURPOSE_ID";
-    String subUnitCode = "SUB_01";
 
     doNothing().when(pdndServiceServiceMock)
-      .deletePdndService(organizationId, purposeId, subUnitCode);
+      .deletePdndService(purposeId);
 
-    ResponseEntity<Void> response = pdndServiceController.deletePdndService(organizationId, purposeId, subUnitCode);
+    ResponseEntity<Void> response = pdndServiceController.deletePdndService(organizationId, purposeId);
 
     assertNotNull(response);
     assertEquals(HttpStatus.OK, response.getStatusCode());

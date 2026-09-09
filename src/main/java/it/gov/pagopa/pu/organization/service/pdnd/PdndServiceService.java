@@ -59,23 +59,23 @@ public class PdndServiceService {
     return pdndServiceViewRepository.findByOrganizationIdAndServiceTypeAndSubUnitCode(organizationId, serviceType, subUnitCode);
   }
 
-  public PdndServiceView getPdndService(Long organizationId, String purposeId, String subUnitCode) {
-    return pdndServiceViewRepository.findByOrganizationIdAndPurposeIdAndSubUnitCode(organizationId, purposeId, subUnitCode)
+  public PdndServiceView getPdndService(Long organizationId, String purposeId) {
+    return pdndServiceViewRepository.findByOrganizationIdAndPurposeId(organizationId, purposeId)
       .orElseThrow(() -> new NotFoundException(
         ErrorCodeConstants.ERROR_CODE_PDND_SERVICE_NOT_FOUND,
-        "PdndService having purposeId %s, organizationId %d and subUnitCode %s not found".formatted(purposeId, organizationId, subUnitCode)));
+        "PdndService having purposeId %s, organizationId %d not found".formatted(purposeId, organizationId)));
   }
 
   @Transactional
-  public void deletePdndService(Long organizationId, String purposeId, String subUnitCode) {
-    PdndService pdndService = findPdndService(organizationId, purposeId, subUnitCode);
+  public void deletePdndService(String purposeId) {
+    PdndService pdndService = findPdndService(purposeId);
     pdndServiceRepository.delete(pdndService);
   }
 
-  private PdndService findPdndService(Long organizationId, String purposeId, String subUnitCode) {
-    return pdndServiceRepository.findByOrganizationIdAndPurposeIdAndSubUnitCode(organizationId, purposeId, subUnitCode)
+  private PdndService findPdndService(String purposeId) {
+    return pdndServiceRepository.findById(purposeId)
       .orElseThrow(() -> new NotFoundException(
         ErrorCodeConstants.ERROR_CODE_PDND_SERVICE_NOT_FOUND,
-        "PdndService having purposeId %s, organizationId %d and subUnitCode %s not found".formatted(purposeId, organizationId, subUnitCode)));
+        "PdndService having purposeId %s not found".formatted(purposeId)));
   }
 }

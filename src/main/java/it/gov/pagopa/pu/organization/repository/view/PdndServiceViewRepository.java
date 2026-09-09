@@ -62,15 +62,10 @@ public interface PdndServiceViewRepository extends Repository<PdndServiceView, S
     )
     WHERE ps.purposeId = :purposeId
     AND pc.organizationId = :organizationId
-    AND (
-      (:subUnitCode IS NULL AND pc.subUnitCode IS NULL)
-      OR (pc.subUnitCode = :subUnitCode)
-    )
     """)
-  Optional<PdndServiceView> findByOrganizationIdAndPurposeIdAndSubUnitCode(
+  Optional<PdndServiceView> findByOrganizationIdAndPurposeId(
     @Param("organizationId") Long organizationId,
-    @Param("purposeId") String purposeId,
-    @RequestParam(required = false) @Param("subUnitCode") String subUnitCode
+    @Param("purposeId") String purposeId
   );
 
 }
