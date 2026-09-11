@@ -1,11 +1,9 @@
 package it.gov.pagopa.pu.organization.controller;
 
 import it.gov.pagopa.pu.organization.dto.OrgAndSubUnitDTO;
-import it.gov.pagopa.pu.organization.dto.generated.BrokerApiKeys;
 import it.gov.pagopa.pu.organization.enums.PdndServiceType;
 import it.gov.pagopa.pu.organization.service.orgsubunit.OrgSubUnitService;
 import org.junit.jupiter.api.AfterEach;
-import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.InjectMocks;
@@ -43,8 +41,8 @@ class OrgSubUnitControllerTest {
     //when
     ResponseEntity<List<OrgAndSubUnitDTO>> response = controller.getOrgSubUnitWithNoServiceType(organizationId, PdndServiceType.SEND);
     //verify
-    Assertions.assertNotNull(response);
-    Assertions.assertEquals(expectedResult, response.getBody());
+    assertNotNull(response);
+    assertEquals(expectedResult, response.getBody());
   }
 
 }
