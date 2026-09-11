@@ -2,8 +2,10 @@ package it.gov.pagopa.pu.organization.repository;
 
 import io.swagger.v3.oas.annotations.Parameter;
 import io.swagger.v3.oas.annotations.media.Schema;
+import it.gov.pagopa.pu.organization.dto.OrgAndSubUnitDTO;
 import it.gov.pagopa.pu.organization.dto.generated.OrganizationApiKeyType;
 import it.gov.pagopa.pu.organization.enums.OrgSubUnitStatus;
+import it.gov.pagopa.pu.organization.enums.PdndServiceType;
 import it.gov.pagopa.pu.organization.enums.SubUnitType;
 import it.gov.pagopa.pu.organization.model.OrgSubUnit;
 import org.springframework.data.domain.Page;
@@ -19,6 +21,7 @@ import org.springframework.web.bind.annotation.RequestParam;
 
 import java.util.Collection;
 import java.util.List;
+import java.util.Optional;
 import java.util.Set;
 
 import static it.gov.pagopa.pu.organization.util.Constants.UPDATE_AUDIT_FIELDS_SPEL;
@@ -94,4 +97,28 @@ public interface OrgSubUnitRepository extends JpaRepository<OrgSubUnit, OrgSubUn
   Set<String> findExistingSubUnitCodes(
     @Param("organizationId") Long organizationId,
     @Param("subUnitCodes") Collection<String> subUnitCodes);
+
+  @Query("""
+    SELECT new it.gov.pagopa.pu.organization.dto.OrgAndSubUnitDTO(
+      osu.id.organizationId,
+      o.orgName,
+      osu.id.subUnitCode,
+      osu.subUnitName
+    )
+    FROM OrgSubUnit osu
+    JOIN Organization o ON o.organizationId = osu.id.organizationId
+    WHERE osu.id.organizationId = :organizationId
+    AND NOT EXISTS (
+      SELECT 1
+      FROM PdndService ps
+      JOIN PdndClient pc ON ps.clientId = pc.clientId
+      WHERE pc.organizationId = osu.id.organizationId
+      AND pc.subUnitCode = osu.id.subUnitCode
+      AND ps.serviceType = :serviceType
+    )
+    """)
+  List<OrgAndSubUnitDTO> findSubUnitsWithNoServiceType(
+    @Param("organizationId") Long organizationId,
+    @Param("serviceType") PdndServiceType serviceType
+  );
 }
