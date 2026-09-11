@@ -1,8 +1,10 @@
 package it.gov.pagopa.pu.organization.repository;
 
 import io.swagger.v3.oas.annotations.Parameter;
+import it.gov.pagopa.pu.organization.dto.OrgAndSubUnitDTO;
 import it.gov.pagopa.pu.organization.dto.generated.OrganizationApiKeyType;
 import it.gov.pagopa.pu.organization.enums.OrganizationStatus;
+import it.gov.pagopa.pu.organization.enums.PdndServiceType;
 import it.gov.pagopa.pu.organization.model.Organization;
 import jakarta.annotation.Nonnull;
 import org.springframework.data.domain.Page;
@@ -104,4 +106,29 @@ public interface OrganizationRepository extends
     and o.status = :#{T(it.gov.pagopa.pu.organization.enums.OrganizationStatus).ACTIVE}
     """)
   Organization getActiveOrganizationWithKey(Long organizationId, OrganizationApiKeyType keyType);
+
+  @RestResource(exported = false)
+  @Query("""
+    SELECT new it.gov.pagopa.pu.organization.dto.OrgAndSubUnitDTO(
+      o.organizationId,
+      o.orgName,
+      NULL,
+      NULL
+    )
+    FROM Organization o
+    WHERE o.organizationId = :organizationId
+    AND NOT EXISTS (
+      SELECT 1
+      FROM PdndService ps
+      JOIN PdndClient pc ON ps.clientId = pc.clientId
+      WHERE pc.organizationId = o.organizationId
+      AND pc.subUnitCode IS NULL
+      AND ps.serviceType = :serviceType
+    )
+    """)
+  Optional<OrgAndSubUnitDTO> findOrgWithNoServiceType(
+    @Param("organizationId") Long organizationId,
+    @Param("serviceType") PdndServiceType serviceType
+  );
+
 }
