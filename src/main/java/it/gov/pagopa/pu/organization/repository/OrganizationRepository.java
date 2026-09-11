@@ -107,6 +107,7 @@ public interface OrganizationRepository extends
     """)
   Organization getActiveOrganizationWithKey(Long organizationId, OrganizationApiKeyType keyType);
 
+  @RestResource(exported = false)
   @Query("""
     SELECT new it.gov.pagopa.pu.organization.dto.OrgAndSubUnitDTO(
       o.organizationId,

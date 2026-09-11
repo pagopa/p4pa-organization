@@ -97,6 +97,7 @@ public interface OrgSubUnitRepository extends JpaRepository<OrgSubUnit, OrgSubUn
     @Param("organizationId") Long organizationId,
     @Param("subUnitCodes") Collection<String> subUnitCodes);
 
+  @RestResource(exported = false)
   @Query("""
     SELECT new it.gov.pagopa.pu.organization.dto.OrgAndSubUnitDTO(
       osu.id.organizationId,
