@@ -132,6 +132,7 @@ class OrganizationValidatorServiceTest {
     existingOrganization.setOrgFiscalCode(organizationUpdateDTO.getOrgFiscalCode());
     existingOrganization.setOrgName(organizationUpdateDTO.getOrgName());
     existingOrganization.setOrgTypeCode(organizationUpdateDTO.getOrgTypeCode());
+    existingOrganization.setStatus(OrganizationStatus.DRAFT);
 
     assertDoesNotThrow(() -> organizationValidatorService.validateOrganizationDTO(organizationUpdateDTO, existingOrganization));
   }
@@ -143,6 +144,7 @@ class OrganizationValidatorServiceTest {
     organizationUpdateDTO.setIban("IT60X0542811101000000123456");
     organizationUpdateDTO.setPostalIban("IT00X0760100000000000000000");
     organizationUpdateDTO.setSegregationCode("01");
+    organizationUpdateDTO.setOrgTypeCode("01");
 
     Organization existingOrganization = OrganizationFaker.buildOrganization();
     existingOrganization.setBrokerId(organizationUpdateDTO.getBrokerId());
@@ -151,6 +153,8 @@ class OrganizationValidatorServiceTest {
     existingOrganization.setOrgFiscalCode(organizationUpdateDTO.getOrgFiscalCode());
     existingOrganization.setOrgName(organizationUpdateDTO.getOrgName());
     existingOrganization.setOrgTypeCode(organizationUpdateDTO.getOrgTypeCode() + "_old");
+    existingOrganization.setOrgTypeCode("00");
+    existingOrganization.setStatus(OrganizationStatus.ACTIVE);
 
     InvalidValueException exception = assertThrows(InvalidValueException.class, () ->
       organizationValidatorService.validateOrganizationDTO(organizationUpdateDTO, existingOrganization));
@@ -199,6 +203,7 @@ class OrganizationValidatorServiceTest {
     organization.setOrgLogo("logo_url");
     organization.setIban("IT60X0542811101000000123456");
     organization.setDefaultOrganizationStationId(1L);
+    organization.setOrgTypeCode("01");
 
     OrganizationStation station = new OrganizationStation();
     station.setSegregationCode("01");
