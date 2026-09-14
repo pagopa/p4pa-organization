@@ -132,6 +132,7 @@ class OrganizationValidatorServiceTest {
     existingOrganization.setOrgFiscalCode(organizationUpdateDTO.getOrgFiscalCode());
     existingOrganization.setOrgName(organizationUpdateDTO.getOrgName());
     existingOrganization.setOrgTypeCode(organizationUpdateDTO.getOrgTypeCode());
+    existingOrganization.setStatus(OrganizationStatus.DRAFT);
 
     assertDoesNotThrow(() -> organizationValidatorService.validateOrganizationDTO(organizationUpdateDTO, existingOrganization));
   }
