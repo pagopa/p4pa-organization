@@ -153,6 +153,7 @@ class OrganizationValidatorServiceTest {
     existingOrganization.setOrgName(organizationUpdateDTO.getOrgName());
     existingOrganization.setOrgTypeCode(organizationUpdateDTO.getOrgTypeCode() + "_old");
     existingOrganization.setOrgTypeCode("00");
+    existingOrganization.setStatus(OrganizationStatus.ACTIVE);
 
     InvalidValueException exception = assertThrows(InvalidValueException.class, () ->
       organizationValidatorService.validateOrganizationDTO(organizationUpdateDTO, existingOrganization));
