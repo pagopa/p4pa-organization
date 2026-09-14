@@ -718,19 +718,19 @@ class OrganizationServiceTest {
   }
 
   @Test
-  void getOrganizationApiKeyTypeWithFlagActive_organizationNotFound_throwsException() {
+  void getOrganizationApiKeys_organizationNotFound_throwsException() {
     Long orgId = 1L;
     String subUnitCode = "CODE";
     when(organizationRepositoryMock.findById(orgId))
       .thenReturn(Optional.empty());
 
     assertThrows(OrganizationNotFoundException.class, () ->
-      service.getOrganizationApiKeyTypeWithFlagActive(orgId, subUnitCode)
+      service.getOrganizationApiKeys(orgId, subUnitCode)
     );
   }
 
   @Test
-  void getOrganizationApiKeyTypeWithFlagActive_ioActiveTrue_setsFlagOnlyForIo() {
+  void getOrganizationApiKeys_ioActiveTrue_setsFlagOnlyForIo() {
     Long orgId = 1L;
     String subUnitCode = "CODE";
     Organization organization = mock(Organization.class);
@@ -751,22 +751,22 @@ class OrganizationServiceTest {
     when(organizationKeysRepositoryMock.findByOrganizationIdAndSubUnitCode(orgId, subUnitCode))
       .thenReturn(List.of(ioKey, sendKey, generateNoticeKey));
 
-    List<OrganizationApiKeyTypeWithFlagActive> result =
-      service.getOrganizationApiKeyTypeWithFlagActive(orgId, subUnitCode);
+    List<OrganizationApiKey> result =
+      service.getOrganizationApiKeys(orgId, subUnitCode);
 
-    OrganizationApiKeyTypeWithFlagActive ioDto = result.stream()
+    OrganizationApiKey ioDto = result.stream()
       .filter(dto -> dto.getKeyType() == OrganizationApiKeyType.IO)
       .findFirst()
       .orElseThrow();
     assertTrue(ioDto.getFlagActive());
 
-    OrganizationApiKeyTypeWithFlagActive sendDto = result.stream()
+    OrganizationApiKey sendDto = result.stream()
       .filter(dto -> dto.getKeyType() == OrganizationApiKeyType.SEND)
       .findFirst()
       .orElseThrow();
     assertNull(sendDto.getFlagActive());
 
-    OrganizationApiKeyTypeWithFlagActive generateNoticeDto = result.stream()
+    OrganizationApiKey generateNoticeDto = result.stream()
       .filter(dto -> dto.getKeyType() == OrganizationApiKeyType.GENERATE_NOTICE)
       .findFirst()
       .orElseThrow();
@@ -774,7 +774,7 @@ class OrganizationServiceTest {
   }
 
   @Test
-  void getOrganizationApiKeyTypeWithFlagActive_noKeysFound_returnsEmptyList() {
+  void getOrganizationApiKeys_noKeysFound_returnsEmptyList() {
     Long orgId = 1L;
     String subUnitCode = "CODE";
     Organization organization = mock(Organization.class);
@@ -785,8 +785,8 @@ class OrganizationServiceTest {
     when(organizationKeysRepositoryMock.findByOrganizationIdAndSubUnitCode(orgId, subUnitCode))
       .thenReturn(List.of());
 
-    List<OrganizationApiKeyTypeWithFlagActive> result =
-      service.getOrganizationApiKeyTypeWithFlagActive(orgId, subUnitCode);
+    List<OrganizationApiKey> result =
+      service.getOrganizationApiKeys(orgId, subUnitCode);
 
     assertTrue(result.isEmpty());
   }

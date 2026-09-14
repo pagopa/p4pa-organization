@@ -4,10 +4,7 @@ import io.micrometer.tracing.Tracer;
 import it.gov.pagopa.pu.organization.dto.OrganizationDetailDTO;
 import it.gov.pagopa.pu.organization.dto.OrganizationStationDTO;
 import it.gov.pagopa.pu.organization.dto.OrganizationUpdateDTO;
-import it.gov.pagopa.pu.organization.dto.generated.OrganizationApiKeyType;
-import it.gov.pagopa.pu.organization.dto.generated.OrganizationApiKeyTypeWithFlagActive;
-import it.gov.pagopa.pu.organization.dto.generated.OrganizationApiKeys;
-import it.gov.pagopa.pu.organization.dto.generated.OrganizationCreateDTO;
+import it.gov.pagopa.pu.organization.dto.generated.*;
 import it.gov.pagopa.pu.organization.enums.OrganizationAdditionalLanguage;
 import it.gov.pagopa.pu.organization.enums.OrganizationStatus;
 import it.gov.pagopa.pu.organization.service.organization.OrganizationService;
@@ -235,15 +232,15 @@ class OrganizationControllerTest {
   }
 
   @Test
-  void whenGetOrganizationApiKeyTypeWithFlagActiveThenOk() throws Exception {
-    OrganizationApiKeyTypeWithFlagActive dto = podamFactory.manufacturePojo(OrganizationApiKeyTypeWithFlagActive.class);
-    List<OrganizationApiKeyTypeWithFlagActive> expectedResponse = List.of(dto);
+  void whenGetOrganizationApiKeysThenOk() throws Exception {
+    OrganizationApiKey dto = podamFactory.manufacturePojo(OrganizationApiKey.class);
+    List<OrganizationApiKey> expectedResponse = List.of(dto);
     Long orgId = 1L;
     String subUnitCode = "CODE";
-    when(organizationServiceMock.getOrganizationApiKeyTypeWithFlagActive(orgId, subUnitCode)).thenReturn(expectedResponse);
+    when(organizationServiceMock.getOrganizationApiKeys(orgId, subUnitCode)).thenReturn(expectedResponse);
 
     MvcResult result = mockMvc.perform(
-        get("/organization/1/api-key/with-flag-active")
+        get("/organization/1/apiKeys")
           .param("subUnitCode", subUnitCode)
           .contentType(MediaType.APPLICATION_JSON_VALUE))
       .andExpect(status().isOk())
@@ -262,7 +259,7 @@ class OrganizationControllerTest {
 
     assertEquals(expectedResponse, actualResponse);
 
-    verify(organizationServiceMock).getOrganizationApiKeyTypeWithFlagActive(orgId, subUnitCode);
+    verify(organizationServiceMock).getOrganizationApiKeys(orgId, subUnitCode);
   }
 
 }

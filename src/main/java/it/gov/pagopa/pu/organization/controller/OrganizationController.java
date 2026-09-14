@@ -4,8 +4,8 @@ import it.gov.pagopa.pu.organization.controller.generated.OrganizationApi;
 import it.gov.pagopa.pu.organization.dto.OrganizationDetailDTO;
 import it.gov.pagopa.pu.organization.dto.OrganizationStationDTO;
 import it.gov.pagopa.pu.organization.dto.OrganizationUpdateDTO;
+import it.gov.pagopa.pu.organization.dto.generated.OrganizationApiKey;
 import it.gov.pagopa.pu.organization.dto.generated.OrganizationApiKeyType;
-import it.gov.pagopa.pu.organization.dto.generated.OrganizationApiKeyTypeWithFlagActive;
 import it.gov.pagopa.pu.organization.dto.generated.OrganizationApiKeys;
 import it.gov.pagopa.pu.organization.dto.generated.OrganizationCreateDTO;
 import it.gov.pagopa.pu.organization.enums.OrganizationStatus;
@@ -87,8 +87,8 @@ public class OrganizationController implements OrganizationApi {
   }
 
   @Override
-  public ResponseEntity<List<OrganizationApiKeyTypeWithFlagActive>> getOrganizationApiKeyTypeWithFlagActive(Long organizationId, String subUnitCode) {
-    log.info("Retrieving organization keys type with flag active for organization having id {} and subUnitCode {}", organizationId, subUnitCode);
-    return ResponseEntity.ok(service.getOrganizationApiKeyTypeWithFlagActive(organizationId, subUnitCode));
+  public ResponseEntity<List<OrganizationApiKey>> getOrganizationApiKeys(Long organizationId, String subUnitCode) {
+    log.info("Retrieving organization keys for organization having id {} and subUnitCode {}", organizationId, subUnitCode);
+    return ResponseEntity.ok(service.getOrganizationApiKeys(organizationId, subUnitCode));
   }
 }

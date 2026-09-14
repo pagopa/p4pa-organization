@@ -226,7 +226,7 @@ public class OrganizationService {
     }
   }
 
-  public List<OrganizationApiKeyTypeWithFlagActive> getOrganizationApiKeyTypeWithFlagActive(Long organizationId, String subUnitCode){
+  public List<OrganizationApiKey> getOrganizationApiKeys(Long organizationId, String subUnitCode){
     Organization organization = organizationRepository.findById(organizationId)
       .orElseThrow(() -> new OrganizationNotFoundException(ORGANIZATION_NOT_FOUND_MSG.formatted(organizationId)));
 
@@ -236,7 +236,7 @@ public class OrganizationService {
       .findByOrganizationIdAndSubUnitCode(organizationId, subUnitCode);
 
     return keys.stream()
-      .map(key -> new OrganizationApiKeyTypeWithFlagActive(
+      .map(key -> new OrganizationApiKey(
         key.getKeyType(),
         OrganizationApiKeyType.IO.equals(key.getKeyType()) ? ioActive : null
       ))

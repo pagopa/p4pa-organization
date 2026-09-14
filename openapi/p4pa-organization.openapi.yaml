@@ -70,7 +70,7 @@ paths:
             application/json:
               schema:
                 $ref: '#/components/schemas/OrganizationErrorDTO'
-  /organization/{organizationId}/apiKey:
+  /organization/{organizationId}/apiKeys:
     post:
       tags:
         - Organization
@@ -293,12 +293,12 @@ paths:
             application/json:
               schema:
                 $ref: '#/components/schemas/OrganizationErrorDTO'
-  /organization/{organizationId}/api-key/with-flag-active:
+  /organization/{organizationId}/apiKey:
     get:
       tags:
         - Organization
       summary: Get active API keys by key type
-      operationId: getOrganizationApiKeyTypeWithFlagActive
+      operationId: getOrganizationApiKeys
       parameters:
         - name: organizationId
           in: path
@@ -318,7 +318,7 @@ paths:
               schema:
                 type: array
                 items:
-                  $ref: '#/components/schemas/OrganizationApiKeyTypeWithFlagActive'
+                  $ref: '#/components/schemas/OrganizationApiKey'
         '404':
           description: Organization Not Found
           content:
@@ -1485,7 +1485,7 @@ components:
           type: 'PdndServiceType'
         clientId:
           type: string
-    OrganizationApiKeyTypeWithFlagActive:
+    OrganizationApiKey:
       type: object
       required:
         - keyType
