@@ -249,11 +249,11 @@ class OrganizationControllerTest {
     String responseBody = result.getResponse().getContentAsString();
     assertNotNull(responseBody);
 
-    List<OrganizationApiKeyTypeWithFlagActive> actualResponse = jsonMapper.readValue(responseBody, new TypeReference<>() {});
+    List<OrganizationApiKey> actualResponse = jsonMapper.readValue(responseBody, new TypeReference<>() {});
 
     assertEquals(1, actualResponse.size());
 
-    OrganizationApiKeyTypeWithFlagActive actualDto = actualResponse.getFirst();
+    OrganizationApiKey actualDto = actualResponse.getFirst();
     assertEquals(dto.getKeyType(), actualDto.getKeyType());
     assertEquals(dto.getFlagActive(), actualDto.getFlagActive());
 

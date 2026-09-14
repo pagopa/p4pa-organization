@@ -70,7 +70,7 @@ paths:
             application/json:
               schema:
                 $ref: '#/components/schemas/OrganizationErrorDTO'
-  /organization/{organizationId}/apiKeys:
+  /organization/{organizationId}/apiKey:
     post:
       tags:
         - Organization
@@ -293,7 +293,7 @@ paths:
             application/json:
               schema:
                 $ref: '#/components/schemas/OrganizationErrorDTO'
-  /organization/{organizationId}/apiKey:
+  /organization/{organizationId}/apiKeys:
     get:
       tags:
         - Organization
