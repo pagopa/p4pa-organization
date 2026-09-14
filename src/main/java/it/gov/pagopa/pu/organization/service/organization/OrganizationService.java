@@ -5,10 +5,7 @@ import it.gov.pagopa.pu.organization.connector.workflow.service.WorkflowDebtPosi
 import it.gov.pagopa.pu.organization.dto.OrganizationDetailDTO;
 import it.gov.pagopa.pu.organization.dto.OrganizationStationDTO;
 import it.gov.pagopa.pu.organization.dto.OrganizationUpdateDTO;
-import it.gov.pagopa.pu.organization.dto.generated.BrokerApiKeyType;
-import it.gov.pagopa.pu.organization.dto.generated.OrganizationApiKeyType;
-import it.gov.pagopa.pu.organization.dto.generated.OrganizationApiKeys;
-import it.gov.pagopa.pu.organization.dto.generated.OrganizationCreateDTO;
+import it.gov.pagopa.pu.organization.dto.generated.*;
 import it.gov.pagopa.pu.organization.enums.OrganizationStatus;
 import it.gov.pagopa.pu.organization.exception.custom.BrokerNotFoundException;
 import it.gov.pagopa.pu.organization.exception.common.InvalidValueException;
@@ -17,10 +14,12 @@ import it.gov.pagopa.pu.organization.mapper.OrganizationMapper;
 import it.gov.pagopa.pu.organization.mapper.OrganizationStationMapper;
 import it.gov.pagopa.pu.organization.model.Broker;
 import it.gov.pagopa.pu.organization.model.Organization;
+import it.gov.pagopa.pu.organization.model.OrganizationKeys;
 import it.gov.pagopa.pu.organization.model.OrganizationStation;
 import it.gov.pagopa.pu.organization.model.taxonomy.TaxonomyOrganizationTypeDTO;
 import it.gov.pagopa.pu.organization.repository.BrokerRepository;
 import it.gov.pagopa.pu.organization.repository.OrgSubUnitRepository;
+import it.gov.pagopa.pu.organization.repository.OrganizationKeysRepository;
 import it.gov.pagopa.pu.organization.repository.OrganizationRepository;
 import it.gov.pagopa.pu.organization.repository.taxonomy.TaxonomyOrganizationTypeRepository;
 import it.gov.pagopa.pu.organization.service.brokerkeys.BrokerKeysService;
@@ -32,6 +31,7 @@ import jakarta.transaction.Transactional;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 
+import java.util.List;
 import java.util.Objects;
 import java.util.Optional;
 
@@ -48,6 +48,7 @@ public class OrganizationService {
   private final DefaultOrganizationStationService defaultOrganizationStationService;
   private final OrganizationValidatorService organizationValidatorService;
   private final OrganizationKeysService organizationKeysService;
+  private final OrganizationKeysRepository organizationKeysRepository;
   private final OrgSubUnitRepository orgSubUnitRepository;
   private final TaxonomyOrganizationTypeRepository taxonomyOrganizationTypeRepository;
 
@@ -223,5 +224,22 @@ public class OrganizationService {
     if (key != null) {
       organizationKeysService.encryptAndSave(organizationId, new OrganizationApiKeys(keyType, key), null);
     }
+  }
+
+  public List<OrganizationApiKeyTypeWithFlagActive> getOrganizationApiKeyTypeWithFlagActive(Long organizationId, String subUnitCode){
+    Organization organization = organizationRepository.findById(organizationId)
+      .orElseThrow(() -> new OrganizationNotFoundException(ORGANIZATION_NOT_FOUND_MSG.formatted(organizationId)));
+
+    boolean ioActive = organization.isFlagNotifyIo();
+
+    List<OrganizationKeys> keys = organizationKeysRepository
+      .findByOrganizationIdAndSubUnitCode(organizationId, subUnitCode);
+
+    return keys.stream()
+      .map(key -> new OrganizationApiKeyTypeWithFlagActive(
+        key.getKeyType(),
+        OrganizationApiKeyType.IO.equals(key.getKeyType()) ? ioActive : null
+      ))
+      .toList();
   }
 }

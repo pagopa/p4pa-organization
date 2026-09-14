@@ -5,10 +5,7 @@ import it.gov.pagopa.pu.organization.connector.workflow.service.WorkflowDebtPosi
 import it.gov.pagopa.pu.organization.dto.OrganizationDetailDTO;
 import it.gov.pagopa.pu.organization.dto.OrganizationStationDTO;
 import it.gov.pagopa.pu.organization.dto.OrganizationUpdateDTO;
-import it.gov.pagopa.pu.organization.dto.generated.BrokerApiKeyType;
-import it.gov.pagopa.pu.organization.dto.generated.OrganizationApiKeyType;
-import it.gov.pagopa.pu.organization.dto.generated.OrganizationApiKeys;
-import it.gov.pagopa.pu.organization.dto.generated.OrganizationCreateDTO;
+import it.gov.pagopa.pu.organization.dto.generated.*;
 import it.gov.pagopa.pu.organization.enums.OrganizationStatus;
 import it.gov.pagopa.pu.organization.exception.common.InvalidValueException;
 import it.gov.pagopa.pu.organization.exception.custom.BrokerNotFoundException;
@@ -17,10 +14,12 @@ import it.gov.pagopa.pu.organization.mapper.OrganizationMapper;
 import it.gov.pagopa.pu.organization.mapper.OrganizationStationMapper;
 import it.gov.pagopa.pu.organization.model.Broker;
 import it.gov.pagopa.pu.organization.model.Organization;
+import it.gov.pagopa.pu.organization.model.OrganizationKeys;
 import it.gov.pagopa.pu.organization.model.OrganizationStation;
 import it.gov.pagopa.pu.organization.model.taxonomy.TaxonomyOrganizationTypeDTO;
 import it.gov.pagopa.pu.organization.repository.BrokerRepository;
 import it.gov.pagopa.pu.organization.repository.OrgSubUnitRepository;
+import it.gov.pagopa.pu.organization.repository.OrganizationKeysRepository;
 import it.gov.pagopa.pu.organization.repository.OrganizationRepository;
 import it.gov.pagopa.pu.organization.repository.taxonomy.TaxonomyOrganizationTypeRepository;
 import it.gov.pagopa.pu.organization.service.brokerkeys.BrokerKeysService;
@@ -39,6 +38,7 @@ import org.mockito.Mockito;
 import org.mockito.junit.jupiter.MockitoExtension;
 import uk.co.jemos.podam.api.PodamFactory;
 
+import java.util.List;
 import java.util.Optional;
 
 import static it.gov.pagopa.pu.organization.util.faker.OrganizationFaker.buildOrganization;
@@ -70,6 +70,8 @@ class OrganizationServiceTest {
   @Mock
   private OrganizationKeysService organizationKeysServiceMock;
   @Mock
+  private OrganizationKeysRepository organizationKeysRepositoryMock;
+  @Mock
   private OrgSubUnitRepository orgSubUnitRepositoryMock;
   @Mock
   private TaxonomyOrganizationTypeRepository taxonomyOrganizationTypeRepositoryMock;
@@ -89,6 +91,7 @@ class OrganizationServiceTest {
       defaultOrganizationStationServiceMock,
       organizationValidatorServiceMock,
       organizationKeysServiceMock,
+      organizationKeysRepositoryMock,
       orgSubUnitRepositoryMock,
       taxonomyOrganizationTypeRepositoryMock
     );
@@ -712,5 +715,79 @@ class OrganizationServiceTest {
     when(organizationRepositoryMock.findById(organizationId)).thenReturn(Optional.empty());
 
     assertThrows(OrganizationNotFoundException.class,() -> service.updateOrganizationExternalId(organizationId, organizationExternalId));
+  }
+
+  @Test
+  void getOrganizationApiKeyTypeWithFlagActive_organizationNotFound_throwsException() {
+    Long orgId = 1L;
+    String subUnitCode = "CODE";
+    when(organizationRepositoryMock.findById(orgId))
+      .thenReturn(Optional.empty());
+
+    assertThrows(OrganizationNotFoundException.class, () ->
+      service.getOrganizationApiKeyTypeWithFlagActive(orgId, subUnitCode)
+    );
+  }
+
+  @Test
+  void getOrganizationApiKeyTypeWithFlagActive_ioActiveTrue_setsFlagOnlyForIo() {
+    Long orgId = 1L;
+    String subUnitCode = "CODE";
+    Organization organization = mock(Organization.class);
+    organization.setOrganizationId(orgId);
+    when(organization.isFlagNotifyIo()).thenReturn(true);
+    when(organizationRepositoryMock.findById(orgId))
+      .thenReturn(Optional.of(organization));
+
+    OrganizationKeys ioKey = mock(OrganizationKeys.class);
+    when(ioKey.getKeyType()).thenReturn(OrganizationApiKeyType.IO);
+
+    OrganizationKeys sendKey = mock(OrganizationKeys.class);
+    when(sendKey.getKeyType()).thenReturn(OrganizationApiKeyType.SEND);
+
+    OrganizationKeys generateNoticeKey = mock(OrganizationKeys.class);
+    when(generateNoticeKey.getKeyType()).thenReturn(OrganizationApiKeyType.GENERATE_NOTICE);
+
+    when(organizationKeysRepositoryMock.findByOrganizationIdAndSubUnitCode(orgId, subUnitCode))
+      .thenReturn(List.of(ioKey, sendKey, generateNoticeKey));
+
+    List<OrganizationApiKeyTypeWithFlagActive> result =
+      service.getOrganizationApiKeyTypeWithFlagActive(orgId, subUnitCode);
+
+    OrganizationApiKeyTypeWithFlagActive ioDto = result.stream()
+      .filter(dto -> dto.getKeyType() == OrganizationApiKeyType.IO)
+      .findFirst()
+      .orElseThrow();
+    assertTrue(ioDto.getFlagActive());
+
+    OrganizationApiKeyTypeWithFlagActive sendDto = result.stream()
+      .filter(dto -> dto.getKeyType() == OrganizationApiKeyType.SEND)
+      .findFirst()
+      .orElseThrow();
+    assertNull(sendDto.getFlagActive());
+
+    OrganizationApiKeyTypeWithFlagActive generateNoticeDto = result.stream()
+      .filter(dto -> dto.getKeyType() == OrganizationApiKeyType.GENERATE_NOTICE)
+      .findFirst()
+      .orElseThrow();
+    assertNull(generateNoticeDto.getFlagActive());
+  }
+
+  @Test
+  void getOrganizationApiKeyTypeWithFlagActive_noKeysFound_returnsEmptyList() {
+    Long orgId = 1L;
+    String subUnitCode = "CODE";
+    Organization organization = mock(Organization.class);
+    when(organization.isFlagNotifyIo()).thenReturn(true);
+    when(organizationRepositoryMock.findById(orgId))
+      .thenReturn(Optional.of(organization));
+
+    when(organizationKeysRepositoryMock.findByOrganizationIdAndSubUnitCode(orgId, subUnitCode))
+      .thenReturn(List.of());
+
+    List<OrganizationApiKeyTypeWithFlagActive> result =
+      service.getOrganizationApiKeyTypeWithFlagActive(orgId, subUnitCode);
+
+    assertTrue(result.isEmpty());
   }
 }
