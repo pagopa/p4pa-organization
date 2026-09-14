@@ -4,6 +4,7 @@ import it.gov.pagopa.pu.organization.controller.generated.OrganizationApi;
 import it.gov.pagopa.pu.organization.dto.OrganizationDetailDTO;
 import it.gov.pagopa.pu.organization.dto.OrganizationStationDTO;
 import it.gov.pagopa.pu.organization.dto.OrganizationUpdateDTO;
+import it.gov.pagopa.pu.organization.dto.generated.OrganizationApiKey;
 import it.gov.pagopa.pu.organization.dto.generated.OrganizationApiKeyType;
 import it.gov.pagopa.pu.organization.dto.generated.OrganizationApiKeys;
 import it.gov.pagopa.pu.organization.dto.generated.OrganizationCreateDTO;
@@ -15,6 +16,8 @@ import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.RestController;
+
+import java.util.List;
 
 @RestController
 @Slf4j
@@ -81,5 +84,11 @@ public class OrganizationController implements OrganizationApi {
     log.info("Updating status of organization {} to {}", organizationId, newStatus);
     service.updateOrganizationStatus(organizationId, newStatus);
     return ResponseEntity.ok().build();
+  }
+
+  @Override
+  public ResponseEntity<List<OrganizationApiKey>> getOrganizationApiKeys(Long organizationId, String subUnitCode) {
+    log.info("Retrieving organization keys for organization having id {} and subUnitCode {}", organizationId, subUnitCode);
+    return ResponseEntity.ok(service.getOrganizationApiKeys(organizationId, subUnitCode));
   }
 }

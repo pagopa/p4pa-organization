@@ -4,9 +4,7 @@ import io.micrometer.tracing.Tracer;
 import it.gov.pagopa.pu.organization.dto.OrganizationDetailDTO;
 import it.gov.pagopa.pu.organization.dto.OrganizationStationDTO;
 import it.gov.pagopa.pu.organization.dto.OrganizationUpdateDTO;
-import it.gov.pagopa.pu.organization.dto.generated.OrganizationApiKeyType;
-import it.gov.pagopa.pu.organization.dto.generated.OrganizationApiKeys;
-import it.gov.pagopa.pu.organization.dto.generated.OrganizationCreateDTO;
+import it.gov.pagopa.pu.organization.dto.generated.*;
 import it.gov.pagopa.pu.organization.enums.OrganizationAdditionalLanguage;
 import it.gov.pagopa.pu.organization.enums.OrganizationStatus;
 import it.gov.pagopa.pu.organization.service.organization.OrganizationService;
@@ -19,12 +17,15 @@ import org.springframework.http.MediaType;
 import org.springframework.test.context.bean.override.mockito.MockitoBean;
 import org.springframework.test.web.servlet.MockMvc;
 import org.springframework.test.web.servlet.MvcResult;
+import tools.jackson.core.type.TypeReference;
 import tools.jackson.databind.json.JsonMapper;
 import uk.co.jemos.podam.api.PodamFactory;
 
 import java.time.LocalDate;
+import java.util.List;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertNotNull;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.*;
@@ -94,7 +95,7 @@ class OrganizationControllerTest {
 
     mockMvc.perform(
         post("/organization/1/apiKey")
-          .param("subUnitCode","CODE")
+          .param("subUnitCode", "CODE")
           .contentType(MediaType.APPLICATION_JSON_VALUE)
           .content(jsonMapper.writeValueAsString(organizationApiKeys)))
       .andExpect(status().isOk())
@@ -110,7 +111,7 @@ class OrganizationControllerTest {
 
     MvcResult result = mockMvc.perform(
         get("/organization/1/apiKey/IO")
-          .param("subUnitCode","CODE")
+          .param("subUnitCode", "CODE")
           .contentType(MediaType.APPLICATION_JSON_VALUE))
       .andExpect(status().isOk())
       .andReturn();
@@ -160,11 +161,11 @@ class OrganizationControllerTest {
     OrganizationUpdateDTO organizationUpdateDTO = podamFactory.manufacturePojo(OrganizationUpdateDTO.class);
 
     mockMvc.perform(
-                    put("/organization")
-                            .contentType(MediaType.APPLICATION_JSON_VALUE)
-                            .content(jsonMapper.writeValueAsString(organizationUpdateDTO)))
-            .andExpect(status().isOk())
-            .andReturn();
+        put("/organization")
+          .contentType(MediaType.APPLICATION_JSON_VALUE)
+          .content(jsonMapper.writeValueAsString(organizationUpdateDTO)))
+      .andExpect(status().isOk())
+      .andReturn();
 
     verify(organizationServiceMock).updateOrganization(organizationUpdateDTO, TestUtils.getFakeAccessToken());
   }
@@ -197,7 +198,7 @@ class OrganizationControllerTest {
     mockMvc.perform(
         put("/organization/{organizationId}/status/{newStatus}",
           organizationId, newStatus
-          )
+        )
           .contentType(MediaType.APPLICATION_JSON_VALUE))
       .andExpect(status().isOk())
       .andReturn();
@@ -228,6 +229,37 @@ class OrganizationControllerTest {
     assertEquals(dto.getIpaCode(), responseDto.getIpaCode());
 
     verify(organizationServiceMock).getOrganizationStation(1L, null);
+  }
+
+  @Test
+  void whenGetOrganizationApiKeysThenOk() throws Exception {
+    OrganizationApiKey dto = podamFactory.manufacturePojo(OrganizationApiKey.class);
+    List<OrganizationApiKey> expectedResponse = List.of(dto);
+    Long orgId = 1L;
+    String subUnitCode = "CODE";
+    when(organizationServiceMock.getOrganizationApiKeys(orgId, subUnitCode)).thenReturn(expectedResponse);
+
+    MvcResult result = mockMvc.perform(
+        get("/organization/1/apiKeys")
+          .param("subUnitCode", subUnitCode)
+          .contentType(MediaType.APPLICATION_JSON_VALUE))
+      .andExpect(status().isOk())
+      .andReturn();
+
+    String responseBody = result.getResponse().getContentAsString();
+    assertNotNull(responseBody);
+
+    List<OrganizationApiKey> actualResponse = jsonMapper.readValue(responseBody, new TypeReference<>() {});
+
+    assertEquals(1, actualResponse.size());
+
+    OrganizationApiKey actualDto = actualResponse.getFirst();
+    assertEquals(dto.getKeyType(), actualDto.getKeyType());
+    assertEquals(dto.getFlagActive(), actualDto.getFlagActive());
+
+    assertEquals(expectedResponse, actualResponse);
+
+    verify(organizationServiceMock).getOrganizationApiKeys(orgId, subUnitCode);
   }
 
 }
