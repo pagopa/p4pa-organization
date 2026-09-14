@@ -143,6 +143,7 @@ class OrganizationValidatorServiceTest {
     organizationUpdateDTO.setIban("IT60X0542811101000000123456");
     organizationUpdateDTO.setPostalIban("IT00X0760100000000000000000");
     organizationUpdateDTO.setSegregationCode("01");
+    organizationUpdateDTO.setOrgTypeCode("01");
 
     Organization existingOrganization = OrganizationFaker.buildOrganization();
     existingOrganization.setBrokerId(organizationUpdateDTO.getBrokerId());
@@ -151,6 +152,7 @@ class OrganizationValidatorServiceTest {
     existingOrganization.setOrgFiscalCode(organizationUpdateDTO.getOrgFiscalCode());
     existingOrganization.setOrgName(organizationUpdateDTO.getOrgName());
     existingOrganization.setOrgTypeCode(organizationUpdateDTO.getOrgTypeCode() + "_old");
+    existingOrganization.setOrgTypeCode("00");
 
     InvalidValueException exception = assertThrows(InvalidValueException.class, () ->
       organizationValidatorService.validateOrganizationDTO(organizationUpdateDTO, existingOrganization));
