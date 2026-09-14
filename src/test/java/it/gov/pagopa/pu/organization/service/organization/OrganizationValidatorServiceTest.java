@@ -199,6 +199,7 @@ class OrganizationValidatorServiceTest {
     organization.setOrgLogo("logo_url");
     organization.setIban("IT60X0542811101000000123456");
     organization.setDefaultOrganizationStationId(1L);
+    organization.setOrgTypeCode("01");
 
     OrganizationStation station = new OrganizationStation();
     station.setSegregationCode("01");

@@ -16,6 +16,7 @@ import java.util.ArrayList;
 import java.util.List;
 
 import static it.gov.pagopa.pu.organization.util.Utilities.*;
+import static it.gov.pagopa.pu.organization.util.Utilities.checkBlankOrNullField;
 
 @Service
 public class OrganizationValidatorService {
@@ -44,6 +45,7 @@ public class OrganizationValidatorService {
       checkBlankOrNullField("orgLogo", organization.getOrgLogo(), emptyOrNullFields);
       checkBlankOrNullField("iban", organization.getIban(), emptyOrNullFields);
       checkBlankOrNullField("defaultOrganizationStationId", organization.getDefaultOrganizationStationId(), emptyOrNullFields);
+      checkBlankOrNullField("orgTypeCode", organization.getOrgTypeCode(), emptyOrNullFields);
 
       if (!CollectionUtils.isEmpty(emptyOrNullFields)) {
         throw new InvalidValueException(
@@ -96,7 +98,11 @@ public class OrganizationValidatorService {
     checkImmutableField("ipaCode", existingOrganization.getIpaCode(), organization.getIpaCode(), modifiedFields);
     checkImmutableField("orgFiscalCode", existingOrganization.getOrgFiscalCode(), organization.getOrgFiscalCode(), modifiedFields);
     checkImmutableField("orgName", existingOrganization.getOrgName(), organization.getOrgName(), modifiedFields);
-    checkImmutableField("orgTypeCode", existingOrganization.getOrgTypeCode(), organization.getOrgTypeCode(), modifiedFields);
+
+    if (!OrganizationStatus.DRAFT.equals(existingOrganization.getStatus())) {
+      checkImmutableField("orgTypeCode", existingOrganization.getOrgTypeCode(), organization.getOrgTypeCode(), modifiedFields);
+    }
+
     if(!CollectionUtils.isEmpty(modifiedFields)){
       throw new InvalidValueException(ErrorCodeConstants.ERROR_CODE_IMMUTABLE_FIELD, "The following Organization fields are readOnly. "+modifiedFields);
     }
