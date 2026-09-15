@@ -13,4 +13,6 @@ public interface OrgSubUnitOperatorsRepository extends JpaRepository<OrgSubUnitO
   Optional<OrgSubUnitOperators> findByOrganizationIdAndSubUnitCodeAndOperatorExternalUserId(Long organizationId, String subUnitCode, String operatorExternalUserId);
 
   Page<OrgSubUnitOperators> findByOrganizationIdAndSubUnitCode(Long organizationId, String subUnitCode, Pageable pageable);
+
+  void deleteByOrganizationIdAndSubUnitCodeAndOperatorExternalUserId(Long organizationId, String subUnitCode, String operatorExternalUserId);
 }
