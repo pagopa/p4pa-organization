@@ -217,4 +217,15 @@ class OrgSubUnitOperatorsServiceTest {
 
     verify(orgSubUnitOperatorsRepositoryMock).save(any(OrgSubUnitOperators.class));
   }
+
+  @Test
+  void whenDeleteOrgSubUnitFromOperatorThenOk() {
+    Long organizationId = 1L;
+    String mappedExternalUserId = "userId";
+    String subUnitCode = "SUB_UNIT_1";
+
+    assertDoesNotThrow(() -> service.deleteOrgSubUnitFromOperator(organizationId, mappedExternalUserId, subUnitCode));
+
+    verify(orgSubUnitOperatorsRepositoryMock).deleteByOrganizationIdAndSubUnitCodeAndOperatorExternalUserId(organizationId, subUnitCode, mappedExternalUserId);
+  }
 }

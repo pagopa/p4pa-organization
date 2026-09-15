@@ -55,4 +55,10 @@ public class OrgSubUnitOperatorsService {
     });
     log.info("Added orgSubUnits {} to operator {} for organization {}", addedSubUnitCodes, mappedExternalUserId, organizationId);
   }
+
+  @Transactional
+  public void deleteOrgSubUnitFromOperator(Long organizationId, String mappedExternalUserId, String subUnitCode) {
+    orgSubUnitOperatorsRepository.deleteByOrganizationIdAndSubUnitCodeAndOperatorExternalUserId(organizationId, subUnitCode, mappedExternalUserId);
+    log.info("Removed orgSubUnit {} from operator {} for organization {}", subUnitCode, mappedExternalUserId, organizationId);
+  }
 }
