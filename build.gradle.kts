@@ -200,6 +200,7 @@ tasks.register<org.openapitools.generator.gradle.plugin.tasks.GenerateTask>("ope
       "SilServiceAuthConfigDTO" to "it.gov.pagopa.pu.organization.dto.orgsilservice.SilServiceAuthConfigDTO",
       "OrganizationDetailDTO" to "it.gov.pagopa.pu.organization.dto.OrganizationDetailDTO",
       "Organization" to "it.gov.pagopa.pu.organization.model.Organization",
+      "OrganizationUpdateDTO" to "it.gov.pagopa.pu.organization.dto.OrganizationUpdateDTO",
       "OrganizationAdditionalLanguage" to "it.gov.pagopa.pu.organization.enums.OrganizationAdditionalLanguage",
       "EmailServerConfig" to "it.gov.pagopa.pu.organization.dto.EmailServerConfig",
       "OrganizationStationDTO" to "it.gov.pagopa.pu.organization.dto.OrganizationStationDTO",
@@ -207,7 +208,9 @@ tasks.register<org.openapitools.generator.gradle.plugin.tasks.GenerateTask>("ope
       "PdndClient" to "it.gov.pagopa.pu.organization.model.PdndClient",
       "PdndServiceType" to "it.gov.pagopa.pu.organization.enums.PdndServiceType",
       "PdndService" to "it.gov.pagopa.pu.organization.model.PdndService",
-      "OrgSubUnitStatus" to "it.gov.pagopa.pu.organization.enums.OrgSubUnitStatus"
+      "OrgSubUnitStatus" to "it.gov.pagopa.pu.organization.enums.OrgSubUnitStatus",
+      "PdndServiceView" to "it.gov.pagopa.pu.organization.model.view.PdndServiceView",
+      "OrgAndSubUnitDTO" to "it.gov.pagopa.pu.organization.dto.OrgAndSubUnitDTO"
     )
   )
   configOptions.set(

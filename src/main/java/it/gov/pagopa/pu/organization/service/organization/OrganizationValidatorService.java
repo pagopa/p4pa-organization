@@ -1,7 +1,7 @@
 package it.gov.pagopa.pu.organization.service.organization;
 
 import it.gov.pagopa.pu.organization.dto.BaseOrganization;
-import it.gov.pagopa.pu.organization.dto.OrganizationDetailDTO;
+import it.gov.pagopa.pu.organization.dto.OrganizationUpdateDTO;
 import it.gov.pagopa.pu.organization.dto.generated.OrganizationCreateDTO;
 import it.gov.pagopa.pu.organization.enums.OrganizationStatus;
 import it.gov.pagopa.pu.organization.exception.common.InvalidValueException;
@@ -16,6 +16,7 @@ import java.util.ArrayList;
 import java.util.List;
 
 import static it.gov.pagopa.pu.organization.util.Utilities.*;
+import static it.gov.pagopa.pu.organization.util.Utilities.checkBlankOrNullField;
 
 @Service
 public class OrganizationValidatorService {
@@ -32,9 +33,9 @@ public class OrganizationValidatorService {
     validatePostalIban(organizationCreateDTO);
   }
 
-  public void validateOrganizationDTO(OrganizationDetailDTO organization, Organization existingOrganization) {
+  public void validateOrganizationDTO(OrganizationUpdateDTO organization, Organization existingOrganization) {
     validateOrganizationCreateDTO(organization);
-    checkReadOnlyFields(existingOrganization,organization);
+    checkReadOnlyFields(existingOrganization, organization);
     validateStatusUpdate(organization);
   }
 
@@ -44,6 +45,7 @@ public class OrganizationValidatorService {
       checkBlankOrNullField("orgLogo", organization.getOrgLogo(), emptyOrNullFields);
       checkBlankOrNullField("iban", organization.getIban(), emptyOrNullFields);
       checkBlankOrNullField("defaultOrganizationStationId", organization.getDefaultOrganizationStationId(), emptyOrNullFields);
+      checkBlankOrNullField("orgTypeCode", organization.getOrgTypeCode(), emptyOrNullFields);
 
       if (!CollectionUtils.isEmpty(emptyOrNullFields)) {
         throw new InvalidValueException(
@@ -89,14 +91,18 @@ public class OrganizationValidatorService {
     }
   }
 
-  private void checkReadOnlyFields(Organization existingOrganization, OrganizationDetailDTO organization) {
+  private void checkReadOnlyFields(Organization existingOrganization, OrganizationUpdateDTO organization) {
     List<String> modifiedFields = new ArrayList<>();
     checkImmutableField("brokerId", existingOrganization.getBrokerId(), organization.getBrokerId(), modifiedFields);
     checkImmutableField("externalOrganizationId", existingOrganization.getExternalOrganizationId(), organization.getExternalOrganizationId(), modifiedFields);
     checkImmutableField("ipaCode", existingOrganization.getIpaCode(), organization.getIpaCode(), modifiedFields);
     checkImmutableField("orgFiscalCode", existingOrganization.getOrgFiscalCode(), organization.getOrgFiscalCode(), modifiedFields);
     checkImmutableField("orgName", existingOrganization.getOrgName(), organization.getOrgName(), modifiedFields);
-    checkImmutableField("orgTypeCode", existingOrganization.getOrgTypeCode(), organization.getOrgTypeCode(), modifiedFields);
+
+    if (!OrganizationStatus.DRAFT.equals(existingOrganization.getStatus())) {
+      checkImmutableField("orgTypeCode", existingOrganization.getOrgTypeCode(), organization.getOrgTypeCode(), modifiedFields);
+    }
+
     if(!CollectionUtils.isEmpty(modifiedFields)){
       throw new InvalidValueException(ErrorCodeConstants.ERROR_CODE_IMMUTABLE_FIELD, "The following Organization fields are readOnly. "+modifiedFields);
     }
