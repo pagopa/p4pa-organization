@@ -56,8 +56,7 @@ public class OrganizationService {
 
   @Transactional
   public void encryptAndSaveApiKey(Long organizationId, OrganizationApiKeys organizationApiKeys, String subUnitCode) {
-    Organization org = organizationRepository.findById(organizationId)
-      .orElseThrow(() -> new OrganizationNotFoundException(ORGANIZATION_NOT_FOUND_MSG.formatted(organizationId)));
+    Organization org = findOrganizationById(organizationId);
 
     organizationKeysService.encryptAndSave(organizationId, organizationApiKeys, subUnitCode);
 
@@ -98,8 +97,7 @@ public class OrganizationService {
   }
 
   public String getApiKey(Long organizationId, OrganizationApiKeyType keyType, String subUnitCode) {
-    Organization organization = organizationRepository.findById(organizationId)
-      .orElseThrow(() -> new OrganizationNotFoundException(ORGANIZATION_NOT_FOUND_MSG.formatted(organizationId)));
+    Organization organization = findOrganizationById(organizationId);
 
     return switch (keyType) {
       case IO -> organization.isFlagNotifyIo() ? organizationKeysService.getApiKey(organizationId, keyType, subUnitCode) : null;
@@ -124,8 +122,7 @@ public class OrganizationService {
   }
 
   public OrganizationDetailDTO getOrganization(Long organizationId) {
-    Organization org = organizationRepository.findById(organizationId)
-      .orElseThrow(() -> new OrganizationNotFoundException(ORGANIZATION_NOT_FOUND_MSG.formatted(organizationId)));
+    Organization org = findOrganizationById(organizationId);
 
     OrganizationStationDTO organizationStationDTO = organizationStationMapper.mapToDTO(org, null);
 
@@ -152,8 +149,7 @@ public class OrganizationService {
   public void updateOrganization(OrganizationUpdateDTO organization, String accessToken) {
     Long organizationId = organization.getOrganizationId();
 
-    Organization existingOrganization = organizationRepository.findById(organizationId)
-            .orElseThrow(() -> new OrganizationNotFoundException(ORGANIZATION_NOT_FOUND_MSG.formatted(organizationId)));
+    Organization existingOrganization = findOrganizationById(organizationId);
 
     handleOrganizationStationUpdate(organization);
 
@@ -163,8 +159,7 @@ public class OrganizationService {
   }
 
   public void updateOrganizationExternalId(Long organizationId, String organizationExternalId) {
-    Organization organization = organizationRepository.findById(organizationId)
-      .orElseThrow(()->new OrganizationNotFoundException(ORGANIZATION_NOT_FOUND_MSG.formatted(organizationId)));
+    Organization organization = findOrganizationById(organizationId);
     organization.setExternalOrganizationId(organizationExternalId);
     organizationRepository.save(organization);
   }
@@ -222,8 +217,7 @@ public class OrganizationService {
   }
 
   public void updateOrganizationStatus(Long organizationId, OrganizationStatus newStatus) {
-    Organization organization = organizationRepository.findById(organizationId)
-      .orElseThrow(()->new OrganizationNotFoundException(ORGANIZATION_NOT_FOUND_MSG.formatted(organizationId)));
+    Organization organization = findOrganizationById(organizationId);
     organization.setStatus(newStatus);
     organizationValidatorService.validateStatusUpdate(organization);
     organizationRepository.save(organization);
@@ -236,8 +230,7 @@ public class OrganizationService {
   }
 
   public List<OrganizationApiKey> getOrganizationApiKeys(Long organizationId, String subUnitCode){
-    Organization organization = organizationRepository.findById(organizationId)
-      .orElseThrow(() -> new OrganizationNotFoundException(ORGANIZATION_NOT_FOUND_MSG.formatted(organizationId)));
+    Organization organization = findOrganizationById(organizationId);
 
     boolean ioActive = organization.isFlagNotifyIo();
 
@@ -250,5 +243,11 @@ public class OrganizationService {
         OrganizationApiKeyType.IO.equals(key.getKeyType()) ? ioActive : null
       ))
       .toList();
+  }
+
+
+  private Organization findOrganizationById(Long organizationId) {
+    return organizationRepository.findById(organizationId)
+      .orElseThrow(() -> new OrganizationNotFoundException(ORGANIZATION_NOT_FOUND_MSG.formatted(organizationId)));
   }
 }
