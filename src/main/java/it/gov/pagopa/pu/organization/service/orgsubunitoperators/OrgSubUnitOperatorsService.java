@@ -1,5 +1,6 @@
 package it.gov.pagopa.pu.organization.service.orgsubunitoperators;
 
+import it.gov.pagopa.pu.organization.model.OrgSubUnit;
 import it.gov.pagopa.pu.organization.model.OrgSubUnitOperators;
 import it.gov.pagopa.pu.organization.repository.OrgSubUnitOperatorsRepository;
 import it.gov.pagopa.pu.organization.repository.OrgSubUnitRepository;
@@ -60,5 +61,35 @@ public class OrgSubUnitOperatorsService {
   public void deleteOrgSubUnitFromOperator(Long organizationId, String mappedExternalUserId, String subUnitCode) {
     orgSubUnitOperatorsRepository.deleteByOrganizationIdAndSubUnitCodeAndOperatorExternalUserId(organizationId, subUnitCode, mappedExternalUserId);
     log.info("Removed orgSubUnit {} from operator {} for organization {}", subUnitCode, mappedExternalUserId, organizationId);
+  }
+
+  @Transactional
+  public void addOperatorsToOrgSubUnit(Long organizationId, String subUnitCode, List<String> mappedExternalUserIds) {
+    boolean orgSubUnitExists = orgSubUnitRepository.existsById(new OrgSubUnit.OrgSubUnitId(organizationId, subUnitCode));
+
+    if (!orgSubUnitExists) {throw new ResponseStatusException(
+      HttpStatus.BAD_REQUEST, "OrgSubUnit %s does not exist for organization %s".formatted(subUnitCode, organizationId));
+    }
+
+    Set<String> requestedMappedExternalUserIds = new HashSet<>(mappedExternalUserIds);
+    Set<String> addedMappedExternalUserIds = new HashSet<>();
+
+    requestedMappedExternalUserIds.forEach(mappedExternalUserId -> {
+      boolean alreadyAssociated = orgSubUnitOperatorsRepository
+        .findByOrganizationIdAndSubUnitCodeAndOperatorExternalUserId(organizationId, subUnitCode, mappedExternalUserId)
+        .isPresent();
+
+      if (!alreadyAssociated) {
+        OrgSubUnitOperators association = new OrgSubUnitOperators();
+        association.setOrganizationId(organizationId);
+        association.setSubUnitCode(subUnitCode);
+        association.setOperatorExternalUserId(mappedExternalUserId);
+
+        orgSubUnitOperatorsRepository.save(association);
+        addedMappedExternalUserIds.add(mappedExternalUserId);
+      }
+    });
+
+    log.info("Added operators {} to orgSubUnit {} for organization {}", addedMappedExternalUserIds, subUnitCode, organizationId);
   }
 }
