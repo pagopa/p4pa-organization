@@ -54,8 +54,17 @@ public class OrganizationService {
 
   private static final String ORGANIZATION_NOT_FOUND_MSG = "Organization with id %s not found";
 
+  @Transactional
   public void encryptAndSaveApiKey(Long organizationId, OrganizationApiKeys organizationApiKeys, String subUnitCode) {
+    Organization org = organizationRepository.findById(organizationId)
+      .orElseThrow(() -> new OrganizationNotFoundException(ORGANIZATION_NOT_FOUND_MSG.formatted(organizationId)));
+
     organizationKeysService.encryptAndSave(organizationId, organizationApiKeys, subUnitCode);
+
+    if (organizationApiKeys.getKeyType().equals(OrganizationApiKeys.KeyTypeEnum.IO)) {
+      org.setFlagNotifyIo(organizationApiKeys.getServiceEnabled());
+      organizationRepository.save(org);
+    }
   }
 
   @Transactional
