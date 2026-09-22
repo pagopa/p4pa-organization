@@ -188,13 +188,17 @@ class OrganizationServiceTest {
   void givenEncryptAndSaveSendApiKeyThenSuccess() {
     // Given
     String plainText = "PLAINTEXT";
-    OrganizationApiKeys organizationApiKeys = new OrganizationApiKeys(OrganizationApiKeys.KeyTypeEnum.SEND, plainText);
+    Long organizationId = 1L;
+    Organization organization = buildOrganization();
+    OrganizationApiKeys organizationApiKeys = new OrganizationApiKeys(OrganizationApiKeys.KeyTypeEnum.IO, plainText);
 
+    when(organizationRepositoryMock.findById(organizationId)).thenReturn(Optional.of(organization));
     // When
     service.encryptAndSaveApiKey(1L, organizationApiKeys, null);
 
     // Then
     verify(organizationKeysServiceMock).encryptAndSave(1L, organizationApiKeys, null);
+    verify(organizationRepositoryMock).save(organization);
   }
 
   @Test
