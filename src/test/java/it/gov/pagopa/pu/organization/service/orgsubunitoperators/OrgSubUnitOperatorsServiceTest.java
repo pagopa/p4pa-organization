@@ -1,5 +1,6 @@
 package it.gov.pagopa.pu.organization.service.orgsubunitoperators;
 
+import it.gov.pagopa.pu.organization.model.OrgSubUnit;
 import it.gov.pagopa.pu.organization.model.OrgSubUnitOperators;
 import it.gov.pagopa.pu.organization.repository.OrgSubUnitOperatorsRepository;
 import it.gov.pagopa.pu.organization.repository.OrgSubUnitRepository;
@@ -227,5 +228,162 @@ class OrgSubUnitOperatorsServiceTest {
     assertDoesNotThrow(() -> service.deleteOrgSubUnitFromOperator(organizationId, mappedExternalUserId, subUnitCode));
 
     verify(orgSubUnitOperatorsRepositoryMock).deleteByOrganizationIdAndSubUnitCodeAndOperatorExternalUserId(organizationId, subUnitCode, mappedExternalUserId);
+  }
+
+  @Test
+  void whenAddOperatorsToOrgSubUnitThenOk() {
+    Long organizationId = 1L;
+    String subUnitCode = "SUB_UNIT_1";
+    List<String> mappedExternalUserIds = List.of("userId1", "userId2");
+
+    OrgSubUnit.OrgSubUnitId orgSubUnitId = new OrgSubUnit.OrgSubUnitId(organizationId, subUnitCode);
+
+    when(orgSubUnitRepositoryMock.existsById(orgSubUnitId))
+      .thenReturn(true);
+
+    when(orgSubUnitOperatorsRepositoryMock
+      .findByOrganizationIdAndSubUnitCodeAndOperatorExternalUserId(organizationId, subUnitCode, "userId1"))
+      .thenReturn(Optional.empty());
+
+    when(orgSubUnitOperatorsRepositoryMock
+      .findByOrganizationIdAndSubUnitCodeAndOperatorExternalUserId(organizationId, subUnitCode, "userId2"))
+      .thenReturn(Optional.empty());
+
+    assertDoesNotThrow(() -> service.addOperatorsToOrgSubUnit(organizationId, subUnitCode, mappedExternalUserIds));
+
+    verify(orgSubUnitRepositoryMock).existsById(orgSubUnitId);
+    verify(orgSubUnitOperatorsRepositoryMock).findByOrganizationIdAndSubUnitCodeAndOperatorExternalUserId(organizationId, subUnitCode, "userId1");
+    verify(orgSubUnitOperatorsRepositoryMock).findByOrganizationIdAndSubUnitCodeAndOperatorExternalUserId(organizationId, subUnitCode, "userId2");
+
+    ArgumentCaptor<OrgSubUnitOperators> captor =
+      ArgumentCaptor.forClass(OrgSubUnitOperators.class);
+
+    verify(orgSubUnitOperatorsRepositoryMock, times(2)).save(captor.capture());
+
+    List<OrgSubUnitOperators> savedAssociations = captor.getAllValues();
+
+    assertEquals(
+      Set.of("userId1", "userId2"),
+      savedAssociations.stream()
+        .map(OrgSubUnitOperators::getOperatorExternalUserId)
+        .collect(Collectors.toSet())
+    );
+
+    savedAssociations.forEach(association -> {
+      assertEquals(organizationId, association.getOrganizationId());
+      assertEquals(subUnitCode, association.getSubUnitCode());
+    });
+  }
+
+  @Test
+  void givenAlreadyExistingAssociationWhenAddOperatorsToOrgSubUnitThenIgnoreIt() {
+    Long organizationId = 1L;
+    String subUnitCode = "SUB_UNIT_1";
+    List<String> mappedExternalUserIds = List.of("userId1", "userId2");
+
+    OrgSubUnit.OrgSubUnitId orgSubUnitId = new OrgSubUnit.OrgSubUnitId(organizationId, subUnitCode);
+
+    when(orgSubUnitRepositoryMock.existsById(orgSubUnitId))
+      .thenReturn(true);
+
+    OrgSubUnitOperators existingAssociation = new OrgSubUnitOperators();
+    existingAssociation.setOrganizationId(organizationId);
+    existingAssociation.setSubUnitCode(subUnitCode);
+    existingAssociation.setOperatorExternalUserId("userId1");
+
+    when(orgSubUnitOperatorsRepositoryMock
+      .findByOrganizationIdAndSubUnitCodeAndOperatorExternalUserId(organizationId, subUnitCode, "userId1"))
+      .thenReturn(Optional.of(existingAssociation));
+
+    when(orgSubUnitOperatorsRepositoryMock
+      .findByOrganizationIdAndSubUnitCodeAndOperatorExternalUserId(organizationId, subUnitCode, "userId2"))
+      .thenReturn(Optional.empty());
+
+    assertDoesNotThrow(() -> service.addOperatorsToOrgSubUnit(organizationId, subUnitCode, mappedExternalUserIds));
+
+    verify(orgSubUnitRepositoryMock).existsById(orgSubUnitId);
+    verify(orgSubUnitOperatorsRepositoryMock).findByOrganizationIdAndSubUnitCodeAndOperatorExternalUserId(organizationId, subUnitCode, "userId1");
+    verify(orgSubUnitOperatorsRepositoryMock).findByOrganizationIdAndSubUnitCodeAndOperatorExternalUserId(organizationId, subUnitCode, "userId2");
+
+    ArgumentCaptor<OrgSubUnitOperators> captor = ArgumentCaptor.forClass(OrgSubUnitOperators.class);
+
+    verify(orgSubUnitOperatorsRepositoryMock).save(captor.capture());
+
+    OrgSubUnitOperators savedAssociation = captor.getValue();
+
+    assertEquals(organizationId, savedAssociation.getOrganizationId());
+    assertEquals(subUnitCode, savedAssociation.getSubUnitCode());
+    assertEquals("userId2", savedAssociation.getOperatorExternalUserId());
+  }
+
+  @Test
+  void givenAllAssociationsAlreadyExistWhenAddOperatorsToOrgSubUnitThenOk() {
+    Long organizationId = 1L;
+    String subUnitCode = "SUB_UNIT_1";
+    List<String> mappedExternalUserIds = List.of("userId1", "userId2");
+
+    OrgSubUnit.OrgSubUnitId orgSubUnitId = new OrgSubUnit.OrgSubUnitId(organizationId, subUnitCode);
+
+    when(orgSubUnitRepositoryMock.existsById(orgSubUnitId))
+      .thenReturn(true);
+
+    OrgSubUnitOperators firstAssociation = new OrgSubUnitOperators();
+    OrgSubUnitOperators secondAssociation = new OrgSubUnitOperators();
+
+    when(orgSubUnitOperatorsRepositoryMock
+      .findByOrganizationIdAndSubUnitCodeAndOperatorExternalUserId(organizationId, subUnitCode, "userId1"))
+      .thenReturn(Optional.of(firstAssociation));
+
+    when(orgSubUnitOperatorsRepositoryMock
+      .findByOrganizationIdAndSubUnitCodeAndOperatorExternalUserId(organizationId, subUnitCode, "userId2"))
+      .thenReturn(Optional.of(secondAssociation));
+
+    assertDoesNotThrow(() -> service.addOperatorsToOrgSubUnit(organizationId, subUnitCode, mappedExternalUserIds));
+
+    verify(orgSubUnitRepositoryMock).existsById(orgSubUnitId);
+    verify(orgSubUnitOperatorsRepositoryMock).findByOrganizationIdAndSubUnitCodeAndOperatorExternalUserId(organizationId, subUnitCode, "userId1");
+    verify(orgSubUnitOperatorsRepositoryMock).findByOrganizationIdAndSubUnitCodeAndOperatorExternalUserId(organizationId, subUnitCode, "userId2");
+    verify(orgSubUnitOperatorsRepositoryMock, never()).save(any(OrgSubUnitOperators.class));
+  }
+
+  @Test
+  void givenMissingOrgSubUnitWhenAddOperatorsToOrgSubUnitThenBadRequestException() {
+    Long organizationId = 1L;
+    String subUnitCode = "SUB_UNIT_1";
+    List<String> mappedExternalUserIds = List.of("userId1", "userId2");
+
+    OrgSubUnit.OrgSubUnitId orgSubUnitId = new OrgSubUnit.OrgSubUnitId(organizationId, subUnitCode);
+
+    when(orgSubUnitRepositoryMock.existsById(orgSubUnitId))
+      .thenReturn(false);
+
+    ResponseStatusException exception = assertThrows(
+      ResponseStatusException.class,
+      () -> service.addOperatorsToOrgSubUnit(organizationId, subUnitCode, mappedExternalUserIds));
+
+    assertEquals(400, exception.getStatusCode().value());
+    verify(orgSubUnitRepositoryMock).existsById(orgSubUnitId);
+  }
+
+  @Test
+  void givenDuplicatedMappedExternalUserIdsWhenAddOperatorsToOrgSubUnitThenProcessOnce() {
+    Long organizationId = 1L;
+    String subUnitCode = "SUB_UNIT_1";
+    List<String> mappedExternalUserIds = List.of("userId1", "userId1");
+
+    OrgSubUnit.OrgSubUnitId orgSubUnitId = new OrgSubUnit.OrgSubUnitId(organizationId, subUnitCode);
+
+    when(orgSubUnitRepositoryMock.existsById(orgSubUnitId))
+      .thenReturn(true);
+
+    when(orgSubUnitOperatorsRepositoryMock
+      .findByOrganizationIdAndSubUnitCodeAndOperatorExternalUserId(organizationId, subUnitCode, "userId1"))
+      .thenReturn(Optional.empty());
+
+    assertDoesNotThrow(() -> service.addOperatorsToOrgSubUnit(organizationId, subUnitCode, mappedExternalUserIds));
+
+    verify(orgSubUnitRepositoryMock).existsById(orgSubUnitId);
+    verify(orgSubUnitOperatorsRepositoryMock, times(1)).findByOrganizationIdAndSubUnitCodeAndOperatorExternalUserId(organizationId, subUnitCode, "userId1");
+    verify(orgSubUnitOperatorsRepositoryMock, times(1)).save(any(OrgSubUnitOperators.class));
   }
 }
