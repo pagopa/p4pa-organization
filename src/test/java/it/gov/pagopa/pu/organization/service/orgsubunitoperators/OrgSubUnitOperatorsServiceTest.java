@@ -386,4 +386,26 @@ class OrgSubUnitOperatorsServiceTest {
     verify(orgSubUnitOperatorsRepositoryMock, times(1)).findByOrganizationIdAndSubUnitCodeAndOperatorExternalUserId(organizationId, subUnitCode, "userId1");
     verify(orgSubUnitOperatorsRepositoryMock, times(1)).save(any(OrgSubUnitOperators.class));
   }
+
+  @Test
+  void whenDeleteOperatorsFromOrgSubUnitThenOk() {
+    Long organizationId = 1L;
+    String subUnitCode = "SUB_UNIT_1";
+    List<String> mappedExternalUserIds = List.of("userId1", "userId2");
+
+    assertDoesNotThrow(() -> service.deleteOperatorsFromOrgSubUnit(organizationId, subUnitCode, mappedExternalUserIds));
+    verify(orgSubUnitOperatorsRepositoryMock).deleteByOrganizationIdAndSubUnitCodeAndOperatorExternalUserId(organizationId, subUnitCode, "userId1");
+    verify(orgSubUnitOperatorsRepositoryMock).deleteByOrganizationIdAndSubUnitCodeAndOperatorExternalUserId(organizationId, subUnitCode, "userId2");
+  }
+
+  @Test
+  void givenDuplicatedMappedExternalUserIdsWhenDeleteOperatorsFromOrgSubUnitThenProcessOnce() {
+    Long organizationId = 1L;
+    String subUnitCode = "SUB_UNIT_1";
+    List<String> mappedExternalUserIds = List.of("userId1", "userId1");
+
+    assertDoesNotThrow(() -> service.deleteOperatorsFromOrgSubUnit(organizationId, subUnitCode, mappedExternalUserIds));
+    verify(orgSubUnitOperatorsRepositoryMock, times(1))
+      .deleteByOrganizationIdAndSubUnitCodeAndOperatorExternalUserId(organizationId, subUnitCode, "userId1");
+  }
 }

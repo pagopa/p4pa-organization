@@ -92,4 +92,13 @@ public class OrgSubUnitOperatorsService {
 
     log.info("Added operators {} to orgSubUnit {} for organization {}", addedMappedExternalUserIds, subUnitCode, organizationId);
   }
+
+  @Transactional
+  public void deleteOperatorsFromOrgSubUnit(Long organizationId, String subUnitCode, List<String> mappedExternalUserIds) {
+    Set<String> requestedMappedExternalUserIds = new HashSet<>(mappedExternalUserIds);
+
+    requestedMappedExternalUserIds.forEach(
+      mappedExternalUserId -> orgSubUnitOperatorsRepository
+        .deleteByOrganizationIdAndSubUnitCodeAndOperatorExternalUserId(organizationId, subUnitCode, mappedExternalUserId));
+  }
 }
