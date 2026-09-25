@@ -346,6 +346,7 @@ class OrganizationServiceTest {
     OrganizationApiKeys result = service.getApiKey(organizationId, keyType, subUnitCode);
 
     assertEquals(expectedApiKey, result.getApiKey());
+    assertEquals(keyType.getValue(), result.getKeyType().getValue());
   }
 
   @Test
@@ -369,6 +370,7 @@ class OrganizationServiceTest {
     OrganizationApiKeys result = service.getApiKey(organizationId, keyType, subUnitCode);
 
     assertEquals(expectedApiKey, result.getApiKey());
+    assertEquals(keyType.getValue(), result.getKeyType().getValue());
   }
 
   @Test
