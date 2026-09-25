@@ -106,8 +106,11 @@ class OrganizationControllerTest {
 
   @Test
   void whenGetApiKeyThenOk() throws Exception {
-    String apiKey = "apikey";
-    when(organizationServiceMock.getApiKey(1L, OrganizationApiKeyType.IO, "CODE")).thenReturn(apiKey);
+    OrganizationApiKeys apiKeys = new OrganizationApiKeys();
+    apiKeys.setApiKey("apikey");
+    apiKeys.setKeyType(OrganizationApiKeys.KeyTypeEnum.IO);
+
+    when(organizationServiceMock.getApiKey(1L, OrganizationApiKeyType.IO, "CODE")).thenReturn(apiKeys);
 
     MvcResult result = mockMvc.perform(
         get("/organization/1/apiKey/IO")
@@ -116,7 +119,10 @@ class OrganizationControllerTest {
       .andExpect(status().isOk())
       .andReturn();
 
-    assertEquals(apiKey, result.getResponse().getContentAsString());
+    String responseBody = result.getResponse().getContentAsString();
+    OrganizationApiKeys responseDto = jsonMapper.readValue(responseBody, OrganizationApiKeys.class);
+
+    assertEquals(apiKeys, responseDto);
   }
 
   @Test
