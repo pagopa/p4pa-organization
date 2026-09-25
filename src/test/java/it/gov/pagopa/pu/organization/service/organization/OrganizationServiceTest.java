@@ -213,9 +213,9 @@ class OrganizationServiceTest {
     when(organizationRepositoryMock.findById(organizationId)).thenReturn(Optional.of(organization));
     when(organizationKeysServiceMock.getApiKey(organizationId, keyType, subUnitCode))
       .thenReturn(expectedApiKey);
-    String result = service.getApiKey(organizationId, keyType, subUnitCode);
+    OrganizationApiKeys result = service.getApiKey(organizationId, keyType, subUnitCode);
 
-    assertEquals(expectedApiKey, result);
+    assertEquals(expectedApiKey, result.getApiKey());
   }
 
   @Test
@@ -225,12 +225,16 @@ class OrganizationServiceTest {
     Organization organization = buildOrganization();
     organization.setFlagNotifyIo(false);
     OrganizationApiKeyType keyType = OrganizationApiKeyType.IO;
+    String expectedApiKey = "apiKey";
 
     when(organizationRepositoryMock.findById(organizationId)).thenReturn(Optional.of(organization));
+    when(organizationKeysServiceMock.getApiKey(organizationId, keyType, subUnitCode))
+      .thenReturn(expectedApiKey);
 
-    String result = service.getApiKey(organizationId, keyType, subUnitCode);
+    OrganizationApiKeys result = service.getApiKey(organizationId, keyType, subUnitCode);
 
-    assertNull(result);
+    assertEquals(expectedApiKey, result.getApiKey());
+    assertFalse(result.getServiceEnabled());
   }
 
   @Test
@@ -246,9 +250,9 @@ class OrganizationServiceTest {
     when(organizationKeysServiceMock.getApiKey(organizationId, keyType, subUnitCode))
       .thenReturn(expectedApiKey);
 
-    String result = service.getApiKey(organizationId, keyType, subUnitCode);
+    OrganizationApiKeys result = service.getApiKey(organizationId, keyType, subUnitCode);
 
-    assertEquals(expectedApiKey, result);
+    assertEquals(expectedApiKey, result.getApiKey());
   }
 
   @Test
@@ -268,10 +272,10 @@ class OrganizationServiceTest {
       .thenReturn(expectedApiKey);
 
     // When
-    String result = service.getApiKey(organizationId, keyType, subUnitCode);
+    OrganizationApiKeys result = service.getApiKey(organizationId, keyType, subUnitCode);
 
     // Then
-    assertEquals(expectedApiKey, result);
+    assertEquals(expectedApiKey, result.getApiKey());
   }
 
   @Test
@@ -283,14 +287,13 @@ class OrganizationServiceTest {
     OrganizationApiKeyType keyType = OrganizationApiKeyType.SEND;
 
     when(organizationRepositoryMock.findById(organizationId)).thenReturn(Optional.of(organization));
-
     when(organizationKeysServiceMock.getApiKey(organizationId, keyType, subUnitCode))
       .thenReturn(null);
     when(organizationKeysServiceMock.getApiKey(organizationId, keyType, null))
       .thenReturn(null);
 
     // When
-    String result = service.getApiKey(organizationId, keyType, subUnitCode);
+    OrganizationApiKeys result = service.getApiKey(organizationId, keyType, subUnitCode);
 
     // Then
     assertNull(result);
@@ -325,9 +328,9 @@ class OrganizationServiceTest {
     when(organizationKeysServiceMock.getApiKey(organizationId, keyType, subUnitCode))
       .thenReturn(expectedApiKey);
 
-    String result = service.getApiKey(organizationId, keyType, subUnitCode);
+    OrganizationApiKeys result = service.getApiKey(organizationId, keyType, subUnitCode);
 
-    assertEquals(expectedApiKey, result);
+    assertEquals(expectedApiKey, result.getApiKey());
   }
 
   @Test
@@ -348,9 +351,9 @@ class OrganizationServiceTest {
     when(organizationKeysServiceMock.getApiKey(organizationId, keyType, subUnitCode))
       .thenReturn(null);
 
-    String result = service.getApiKey(organizationId, keyType, subUnitCode);
+    OrganizationApiKeys result = service.getApiKey(organizationId, keyType, subUnitCode);
 
-    assertEquals(expectedApiKey, result);
+    assertEquals(expectedApiKey, result.getApiKey());
   }
 
   @Test

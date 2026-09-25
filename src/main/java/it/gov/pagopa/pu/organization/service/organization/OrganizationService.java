@@ -96,31 +96,41 @@ public class OrganizationService {
     return organization;
   }
 
-  public String getApiKey(Long organizationId, OrganizationApiKeyType keyType, String subUnitCode) {
+  public OrganizationApiKeys getApiKey(Long organizationId, OrganizationApiKeyType keyType, String subUnitCode) {
     Organization organization = findOrganizationById(organizationId);
+    String key = organizationKeysService.getApiKey(organizationId, keyType, subUnitCode);
 
-    return switch (keyType) {
-      case IO -> organization.isFlagNotifyIo() ? organizationKeysService.getApiKey(organizationId, keyType, subUnitCode) : null;
-      case SEND -> {
-        String key = organizationKeysService.getApiKey(organizationId, keyType, subUnitCode);
-        if(Objects.isNull(key) && !Objects.isNull(subUnitCode)) {
-          key = organizationKeysService.getApiKey(organizationId, keyType, null);
-        }
-        yield key;
-      }
-      case GENERATE_NOTICE -> {
-        String key = organizationKeysService.getApiKey(organizationId, keyType, subUnitCode);
-        if(key!=null) {
-          yield key;
-        } else {
-          Broker broker = brokerRepository.findByBrokeredOrganizationId(String.valueOf(organizationId))
-            .orElseThrow(() -> new BrokerNotFoundException("Broker for org with id %s not found".formatted(organizationId)));
-          yield brokerKeysService.getBrokerDecryptedApiKey(broker.getBrokerId(), BrokerApiKeyType.GENERATE_NOTICE);
-        }
-      }
-    };
+    if (key == null) {
+      key = resolveFallbackKey(organizationId, keyType, subUnitCode);
+    }
+    if (key == null) {
+      return null;
+    }
+
+    OrganizationApiKeys organizationApiKeys = new OrganizationApiKeys();
+    organizationApiKeys.setApiKey(key);
+    organizationApiKeys.setKeyType(OrganizationApiKeys.KeyTypeEnum.fromValue(keyType.getValue()));
+
+    if (keyType == OrganizationApiKeyType.IO) {
+      organizationApiKeys.setServiceEnabled(organization.isFlagNotifyIo());
+    }
+
+    return organizationApiKeys;
   }
 
+  private String resolveFallbackKey(Long organizationId, OrganizationApiKeyType keyType, String subUnitCode) {
+    return switch (keyType) {
+      case SEND -> (subUnitCode != null)
+        ? organizationKeysService.getApiKey(organizationId, keyType, null)
+        : null;
+
+      case GENERATE_NOTICE -> brokerRepository.findByBrokeredOrganizationId(String.valueOf(organizationId))
+        .map(broker -> brokerKeysService.getBrokerDecryptedApiKey(broker.getBrokerId(), BrokerApiKeyType.GENERATE_NOTICE))
+        .orElseThrow(() -> new BrokerNotFoundException("Broker for org with id %s not found".formatted(organizationId)));
+
+      default -> null;
+    };
+  }
   public OrganizationDetailDTO getOrganization(Long organizationId) {
     Organization org = findOrganizationById(organizationId);
 
