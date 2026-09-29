@@ -6,7 +6,6 @@ import org.springframework.data.domain.Pageable;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.rest.core.annotation.RepositoryRestResource;
 
-import java.util.Collection;
 import java.util.Optional;
 import java.util.Set;
 
@@ -14,9 +13,9 @@ import java.util.Set;
 public interface OrgSubUnitOperatorsRepository extends JpaRepository<OrgSubUnitOperators,Long> {
   Optional<OrgSubUnitOperators> findByOrganizationIdAndSubUnitCodeAndOperatorExternalUserId(Long organizationId, String subUnitCode, String operatorExternalUserId);
 
-  Page<OrgSubUnitOperators> findByOrganizationIdAndSubUnitCode(Long organizationId, String subUnitCode, Set<String> mappedExternal, Pageable pageable);
+  Page<OrgSubUnitOperators> findByOrganizationIdAndSubUnitCode(Long organizationId, String subUnitCode, Pageable pageable);
 
-  Page<OrgSubUnitOperators> findByOrganizationIdAndSubUnitCodeAndOperatorExternalUserIdIn(Long organizationId, String subUnitCode, Collection<String> mappedExternalUserIds, Pageable pageable);
+  Page<OrgSubUnitOperators> findByOrganizationIdAndSubUnitCodeAndOperatorExternalUserIdIn(Long organizationId, String subUnitCode, Set<String> mappedExternalUserIds, Pageable pageable);
 
   void deleteByOrganizationIdAndSubUnitCodeAndOperatorExternalUserId(Long organizationId, String subUnitCode, String operatorExternalUserId);
 }
