@@ -5,12 +5,17 @@ import it.gov.pagopa.pu.organization.model.OrganizationKeys;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.repository.query.Param;
 import org.springframework.data.rest.core.annotation.RepositoryRestResource;
+import org.springframework.data.rest.core.annotation.RestResource;
 import org.springframework.web.bind.annotation.RequestParam;
 
 import java.util.List;
 
 @RepositoryRestResource(path = "organization-keys", exported = false)
 public interface OrganizationKeysRepository extends JpaRepository<OrganizationKeys, String> {
+
+  @RestResource(exported = false)
+  @Override
+  void deleteById(String s);
 
   List<OrganizationKeys> findByOrganizationIdAndSubUnitCode(
     @Parameter(required = true) @Param("organizationId") Long organizationId,
