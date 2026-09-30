@@ -11,7 +11,6 @@ import java.util.List;
 
 @RepositoryRestResource(path = "organization-keys", exported = false)
 public interface OrganizationKeysRepository extends JpaRepository<OrganizationKeys, String> {
-
   List<OrganizationKeys> findByOrganizationIdAndSubUnitCode(
     @Parameter(required = true) @Param("organizationId") Long organizationId,
     @RequestParam(required = false) @Param("subUnitCode") String subUnitCode

@@ -814,4 +814,36 @@ class OrganizationServiceTest {
 
     assertTrue(result.isEmpty());
   }
+
+  @Test
+  void givenIoKeyTypeWhenDeleteOrganizationApiKeyThenSuccessAndResetFlagNotifyIo() {
+    Long organizationId = 1L;
+    OrganizationApiKeyType keyType = OrganizationApiKeyType.IO;
+    String subUnitCode = "SUB_1";
+    String expectedKeysId = OrganizationKeys.buildSemanticId(organizationId, subUnitCode, keyType);
+
+    Organization organization = OrganizationFaker.buildOrganization();
+    organization.setOrganizationId(organizationId);
+    organization.setFlagNotifyIo(true);
+
+    when(organizationRepositoryMock.findById(organizationId)).thenReturn(Optional.of(organization));
+    doNothing().when(organizationKeysRepositoryMock).deleteById(expectedKeysId);
+
+    Assertions.assertDoesNotThrow(() -> service.deleteOrganizationApiKey(organizationId, keyType, subUnitCode));
+
+    Assertions.assertFalse(organization.isFlagNotifyIo());
+    verify(organizationRepositoryMock).save(organization);
+  }
+
+  @Test
+  void givenNonIoKeyTypeWhenDeleteOrganizationApiKeyThenSuccessWithoutUpdatingOrganization() {
+    Long organizationId = 1L;
+    OrganizationApiKeyType keyType = OrganizationApiKeyType.SEND;
+    String subUnitCode = "SUB_1";
+    String expectedKeysId = OrganizationKeys.buildSemanticId(organizationId, subUnitCode, keyType);
+
+    doNothing().when(organizationKeysRepositoryMock).deleteById(expectedKeysId);
+
+    Assertions.assertDoesNotThrow(() -> service.deleteOrganizationApiKey(organizationId, keyType, subUnitCode));
+  }
 }

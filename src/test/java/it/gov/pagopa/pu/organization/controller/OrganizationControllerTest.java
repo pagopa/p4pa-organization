@@ -268,4 +268,16 @@ class OrganizationControllerTest {
     verify(organizationServiceMock).getOrganizationApiKeys(orgId, subUnitCode);
   }
 
+  @Test
+  void whenDeleteOrganizationApiKeyThenOk() throws Exception {
+
+    mockMvc.perform(
+        delete("/organization/1/apiKey/IO")
+          .param("subUnitCode", "CODE")
+          .contentType(MediaType.APPLICATION_JSON_VALUE))
+      .andExpect(status().isNoContent())
+      .andReturn();
+
+    verify(organizationServiceMock).deleteOrganizationApiKey(1L, OrganizationApiKeyType.IO, "CODE");
+  }
 }

@@ -259,4 +259,16 @@ public class OrganizationService {
     return organizationRepository.findById(organizationId)
       .orElseThrow(() -> new OrganizationNotFoundException(ORGANIZATION_NOT_FOUND_MSG.formatted(organizationId)));
   }
+
+  @Transactional
+  public void deleteOrganizationApiKey(Long organizationId, OrganizationApiKeyType keyType, String subUnitCode){
+    String organizationKeysId = OrganizationKeys.buildSemanticId(organizationId, subUnitCode, keyType);
+    organizationKeysRepository.deleteById(organizationKeysId);
+
+    if (keyType.equals(OrganizationApiKeyType.IO)) {
+      Organization organization = findOrganizationById(organizationId);
+      organization.setFlagNotifyIo(false);
+      organizationRepository.save(organization);
+    }
+  }
 }
