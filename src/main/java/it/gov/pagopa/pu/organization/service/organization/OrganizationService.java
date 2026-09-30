@@ -264,17 +264,15 @@ public class OrganizationService {
 
   @Transactional
   public void deleteOrganizationApiKey(Long organizationId, OrganizationApiKeyType keyType, String subUnitCode){
-    OrganizationApiKeys organizationApiKeys = getApiKey(organizationId, keyType, subUnitCode);
-    if (organizationApiKeys!=null && organizationApiKeys.getApiKey()!=null) {
-      organizationKeysRepository.deleteById(organizationApiKeys.getApiKey());
+    String organizationKeysId = OrganizationKeys.buildSemanticId(organizationId, subUnitCode, keyType);
+    organizationKeysRepository.findById(organizationKeysId).orElseThrow(() ->
+      new OrganizationNotFoundException(ORGANIZATION_KEY_NOT_FOUND_MSG.formatted(organizationId)));
 
-      if (keyType.equals(OrganizationApiKeyType.IO)) {
-        Organization organization = findOrganizationById(organizationId);
-        organization.setFlagNotifyIo(false);
-        organizationRepository.save(organization);
-      }
-    } else {
-      throw new OrganizationNotFoundException(ORGANIZATION_KEY_NOT_FOUND_MSG.formatted(organizationId));
+    organizationKeysRepository.deleteById(organizationKeysId);
+    if (keyType.equals(OrganizationApiKeyType.IO)) {
+      Organization organization = findOrganizationById(organizationId);
+      organization.setFlagNotifyIo(false);
+      organizationRepository.save(organization);
     }
   }
 }
