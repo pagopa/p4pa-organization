@@ -296,7 +296,7 @@ paths:
     delete:
       tags:
         - Organization
-      summary: Delete API keys for IO or SEND
+      summary: Delete API keys
       operationId: deleteOrganizationApiKey
       parameters:
         - name: organizationId
@@ -318,7 +318,7 @@ paths:
         '204':
           description: No Content - Key deleted successfully
         '404':
-          description: Organization or Key Not Found
+          description: Key Not Found
           content:
             application/json:
               schema:
