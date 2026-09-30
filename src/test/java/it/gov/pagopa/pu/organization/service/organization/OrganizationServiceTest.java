@@ -842,8 +842,6 @@ class OrganizationServiceTest {
     String subUnitCode = "SUB_1";
     String expectedKeysId = OrganizationKeys.buildSemanticId(organizationId, subUnitCode, keyType);
 
-    OrganizationKeys organizationKeys = new OrganizationKeys();
-
     doNothing().when(organizationKeysRepositoryMock).deleteById(expectedKeysId);
 
     Assertions.assertDoesNotThrow(() -> service.deleteOrganizationApiKey(organizationId, keyType, subUnitCode));
