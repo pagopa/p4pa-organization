@@ -52,8 +52,6 @@ public class OrganizationService {
   private final TaxonomyOrganizationTypeRepository taxonomyOrganizationTypeRepository;
 
   private static final String ORGANIZATION_NOT_FOUND_MSG = "Organization with id %s not found";
-  private static final String ORGANIZATION_KEY_NOT_FOUND_MSG = "OrganizationKey for Organization with id %s not found";
-
 
   @Transactional
   public void encryptAndSaveApiKey(Long organizationId, OrganizationApiKeys organizationApiKeys, String subUnitCode) {
@@ -265,8 +263,7 @@ public class OrganizationService {
   @Transactional
   public void deleteOrganizationApiKey(Long organizationId, OrganizationApiKeyType keyType, String subUnitCode){
     String organizationKeysId = OrganizationKeys.buildSemanticId(organizationId, subUnitCode, keyType);
-    organizationKeysRepository.findById(organizationKeysId).orElseThrow(() ->
-      new OrganizationNotFoundException(ORGANIZATION_KEY_NOT_FOUND_MSG.formatted(organizationId)));
+    organizationKeysRepository.deleteById(organizationKeysId);
 
     organizationKeysRepository.deleteById(organizationKeysId);
     if (keyType.equals(OrganizationApiKeyType.IO)) {

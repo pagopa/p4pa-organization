@@ -822,12 +822,10 @@ class OrganizationServiceTest {
     String subUnitCode = "SUB_1";
     String expectedKeysId = OrganizationKeys.buildSemanticId(organizationId, subUnitCode, keyType);
 
-    OrganizationKeys organizationKeys = new OrganizationKeys();
     Organization organization = OrganizationFaker.buildOrganization();
     organization.setOrganizationId(organizationId);
     organization.setFlagNotifyIo(true);
 
-    when(organizationKeysRepositoryMock.findById(expectedKeysId)).thenReturn(Optional.of(organizationKeys));
     when(organizationRepositoryMock.findById(organizationId)).thenReturn(Optional.of(organization));
     doNothing().when(organizationKeysRepositoryMock).deleteById(expectedKeysId);
 
@@ -846,24 +844,8 @@ class OrganizationServiceTest {
 
     OrganizationKeys organizationKeys = new OrganizationKeys();
 
-    when(organizationKeysRepositoryMock.findById(expectedKeysId)).thenReturn(Optional.of(organizationKeys));
     doNothing().when(organizationKeysRepositoryMock).deleteById(expectedKeysId);
 
     Assertions.assertDoesNotThrow(() -> service.deleteOrganizationApiKey(organizationId, keyType, subUnitCode));
-  }
-
-  @Test
-  void givenKeyNotFoundWhenDeleteOrganizationApiKeyThenThrowOrganizationNotFoundException() {
-    Long organizationId = 1L;
-    OrganizationApiKeyType keyType = OrganizationApiKeyType.IO;
-    String subUnitCode = "SUB_1";
-    String expectedKeysId = OrganizationKeys.buildSemanticId(organizationId, subUnitCode, keyType);
-
-    when(organizationKeysRepositoryMock.findById(expectedKeysId)).thenReturn(Optional.empty());
-
-    Assertions.assertThrows(OrganizationNotFoundException.class,
-      () -> service.deleteOrganizationApiKey(organizationId, keyType, subUnitCode));
-
-    verify(organizationKeysRepositoryMock, never()).deleteById(anyString());
   }
 }

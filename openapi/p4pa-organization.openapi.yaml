@@ -317,12 +317,6 @@ paths:
       responses:
         '204':
           description: No Content - Key deleted successfully
-        '404':
-          description: Key Not Found
-          content:
-            application/json:
-              schema:
-                $ref: '#/components/schemas/OrganizationErrorDTO'
         '500':
           description: Internal Server Error
           content:
