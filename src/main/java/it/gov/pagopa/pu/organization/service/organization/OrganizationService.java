@@ -265,7 +265,6 @@ public class OrganizationService {
     String organizationKeysId = OrganizationKeys.buildSemanticId(organizationId, subUnitCode, keyType);
     organizationKeysRepository.deleteById(organizationKeysId);
 
-    organizationKeysRepository.deleteById(organizationKeysId);
     if (keyType.equals(OrganizationApiKeyType.IO)) {
       Organization organization = findOrganizationById(organizationId);
       organization.setFlagNotifyIo(false);
