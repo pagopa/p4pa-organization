@@ -188,13 +188,17 @@ class OrganizationServiceTest {
   void givenEncryptAndSaveSendApiKeyThenSuccess() {
     // Given
     String plainText = "PLAINTEXT";
-    OrganizationApiKeys organizationApiKeys = new OrganizationApiKeys(OrganizationApiKeys.KeyTypeEnum.SEND, plainText);
+    Long organizationId = 1L;
+    Organization organization = buildOrganization();
+    OrganizationApiKeys organizationApiKeys = new OrganizationApiKeys(OrganizationApiKeys.KeyTypeEnum.IO, plainText);
 
+    when(organizationRepositoryMock.findById(organizationId)).thenReturn(Optional.of(organization));
     // When
     service.encryptAndSaveApiKey(1L, organizationApiKeys, null);
 
     // Then
     verify(organizationKeysServiceMock).encryptAndSave(1L, organizationApiKeys, null);
+    verify(organizationRepositoryMock).save(organization);
   }
 
   @Test
@@ -209,9 +213,9 @@ class OrganizationServiceTest {
     when(organizationRepositoryMock.findById(organizationId)).thenReturn(Optional.of(organization));
     when(organizationKeysServiceMock.getApiKey(organizationId, keyType, subUnitCode))
       .thenReturn(expectedApiKey);
-    String result = service.getApiKey(organizationId, keyType, subUnitCode);
+    OrganizationApiKeys result = service.getApiKey(organizationId, keyType, subUnitCode);
 
-    assertEquals(expectedApiKey, result);
+    assertEquals(expectedApiKey, result.getApiKey());
   }
 
   @Test
@@ -221,12 +225,16 @@ class OrganizationServiceTest {
     Organization organization = buildOrganization();
     organization.setFlagNotifyIo(false);
     OrganizationApiKeyType keyType = OrganizationApiKeyType.IO;
+    String expectedApiKey = "apiKey";
 
     when(organizationRepositoryMock.findById(organizationId)).thenReturn(Optional.of(organization));
+    when(organizationKeysServiceMock.getApiKey(organizationId, keyType, subUnitCode))
+      .thenReturn(expectedApiKey);
 
-    String result = service.getApiKey(organizationId, keyType, subUnitCode);
+    OrganizationApiKeys result = service.getApiKey(organizationId, keyType, subUnitCode);
 
-    assertNull(result);
+    assertEquals(expectedApiKey, result.getApiKey());
+    assertFalse(result.getServiceEnabled());
   }
 
   @Test
@@ -242,9 +250,9 @@ class OrganizationServiceTest {
     when(organizationKeysServiceMock.getApiKey(organizationId, keyType, subUnitCode))
       .thenReturn(expectedApiKey);
 
-    String result = service.getApiKey(organizationId, keyType, subUnitCode);
+    OrganizationApiKeys result = service.getApiKey(organizationId, keyType, subUnitCode);
 
-    assertEquals(expectedApiKey, result);
+    assertEquals(expectedApiKey, result.getApiKey());
   }
 
   @Test
@@ -264,14 +272,31 @@ class OrganizationServiceTest {
       .thenReturn(expectedApiKey);
 
     // When
-    String result = service.getApiKey(organizationId, keyType, subUnitCode);
+    OrganizationApiKeys result = service.getApiKey(organizationId, keyType, subUnitCode);
 
     // Then
-    assertEquals(expectedApiKey, result);
+    assertEquals(expectedApiKey, result.getApiKey());
   }
 
   @Test
-  void givenGetApiKeySENDWhenBothSpecificAndGeneralKeysAreNullThenReturnNull() {
+  void givenGetApiKeySENDWhenSubUnitCodeIsNullAndKeyIsNullThenReturnNull() {
+    // Given
+    Long organizationId = 1L;
+    Organization organization = buildOrganization();
+    OrganizationApiKeyType keyType = OrganizationApiKeyType.SEND;
+
+    when(organizationRepositoryMock.findById(organizationId)).thenReturn(Optional.of(organization));
+    when(organizationKeysServiceMock.getApiKey(organizationId, keyType, null)).thenReturn(null);
+
+    // When
+    OrganizationApiKeys result = service.getApiKey(organizationId, keyType, null);
+
+    // Then
+    assertNull(result);
+  }
+
+  @Test
+  void givenGetApiKeySENDWhenBothKeysAreNullThenReturnNull() {
     // Given
     Long organizationId = 1L;
     String subUnitCode = "CODE";
@@ -279,14 +304,11 @@ class OrganizationServiceTest {
     OrganizationApiKeyType keyType = OrganizationApiKeyType.SEND;
 
     when(organizationRepositoryMock.findById(organizationId)).thenReturn(Optional.of(organization));
-
-    when(organizationKeysServiceMock.getApiKey(organizationId, keyType, subUnitCode))
-      .thenReturn(null);
-    when(organizationKeysServiceMock.getApiKey(organizationId, keyType, null))
-      .thenReturn(null);
+    when(organizationKeysServiceMock.getApiKey(organizationId, keyType, subUnitCode)).thenReturn(null);
+    when(organizationKeysServiceMock.getApiKey(organizationId, keyType, null)).thenReturn(null);
 
     // When
-    String result = service.getApiKey(organizationId, keyType, subUnitCode);
+    OrganizationApiKeys result = service.getApiKey(organizationId, keyType, subUnitCode);
 
     // Then
     assertNull(result);
@@ -321,9 +343,10 @@ class OrganizationServiceTest {
     when(organizationKeysServiceMock.getApiKey(organizationId, keyType, subUnitCode))
       .thenReturn(expectedApiKey);
 
-    String result = service.getApiKey(organizationId, keyType, subUnitCode);
+    OrganizationApiKeys result = service.getApiKey(organizationId, keyType, subUnitCode);
 
-    assertEquals(expectedApiKey, result);
+    assertEquals(expectedApiKey, result.getApiKey());
+    assertEquals(keyType.getValue(), result.getKeyType().getValue());
   }
 
   @Test
@@ -344,9 +367,10 @@ class OrganizationServiceTest {
     when(organizationKeysServiceMock.getApiKey(organizationId, keyType, subUnitCode))
       .thenReturn(null);
 
-    String result = service.getApiKey(organizationId, keyType, subUnitCode);
+    OrganizationApiKeys result = service.getApiKey(organizationId, keyType, subUnitCode);
 
-    assertEquals(expectedApiKey, result);
+    assertEquals(expectedApiKey, result.getApiKey());
+    assertEquals(keyType.getValue(), result.getKeyType().getValue());
   }
 
   @Test
@@ -789,5 +813,37 @@ class OrganizationServiceTest {
       service.getOrganizationApiKeys(orgId, subUnitCode);
 
     assertTrue(result.isEmpty());
+  }
+
+  @Test
+  void givenIoKeyTypeWhenDeleteOrganizationApiKeyThenSuccessAndResetFlagNotifyIo() {
+    Long organizationId = 1L;
+    OrganizationApiKeyType keyType = OrganizationApiKeyType.IO;
+    String subUnitCode = "SUB_1";
+    String expectedKeysId = OrganizationKeys.buildSemanticId(organizationId, subUnitCode, keyType);
+
+    Organization organization = OrganizationFaker.buildOrganization();
+    organization.setOrganizationId(organizationId);
+    organization.setFlagNotifyIo(true);
+
+    when(organizationRepositoryMock.findById(organizationId)).thenReturn(Optional.of(organization));
+    doNothing().when(organizationKeysRepositoryMock).deleteById(expectedKeysId);
+
+    Assertions.assertDoesNotThrow(() -> service.deleteOrganizationApiKey(organizationId, keyType, subUnitCode));
+
+    Assertions.assertFalse(organization.isFlagNotifyIo());
+    verify(organizationRepositoryMock).save(organization);
+  }
+
+  @Test
+  void givenNonIoKeyTypeWhenDeleteOrganizationApiKeyThenSuccessWithoutUpdatingOrganization() {
+    Long organizationId = 1L;
+    OrganizationApiKeyType keyType = OrganizationApiKeyType.SEND;
+    String subUnitCode = "SUB_1";
+    String expectedKeysId = OrganizationKeys.buildSemanticId(organizationId, subUnitCode, keyType);
+
+    doNothing().when(organizationKeysRepositoryMock).deleteById(expectedKeysId);
+
+    Assertions.assertDoesNotThrow(() -> service.deleteOrganizationApiKey(organizationId, keyType, subUnitCode));
   }
 }

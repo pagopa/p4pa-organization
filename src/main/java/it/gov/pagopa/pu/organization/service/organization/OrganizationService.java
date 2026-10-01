@@ -12,7 +12,6 @@ import it.gov.pagopa.pu.organization.exception.common.InvalidValueException;
 import it.gov.pagopa.pu.organization.exception.custom.OrganizationNotFoundException;
 import it.gov.pagopa.pu.organization.mapper.OrganizationMapper;
 import it.gov.pagopa.pu.organization.mapper.OrganizationStationMapper;
-import it.gov.pagopa.pu.organization.model.Broker;
 import it.gov.pagopa.pu.organization.model.Organization;
 import it.gov.pagopa.pu.organization.model.OrganizationKeys;
 import it.gov.pagopa.pu.organization.model.OrganizationStation;
@@ -54,8 +53,16 @@ public class OrganizationService {
 
   private static final String ORGANIZATION_NOT_FOUND_MSG = "Organization with id %s not found";
 
+  @Transactional
   public void encryptAndSaveApiKey(Long organizationId, OrganizationApiKeys organizationApiKeys, String subUnitCode) {
+    Organization org = findOrganizationById(organizationId);
+
     organizationKeysService.encryptAndSave(organizationId, organizationApiKeys, subUnitCode);
+
+    if (organizationApiKeys.getKeyType().equals(OrganizationApiKeys.KeyTypeEnum.IO)) {
+      org.setFlagNotifyIo(organizationApiKeys.getServiceEnabled());
+      organizationRepository.save(org);
+    }
   }
 
   @Transactional
@@ -88,35 +95,43 @@ public class OrganizationService {
     return organization;
   }
 
-  public String getApiKey(Long organizationId, OrganizationApiKeyType keyType, String subUnitCode) {
-    Organization organization = organizationRepository.findById(organizationId)
-      .orElseThrow(() -> new OrganizationNotFoundException(ORGANIZATION_NOT_FOUND_MSG.formatted(organizationId)));
+  public OrganizationApiKeys getApiKey(Long organizationId, OrganizationApiKeyType keyType, String subUnitCode) {
+    Organization organization = findOrganizationById(organizationId);
+    String key = organizationKeysService.getApiKey(organizationId, keyType, subUnitCode);
 
-    return switch (keyType) {
-      case IO -> organization.isFlagNotifyIo() ? organizationKeysService.getApiKey(organizationId, keyType, subUnitCode) : null;
-      case SEND -> {
-        String key = organizationKeysService.getApiKey(organizationId, keyType, subUnitCode);
-        if(Objects.isNull(key) && !Objects.isNull(subUnitCode)) {
-          key = organizationKeysService.getApiKey(organizationId, keyType, null);
-        }
-        yield key;
-      }
-      case GENERATE_NOTICE -> {
-        String key = organizationKeysService.getApiKey(organizationId, keyType, subUnitCode);
-        if(key!=null) {
-          yield key;
-        } else {
-          Broker broker = brokerRepository.findByBrokeredOrganizationId(String.valueOf(organizationId))
-            .orElseThrow(() -> new BrokerNotFoundException("Broker for org with id %s not found".formatted(organizationId)));
-          yield brokerKeysService.getBrokerDecryptedApiKey(broker.getBrokerId(), BrokerApiKeyType.GENERATE_NOTICE);
-        }
-      }
-    };
+    if (key == null) {
+      key = resolveFallbackKey(organizationId, keyType, subUnitCode);
+    }
+    if (key == null) {
+      return null;
+    }
+
+    OrganizationApiKeys organizationApiKeys = new OrganizationApiKeys();
+    organizationApiKeys.setApiKey(key);
+    organizationApiKeys.setKeyType(OrganizationApiKeys.KeyTypeEnum.fromValue(keyType.getValue()));
+
+    if (keyType == OrganizationApiKeyType.IO) {
+      organizationApiKeys.setServiceEnabled(organization.isFlagNotifyIo());
+    }
+
+    return organizationApiKeys;
   }
 
+  private String resolveFallbackKey(Long organizationId, OrganizationApiKeyType keyType, String subUnitCode) {
+    return switch (keyType) {
+      case SEND -> (subUnitCode != null)
+        ? organizationKeysService.getApiKey(organizationId, keyType, null)
+        : null;
+
+      case GENERATE_NOTICE -> brokerRepository.findByBrokeredOrganizationId(String.valueOf(organizationId))
+        .map(broker -> brokerKeysService.getBrokerDecryptedApiKey(broker.getBrokerId(), BrokerApiKeyType.GENERATE_NOTICE))
+        .orElseThrow(() -> new BrokerNotFoundException("Broker for org with id %s not found".formatted(organizationId)));
+
+      default -> null;
+    };
+  }
   public OrganizationDetailDTO getOrganization(Long organizationId) {
-    Organization org = organizationRepository.findById(organizationId)
-      .orElseThrow(() -> new OrganizationNotFoundException(ORGANIZATION_NOT_FOUND_MSG.formatted(organizationId)));
+    Organization org = findOrganizationById(organizationId);
 
     OrganizationStationDTO organizationStationDTO = organizationStationMapper.mapToDTO(org, null);
 
@@ -143,8 +158,7 @@ public class OrganizationService {
   public void updateOrganization(OrganizationUpdateDTO organization, String accessToken) {
     Long organizationId = organization.getOrganizationId();
 
-    Organization existingOrganization = organizationRepository.findById(organizationId)
-            .orElseThrow(() -> new OrganizationNotFoundException(ORGANIZATION_NOT_FOUND_MSG.formatted(organizationId)));
+    Organization existingOrganization = findOrganizationById(organizationId);
 
     handleOrganizationStationUpdate(organization);
 
@@ -154,8 +168,7 @@ public class OrganizationService {
   }
 
   public void updateOrganizationExternalId(Long organizationId, String organizationExternalId) {
-    Organization organization = organizationRepository.findById(organizationId)
-      .orElseThrow(()->new OrganizationNotFoundException(ORGANIZATION_NOT_FOUND_MSG.formatted(organizationId)));
+    Organization organization = findOrganizationById(organizationId);
     organization.setExternalOrganizationId(organizationExternalId);
     organizationRepository.save(organization);
   }
@@ -213,8 +226,7 @@ public class OrganizationService {
   }
 
   public void updateOrganizationStatus(Long organizationId, OrganizationStatus newStatus) {
-    Organization organization = organizationRepository.findById(organizationId)
-      .orElseThrow(()->new OrganizationNotFoundException(ORGANIZATION_NOT_FOUND_MSG.formatted(organizationId)));
+    Organization organization = findOrganizationById(organizationId);
     organization.setStatus(newStatus);
     organizationValidatorService.validateStatusUpdate(organization);
     organizationRepository.save(organization);
@@ -227,8 +239,7 @@ public class OrganizationService {
   }
 
   public List<OrganizationApiKey> getOrganizationApiKeys(Long organizationId, String subUnitCode){
-    Organization organization = organizationRepository.findById(organizationId)
-      .orElseThrow(() -> new OrganizationNotFoundException(ORGANIZATION_NOT_FOUND_MSG.formatted(organizationId)));
+    Organization organization = findOrganizationById(organizationId);
 
     boolean ioActive = organization.isFlagNotifyIo();
 
@@ -241,5 +252,23 @@ public class OrganizationService {
         OrganizationApiKeyType.IO.equals(key.getKeyType()) ? ioActive : null
       ))
       .toList();
+  }
+
+
+  private Organization findOrganizationById(Long organizationId) {
+    return organizationRepository.findById(organizationId)
+      .orElseThrow(() -> new OrganizationNotFoundException(ORGANIZATION_NOT_FOUND_MSG.formatted(organizationId)));
+  }
+
+  @Transactional
+  public void deleteOrganizationApiKey(Long organizationId, OrganizationApiKeyType keyType, String subUnitCode){
+    String organizationKeysId = OrganizationKeys.buildSemanticId(organizationId, subUnitCode, keyType);
+    organizationKeysRepository.deleteById(organizationKeysId);
+
+    if (keyType.equals(OrganizationApiKeyType.IO)) {
+      Organization organization = findOrganizationById(organizationId);
+      organization.setFlagNotifyIo(false);
+      organizationRepository.save(organization);
+    }
   }
 }
