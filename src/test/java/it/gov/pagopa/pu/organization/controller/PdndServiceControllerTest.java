@@ -1,5 +1,6 @@
 package it.gov.pagopa.pu.organization.controller;
 
+import it.gov.pagopa.pu.organization.dto.generated.PagedPdndServiceView;
 import it.gov.pagopa.pu.organization.dto.generated.PdndServiceRequestDTO;
 import it.gov.pagopa.pu.organization.enums.PdndServiceType;
 import it.gov.pagopa.pu.organization.model.PdndService;
@@ -102,5 +103,23 @@ class PdndServiceControllerTest {
     assertNotNull(response);
     assertEquals(HttpStatus.OK, response.getStatusCode());
     assertNull(response.getBody());
+  }
+
+  @Test
+  void whenGetOrgSubUnitsPdndServicesThenOk() {
+    Long organizationId = 1L;
+    String subUnitCode = "CODE";
+    String subUnitName = "NAME";
+
+    PagedPdndServiceView expectedResponse = podamFactory.manufacturePojo(PagedPdndServiceView.class);
+
+    when(pdndServiceServiceMock.getOrgSubUnitsPdndServices(organizationId, subUnitCode, subUnitName, null))
+      .thenReturn(expectedResponse);
+
+    ResponseEntity<PagedPdndServiceView> response = pdndServiceController.getOrgSubUnitsPdndServices(organizationId, subUnitCode, subUnitName, null);
+
+    assertNotNull(response);
+    assertEquals(HttpStatus.OK, response.getStatusCode());
+    assertSame(expectedResponse, response.getBody());
   }
 }
