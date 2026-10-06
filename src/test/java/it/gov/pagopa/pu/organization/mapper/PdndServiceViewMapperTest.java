@@ -31,7 +31,7 @@ class PdndServiceViewMapperTest {
   @Test
   void givenPagedPdndServiceViewThenOk() {
     Pageable pageable = PageRequest.of(0, 5);
-    PdndServiceView sampleView = new PdndServiceView(); // Assicurati che il costruttore/builder esista
+    PdndServiceView sampleView = new PdndServiceView();
     List<PdndServiceView> expectedContent = List.of(sampleView);
     Page<PdndServiceView> pagePdndServiceView = new PageImpl<>(expectedContent, pageable, 1);
 
