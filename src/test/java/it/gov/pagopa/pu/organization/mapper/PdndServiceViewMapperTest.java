@@ -70,7 +70,7 @@ class PdndServiceViewMapperTest {
     PagedPdndServiceView result = pdndServiceViewMapper.mapToPagedPdndServiceView(null);
 
     assertNotNull(result);
-    assertTrue(result.getContent() == null || result.getContent().isEmpty());
+    assertTrue(result.getContent().isEmpty());
   }
 
 }
