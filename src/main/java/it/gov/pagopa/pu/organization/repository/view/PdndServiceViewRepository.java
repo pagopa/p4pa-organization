@@ -91,7 +91,7 @@ public interface PdndServiceViewRepository extends Repository<PdndServiceView, S
   )
   WHERE pc.organizationId = :organizationId
   AND (:subUnitCode IS NULL OR pc.subUnitCode = :subUnitCode)
-  AND (CAST(:subUnitName AS string) IS NULL OR LOWER(osu.subUnitName) LIKE LOWER(CONCAT('%', CAST(:subUnitName AS string), '%')))
+  AND (:subUnitName IS NULL OR osu.subUnitName ILIKE CONCAT('%', cast(:subUnitName as text), '%'))
   """)
   Page<PdndServiceView> findAllPdndServicesByOrganizationIdAndOrgSubUnits(
     @Param("organizationId") Long organizationId,

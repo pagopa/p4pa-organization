@@ -30,7 +30,6 @@ class PdndServiceViewMapperTest {
 
   @Test
   void givenPagedPdndServiceViewThenOk() {
-    // Arrange
     Pageable pageable = PageRequest.of(0, 5);
     PdndServiceView sampleView = new PdndServiceView(); // Assicurati che il costruttore/builder esista
     List<PdndServiceView> expectedContent = List.of(sampleView);
@@ -43,10 +42,8 @@ class PdndServiceViewMapperTest {
     expectedPagedPdndServiceView.setNumber(0L);
     expectedPagedPdndServiceView.setTotalElements(1L);
 
-    // Act
     PagedPdndServiceView result = pdndServiceViewMapper.mapToPagedPdndServiceView(pagePdndServiceView);
 
-    // Assert
     assertNotNull(result);
     checkNotNullFields(result);
     reflectionEqualsByName(expectedPagedPdndServiceView, result);
@@ -55,14 +52,11 @@ class PdndServiceViewMapperTest {
 
   @Test
   void givenEmptyPagedPdndServiceViewThenReturnEmptyPagedResult() {
-    // Arrange
     Pageable pageable = PageRequest.of(0, 10);
     Page<PdndServiceView> emptyPage = new PageImpl<>(Collections.emptyList(), pageable, 0);
 
-    // Act
     PagedPdndServiceView result = pdndServiceViewMapper.mapToPagedPdndServiceView(emptyPage);
 
-    // Assert
     assertNotNull(result);
     assertTrue(result.getContent().isEmpty());
     assertEquals(0L, result.getTotalElements());
@@ -73,10 +67,8 @@ class PdndServiceViewMapperTest {
 
   @Test
   void givenNullPageThenReturnEmptyPagedPdndServiceView() {
-    // Act
     PagedPdndServiceView result = pdndServiceViewMapper.mapToPagedPdndServiceView(null);
 
-    // Assert
     assertNotNull(result);
     assertTrue(result.getContent() == null || result.getContent().isEmpty());
   }
