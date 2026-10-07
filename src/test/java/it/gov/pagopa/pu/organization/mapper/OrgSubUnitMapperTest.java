@@ -9,6 +9,7 @@ import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.springframework.data.domain.*;
 
+import java.util.Collections;
 import java.util.List;
 
 import static it.gov.pagopa.pu.organization.util.TestUtils.checkNotNullFields;
@@ -28,47 +29,91 @@ class OrgSubUnitMapperTest {
   }
 
   @Test
-  void mapToPagedOrgAndSubUnit() {
+  void givenOrgAndSubUnitPageWhenMapToPagedOrgAndSubUnitThenOk() {
     //GIVEN
     Page<OrgSubUnit> orgSubUnitModelPage = new PageImpl<>(List.of(buildOrgSubUnitModel()), PageRequest.of(0, 10), 1);
     //WHEN
-    PagedOrgSubUnit pagedOrgSubUnit = orgSubUnitMapper.mapToPagedOrgAndSubUnit(orgSubUnitModelPage);
+    PagedOrgSubUnit result = orgSubUnitMapper.mapToPagedOrgAndSubUnit(orgSubUnitModelPage);
     //THEN
-    assertNotNull(pagedOrgSubUnit);
-    assertEquals(orgSubUnitModelPage.getTotalElements(), pagedOrgSubUnit.getTotalElements());
-    assertEquals(orgSubUnitModelPage.getTotalPages(), pagedOrgSubUnit.getTotalPages());
-    assertEquals(orgSubUnitModelPage.getSize(), pagedOrgSubUnit.getSize());
-    assertEquals(orgSubUnitModelPage.getNumber(), pagedOrgSubUnit.getNumber());
-    assertOnOrgSubUnitFields(orgSubUnitModelPage.getContent().getFirst(), pagedOrgSubUnit.getContent().getFirst());
+    assertNotNull(result);
+    assertEquals(orgSubUnitModelPage.getTotalElements(), result.getTotalElements());
+    assertEquals(orgSubUnitModelPage.getTotalPages(), result.getTotalPages());
+    assertEquals(orgSubUnitModelPage.getSize(), result.getSize());
+    assertEquals(orgSubUnitModelPage.getNumber(), result.getNumber());
+    assertOnOrgSubUnitFields(orgSubUnitModelPage.getContent().getFirst(), result.getContent().getFirst());
   }
 
   @Test
-  void mapToOrgSubUnitDTOList() {
+  void givenPageWithNoPaginationInformationWhenMapToPagedOrgAndSubUnitThenOk() {
+    //GIVEN
+    Page<OrgSubUnit> orgSubUnitModelPage = new PageImpl<>(List.of(buildOrgSubUnitModel()));
+    //WHEN
+    PagedOrgSubUnit result = orgSubUnitMapper.mapToPagedOrgAndSubUnit(orgSubUnitModelPage);
+    //THEN
+    assertNotNull(result);
+    assertNull(result.getTotalElements());
+    assertNull(result.getTotalPages());
+    assertNull(result.getSize());
+    assertNull(result.getNumber());
+    assertOnOrgSubUnitFields(orgSubUnitModelPage.getContent().getFirst(), result.getContent().getFirst());
+  }
+
+  @Test
+  void givenEmptyPageWhenMapToPagedOrgAndSubUnitThenEmptyPagedResult() {
+    //GIVEN
+    Pageable pageable = PageRequest.of(0, 10);
+    Page<OrgSubUnit> emptyPage = new PageImpl<>(Collections.emptyList(), pageable, 0);
+    //WHEN
+    PagedOrgSubUnit result = orgSubUnitMapper.mapToPagedOrgAndSubUnit(emptyPage);
+    //THEN
+    assertNotNull(result);
+    assertTrue(result.getContent().isEmpty());
+    assertEquals(0L, result.getTotalElements());
+    assertEquals(0L, result.getTotalPages());
+    assertEquals(10L, result.getSize());
+    assertEquals(0L, result.getNumber());
+  }
+
+  @Test
+  void givenNullPageWhenMapToPagedOrgAndSubUnitThenReturnEmptyPaged() {
+    //WHEN
+    PagedOrgSubUnit result = orgSubUnitMapper.mapToPagedOrgAndSubUnit(null);
+    //THEN
+    assertNotNull(result);
+    assertNull(result.getTotalElements());
+    assertNull(result.getTotalPages());
+    assertNull(result.getSize());
+    assertNull(result.getNumber());
+    assertTrue(result.getContent().isEmpty());
+  }
+
+  @Test
+  void whenMapToOrgSubUnitDTOListThenOk() {
     //GIVEN
     List<OrgSubUnit> orgSubUnitModelList = List.of(buildOrgSubUnitModel());
     //WHEN
-    List<OrgSubUnitDTO> orgSubUnitDTOList = orgSubUnitMapper.mapToOrgSubUnitDTOList(orgSubUnitModelList);
+    List<OrgSubUnitDTO> result = orgSubUnitMapper.mapToOrgSubUnitDTOList(orgSubUnitModelList);
     //THEN
-    assertNotNull(orgSubUnitDTOList);
-    assertFalse(orgSubUnitDTOList.isEmpty());
-    assertEquals(orgSubUnitModelList.size(), orgSubUnitDTOList.size());
-    assertOnOrgSubUnitFields(orgSubUnitModelList.getFirst(), orgSubUnitDTOList.getFirst());
+    assertNotNull(result);
+    assertFalse(result.isEmpty());
+    assertEquals(orgSubUnitModelList.size(), result.size());
+    assertOnOrgSubUnitFields(orgSubUnitModelList.getFirst(), result.getFirst());
   }
 
   @Test
-  void mapToOrgSubUnitDTO() {
+  void whenMapToOrgSubUnitDTOThenOk() {
     //GIVEN
     OrgSubUnit orgSubUnitModel = buildOrgSubUnitModel();
     //WHEN
-    OrgSubUnitDTO orgSubUnitDTO = orgSubUnitMapper.mapToOrgSubUnitDTO(orgSubUnitModel);
+    OrgSubUnitDTO result = orgSubUnitMapper.mapToOrgSubUnitDTO(orgSubUnitModel);
     //THEN
-    assertNotNull(orgSubUnitDTO);
-    checkNotNullFields(orgSubUnitDTO);
-    assertOnOrgSubUnitFields(orgSubUnitModel, orgSubUnitDTO);
+    assertNotNull(result);
+    checkNotNullFields(result);
+    assertOnOrgSubUnitFields(orgSubUnitModel, result);
   }
 
   @Test
-  void mapIdIntoPageable() {
+  void whenMapCompositeIdPropertiesThenOk() {
     //GIVEN
     Sort sort = Sort.by(
       Sort.Order.asc(OrgSubUnit.OrgSubUnitId.Fields.organizationId),
@@ -77,15 +122,15 @@ class OrgSubUnitMapperTest {
     );
     Pageable pageable = PageRequest.of(0, 10, sort);
     //WHEN
-    Pageable mappedPageable = orgSubUnitMapper.mapCompositeIdProperties(pageable);
+    Pageable result = orgSubUnitMapper.mapCompositeIdProperties(pageable);
     //THEN
-    assertTrue(mappedPageable.getSort().stream().anyMatch(order ->
+    assertTrue(result.getSort().stream().anyMatch(order ->
       "id.%s".formatted(OrgSubUnit.OrgSubUnitId.Fields.organizationId).equals(order.getProperty())
     ));
-    assertTrue(mappedPageable.getSort().stream().anyMatch(order ->
+    assertTrue(result.getSort().stream().anyMatch(order ->
       "id.%s".formatted(OrgSubUnit.OrgSubUnitId.Fields.subUnitCode).equals(order.getProperty())
     ));
-    assertTrue(mappedPageable.getSort().stream().anyMatch(order ->
+    assertTrue(result.getSort().stream().anyMatch(order ->
       "notOrganizationIdNorSubUnitCode".equals(order.getProperty())
     ));
   }
