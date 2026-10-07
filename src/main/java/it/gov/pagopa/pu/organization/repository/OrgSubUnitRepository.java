@@ -122,7 +122,6 @@ public interface OrgSubUnitRepository extends JpaRepository<OrgSubUnit, OrgSubUn
     @Param("serviceType") PdndServiceType serviceType
   );
 
-  @RestResource(exported = false)
   @Query("""
     SELECT osu
     FROM OrgSubUnit osu
