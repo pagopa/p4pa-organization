@@ -121,4 +121,26 @@ public interface OrgSubUnitRepository extends JpaRepository<OrgSubUnit, OrgSubUn
     @Param("organizationId") Long organizationId,
     @Param("serviceType") PdndServiceType serviceType
   );
+
+  @Query("""
+    SELECT osu
+    FROM OrgSubUnit osu
+    WHERE osu.id.organizationId = :organizationId
+    AND osu.status = :#{T(it.gov.pagopa.pu.organization.enums.OrgSubUnitStatus).ACTIVE}
+    AND osu.id.subUnitCode NOT IN (
+        SELECT osuo.subUnitCode
+        FROM OrgSubUnitOperators osuo
+        WHERE osuo.organizationId = :organizationId
+        AND osuo.operatorExternalUserId = :mappedExternalUserId
+    )
+    AND (:subUnitCode IS NULL OR osu.id.subUnitCode = :subUnitCode)
+    AND (:subUnitName IS NULL OR osu.subUnitName ILIKE CONCAT('%', CAST(:subUnitName as text), '%'))
+    """)
+  Page<OrgSubUnit> findOrgSubUnitsAssignableToOperator(
+    @Param("organizationId") Long organizationId,
+    @Param("mappedExternalUserId") String mappedExternalUserId,
+    @RequestParam(required = false) @Param("subUnitCode") String subUnitCode,
+    @RequestParam(required = false) @Param("subUnitName") String subUnitName,
+    Pageable pageable
+  );
 }
