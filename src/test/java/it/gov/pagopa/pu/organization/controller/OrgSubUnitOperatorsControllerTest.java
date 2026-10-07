@@ -1,5 +1,8 @@
 package it.gov.pagopa.pu.organization.controller;
 
+import it.gov.pagopa.pu.organization.dto.OrgSubUnitDTO;
+import it.gov.pagopa.pu.organization.dto.generated.PagedOrgSubUnit;
+import it.gov.pagopa.pu.organization.enums.SubUnitType;
 import it.gov.pagopa.pu.organization.service.orgsubunitoperators.OrgSubUnitOperatorsService;
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeEach;
@@ -8,12 +11,14 @@ import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.Mock;
 import org.mockito.Mockito;
 import org.mockito.junit.jupiter.MockitoExtension;
+import org.springframework.data.domain.PageRequest;
 import org.springframework.http.ResponseEntity;
 
 import java.util.List;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.mockito.Mockito.verify;
+import static org.mockito.Mockito.when;
 
 @ExtendWith(MockitoExtension.class)
 class OrgSubUnitOperatorsControllerTest {
@@ -86,5 +91,23 @@ class OrgSubUnitOperatorsControllerTest {
 
     assertEquals(200, result.getStatusCode().value());
     verify(orgSubUnitOperatorsServiceMock).deleteOperatorsFromOrgSubUnit(organizationId, subUnitCode, mappedExternalUserIds);
+  }
+
+  @Test
+  void getOrgSubUnitsAssignableToOperator() {
+    //GIVEN
+    Long organizationId = 1L;
+    String mappedExternalUserId = "mappedExternalUserId";
+    String subUnitCode = "subUnitCode";
+    String subUnitName = "subUnitName";
+    PagedOrgSubUnit expectedPagedOrgSubUnit = new PagedOrgSubUnit();
+    expectedPagedOrgSubUnit.addContentItem(new OrgSubUnitDTO(organizationId, subUnitCode, SubUnitType.UO, subUnitName));
+    when(orgSubUnitOperatorsServiceMock.getOrgSubUnitsAssignableToOperator(organizationId, mappedExternalUserId, subUnitCode, subUnitName, PageRequest.of(0, 10)))
+      .thenReturn(expectedPagedOrgSubUnit);
+    //WHEN
+    ResponseEntity<PagedOrgSubUnit> actualResulT = controller.getOrgSubUnitsAssignableToOperator(organizationId, mappedExternalUserId, subUnitCode, subUnitName, PageRequest.of(0, 10));
+    //THEN
+    assertEquals(200, actualResulT.getStatusCode().value());
+    assertEquals(expectedPagedOrgSubUnit, actualResulT.getBody());
   }
 }

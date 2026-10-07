@@ -1,8 +1,10 @@
 package it.gov.pagopa.pu.organization.controller;
 
 import it.gov.pagopa.pu.organization.controller.generated.OrgSubUnitOperatorsApi;
+import it.gov.pagopa.pu.organization.dto.generated.PagedOrgSubUnit;
 import it.gov.pagopa.pu.organization.service.orgsubunitoperators.OrgSubUnitOperatorsService;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.data.domain.Pageable;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.RestController;
 
@@ -44,5 +46,13 @@ public class OrgSubUnitOperatorsController implements OrgSubUnitOperatorsApi {
     log.info("Requested to remove operators {} from orgSubUnit {} for organization {}", mappedExternalUserIds, subUnitCode, organizationId);
     orgSubUnitOperatorsService.deleteOperatorsFromOrgSubUnit(organizationId, subUnitCode, mappedExternalUserIds);
     return ResponseEntity.ok().build();
+  }
+
+  @Override
+  public ResponseEntity<PagedOrgSubUnit> getOrgSubUnitsAssignableToOperator(Long organizationId, String mappedExternalUserId, String orgSubUnitCode, String orgSubUnitName, Pageable pageable) {
+    log.info("Requested to get orgSubUnits assignable to operator {} for organization {}", mappedExternalUserId, organizationId);
+    return ResponseEntity.ok(
+      orgSubUnitOperatorsService.getOrgSubUnitsAssignableToOperator(organizationId, mappedExternalUserId, orgSubUnitCode, orgSubUnitName, pageable)
+    );
   }
 }

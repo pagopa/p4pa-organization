@@ -1177,6 +1177,54 @@ paths:
             application/json:
               schema:
                 $ref: '#/components/schemas/OrganizationErrorDTO'
+  /organization/{organizationId}/operators/{mappedExternalUserId}/assignable-org-sub-units:
+    get:
+      tags:
+        - OrgSubUnitOperators
+      operationId: getOrgSubUnitsAssignableToOperator
+      summary: get organization sub-units not already assigned to the operator
+      parameters:
+        - name: organizationId
+          in: path
+          required: true
+          schema:
+            type: integer
+            format: int64
+        - name: mappedExternalUserId
+          in: path
+          required: true
+          schema:
+            type: string
+        - name: orgSubUnitCode
+          in: query
+          required: false
+          schema:
+            type: string
+        - name: orgSubUnitName
+          in: query
+          required: false
+          schema:
+            type: string
+      responses:
+        '200':
+          description: OK
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/PagedOrgSubUnit'
+        '400':
+          description: Bad Request
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/OrganizationErrorDTO'
+        '500':
+          description: Internal Server Error
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/OrganizationErrorDTO'
+      x-spring-paginated: true
   /organization/{organizationId}/operators/{mappedExternalUserId}/org-sub-units:
     post:
       tags:
@@ -1694,6 +1742,31 @@ components:
           type: array
           items:
             type: 'PdndServiceView'
+        size:
+          type: integer
+          format: int64
+        totalElements:
+          type: integer
+          format: int64
+        totalPages:
+          type: integer
+          format: int64
+        number:
+          type: integer
+          format: int64
+    PagedOrgSubUnit:
+      type: object
+      required:
+        - content
+        - size
+        - totalElements
+        - totalPages
+        - number
+      properties:
+        content:
+          type: array
+          items:
+            type: 'OrgSubUnitDTO'
         size:
           type: integer
           format: int64

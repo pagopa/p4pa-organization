@@ -1,11 +1,15 @@
 package it.gov.pagopa.pu.organization.service.orgsubunitoperators;
 
+import it.gov.pagopa.pu.organization.dto.generated.PagedOrgSubUnit;
+import it.gov.pagopa.pu.organization.mapper.OrgSubUnitMapper;
 import it.gov.pagopa.pu.organization.model.OrgSubUnit;
 import it.gov.pagopa.pu.organization.model.OrgSubUnitOperators;
 import it.gov.pagopa.pu.organization.repository.OrgSubUnitOperatorsRepository;
 import it.gov.pagopa.pu.organization.repository.OrgSubUnitRepository;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
 import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -22,6 +26,7 @@ public class OrgSubUnitOperatorsService {
 
   private final OrgSubUnitRepository orgSubUnitRepository;
   private final OrgSubUnitOperatorsRepository orgSubUnitOperatorsRepository;
+  private final OrgSubUnitMapper orgSubUnitMapper;
 
   @Transactional
   public void addOrgSubUnitsToOperator(Long organizationId, String mappedExternalUserId, List<String> orgSubUnitCodes) {
@@ -100,5 +105,12 @@ public class OrgSubUnitOperatorsService {
     requestedMappedExternalUserIds.forEach(
       mappedExternalUserId -> orgSubUnitOperatorsRepository
         .deleteByOrganizationIdAndSubUnitCodeAndOperatorExternalUserId(organizationId, subUnitCode, mappedExternalUserId));
+  }
+
+  public PagedOrgSubUnit getOrgSubUnitsAssignableToOperator(Long organizationId, String mappedExternalUserId, String orgSubUnitCode, String orgSubUnitName, Pageable pageable) {
+    Page<OrgSubUnit> orgSubUnitPage = orgSubUnitRepository.findOrgSubUnitsAssignableToOperator(
+      organizationId, mappedExternalUserId, orgSubUnitCode, orgSubUnitName, orgSubUnitMapper.mapCompositeIdProperties(pageable)
+    );
+    return orgSubUnitMapper.mapToPagedOrgAndSubUnit(orgSubUnitPage);
   }
 }

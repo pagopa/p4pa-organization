@@ -6,6 +6,7 @@ import it.gov.pagopa.pu.organization.enums.SubUnitType;
 import jakarta.persistence.*;
 import jakarta.validation.constraints.NotNull;
 import lombok.*;
+import lombok.experimental.FieldNameConstants;
 
 import java.io.Serializable;
 
@@ -32,6 +33,7 @@ public class OrgSubUnit extends BaseEntity implements Serializable {
   @NoArgsConstructor
   @AllArgsConstructor
   @Embeddable
+  @FieldNameConstants
   public static class OrgSubUnitId implements Serializable{
     @NotNull
     Long organizationId;

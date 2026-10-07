@@ -1,5 +1,10 @@
 package it.gov.pagopa.pu.organization.service.orgsubunitoperators;
 
+import it.gov.pagopa.pu.organization.dto.OrgSubUnitDTO;
+import it.gov.pagopa.pu.organization.dto.generated.PagedOrgSubUnit;
+import it.gov.pagopa.pu.organization.enums.OrgSubUnitStatus;
+import it.gov.pagopa.pu.organization.enums.SubUnitType;
+import it.gov.pagopa.pu.organization.mapper.OrgSubUnitMapper;
 import it.gov.pagopa.pu.organization.model.OrgSubUnit;
 import it.gov.pagopa.pu.organization.model.OrgSubUnitOperators;
 import it.gov.pagopa.pu.organization.repository.OrgSubUnitOperatorsRepository;
@@ -12,6 +17,9 @@ import org.mockito.ArgumentCaptor;
 import org.mockito.Mock;
 import org.mockito.Mockito;
 import org.mockito.junit.jupiter.MockitoExtension;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageImpl;
+import org.springframework.data.domain.PageRequest;
 import org.springframework.web.server.ResponseStatusException;
 
 import java.util.List;
@@ -31,13 +39,17 @@ class OrgSubUnitOperatorsServiceTest {
   @Mock
   private OrgSubUnitOperatorsRepository orgSubUnitOperatorsRepositoryMock;
 
+  @Mock
+  private OrgSubUnitMapper orgSubUnitMapperMock;
+
   private OrgSubUnitOperatorsService service;
 
   @BeforeEach
   void setUp() {
     service = new OrgSubUnitOperatorsService(
       orgSubUnitRepositoryMock,
-      orgSubUnitOperatorsRepositoryMock
+      orgSubUnitOperatorsRepositoryMock,
+      orgSubUnitMapperMock
     );
   }
 
@@ -45,7 +57,8 @@ class OrgSubUnitOperatorsServiceTest {
   void tearDown() {
     Mockito.verifyNoMoreInteractions(
       orgSubUnitRepositoryMock,
-      orgSubUnitOperatorsRepositoryMock
+      orgSubUnitOperatorsRepositoryMock,
+      orgSubUnitMapperMock
     );
   }
 
@@ -407,5 +420,36 @@ class OrgSubUnitOperatorsServiceTest {
     assertDoesNotThrow(() -> service.deleteOperatorsFromOrgSubUnit(organizationId, subUnitCode, mappedExternalUserIds));
     verify(orgSubUnitOperatorsRepositoryMock, times(1))
       .deleteByOrganizationIdAndSubUnitCodeAndOperatorExternalUserId(organizationId, subUnitCode, "userId1");
+  }
+
+  @Test
+  void getOrgSubUnitsAssignableToOperator() {
+    //GIVEN
+    Long organizationId = 1L;
+    String mappedExternalUserId = "mappedExternalUserId";
+    String subUnitCode = "subUnitCode";
+    String subUnitName = "subUnitName";
+    PageRequest pageable = PageRequest.of(0, 10);
+
+    OrgSubUnit orgSubUnit = new OrgSubUnit();
+    orgSubUnit.setId(new OrgSubUnit.OrgSubUnitId(organizationId, subUnitCode));
+    orgSubUnit.setSubUnitType(SubUnitType.UO);
+    orgSubUnit.setSubUnitName(subUnitName);
+    orgSubUnit.setStatus(OrgSubUnitStatus.ACTIVE);
+    Page<OrgSubUnit> orgSubUnitPage = new PageImpl<>(List.of(orgSubUnit), pageable, 1);
+
+    PagedOrgSubUnit expectedPagedOrgSubUnit = new PagedOrgSubUnit();
+    expectedPagedOrgSubUnit.addContentItem(new OrgSubUnitDTO(organizationId, subUnitCode, SubUnitType.UO, subUnitName));
+
+    when(orgSubUnitMapperMock.mapCompositeIdProperties(pageable))
+      .thenReturn(pageable);
+    when(orgSubUnitRepositoryMock.findOrgSubUnitsAssignableToOperator(organizationId, mappedExternalUserId, subUnitCode, subUnitName, pageable))
+      .thenReturn(orgSubUnitPage);
+    when(orgSubUnitMapperMock.mapToPagedOrgAndSubUnit(orgSubUnitPage))
+      .thenReturn(expectedPagedOrgSubUnit);
+    //WHEN
+    PagedOrgSubUnit actualResult = service.getOrgSubUnitsAssignableToOperator(organizationId, mappedExternalUserId, subUnitCode, subUnitName, pageable);
+    //THEN
+    assertEquals(expectedPagedOrgSubUnit, actualResult);
   }
 }
