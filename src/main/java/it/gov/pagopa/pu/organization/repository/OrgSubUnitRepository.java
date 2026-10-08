@@ -69,6 +69,7 @@ public interface OrgSubUnitRepository extends JpaRepository<OrgSubUnit, OrgSubUn
          WHERE osu.id.organizationId = :organizationId
           AND (:operatorExternalUserId IS NULL OR osuo.operatorExternalUserId = :operatorExternalUserId)
           AND (:subUnitCode IS NULL OR osu.id.subUnitCode = :subUnitCode)
+          AND (:subUnitName IS NULL OR osu.subUnitName ILIKE CONCAT('%', CAST(:subUnitName as text), '%'))
           AND (:status IS NULL OR osu.status = :status)
           AND (:subUnitType IS NULL OR osu.subUnitType = :subUnitType)
          """)
@@ -76,6 +77,7 @@ public interface OrgSubUnitRepository extends JpaRepository<OrgSubUnit, OrgSubUn
     @Param("organizationId") Long organizationId,
     @RequestParam(required = false) @Param("operatorExternalUserId") String operatorExternalUserId,
     @RequestParam(required = false) @Param("subUnitCode") String subUnitCode,
+    @RequestParam(required = false) @Param("subUnitName") String subUnitName,
     @RequestParam(required = false) @Param("status") OrgSubUnitStatus status,
     @RequestParam(required = false) @Param("subUnitType") SubUnitType subUnitType,
     Pageable pageable
