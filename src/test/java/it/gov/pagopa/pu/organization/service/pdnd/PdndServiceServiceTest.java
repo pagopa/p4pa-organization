@@ -1,5 +1,6 @@
 package it.gov.pagopa.pu.organization.service.pdnd;
 
+import it.gov.pagopa.pu.organization.dto.generated.PagedPdndServiceView;
 import it.gov.pagopa.pu.organization.dto.generated.PdndClientDTO;
 import it.gov.pagopa.pu.organization.dto.generated.PdndServiceRequestDTO;
 import it.gov.pagopa.pu.organization.enums.PdndServiceType;
@@ -7,6 +8,7 @@ import it.gov.pagopa.pu.organization.exception.common.ConflictException;
 import it.gov.pagopa.pu.organization.exception.common.InvalidValueException;
 import it.gov.pagopa.pu.organization.exception.common.NotFoundException;
 import it.gov.pagopa.pu.organization.mapper.PdndServiceMapper;
+import it.gov.pagopa.pu.organization.mapper.PdndServiceViewMapper;
 import it.gov.pagopa.pu.organization.model.PdndService;
 import it.gov.pagopa.pu.organization.model.view.PdndServiceView;
 import it.gov.pagopa.pu.organization.repository.PdndServiceRepository;
@@ -21,6 +23,9 @@ import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.Mockito;
 import org.mockito.junit.jupiter.MockitoExtension;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageImpl;
+import org.springframework.data.domain.Pageable;
 import uk.co.jemos.podam.api.PodamFactory;
 
 import java.util.Collections;
@@ -44,6 +49,9 @@ class PdndServiceServiceTest {
   private PdndServiceMapper pdndServiceMapperMock;
   @Mock
   private PdndClientService pdndClientServiceMock;
+  @Mock
+  private PdndServiceViewMapper pdndServiceViewMapper;
+
   @InjectMocks
   private PdndServiceService service;
 
@@ -53,7 +61,8 @@ class PdndServiceServiceTest {
       pdndServiceRepositoryMock,
       pdndServiceMapperMock,
       pdndClientServiceMock,
-      pdndServiceViewRepositoryMock
+      pdndServiceViewRepositoryMock,
+      pdndServiceViewMapper
     );
   }
 
@@ -191,5 +200,24 @@ class PdndServiceServiceTest {
     NotFoundException exception = assertThrows(NotFoundException.class, () -> service.deletePdndService(purposeId));
 
     assertEquals(ErrorCodeConstants.ERROR_CODE_PDND_SERVICE_NOT_FOUND, exception.getCode());
+  }
+
+  @Test
+  void whenGetOrgSubUnitsPdndServicesThenOk() {
+    Long organizationId = 1L;
+    String subUnitCode = "CODE";
+    String subUnitName = "NAME";
+    Pageable pageable = Pageable.ofSize(5);
+
+    Page<PdndServiceView> pdndServiceViews = new PageImpl<>(List.of(podamFactory.manufacturePojo(PdndServiceView.class)));
+    PagedPdndServiceView expectedResult = podamFactory.manufacturePojo(PagedPdndServiceView.class);
+
+    when(pdndServiceViewRepositoryMock.findAllPdndServicesByOrganizationIdAndOrgSubUnits(organizationId, subUnitCode, subUnitName, pageable))
+      .thenReturn(pdndServiceViews);
+    when(pdndServiceViewMapper.mapToPagedPdndServiceView(pdndServiceViews)).thenReturn(expectedResult);
+
+    PagedPdndServiceView result = service.getOrgSubUnitsPdndServices(organizationId, subUnitCode, subUnitName, pageable);
+
+    assertSame(expectedResult, result);
   }
 }

@@ -1,5 +1,6 @@
 package it.gov.pagopa.pu.organization.service.pdnd;
 
+import it.gov.pagopa.pu.organization.dto.generated.PagedPdndServiceView;
 import it.gov.pagopa.pu.organization.dto.generated.PdndClientDTO;
 import it.gov.pagopa.pu.organization.dto.generated.PdndServiceRequestDTO;
 import it.gov.pagopa.pu.organization.enums.PdndServiceType;
@@ -7,12 +8,15 @@ import it.gov.pagopa.pu.organization.exception.common.ConflictException;
 import it.gov.pagopa.pu.organization.exception.common.InvalidValueException;
 import it.gov.pagopa.pu.organization.exception.common.NotFoundException;
 import it.gov.pagopa.pu.organization.mapper.PdndServiceMapper;
+import it.gov.pagopa.pu.organization.mapper.PdndServiceViewMapper;
 import it.gov.pagopa.pu.organization.model.PdndService;
 import it.gov.pagopa.pu.organization.model.view.PdndServiceView;
 import it.gov.pagopa.pu.organization.repository.PdndServiceRepository;
 import it.gov.pagopa.pu.organization.repository.view.PdndServiceViewRepository;
 import it.gov.pagopa.pu.organization.util.ErrorCodeConstants;
 import jakarta.transaction.Transactional;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
@@ -24,12 +28,14 @@ public class PdndServiceService {
   private final PdndServiceMapper pdndServiceMapper;
   private final PdndClientService pdndClientService;
   private final PdndServiceViewRepository pdndServiceViewRepository;
+  private final PdndServiceViewMapper pdndServiceViewMapper;
 
-  public PdndServiceService(PdndServiceRepository pdndServiceRepository, PdndServiceMapper pdndServiceMapper, PdndClientService pdndClientService, PdndServiceViewRepository pdndServiceViewRepository) {
+  public PdndServiceService(PdndServiceRepository pdndServiceRepository, PdndServiceMapper pdndServiceMapper, PdndClientService pdndClientService, PdndServiceViewRepository pdndServiceViewRepository, PdndServiceViewMapper pdndServiceViewMapper) {
     this.pdndServiceRepository = pdndServiceRepository;
     this.pdndServiceMapper = pdndServiceMapper;
     this.pdndClientService = pdndClientService;
     this.pdndServiceViewRepository = pdndServiceViewRepository;
+    this.pdndServiceViewMapper = pdndServiceViewMapper;
   }
 
   @Transactional
@@ -77,5 +83,10 @@ public class PdndServiceService {
       .orElseThrow(() -> new NotFoundException(
         ErrorCodeConstants.ERROR_CODE_PDND_SERVICE_NOT_FOUND,
         "PdndService having purposeId %s not found".formatted(purposeId)));
+  }
+
+  public PagedPdndServiceView getOrgSubUnitsPdndServices(Long organizationId, String subUnitCode, String subUnitName, Pageable pageable) {
+    Page<PdndServiceView> pdndServiceViewPage = pdndServiceViewRepository.findAllPdndServicesByOrganizationIdAndOrgSubUnits(organizationId, subUnitCode, subUnitName, pageable);
+    return pdndServiceViewMapper.mapToPagedPdndServiceView(pdndServiceViewPage);
   }
 }
