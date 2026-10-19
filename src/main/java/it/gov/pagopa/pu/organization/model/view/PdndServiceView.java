@@ -11,7 +11,7 @@ import lombok.EqualsAndHashCode;
 import lombok.NoArgsConstructor;
 
 @Entity
-@Table(name = "pdnd_service_view")
+@Table(name = "pdnd_services")
 @AllArgsConstructor
 @NoArgsConstructor
 @Data

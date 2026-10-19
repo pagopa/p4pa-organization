@@ -1,5 +1,6 @@
 package it.gov.pagopa.pu.organization.service.pdnd;
 
+import it.gov.pagopa.pu.organization.dto.generated.PagedPdndClientView;
 import it.gov.pagopa.pu.organization.dto.generated.PdndClientDTO;
 import it.gov.pagopa.pu.organization.dto.generated.PdndClientNoSecretDTO;
 import it.gov.pagopa.pu.organization.enums.PdndServiceType;
@@ -8,15 +9,20 @@ import it.gov.pagopa.pu.organization.exception.common.InvalidValueException;
 import it.gov.pagopa.pu.organization.exception.common.NotFoundException;
 import it.gov.pagopa.pu.organization.exception.custom.OrganizationNotFoundException;
 import it.gov.pagopa.pu.organization.mapper.PdndClientMapper;
+import it.gov.pagopa.pu.organization.mapper.PdndClientViewMapper;
 import it.gov.pagopa.pu.organization.model.OrgSubUnit;
 import it.gov.pagopa.pu.organization.model.PdndClient;
+import it.gov.pagopa.pu.organization.model.view.PdndClientView;
 import it.gov.pagopa.pu.organization.repository.OrgSubUnitRepository;
 import it.gov.pagopa.pu.organization.repository.OrganizationRepository;
 import it.gov.pagopa.pu.organization.repository.PdndClientRepository;
 import it.gov.pagopa.pu.organization.repository.PdndServiceRepository;
+import it.gov.pagopa.pu.organization.repository.view.PdndClientViewRepository;
 import it.gov.pagopa.pu.organization.util.ErrorCodeConstants;
 import jakarta.transaction.Transactional;
 import org.apache.commons.lang3.StringUtils;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
@@ -28,18 +34,24 @@ public class PdndClientService {
   private final OrganizationRepository organizationRepository;
   private final OrgSubUnitRepository orgSubUnitRepository;
   private final PdndClientMapper pdndClientMapper;
+  private final PdndClientViewRepository pdndClientViewRepository;
+  private final PdndClientViewMapper pdndClientViewMapper;
 
   public PdndClientService(
     PdndClientRepository pdndClientRepository,
     PdndServiceRepository pdndServiceRepository,
     OrganizationRepository organizationRepository,
     OrgSubUnitRepository orgSubUnitRepository,
-    PdndClientMapper pdndClientMapper) {
+    PdndClientMapper pdndClientMapper,
+    PdndClientViewRepository pdndClientViewRepository,
+    PdndClientViewMapper pdndClientViewMapper) {
     this.pdndClientRepository = pdndClientRepository;
     this.pdndServiceRepository = pdndServiceRepository;
     this.organizationRepository = organizationRepository;
     this.orgSubUnitRepository = orgSubUnitRepository;
     this.pdndClientMapper = pdndClientMapper;
+    this.pdndClientViewRepository = pdndClientViewRepository;
+    this.pdndClientViewMapper = pdndClientViewMapper;
   }
 
   @Transactional
@@ -104,5 +116,10 @@ public class PdndClientService {
     }
 
     pdndClientRepository.delete(pdndClient);
+  }
+
+  public PagedPdndClientView getOrgSubUnitsPdndClients(Long organizationId, String subUnitCode, String subUnitName, Pageable pageable) {
+    Page<PdndClientView> pdndClientViewPage = pdndClientViewRepository.findAllPdndClientsByOrganizationIdAndOrgSubUnits(organizationId, subUnitCode, subUnitName, pageable);
+    return pdndClientViewMapper.mapToPagedPdndClientView(pdndClientViewPage);
   }
 }

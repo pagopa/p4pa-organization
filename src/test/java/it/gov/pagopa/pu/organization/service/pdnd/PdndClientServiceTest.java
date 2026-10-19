@@ -1,5 +1,6 @@
 package it.gov.pagopa.pu.organization.service.pdnd;
 
+import it.gov.pagopa.pu.organization.dto.generated.PagedPdndClientView;
 import it.gov.pagopa.pu.organization.dto.generated.PdndClientDTO;
 import it.gov.pagopa.pu.organization.dto.generated.PdndClientNoSecretDTO;
 import it.gov.pagopa.pu.organization.enums.PdndServiceType;
@@ -8,13 +9,16 @@ import it.gov.pagopa.pu.organization.exception.common.InvalidValueException;
 import it.gov.pagopa.pu.organization.exception.common.NotFoundException;
 import it.gov.pagopa.pu.organization.exception.custom.OrganizationNotFoundException;
 import it.gov.pagopa.pu.organization.mapper.PdndClientMapper;
+import it.gov.pagopa.pu.organization.mapper.PdndClientViewMapper;
 import it.gov.pagopa.pu.organization.model.OrgSubUnit;
 import it.gov.pagopa.pu.organization.model.Organization;
 import it.gov.pagopa.pu.organization.model.PdndClient;
+import it.gov.pagopa.pu.organization.model.view.PdndClientView;
 import it.gov.pagopa.pu.organization.repository.OrgSubUnitRepository;
 import it.gov.pagopa.pu.organization.repository.OrganizationRepository;
 import it.gov.pagopa.pu.organization.repository.PdndClientRepository;
 import it.gov.pagopa.pu.organization.repository.PdndServiceRepository;
+import it.gov.pagopa.pu.organization.repository.view.PdndClientViewRepository;
 import it.gov.pagopa.pu.organization.util.ErrorCodeConstants;
 import it.gov.pagopa.pu.organization.util.TestUtils;
 import org.junit.jupiter.api.AfterEach;
@@ -24,6 +28,9 @@ import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.Mock;
 import org.mockito.Mockito;
 import org.mockito.junit.jupiter.MockitoExtension;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageImpl;
+import org.springframework.data.domain.Pageable;
 import uk.co.jemos.podam.api.PodamFactory;
 
 import java.util.Collections;
@@ -31,7 +38,8 @@ import java.util.List;
 import java.util.Optional;
 
 import static org.junit.jupiter.api.Assertions.*;
-import static org.mockito.Mockito.*;
+import static org.mockito.Mockito.verify;
+import static org.mockito.Mockito.when;
 
 @ExtendWith(MockitoExtension.class)
 class PdndClientServiceTest {
@@ -47,6 +55,10 @@ class PdndClientServiceTest {
   private OrgSubUnitRepository orgSubUnitRepositoryMock;
   @Mock
   private PdndClientMapper pdndClientMapperMock;
+  @Mock
+  private PdndClientViewRepository pdndClientViewRepositoryMock;
+  @Mock
+  private PdndClientViewMapper pdndClientViewMapperMock;
 
   private PdndClientService service;
 
@@ -57,7 +69,9 @@ class PdndClientServiceTest {
       pdndServiceRepositoryMock,
       organizationRepositoryMock,
       orgSubUnitRepositoryMock,
-      pdndClientMapperMock
+      pdndClientMapperMock,
+      pdndClientViewRepositoryMock,
+      pdndClientViewMapperMock
     );
   }
 
@@ -68,7 +82,9 @@ class PdndClientServiceTest {
       pdndServiceRepositoryMock,
       organizationRepositoryMock,
       orgSubUnitRepositoryMock,
-      pdndClientMapperMock
+      pdndClientMapperMock,
+      pdndClientViewRepositoryMock,
+      pdndClientViewMapperMock
     );
   }
 
@@ -360,5 +376,24 @@ class PdndClientServiceTest {
       ConflictException.class, () -> service.deletePdndClient(organizationId, clientId));
 
     assertEquals(ErrorCodeConstants.ERROR_CODE_PDND_CLIENT_ID_IN_USE, exception.getCode());
+  }
+
+  @Test
+  void whenGetOrgSubUnitsPdndClientsThenOk() {
+    Long organizationId = 1L;
+    String subUnitCode = "subUnitCode";
+    String subUnitName = "subUnitName";
+    Pageable pageable = Pageable.ofSize(5);
+
+    Page<PdndClientView> pdndClientViews = new PageImpl<>(List.of(podamFactory.manufacturePojo(PdndClientView.class)));
+    PagedPdndClientView expectedResult = podamFactory.manufacturePojo(PagedPdndClientView.class);
+
+    when(pdndClientViewRepositoryMock.findAllPdndClientsByOrganizationIdAndOrgSubUnits(organizationId, subUnitCode, subUnitName, pageable))
+      .thenReturn(pdndClientViews);
+    when(pdndClientViewMapperMock.mapToPagedPdndClientView(pdndClientViews)).thenReturn(expectedResult);
+
+    PagedPdndClientView result = service.getOrgSubUnitsPdndClients(organizationId, subUnitCode, subUnitName, pageable);
+
+    assertSame(expectedResult, result);
   }
 }
