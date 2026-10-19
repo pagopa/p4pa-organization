@@ -1,5 +1,6 @@
 package it.gov.pagopa.pu.organization.controller;
 
+import it.gov.pagopa.pu.organization.dto.generated.PagedPdndClientView;
 import it.gov.pagopa.pu.organization.dto.generated.PdndClientDTO;
 import it.gov.pagopa.pu.organization.dto.generated.PdndClientNoSecretDTO;
 import it.gov.pagopa.pu.organization.enums.PdndServiceType;
@@ -13,6 +14,9 @@ import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.Mockito;
 import org.mockito.junit.jupiter.MockitoExtension;
+import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Pageable;
+import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import uk.co.jemos.podam.api.PodamFactory;
 
@@ -106,5 +110,24 @@ class PdndClientControllerTest {
 
     assertNotNull(response);
     assertEquals(200, response.getStatusCode().value());
+  }
+
+  @Test
+  void whenGetOrgSubUnitsPdndClientsThenOk() {
+    Long organizationId = 1L;
+    String subUnitCode = "subUnitCode";
+    String subUnitName = "subUnitName";
+    Pageable pageable = PageRequest.ofSize(5);
+
+    PagedPdndClientView expectedResponse = podamFactory.manufacturePojo(PagedPdndClientView.class);
+
+    when(pdndClientServiceMock.getOrgSubUnitsPdndClients(organizationId, subUnitCode, subUnitName, pageable))
+      .thenReturn(expectedResponse);
+
+    ResponseEntity<PagedPdndClientView> response = pdndClientController.getOrgSubUnitsPdndClients(organizationId, subUnitCode, subUnitName, pageable);
+
+    assertNotNull(response);
+    assertEquals(HttpStatus.OK, response.getStatusCode());
+    assertSame(expectedResponse, response.getBody());
   }
 }
