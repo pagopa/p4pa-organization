@@ -57,7 +57,16 @@ public class CommonExceptionHandler {
 
   @ExceptionHandler({DataIntegrityViolationException.class})
   public ResponseEntity<OrganizationErrorDTO> handleDataIntegrityViolationException(RuntimeException ex, HttpServletRequest request){
-    return handleException(ex, request, HttpStatus.CONFLICT, OrganizationErrorDTO.CategoryEnum.ORGANIZATION_CONFLICT);
+    ExceptionMessageTranscoded transcoded = buildReturnedMessage(ex);
+    HttpStatus status = HttpStatus.CONFLICT;
+    OrganizationErrorDTO.CategoryEnum errorEnum = OrganizationErrorDTO.CategoryEnum.ORGANIZATION_CONFLICT;
+
+    if (transcoded.getCode() != null && transcoded.getCode().equals(OrganizationErrorDTO.CategoryEnum.ORGANIZATION_BAD_REQUEST.getValue())) {
+      status = HttpStatus.BAD_REQUEST;
+      errorEnum = OrganizationErrorDTO.CategoryEnum.ORGANIZATION_BAD_REQUEST;
+    }
+
+    return handleException(ex, request, status, errorEnum);
   }
 
   @ExceptionHandler({CannotAcquireLockException.class})
