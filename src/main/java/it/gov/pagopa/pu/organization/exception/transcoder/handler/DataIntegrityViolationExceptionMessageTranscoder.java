@@ -16,7 +16,7 @@ public class DataIntegrityViolationExceptionMessageTranscoder implements Excepti
     boolean isUniqueViolation = false;
 
     if (dataIntegrityViolationException.getCause() instanceof ConstraintViolationException hibernateConstraintViolationException) {
-      java.sql.SQLException sqlEx = hibernateConstraintViolationException.getSQLException();;
+      java.sql.SQLException sqlEx = hibernateConstraintViolationException.getSQLException();
       errorMsg += " "+sqlEx.getMessage();
       String sqlState = sqlEx.getSQLState();
 
