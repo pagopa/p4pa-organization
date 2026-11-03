@@ -3,17 +3,14 @@ package it.gov.pagopa.pu.organization.service.pdnd;
 import it.gov.pagopa.pu.organization.dto.generated.PagedPdndServiceView;
 import it.gov.pagopa.pu.organization.dto.generated.PdndClientDTO;
 import it.gov.pagopa.pu.organization.dto.generated.PdndServiceRequestDTO;
-import it.gov.pagopa.pu.organization.dto.generated.PdndServiceUpdateDTO;
 import it.gov.pagopa.pu.organization.enums.PdndServiceType;
 import it.gov.pagopa.pu.organization.exception.common.ConflictException;
 import it.gov.pagopa.pu.organization.exception.common.InvalidValueException;
 import it.gov.pagopa.pu.organization.exception.common.NotFoundException;
 import it.gov.pagopa.pu.organization.mapper.PdndServiceMapper;
 import it.gov.pagopa.pu.organization.mapper.PdndServiceViewMapper;
-import it.gov.pagopa.pu.organization.model.PdndClient;
 import it.gov.pagopa.pu.organization.model.PdndService;
 import it.gov.pagopa.pu.organization.model.view.PdndServiceView;
-import it.gov.pagopa.pu.organization.repository.PdndClientRepository;
 import it.gov.pagopa.pu.organization.repository.PdndServiceRepository;
 import it.gov.pagopa.pu.organization.repository.view.PdndServiceViewRepository;
 import it.gov.pagopa.pu.organization.util.ErrorCodeConstants;
@@ -36,7 +33,8 @@ import java.util.List;
 import java.util.Optional;
 
 import static org.junit.jupiter.api.Assertions.*;
-import static org.mockito.Mockito.*;
+import static org.mockito.Mockito.verify;
+import static org.mockito.Mockito.when;
 
 @ExtendWith(MockitoExtension.class)
 class PdndServiceServiceTest {
@@ -53,8 +51,6 @@ class PdndServiceServiceTest {
   private PdndClientService pdndClientServiceMock;
   @Mock
   private PdndServiceViewMapper pdndServiceViewMapper;
-  @Mock
-  private PdndClientRepository pdndClientRepositoryMock;
 
   @InjectMocks
   private PdndServiceService service;
@@ -66,8 +62,7 @@ class PdndServiceServiceTest {
       pdndServiceMapperMock,
       pdndClientServiceMock,
       pdndServiceViewRepositoryMock,
-      pdndServiceViewMapper,
-      pdndClientRepositoryMock
+      pdndServiceViewMapper
     );
   }
 
@@ -224,201 +219,5 @@ class PdndServiceServiceTest {
     PagedPdndServiceView result = service.getOrgSubUnitsPdndServices(organizationId, subUnitCode, subUnitName, pageable);
 
     assertSame(expectedResult, result);
-  }
-
-  @Test
-  void givenNewClientWhenUpdatePdndServiceThenOk() {
-    Long organizationId = 1L;
-    String purposeId = "PURPOSE_ID";
-    String subUnitCode = "SUB_01";
-    PdndServiceUpdateDTO updateDTO = podamFactory.manufacturePojo(PdndServiceUpdateDTO.class);
-    PdndService pdndService = podamFactory.manufacturePojo(PdndService.class);
-    pdndService.setClientId("oldClientId");
-    PdndClient newPdndClient = podamFactory.manufacturePojo(PdndClient.class);
-    newPdndClient.setOrganizationId(organizationId);
-    newPdndClient.setSubUnitCode(subUnitCode);
-    PdndService expectedResult = podamFactory.manufacturePojo(PdndService.class);
-
-    when(pdndServiceRepositoryMock.findByOrganizationIdAndPurposeIdAndSubUnitCode(organizationId, purposeId, subUnitCode))
-      .thenReturn(Optional.of(pdndService));
-    when(pdndClientRepositoryMock.findById(updateDTO.getClientId())).thenReturn(Optional.of(newPdndClient));
-    when(pdndServiceRepositoryMock.findByClientIdAndServiceType(updateDTO.getClientId(), pdndService.getServiceType()))
-      .thenReturn(null);
-    doNothing().when(pdndServiceMapperMock).updateModel(pdndService, updateDTO);
-    when(pdndServiceRepositoryMock.save(pdndService)).thenReturn(expectedResult);
-
-    PdndService result = service.updatePdndService(organizationId, purposeId, updateDTO, subUnitCode);
-
-    assertSame(expectedResult, result);
-  }
-
-  @Test
-  void givenNewClientAndNullSubUnitCodeWhenUpdatePdndServiceThenOk() {
-    Long organizationId = 1L;
-    String purposeId = "PURPOSE_ID";
-    PdndServiceUpdateDTO updateDTO = podamFactory.manufacturePojo(PdndServiceUpdateDTO.class);
-    PdndService pdndService = podamFactory.manufacturePojo(PdndService.class);
-    pdndService.setClientId("oldClientId");
-    PdndClient newPdndClient = podamFactory.manufacturePojo(PdndClient.class);
-    newPdndClient.setOrganizationId(organizationId);
-    newPdndClient.setSubUnitCode(null);
-    PdndService expectedResult = podamFactory.manufacturePojo(PdndService.class);
-
-    when(pdndServiceRepositoryMock.findByOrganizationIdAndPurposeIdAndSubUnitCode(organizationId, purposeId, null))
-      .thenReturn(Optional.of(pdndService));
-    when(pdndClientRepositoryMock.findById(updateDTO.getClientId())).thenReturn(Optional.of(newPdndClient));
-    when(pdndServiceRepositoryMock.findByClientIdAndServiceType(updateDTO.getClientId(), pdndService.getServiceType()))
-      .thenReturn(null);
-    doNothing().when(pdndServiceMapperMock).updateModel(pdndService, updateDTO);
-    when(pdndServiceRepositoryMock.save(pdndService)).thenReturn(expectedResult);
-
-    PdndService result = service.updatePdndService(organizationId, purposeId, updateDTO, null);
-
-    assertSame(expectedResult, result);
-  }
-
-  @Test
-  void givenSameClientWhenUpdatePdndServiceThenOk() {
-    Long organizationId = 1L;
-    String purposeId = "PURPOSE_ID";
-    String subUnitCode = "SUB_01";
-    PdndServiceUpdateDTO updateDTO = podamFactory.manufacturePojo(PdndServiceUpdateDTO.class);
-    PdndService pdndService = podamFactory.manufacturePojo(PdndService.class);
-    pdndService.setClientId(updateDTO.getClientId());
-    PdndService expectedResult = podamFactory.manufacturePojo(PdndService.class);
-
-    when(pdndServiceRepositoryMock.findByOrganizationIdAndPurposeIdAndSubUnitCode(organizationId, purposeId, subUnitCode))
-      .thenReturn(Optional.of(pdndService));
-    doNothing().when(pdndServiceMapperMock).updateModel(pdndService, updateDTO);
-    when(pdndServiceRepositoryMock.save(pdndService)).thenReturn(expectedResult);
-
-    PdndService result = service.updatePdndService(organizationId, purposeId, updateDTO, subUnitCode);
-
-    assertSame(expectedResult, result);
-  }
-
-  @Test
-  void givenNewClientAndServiceTypeAlreadyConfiguredWhenUpdatePdndServiceThenConflictException() {
-    Long organizationId = 1L;
-    String purposeId = "PURPOSE_ID";
-    String subUnitCode = "SUB_01";
-    PdndServiceUpdateDTO updateDTO = podamFactory.manufacturePojo(PdndServiceUpdateDTO.class);
-    PdndService pdndService = podamFactory.manufacturePojo(PdndService.class);
-    pdndService.setClientId("oldClientId");
-    PdndClient newPdndClient = podamFactory.manufacturePojo(PdndClient.class);
-    newPdndClient.setOrganizationId(organizationId);
-    newPdndClient.setSubUnitCode(subUnitCode);
-    PdndService conflictingService = podamFactory.manufacturePojo(PdndService.class);
-
-    when(pdndServiceRepositoryMock.findByOrganizationIdAndPurposeIdAndSubUnitCode(organizationId, purposeId, subUnitCode))
-      .thenReturn(Optional.of(pdndService));
-    when(pdndClientRepositoryMock.findById(updateDTO.getClientId())).thenReturn(Optional.of(newPdndClient));
-    when(pdndServiceRepositoryMock.findByClientIdAndServiceType(updateDTO.getClientId(), pdndService.getServiceType()))
-      .thenReturn(conflictingService);
-
-    ConflictException exception = assertThrows(ConflictException.class,
-      () -> service.updatePdndService(organizationId, purposeId, updateDTO, subUnitCode));
-
-    assertEquals(ErrorCodeConstants.ERROR_CODE_INVALID_PDND_SERVICE_TYPE, exception.getCode());
-  }
-
-  @Test
-  void givenNewClientAndNoMatchingSubUnitWhenUpdatePdndServiceThenInvalidValueException() {
-    Long organizationId = 1L;
-    String purposeId = "PURPOSE_ID";
-    String subUnitCode = "SUB_01";
-    PdndServiceUpdateDTO updateDTO = podamFactory.manufacturePojo(PdndServiceUpdateDTO.class);
-    PdndService pdndService = podamFactory.manufacturePojo(PdndService.class);
-    pdndService.setClientId("oldClientId");
-    PdndClient newPdndClient = podamFactory.manufacturePojo(PdndClient.class);
-    newPdndClient.setOrganizationId(organizationId);
-    newPdndClient.setSubUnitCode("SUB_02");
-
-    when(pdndServiceRepositoryMock.findByOrganizationIdAndPurposeIdAndSubUnitCode(organizationId, purposeId, subUnitCode))
-      .thenReturn(Optional.of(pdndService));
-    when(pdndClientRepositoryMock.findById(updateDTO.getClientId())).thenReturn(Optional.of(newPdndClient));
-
-    InvalidValueException exception = assertThrows(InvalidValueException.class,
-      () -> service.updatePdndService(organizationId, purposeId, updateDTO, subUnitCode));
-
-    assertEquals(ErrorCodeConstants.ERROR_CODE_INVALID_PDND_CLIENT, exception.getCode());
-  }
-
-  @Test
-  void givenNewClientAndNoSubUnitCodeWhenUpdatePdndServiceThenInvalidValueException() {
-    Long organizationId = 1L;
-    String purposeId = "PURPOSE_ID";
-    PdndServiceUpdateDTO updateDTO = podamFactory.manufacturePojo(PdndServiceUpdateDTO.class);
-    PdndService pdndService = podamFactory.manufacturePojo(PdndService.class);
-    pdndService.setClientId("oldClientId");
-    PdndClient newPdndClient = podamFactory.manufacturePojo(PdndClient.class);
-    newPdndClient.setOrganizationId(organizationId);
-    newPdndClient.setSubUnitCode("SUB_01");
-
-    when(pdndServiceRepositoryMock.findByOrganizationIdAndPurposeIdAndSubUnitCode(organizationId, purposeId, null))
-      .thenReturn(Optional.of(pdndService));
-    when(pdndClientRepositoryMock.findById(updateDTO.getClientId())).thenReturn(Optional.of(newPdndClient));
-
-    InvalidValueException exception = assertThrows(InvalidValueException.class,
-      () -> service.updatePdndService(organizationId, purposeId, updateDTO, null));
-
-    assertEquals(ErrorCodeConstants.ERROR_CODE_INVALID_PDND_CLIENT, exception.getCode());
-  }
-
-  @Test
-  void givenNewClientAndNoMatchingOrgIdWhenUpdatePdndServiceThenInvalidValueException() {
-    Long organizationId = 1L;
-    String purposeId = "PURPOSE_ID";
-    String subUnitCode = "SUB_01";
-    PdndServiceUpdateDTO updateDTO = podamFactory.manufacturePojo(PdndServiceUpdateDTO.class);
-    PdndService pdndService = podamFactory.manufacturePojo(PdndService.class);
-    pdndService.setClientId("oldClientId");
-    PdndClient newPdndClient = podamFactory.manufacturePojo(PdndClient.class);
-    newPdndClient.setOrganizationId(2L);
-    newPdndClient.setSubUnitCode(subUnitCode);
-
-    when(pdndServiceRepositoryMock.findByOrganizationIdAndPurposeIdAndSubUnitCode(organizationId, purposeId, subUnitCode))
-      .thenReturn(Optional.of(pdndService));
-    when(pdndClientRepositoryMock.findById(updateDTO.getClientId())).thenReturn(Optional.of(newPdndClient));
-
-    InvalidValueException exception = assertThrows(InvalidValueException.class,
-      () -> service.updatePdndService(organizationId, purposeId, updateDTO, subUnitCode));
-
-    assertEquals(ErrorCodeConstants.ERROR_CODE_INVALID_PDND_CLIENT, exception.getCode());
-  }
-
-  @Test
-  void givenNewClientNotFoundWhenUpdatePdndServiceThenThrowNotFoundException() {
-    Long organizationId = 1L;
-    String purposeId = "PURPOSE_ID";
-    String subUnitCode = "SUB_01";
-    PdndServiceUpdateDTO updateDTO = podamFactory.manufacturePojo(PdndServiceUpdateDTO.class);
-    PdndService pdndService = podamFactory.manufacturePojo(PdndService.class);
-    pdndService.setClientId("oldClientId");
-
-    when(pdndServiceRepositoryMock.findByOrganizationIdAndPurposeIdAndSubUnitCode(organizationId, purposeId, subUnitCode))
-      .thenReturn(Optional.of(pdndService));
-    when(pdndClientRepositoryMock.findById(updateDTO.getClientId())).thenReturn(Optional.empty());
-
-    NotFoundException exception = assertThrows(NotFoundException.class,
-      () -> service.updatePdndService(organizationId, purposeId, updateDTO, subUnitCode));
-
-    assertEquals(ErrorCodeConstants.ERROR_CODE_PDND_CLIENT_NOT_FOUND, exception.getCode());
-  }
-
-  @Test
-  void givenPdndServiceNotFoundWhenUpdatePdndServiceThenThrowNotFoundException() {
-    Long organizationId = 1L;
-    String purposeId = "PURPOSE_ID";
-    String subUnitCode = "SUB_01";
-    PdndServiceUpdateDTO updateDTO = podamFactory.manufacturePojo(PdndServiceUpdateDTO.class);
-
-    when(pdndServiceRepositoryMock.findByOrganizationIdAndPurposeIdAndSubUnitCode(organizationId, purposeId, subUnitCode))
-      .thenReturn(Optional.empty());
-
-    NotFoundException exception = assertThrows(NotFoundException.class,
-      () -> service.updatePdndService(organizationId, purposeId, updateDTO, subUnitCode));
-
-    assertEquals(ErrorCodeConstants.ERROR_CODE_PDND_SERVICE_NOT_FOUND, exception.getCode());
   }
 }

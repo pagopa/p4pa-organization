@@ -3,17 +3,14 @@ package it.gov.pagopa.pu.organization.service.pdnd;
 import it.gov.pagopa.pu.organization.dto.generated.PagedPdndServiceView;
 import it.gov.pagopa.pu.organization.dto.generated.PdndClientDTO;
 import it.gov.pagopa.pu.organization.dto.generated.PdndServiceRequestDTO;
-import it.gov.pagopa.pu.organization.dto.generated.PdndServiceUpdateDTO;
 import it.gov.pagopa.pu.organization.enums.PdndServiceType;
 import it.gov.pagopa.pu.organization.exception.common.ConflictException;
 import it.gov.pagopa.pu.organization.exception.common.InvalidValueException;
 import it.gov.pagopa.pu.organization.exception.common.NotFoundException;
 import it.gov.pagopa.pu.organization.mapper.PdndServiceMapper;
 import it.gov.pagopa.pu.organization.mapper.PdndServiceViewMapper;
-import it.gov.pagopa.pu.organization.model.PdndClient;
 import it.gov.pagopa.pu.organization.model.PdndService;
 import it.gov.pagopa.pu.organization.model.view.PdndServiceView;
-import it.gov.pagopa.pu.organization.repository.PdndClientRepository;
 import it.gov.pagopa.pu.organization.repository.PdndServiceRepository;
 import it.gov.pagopa.pu.organization.repository.view.PdndServiceViewRepository;
 import it.gov.pagopa.pu.organization.util.ErrorCodeConstants;
@@ -23,7 +20,6 @@ import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
-import java.util.Objects;
 
 @Service
 public class PdndServiceService {
@@ -33,15 +29,13 @@ public class PdndServiceService {
   private final PdndClientService pdndClientService;
   private final PdndServiceViewRepository pdndServiceViewRepository;
   private final PdndServiceViewMapper pdndServiceViewMapper;
-  private final PdndClientRepository pdndClientRepository;
 
-  public PdndServiceService(PdndServiceRepository pdndServiceRepository, PdndServiceMapper pdndServiceMapper, PdndClientService pdndClientService, PdndServiceViewRepository pdndServiceViewRepository, PdndServiceViewMapper pdndServiceViewMapper, PdndClientRepository pdndClientRepository) {
+  public PdndServiceService(PdndServiceRepository pdndServiceRepository, PdndServiceMapper pdndServiceMapper, PdndClientService pdndClientService, PdndServiceViewRepository pdndServiceViewRepository, PdndServiceViewMapper pdndServiceViewMapper) {
     this.pdndServiceRepository = pdndServiceRepository;
     this.pdndServiceMapper = pdndServiceMapper;
     this.pdndClientService = pdndClientService;
     this.pdndServiceViewRepository = pdndServiceViewRepository;
     this.pdndServiceViewMapper = pdndServiceViewMapper;
-    this.pdndClientRepository = pdndClientRepository;
   }
 
   @Transactional
@@ -94,36 +88,5 @@ public class PdndServiceService {
   public PagedPdndServiceView getOrgSubUnitsPdndServices(Long organizationId, String subUnitCode, String subUnitName, Pageable pageable) {
     Page<PdndServiceView> pdndServiceViewPage = pdndServiceViewRepository.findAllPdndServicesByOrganizationIdAndOrgSubUnits(organizationId, subUnitCode, subUnitName, pageable);
     return pdndServiceViewMapper.mapToPagedPdndServiceView(pdndServiceViewPage);
-  }
-
-  @Transactional
-  public PdndService updatePdndService(Long organizationId, String purposeId, PdndServiceUpdateDTO updateDTO, String subUnitCode) {
-    PdndService pdndService = pdndServiceRepository.findByOrganizationIdAndPurposeIdAndSubUnitCode(organizationId, purposeId, subUnitCode)
-      .orElseThrow(() -> new NotFoundException(
-        ErrorCodeConstants.ERROR_CODE_PDND_SERVICE_NOT_FOUND,
-        "PdndService having purposeId %s, organizationId %d and subUnitCode %s not found".formatted(purposeId, organizationId, subUnitCode)));
-
-    if (!pdndService.getClientId().equals(updateDTO.getClientId())) {
-      validateNewPdndClient(organizationId, updateDTO.getClientId(), pdndService.getServiceType(), subUnitCode);
-    }
-
-    pdndServiceMapper.updateModel(pdndService, updateDTO);
-    return pdndServiceRepository.save(pdndService);
-  }
-
-  private void validateNewPdndClient(Long organizationId, String clientId, PdndServiceType serviceType, String subUnitCode) {
-    PdndClient pdndClient = pdndClientRepository.findById(clientId)
-      .orElseThrow(() -> new NotFoundException(ErrorCodeConstants.ERROR_CODE_PDND_CLIENT_NOT_FOUND,
-        "PdndClient having clientId %s not found".formatted(clientId)));
-
-    if (!organizationId.equals(pdndClient.getOrganizationId()) || !Objects.equals(subUnitCode, pdndClient.getSubUnitCode())) {
-      throw new InvalidValueException(ErrorCodeConstants.ERROR_CODE_INVALID_PDND_CLIENT,
-        "PdndClient having clientId %s is not associated with organizationId %d and subUnitCode %s".formatted(clientId, organizationId, subUnitCode));
-    }
-
-    if (pdndServiceRepository.findByClientIdAndServiceType(clientId, serviceType) != null) {
-      throw new ConflictException(ErrorCodeConstants.ERROR_CODE_INVALID_PDND_SERVICE_TYPE,
-        "PdndService having pdndServiceType %s already exists for clientId %s".formatted(serviceType, clientId));
-    }
   }
 }

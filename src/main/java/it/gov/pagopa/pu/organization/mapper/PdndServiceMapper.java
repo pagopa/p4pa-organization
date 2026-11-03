@@ -1,7 +1,6 @@
 package it.gov.pagopa.pu.organization.mapper;
 
 import it.gov.pagopa.pu.organization.dto.generated.PdndServiceRequestDTO;
-import it.gov.pagopa.pu.organization.dto.generated.PdndServiceUpdateDTO;
 import it.gov.pagopa.pu.organization.model.PdndService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Component;
@@ -22,10 +21,5 @@ public class PdndServiceMapper {
     pdndService.setClientId(requestDTO.getClientId());
 
     return pdndService;
-  }
-
-  public void updateModel(PdndService pdndService, PdndServiceUpdateDTO updateDTO) {
-    pdndService.setServiceName(updateDTO.getServiceName());
-    pdndService.setClientId(updateDTO.getClientId());
   }
 }
