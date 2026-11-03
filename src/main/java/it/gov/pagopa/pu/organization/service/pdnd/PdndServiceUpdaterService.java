@@ -34,7 +34,7 @@ public class PdndServiceUpdaterService {
         "PdndService having purposeId %s not found".formatted(purposeId)));
 
     if (!pdndService.getClientId().equals(updateDTO.getClientId())) {
-      validateNewPdndClient(pdndService.getClientId(), pdndService.getServiceType(), updateDTO.getClientId());
+      validateNewPdndClient(pdndService.getClientId(), updateDTO.getClientId(), pdndService.getServiceType());
     }
 
     pdndService.setServiceName(updateDTO.getServiceName());
@@ -42,7 +42,7 @@ public class PdndServiceUpdaterService {
     return pdndServiceRepository.save(pdndService);
   }
 
-  private void validateNewPdndClient(String oldClientId, PdndServiceType serviceType, String newClientId) {
+  private void validateNewPdndClient(String oldClientId, String newClientId, PdndServiceType serviceType) {
     PdndClient oldPdndClient = findPdndClient(oldClientId);
     PdndClient newPdndClient = findPdndClient(newClientId);
 
