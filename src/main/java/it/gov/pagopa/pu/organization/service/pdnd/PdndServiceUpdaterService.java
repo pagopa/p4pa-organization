@@ -10,8 +10,8 @@ import it.gov.pagopa.pu.organization.model.PdndService;
 import it.gov.pagopa.pu.organization.repository.PdndClientRepository;
 import it.gov.pagopa.pu.organization.repository.PdndServiceRepository;
 import it.gov.pagopa.pu.organization.util.ErrorCodeConstants;
-import jakarta.transaction.Transactional;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 import java.util.Objects;
 
