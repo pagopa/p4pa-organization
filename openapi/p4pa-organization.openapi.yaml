@@ -1182,6 +1182,65 @@ paths:
             application/json:
               schema:
                 $ref: '#/components/schemas/OrganizationErrorDTO'
+    put:
+      tags:
+        - PdndService
+      summary: Updates a PdndService
+      operationId: updatePdndService
+      parameters:
+        - name: organizationId
+          in: path
+          required: true
+          schema:
+            type: integer
+            format: int64
+        - name: purposeId
+          in: path
+          required: true
+          schema:
+            type: string
+        - name: subUnitCode
+          in: query
+          required: false
+          schema:
+            type: string
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/PdndServiceUpdateDTO'
+      responses:
+        '200':
+          description: OK
+          content:
+            application/json:
+              schema:
+                type: 'PdndService'
+        '400':
+          description: Bad Request
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/OrganizationErrorDTO'
+        '404':
+          description: Not Found
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/OrganizationErrorDTO'
+        '409':
+          description: Conflict
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/OrganizationErrorDTO'
+        '500':
+          description: Internal Server Error
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/OrganizationErrorDTO'
     delete:
       tags:
         - PdndService
@@ -1713,6 +1772,16 @@ components:
           type: string
         serviceType:
           type: 'PdndServiceType'
+        clientId:
+          type: string
+    PdndServiceUpdateDTO:
+      type: object
+      required:
+        - serviceName
+        - clientId
+      properties:
+        serviceName:
+          type: string
         clientId:
           type: string
     OrganizationApiKey:

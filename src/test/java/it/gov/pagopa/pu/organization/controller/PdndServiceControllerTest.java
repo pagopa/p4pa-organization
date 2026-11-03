@@ -2,6 +2,7 @@ package it.gov.pagopa.pu.organization.controller;
 
 import it.gov.pagopa.pu.organization.dto.generated.PagedPdndServiceView;
 import it.gov.pagopa.pu.organization.dto.generated.PdndServiceRequestDTO;
+import it.gov.pagopa.pu.organization.dto.generated.PdndServiceUpdateDTO;
 import it.gov.pagopa.pu.organization.enums.PdndServiceType;
 import it.gov.pagopa.pu.organization.model.PdndService;
 import it.gov.pagopa.pu.organization.model.view.PdndServiceView;
@@ -117,6 +118,25 @@ class PdndServiceControllerTest {
       .thenReturn(expectedResponse);
 
     ResponseEntity<PagedPdndServiceView> response = pdndServiceController.getOrgSubUnitsPdndServices(organizationId, subUnitCode, subUnitName, null);
+
+    assertNotNull(response);
+    assertEquals(HttpStatus.OK, response.getStatusCode());
+    assertSame(expectedResponse, response.getBody());
+  }
+
+  @Test
+  void whenUpdatePdndServiceThenOk() {
+    Long organizationId = 1L;
+    String purposeId = "PURPOSE_ID";
+    String subUnitCode = "SUBUNITCODE";
+    PdndServiceUpdateDTO pdndServiceUpdateDTO = podamFactory.manufacturePojo(PdndServiceUpdateDTO.class);
+    PdndService expectedResponse = podamFactory.manufacturePojo(PdndService.class);
+
+    when(pdndServiceServiceMock.updatePdndService(organizationId, purposeId, pdndServiceUpdateDTO, subUnitCode))
+      .thenReturn(expectedResponse);
+
+    ResponseEntity<PdndService> response = pdndServiceController
+      .updatePdndService(organizationId, purposeId, pdndServiceUpdateDTO, subUnitCode);
 
     assertNotNull(response);
     assertEquals(HttpStatus.OK, response.getStatusCode());

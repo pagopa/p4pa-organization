@@ -3,6 +3,7 @@ package it.gov.pagopa.pu.organization.controller;
 import it.gov.pagopa.pu.organization.controller.generated.PdndServiceApi;
 import it.gov.pagopa.pu.organization.dto.generated.PagedPdndServiceView;
 import it.gov.pagopa.pu.organization.dto.generated.PdndServiceRequestDTO;
+import it.gov.pagopa.pu.organization.dto.generated.PdndServiceUpdateDTO;
 import it.gov.pagopa.pu.organization.enums.PdndServiceType;
 import it.gov.pagopa.pu.organization.model.PdndService;
 import it.gov.pagopa.pu.organization.model.view.PdndServiceView;
@@ -53,6 +54,12 @@ public class PdndServiceController implements PdndServiceApi {
   public ResponseEntity<PagedPdndServiceView> getOrgSubUnitsPdndServices(Long organizationId, String subUnitCode, String subUnitName, Pageable pageable) {
     log.info("Requested OrgSubUnits PdndServices for organizationId {}", organizationId);
     return ResponseEntity.ok(service.getOrgSubUnitsPdndServices(organizationId, subUnitCode, subUnitName, pageable));
+  }
+
+  @Override
+  public ResponseEntity<PdndService> updatePdndService(Long organizationId, String purposeId, PdndServiceUpdateDTO pdndServiceUpdateDTO, String subUnitCode) {
+    log.info("Requested updatePdndService having organizationId {}, purposeId {} and subUnitCode {}", organizationId, purposeId, subUnitCode);
+    return ResponseEntity.ok(service.updatePdndService(organizationId, purposeId, pdndServiceUpdateDTO, subUnitCode));
   }
 
 }

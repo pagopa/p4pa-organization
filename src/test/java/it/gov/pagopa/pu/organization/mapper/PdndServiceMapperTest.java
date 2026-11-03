@@ -1,6 +1,8 @@
 package it.gov.pagopa.pu.organization.mapper;
 
 import it.gov.pagopa.pu.organization.dto.generated.PdndServiceRequestDTO;
+import it.gov.pagopa.pu.organization.dto.generated.PdndServiceUpdateDTO;
+import it.gov.pagopa.pu.organization.enums.PdndServiceType;
 import it.gov.pagopa.pu.organization.model.PdndService;
 import it.gov.pagopa.pu.organization.repository.PdndClientRepository;
 import it.gov.pagopa.pu.organization.util.TestUtils;
@@ -58,5 +60,20 @@ class PdndServiceMapperTest {
         "updateTraceId"
       )
       .isEqualTo(requestDTO);
+  }
+
+  @Test
+  void whenUpdateModelThenOk() {
+    PdndService pdndService = podamFactory.manufacturePojo(PdndService.class);
+    String purposeId = pdndService.getPurposeId();
+    PdndServiceType serviceType = pdndService.getServiceType();
+    PdndServiceUpdateDTO updateDTO = podamFactory.manufacturePojo(PdndServiceUpdateDTO.class);
+
+    pdndServiceMapper.updateModel(pdndService, updateDTO);
+
+    assertEquals(purposeId, pdndService.getPurposeId());
+    assertEquals(serviceType, pdndService.getServiceType());
+    assertEquals(updateDTO.getServiceName(), pdndService.getServiceName());
+    assertEquals(updateDTO.getClientId(), pdndService.getClientId());
   }
 }
