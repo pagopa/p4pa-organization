@@ -3,10 +3,12 @@ package it.gov.pagopa.pu.organization.controller;
 import it.gov.pagopa.pu.organization.controller.generated.PdndServiceApi;
 import it.gov.pagopa.pu.organization.dto.generated.PagedPdndServiceView;
 import it.gov.pagopa.pu.organization.dto.generated.PdndServiceRequestDTO;
+import it.gov.pagopa.pu.organization.dto.generated.PdndServiceUpdateDTO;
 import it.gov.pagopa.pu.organization.enums.PdndServiceType;
 import it.gov.pagopa.pu.organization.model.PdndService;
 import it.gov.pagopa.pu.organization.model.view.PdndServiceView;
 import it.gov.pagopa.pu.organization.service.pdnd.PdndServiceService;
+import it.gov.pagopa.pu.organization.service.pdnd.PdndServiceUpdaterService;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.data.domain.Pageable;
 import org.springframework.http.ResponseEntity;
@@ -19,9 +21,11 @@ import java.util.List;
 public class PdndServiceController implements PdndServiceApi {
 
   private final PdndServiceService service;
+  private final PdndServiceUpdaterService pdndServiceUpdaterService;
 
-  public PdndServiceController(PdndServiceService service) {
+  public PdndServiceController(PdndServiceService service, PdndServiceUpdaterService pdndServiceUpdaterService) {
     this.service = service;
+    this.pdndServiceUpdaterService = pdndServiceUpdaterService;
   }
 
   @Override
@@ -53,6 +57,12 @@ public class PdndServiceController implements PdndServiceApi {
   public ResponseEntity<PagedPdndServiceView> getOrgSubUnitsPdndServices(Long organizationId, String subUnitCode, String subUnitName, Pageable pageable) {
     log.info("Requested OrgSubUnits PdndServices for organizationId {}", organizationId);
     return ResponseEntity.ok(service.getOrgSubUnitsPdndServices(organizationId, subUnitCode, subUnitName, pageable));
+  }
+
+  @Override
+  public ResponseEntity<PdndService> updatePdndService(String purposeId, PdndServiceUpdateDTO pdndServiceUpdateDTO) {
+    log.info("Requested updatePdndService having purposeId {}", purposeId);
+    return ResponseEntity.ok(pdndServiceUpdaterService.updatePdndService(purposeId, pdndServiceUpdateDTO));
   }
 
 }

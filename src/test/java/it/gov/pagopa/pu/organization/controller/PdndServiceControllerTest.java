@@ -2,10 +2,12 @@ package it.gov.pagopa.pu.organization.controller;
 
 import it.gov.pagopa.pu.organization.dto.generated.PagedPdndServiceView;
 import it.gov.pagopa.pu.organization.dto.generated.PdndServiceRequestDTO;
+import it.gov.pagopa.pu.organization.dto.generated.PdndServiceUpdateDTO;
 import it.gov.pagopa.pu.organization.enums.PdndServiceType;
 import it.gov.pagopa.pu.organization.model.PdndService;
 import it.gov.pagopa.pu.organization.model.view.PdndServiceView;
 import it.gov.pagopa.pu.organization.service.pdnd.PdndServiceService;
+import it.gov.pagopa.pu.organization.service.pdnd.PdndServiceUpdaterService;
 import it.gov.pagopa.pu.organization.util.TestUtils;
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.Test;
@@ -31,12 +33,14 @@ class PdndServiceControllerTest {
 
   @Mock
   private PdndServiceService pdndServiceServiceMock;
+  @Mock
+  private PdndServiceUpdaterService pdndServiceUpdaterServiceMock;
   @InjectMocks
   private PdndServiceController pdndServiceController;
 
   @AfterEach
   void verifyNoMoreInteractions(){
-    Mockito.verifyNoMoreInteractions(pdndServiceServiceMock);
+    Mockito.verifyNoMoreInteractions(pdndServiceServiceMock, pdndServiceUpdaterServiceMock);
   }
 
   @Test
@@ -117,6 +121,23 @@ class PdndServiceControllerTest {
       .thenReturn(expectedResponse);
 
     ResponseEntity<PagedPdndServiceView> response = pdndServiceController.getOrgSubUnitsPdndServices(organizationId, subUnitCode, subUnitName, null);
+
+    assertNotNull(response);
+    assertEquals(HttpStatus.OK, response.getStatusCode());
+    assertSame(expectedResponse, response.getBody());
+  }
+
+  @Test
+  void whenUpdatePdndServiceThenOk() {
+    String purposeId = "PURPOSE_ID";
+    PdndServiceUpdateDTO pdndServiceUpdateDTO = podamFactory.manufacturePojo(PdndServiceUpdateDTO.class);
+    PdndService expectedResponse = podamFactory.manufacturePojo(PdndService.class);
+
+    when(pdndServiceUpdaterServiceMock.updatePdndService(purposeId, pdndServiceUpdateDTO))
+      .thenReturn(expectedResponse);
+
+    ResponseEntity<PdndService> response = pdndServiceController
+      .updatePdndService(purposeId, pdndServiceUpdateDTO);
 
     assertNotNull(response);
     assertEquals(HttpStatus.OK, response.getStatusCode());
