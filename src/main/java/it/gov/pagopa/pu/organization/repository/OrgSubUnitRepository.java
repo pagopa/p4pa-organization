@@ -145,4 +145,8 @@ public interface OrgSubUnitRepository extends JpaRepository<OrgSubUnit, OrgSubUn
     @RequestParam(required = false) @Param("subUnitName") String subUnitName,
     Pageable pageable
   );
+
+  List<OrgSubUnit> findAllByIdOrganizationIdAndIdSubUnitCodeIn(
+    @Param("organizationId") Long organizationId,
+    @Param("subUnitCodes") Collection<String> subUnitCodes);
 }
