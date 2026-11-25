@@ -7,8 +7,8 @@ import it.gov.pagopa.pu.organization.dto.OrganizationStationDTO;
 import it.gov.pagopa.pu.organization.dto.OrganizationUpdateDTO;
 import it.gov.pagopa.pu.organization.dto.generated.*;
 import it.gov.pagopa.pu.organization.enums.OrganizationStatus;
-import it.gov.pagopa.pu.organization.exception.custom.BrokerNotFoundException;
 import it.gov.pagopa.pu.organization.exception.common.InvalidValueException;
+import it.gov.pagopa.pu.organization.exception.custom.BrokerNotFoundException;
 import it.gov.pagopa.pu.organization.exception.custom.OrganizationNotFoundException;
 import it.gov.pagopa.pu.organization.mapper.OrganizationMapper;
 import it.gov.pagopa.pu.organization.mapper.OrganizationStationMapper;
@@ -100,7 +100,7 @@ public class OrganizationService {
     String key = organizationKeysService.getApiKey(organizationId, keyType, subUnitCode);
 
     if (key == null) {
-      key = resolveFallbackKey(organizationId, keyType, subUnitCode);
+      key = resolveFallbackKey(organizationId, keyType);
     }
     if (key == null) {
       return null;
@@ -117,12 +117,8 @@ public class OrganizationService {
     return organizationApiKeys;
   }
 
-  private String resolveFallbackKey(Long organizationId, OrganizationApiKeyType keyType, String subUnitCode) {
+  private String resolveFallbackKey(Long organizationId, OrganizationApiKeyType keyType) {
     return switch (keyType) {
-      case SEND -> (subUnitCode != null)
-        ? organizationKeysService.getApiKey(organizationId, keyType, null)
-        : null;
-
       case GENERATE_NOTICE -> brokerRepository.findByBrokeredOrganizationId(String.valueOf(organizationId))
         .map(broker -> brokerKeysService.getBrokerDecryptedApiKey(broker.getBrokerId(), BrokerApiKeyType.GENERATE_NOTICE))
         .orElseThrow(() -> new BrokerNotFoundException("Broker for org with id %s not found".formatted(organizationId)));
