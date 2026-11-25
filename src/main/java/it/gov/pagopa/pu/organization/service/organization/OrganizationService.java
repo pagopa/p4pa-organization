@@ -118,14 +118,14 @@ public class OrganizationService {
   }
 
   private String resolveFallbackKey(Long organizationId, OrganizationApiKeyType keyType) {
-    return switch (keyType) {
-      case GENERATE_NOTICE -> brokerRepository.findByBrokeredOrganizationId(String.valueOf(organizationId))
+    if(keyType == OrganizationApiKeyType.GENERATE_NOTICE){
+      return brokerRepository.findByBrokeredOrganizationId(String.valueOf(organizationId))
         .map(broker -> brokerKeysService.getBrokerDecryptedApiKey(broker.getBrokerId(), BrokerApiKeyType.GENERATE_NOTICE))
         .orElseThrow(() -> new BrokerNotFoundException("Broker for org with id %s not found".formatted(organizationId)));
-
-      default -> null;
-    };
+    }
+    return null;
   }
+
   public OrganizationDetailDTO getOrganization(Long organizationId) {
     Organization org = findOrganizationById(organizationId);
 
