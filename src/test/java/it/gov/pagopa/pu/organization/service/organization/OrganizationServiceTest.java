@@ -256,29 +256,6 @@ class OrganizationServiceTest {
   }
 
   @Test
-  void givenGetApiKeySENDWhenSubUnitKeyIsNullThenFallbackToOrganizationKeySuccess() {
-    // Given
-    Long organizationId = 1L;
-    String subUnitCode = "CODE";
-    Organization organization = buildOrganization();
-    OrganizationApiKeyType keyType = OrganizationApiKeyType.SEND;
-    String expectedApiKey = "fallbackApiKey";
-
-    when(organizationRepositoryMock.findById(organizationId)).thenReturn(Optional.of(organization));
-
-    when(organizationKeysServiceMock.getApiKey(organizationId, keyType, subUnitCode))
-      .thenReturn(null);
-    when(organizationKeysServiceMock.getApiKey(organizationId, keyType, null))
-      .thenReturn(expectedApiKey);
-
-    // When
-    OrganizationApiKeys result = service.getApiKey(organizationId, keyType, subUnitCode);
-
-    // Then
-    assertEquals(expectedApiKey, result.getApiKey());
-  }
-
-  @Test
   void givenGetApiKeySENDWhenSubUnitCodeIsNullAndKeyIsNullThenReturnNull() {
     // Given
     Long organizationId = 1L;
@@ -296,7 +273,7 @@ class OrganizationServiceTest {
   }
 
   @Test
-  void givenGetApiKeySENDWhenBothKeysAreNullThenReturnNull() {
+  void givenGetApiKeySENDWhenSubUnitKeyIsNullThenReturnNullWithoutOrganizationFallback() {
     // Given
     Long organizationId = 1L;
     String subUnitCode = "CODE";
@@ -305,7 +282,6 @@ class OrganizationServiceTest {
 
     when(organizationRepositoryMock.findById(organizationId)).thenReturn(Optional.of(organization));
     when(organizationKeysServiceMock.getApiKey(organizationId, keyType, subUnitCode)).thenReturn(null);
-    when(organizationKeysServiceMock.getApiKey(organizationId, keyType, null)).thenReturn(null);
 
     // When
     OrganizationApiKeys result = service.getApiKey(organizationId, keyType, subUnitCode);
